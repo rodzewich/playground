@@ -25,7 +25,7 @@ function regenerateSourceMaps(filename, linesShift, callback) {
         },
         function (next) {
             console.log(content);
-            smc = new sourceMap.SourceMapConsumer(rawSourceMap);
+            smc = new sourceMap.SourceMapConsumer(content);
             console.log("smc", smc);
         },
         function () {
