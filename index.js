@@ -4,8 +4,27 @@ var fs     = require("fs"),
     url    = require("url"),
     colors = require('colors'),
     ts     = require("./typescript"),
-    rootdir = ".";
+    rootdir = ".",
+    deferred   = require("./lib/deferred");
+var configure = require("./lib/configure");
 
+configure(
+    {
+        cwd: "."
+    },
+    function (error, result) {
+        console.log(result);
+    }
+);
+
+return;
+
+
+
+
+
+
+/*
 function deferred(actions) {
     "use strict";
     function iterate() {
@@ -18,6 +37,7 @@ function deferred(actions) {
     }
     iterate();
 }
+*/
 
 http.createServer(function (request, response) {
 
