@@ -1,6 +1,6 @@
 var fs = require("fs");
 var sourceMap = require('source-map');
-var deferred = require("./deferred");
+var deferred = require("./lib/deferred");
 
 var http = require('http');
 http.createServer(function (req, res) {
