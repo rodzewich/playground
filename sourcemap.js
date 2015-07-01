@@ -2,18 +2,12 @@ var fs = require("fs");
 var sourceMap = require('source-map');
 var deferred = require("./lib/deferred");
 
-var http = require('http');
-http.createServer(function (req, res) {
-    res.writeHead(200, {'Content-Type': 'text/plain'});
-    res.end('Hello World\n');
-}).listen(1337, '127.0.0.1');
-
 function regenerateSourceMaps(filename, linesShift, callback) {
     var smc;
     var content;
+    console.log("deferred", deferred);
     deferred([
         function (next) {
-            console.log(123);
             fs.readFile(filename, function (error, buffer) {
                 if (!error) {
                     content = buffer.toString("utf8");
