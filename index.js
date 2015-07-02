@@ -26,10 +26,6 @@ deferred([
         var publicDirectory = path.join(project, "public"),
             xlibDirectory = path.join(project, "xlib");
 
-        function displayImage(request, response) {
-
-        }
-
         http.createServer(function (request, response) {
 
             var address  = request.url;
@@ -39,8 +35,8 @@ deferred([
             var pathname = options.pathname || "/";
             var dirname  = path.dirname(options.pathname);
             var extname  = path.extname(pathname).toLowerCase();
+            var extensionWithoutDot = extname.substring(1);
             var basename = path.basename(pathname, extname);
-
 
             console.log(String(method).magenta + " " + String(address).gray);
             if (Object.keys(query).length !== 0) {
@@ -110,6 +106,15 @@ deferred([
                     }
                 ]);
             }
+
+            function displayImage() {
+
+            }
+
+            if (!!types.images[extensionWithoutDot]) {
+
+            }
+
 
             if (method === "GET" && extname === "") {
                 response.writeHead(200, {"Content-Type": "text/html"});
