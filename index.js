@@ -49,16 +49,22 @@ deferred([
                         filename     : pathname,
                         basedir      : publicDirectory,
                         useDebugger  : true,
-                        useCache     : false,
+                        useCache     : true,
                         useOnlyCache : false
                     }, function (error, result) {
                         if (!error) {
-                            // todo: use 302 header
-                            response.writeHead(200, {
-                                "Content-Type"  : result.type,
-                                "Last-Modified" : result.date.toUTCString()
-                            });
-                            response.end(result.content);
+                            var lastModified = Date.parse(request.headers["if-modified-since"]),
+                                cacheDate    = 1000 * parseInt(String(Number(result.date) / 1000), 10);
+                            if (lastModified && lastModified === cacheDate) {
+                                response.writeHead(304, http.STATUS_CODES[304]);
+                                response.end();
+                            } else {
+                                response.writeHead(200, http.STATUS_CODES[200], {
+                                    "Content-Type"  : result.type,
+                                    "Last-Modified" : result.date.toUTCString()
+                                });
+                                response.end(result.content);
+                            }
                         } else {
                             console.log("Error:", error);
                             next();
