@@ -60,8 +60,11 @@ deferred([
 
 
             staticExists({
-                basedir: publicDirectory,
-                filename: pathname
+                basedir      : publicDirectory,
+                filename     : pathname,
+                useDebugger  : true,
+                useCache     : false,
+                useOnlyCache : false
             }, function (exists) {
                 console.log("file exists:", exists);
             });
