@@ -51,13 +51,15 @@ deferred([
                         useDebugger  : true,
                         useCache     : false,
                         useOnlyCache : false
-                    }, function (error, content) {
+                    }, function (error, result) {
                         if (!error) {
-                            // todo: out content
+                            // todo: use 304 header
+                            response.writeHead(200, {"Content-Type": result.type});
+                            response.writeHead({"Last-Modified": result.date.toUTCString()});
+                            response.end(result.content);
                         } else {
-                            if () {
-
-                            }
+                            console.log("Error:", error);
+                            next();
                         }
                     });
                 },
