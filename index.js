@@ -8,15 +8,20 @@ var fs     = require("fs"),
     cwd = process.env.PWD,
     types = require("./lib/types"),
     deferred   = require("./lib/deferred"),
-    configure = require("./lib/configure");
+    configure = require("./lib/configure"),
+    charset;
 
-var staticExists = require("./lib/staticExists"),
-    staticContent = require("./lib/staticContent");
+var staticContent = require("./lib/staticContent");
+
+function htmlEntities(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
 
 deferred([
     function (next) {
         configure({cwd: cwd}, function (error, result) {
             if (!error) {
+                charset = result.charset;
                 project = result.project;
                 next();
             } else {
@@ -26,8 +31,8 @@ deferred([
     },
     function () {
 
-        var publicDirectory = path.join(project, "public"),
-            xlibDirectory = path.join(project, "xlib");
+        var contentDirectory = path.join(project, "public"),
+            libDirectory = path.join(project, "xlib");
 
         http.createServer(function (request, response) {
 
@@ -38,16 +43,40 @@ deferred([
             var pathname = options.pathname || "/";
             var dirname  = path.dirname(options.pathname);
             var extname  = path.extname(pathname).toLowerCase();
-            var extensionWithoutDot = extname.substring(1);
             var basename = path.basename(pathname, extname);
 
+            function displayError(code, error) {
+                var stack = [
+                        "<pre>",
+                        htmlEntities(error ? error.stack : ""),
+                        "</pre>"
+                    ],
+                content = [
+                    "<!DOCTYPE html>",
+                    "<html>",
+                    "<head>",
+                    "<title>", code, " ", http.STATUS_CODES[code], "</title>",
+                    "</head>",
+                    "<body bgcolor=\"white\">",
+                    "<center><h1>", code, " ", http.STATUS_CODES[code], "</h1></center>",
+                    "<pre>", error ? stack : "" , "</pre>",
+                    "<hr />",
+                    "<center>phantom 0.0.1</center>",
+                    "</body>",
+                    "</html>"
+                ];
+                response.writeHead(code, {"Content-Type": [types.text.html, "; charset=", charset].join("")});
+                response.end(content.join(""));
+
+            }
+            
             deferred([
 
                 function (next) {
                     staticContent({
-                        charset      : "utf-8",
+                        charset      : charset,
                         filename     : pathname,
-                        basedir      : publicDirectory,
+                        basedir      : contentDirectory,
                         useDebugger  : true,
                         useCache     : true,
                         useOnlyCache : false
@@ -72,20 +101,14 @@ deferred([
                     });
                 },
 
+                function (next) {
+                    displayError(404);
+                },
+
                 function () {
                     console.log(String(method).magenta + " " + String(address).gray);
                     if (Object.keys(query).length !== 0) {
                         console.log("query".green + ": ".gray + JSON.stringify(query, true, 2).gray);
-                    }
-
-                    function displayError404() {
-                        response.writeHead(404, {"Content-Type": "text/html"});
-                        response.end("<!DOCTYPE html>\n<html><head><title>404 Not Found</title></head><body bgcolor=\"white\"><center><h1>404 Not Found</h1></center><hr /><center>phantom</center></body></html>");
-                    }
-
-                    function displayError500 (message) {
-                        response.writeHead(500, {"Content-Type": "text/html"});
-                        response.end("<!DOCTYPE html>\n<html><head><title>500 Internal Server Error</title></head><body bgcolor=\"white\"><center><h1>404 Not Found</h1></center><hr /><center>phantom</center></body></html>");
                     }
 
                     function displayTypeScript() {
@@ -106,7 +129,7 @@ deferred([
                             function (callback) {
                                 fs.readFile(sourceName, function (error, content) {
                                     if (error) {
-                                        displayError500();
+                                        displayError(500);
                                     } else {
                                         try {
                                             references = ts.preProcessFile(content.toString("utf8"), false).referencedFiles.map(function (item) {
@@ -114,7 +137,7 @@ deferred([
                                             });
                                             callback();
                                         } catch (e) {
-                                            displayError500();
+                                            displayError(500);
                                         }
                                     }
                                 });
@@ -125,7 +148,7 @@ deferred([
                             function () {
                                 var content = [];
                                 if (!sourceExists) {
-                                    displayError404();
+                                    displayError(404);
                                 } else {
                                     response.writeHead(200, {"Content-Type": "application/javascript"});
                                     response.end(
@@ -142,22 +165,13 @@ deferred([
                         ]);
                     }
 
-                    function displayImage() {
-
-                    }
-
-                    if (!!types.images[extensionWithoutDot]) {
-
-                    }
-
-
                     if (method === "GET" && extname === "") {
                         response.writeHead(200, {"Content-Type": "text/html"});
                         response.end("<!DOCTYPE html>\n<html><head><title></title><script src=\"/app.js\"></script><script>xlib.app.onReady(function(){xlib.app.start();});</script></head><body></body></html>");
                     } else if (method === "GET" && extname === ".js") {
                         /*displayTypeScript();*/
                     } else {
-                        displayError404();
+                        displayError(404);
                     }
                 }
 
