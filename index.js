@@ -53,9 +53,11 @@ deferred([
                         useOnlyCache : false
                     }, function (error, result) {
                         if (!error) {
-                            // todo: use 304 header
-                            response.writeHead(200, {"Content-Type": result.type});
-                            response.writeHead({"Last-Modified": result.date.toUTCString()});
+                            // todo: use 302 header
+                            response.writeHead(200, {
+                                "Content-Type"  : result.type,
+                                "Last-Modified" : result.date.toUTCString()
+                            });
                             response.end(result.content);
                         } else {
                             console.log("Error:", error);
