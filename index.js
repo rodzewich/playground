@@ -10,47 +10,8 @@ var fs     = require("fs"),
     deferred   = require("./lib/deferred"),
     configure = require("./lib/configure");
 
-var staticExists = require("./lib/staticExists");
-
-function staticContent (options, callback) {
-    var type         = types.other,
-        content      = null,
-        filename     = options.filename,
-        basedir      = options.basedir,
-        useDebugger  = !!options.useDebugger,
-        useCache     = !!options.useCache,
-        useOnlyCache = !!options.useOnlyCache,
-        pathname     = path.join(basedir, filename);
-    deferred([
-        function (next) {
-            staticExists({
-                basedir      : basedir,
-                filename     : filename,
-                useDebugger  : useDebugger,
-                useCache     : useCache,
-                useOnlyCache : useOnlyCache
-            }, function (exists) {
-                if (!exists) {
-                    callback(new Error("bla bla bla"), null);
-                } else {
-                    next();
-                }
-            });
-        },
-
-        function (next) {
-
-        },
-
-        function (next) {
-            console.log("Load static content:", pathname);
-            next();
-        },
-        function () {
-            callback();
-        }
-    ]);
-}
+var staticExists = require("./lib/staticExists"),
+    staticContent = require("./lib/staticContent");
 
 deferred([
     function (next) {
