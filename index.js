@@ -10,6 +10,25 @@ var fs     = require("fs"),
     deferred   = require("./lib/deferred"),
     configure = require("./lib/configure");
 
+var staticExists = require("./lib/staticExists");
+
+function staticContent (options, callback) {
+    var type     = types.other,
+        content  = null,
+        filename = options.filename,
+        basedir  = options.basedir,
+        pathname = path.join(basedir, filename);
+    deferred([
+        function (next) {
+            console.log("Load static content:", pathname);
+            next();
+        },
+        function () {
+            callback();
+        }
+    ]);
+}
+
 deferred([
     function (next) {
         configure({cwd: cwd}, function (error, result) {
@@ -28,6 +47,7 @@ deferred([
 
         http.createServer(function (request, response) {
 
+
             var address  = request.url;
             var options  = url.parse(address, true) || {};
             var method   = request.method || "GET";
@@ -37,6 +57,15 @@ deferred([
             var extname  = path.extname(pathname).toLowerCase();
             var extensionWithoutDot = extname.substring(1);
             var basename = path.basename(pathname, extname);
+
+
+            staticExists({
+                basedir: publicDirectory,
+                filename: pathname
+            }, function (exists) {
+                console.log("file exists:", exists);
+            });
+
 
             console.log(String(method).magenta + " " + String(address).gray);
             if (Object.keys(query).length !== 0) {
@@ -120,7 +149,7 @@ deferred([
                 response.writeHead(200, {"Content-Type": "text/html"});
                 response.end("<!DOCTYPE html>\n<html><head><title></title><script src=\"/app.js\"></script><script>xlib.app.onReady(function(){xlib.app.start();});</script></head><body></body></html>");
             } else if (method === "GET" && extname === ".js") {
-                displayTypeScript();
+                /*displayTypeScript();*/
             } else {
                 displayError404();
             }
