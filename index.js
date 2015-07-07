@@ -77,25 +77,30 @@ deferred([
                         charset      : charset,
                         filename     : pathname,
                         basedir      : contentDirectory,
+                        useMemory    : true,
                         useDebugger  : true,
                         useCache     : false
                     }, function (error, result) {
                         if (!error) {
-                            var lastModified = Date.parse(request.headers["if-modified-since"]),
-                                cacheDate    = 1000 * parseInt(String(Number(result.date) / 1000), 10);
-                            if (lastModified && lastModified === cacheDate) {
-                                response.writeHead(304, http.STATUS_CODES[304]);
-                                response.end();
+                            if (result) {
+                                var lastModified = Date.parse(request.headers["if-modified-since"]),
+                                    cacheDate    = 1000 * parseInt(String(Number(result.date) / 1000), 10);
+                                if (lastModified && lastModified === cacheDate) {
+                                    response.writeHead(304, http.STATUS_CODES[304]);
+                                    response.end();
+                                } else {
+                                    response.writeHead(200, http.STATUS_CODES[200], {
+                                        "Content-Type"  : result.type,
+                                        "Last-Modified" : result.date.toUTCString()
+                                    });
+                                    response.end(result.content);
+                                }
                             } else {
-                                response.writeHead(200, http.STATUS_CODES[200], {
-                                    "Content-Type"  : result.type,
-                                    "Last-Modified" : result.date.toUTCString()
-                                });
-                                response.end(result.content);
+                                next();
                             }
                         } else {
-                            console.log("Error:", error);
-                            next();
+                            // todo: adjust forbidden
+                            displayError(500, error);
                         }
                     });
                 },
