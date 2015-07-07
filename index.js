@@ -78,8 +78,7 @@ deferred([
                         filename     : pathname,
                         basedir      : contentDirectory,
                         useDebugger  : true,
-                        useCache     : true,
-                        useOnlyCache : false
+                        useCache     : false
                     }, function (error, result) {
                         if (!error) {
                             var lastModified = Date.parse(request.headers["if-modified-since"]),
