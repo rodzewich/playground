@@ -11,7 +11,8 @@ var fs     = require("fs"),
     configure = require("./lib/configure"),
     charset;
 
-var staticContent = require("./lib/staticContent");
+var staticContent     = require("./lib/staticContent"),
+    typescriptCompile = require("./lib/typescriptCompile");
 
 function htmlEntities(str) {
     return String(str).
@@ -44,10 +45,10 @@ deferred([
             var options  = url.parse(address, true) || {};
             var method   = request.method || "GET";
             var query    = options.query || {};
-            var pathname = options.pathname || "/";
-            var dirname  = path.dirname(options.pathname);
-            var extname  = path.extname(pathname).toLowerCase();
-            var basename = path.basename(pathname, extname);
+            var filename = options.pathname || "/";
+            var dirname  = path.dirname(filename);
+            var extname  = path.extname(filename).toLowerCase();
+            var basename = path.basename(filename, extname);
 
             function displayError(code, error) {
                 var stack = [
@@ -76,10 +77,11 @@ deferred([
             
             deferred([
 
+                // static
                 function (next) {
                     staticContent({
                         charset      : charset,
-                        filename     : pathname,
+                        filename     : filename,
                         basedir      : contentDirectory,
                         useMemory    : true,
                         useDebugger  : true,
@@ -87,9 +89,9 @@ deferred([
                     }, function (error, result) {
                         if (!error) {
                             if (result) {
-                                var lastModified = Date.parse(request.headers["if-modified-since"]),
-                                    cacheDate    = 1000 * parseInt(String(Number(result.date) / 1000), 10);
-                                if (lastModified && lastModified === cacheDate) {
+                                var modified = Date.parse(request.headers["if-modified-since"]),
+                                    date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
+                                if (modified && modified === date) {
                                     response.writeHead(304, http.STATUS_CODES[304]);
                                     response.end();
                                 } else {
@@ -103,14 +105,129 @@ deferred([
                                 next();
                             }
                         } else {
-                            // todo: adjust forbidden
-                            // displayError(403);
-                            displayError(500, error);
+                            if (error.code === "EACCES") {
+                                displayError(403);
+                            } else {
+                                displayError(500, error);
+                            }
                         }
                     });
                 },
 
+                // typescript
                 function (next) {
+                    var extension = filename.substr(-3).toLowerCase(),
+                        filepath = filename.substr(0, filename.length - 3);
+                    if (extension === ".js") {
+                        typescriptCompile({
+
+                        }, function (error, result) {
+                            if (!error) {
+                                if (result) {
+                                    var modified = Date.parse(request.headers["if-modified-since"]),
+                                        date     = 1000 * parseInt(String(Number(result.javascript.date) / 1000), 10);
+                                    if (modified && modified === date) {
+                                        response.writeHead(304, http.STATUS_CODES[304]);
+                                        response.end();
+                                    } else {
+                                        response.writeHead(200, http.STATUS_CODES[200], {
+                                            "Content-Type"  : result.javascript.type,
+                                            "Last-Modified" : result.javascript.date.toUTCString()
+                                        });
+                                        response.end(result.javascript.content);
+                                    }
+                                } else {
+                                    next();
+                                }
+                            } else {
+                                if (error.code === "EACCES") {
+                                    displayError(403);
+                                } else {
+                                    displayError(500, error);
+                                }
+                            }
+                        });
+                    } else {
+                        next();
+                    }
+                },
+
+                function (next) {
+                    var extension = filename.substr(-3).toLowerCase(),
+                        filepath = filename.substr(0, filename.length - 3);
+                    if (extension === ".ts") {
+                        typescriptCompile({
+
+                        }, function (error, result) {
+                            if (!error) {
+                                if (result) {
+                                    var modified = Date.parse(request.headers["if-modified-since"]),
+                                        date     = 1000 * parseInt(String(Number(result.typescript.date) / 1000), 10);
+                                    if (modified && modified === date) {
+                                        response.writeHead(304, http.STATUS_CODES[304]);
+                                        response.end();
+                                    } else {
+                                        response.writeHead(200, http.STATUS_CODES[200], {
+                                            "Content-Type"  : result.typescript.type,
+                                            "Last-Modified" : result.typescript.date.toUTCString()
+                                        });
+                                        response.end(result.typescript.content);
+                                    }
+                                } else {
+                                    next();
+                                }
+                            } else {
+                                if (error.code === "EACCES") {
+                                    displayError(403);
+                                } else {
+                                    displayError(500, error);
+                                }
+                            }
+                        });
+                    } else {
+                        next();
+                    }
+                },
+
+                function (next) {
+                    var extension = filename.substr(-4).toLowerCase(),
+                        filepath = filename.substr(0, filename.length - 4);
+                    if (extension === ".map") {
+                        typescriptCompile({
+
+                        }, function (error, result) {
+                            if (!error) {
+                                if (result) {
+                                    var modified = Date.parse(request.headers["if-modified-since"]),
+                                        date     = 1000 * parseInt(String(Number(result.sourcemap.date) / 1000), 10);
+                                    if (modified && modified === date) {
+                                        response.writeHead(304, http.STATUS_CODES[304]);
+                                        response.end();
+                                    } else {
+                                        response.writeHead(200, http.STATUS_CODES[200], {
+                                            "Content-Type"  : result.sourcemap.type,
+                                            "Last-Modified" : result.sourcemap.date.toUTCString()
+                                        });
+                                        response.end(result.sourcemap.content);
+                                    }
+                                } else {
+                                    next();
+                                }
+                            } else {
+                                if (error.code === "EACCES") {
+                                    displayError(403);
+                                } else {
+                                    displayError(500, error);
+                                }
+                            }
+                        });
+                    } else {
+                        next();
+                    }
+                },
+
+                // not found
+                function () {
                     displayError(404);
                 },
 
