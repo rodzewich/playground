@@ -14,7 +14,11 @@ var fs     = require("fs"),
 var staticContent = require("./lib/staticContent");
 
 function htmlEntities(str) {
-    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    return String(str).
+        replace(/&/g, '&amp;').
+        replace(/</g, '&lt;').
+        replace(/>/g, '&gt;').
+        replace(/"/g, '&quot;');
 }
 
 deferred([
@@ -100,6 +104,7 @@ deferred([
                             }
                         } else {
                             // todo: adjust forbidden
+                            // displayError(403);
                             displayError(500, error);
                         }
                     });
