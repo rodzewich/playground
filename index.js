@@ -5,9 +5,9 @@ var fs     = require("fs"),
     colors = require('colors'),
     ts     = require("./typescript"),
     project,
-    cwd = process.env.PWD,
-    types = require("./lib/types"),
-    deferred   = require("./lib/deferred"),
+    cwd       = process.env.PWD,
+    types     = require("./lib/types"),
+    deferred  = require("./lib/deferred"),
     configure = require("./lib/configure"),
     charset;
 
