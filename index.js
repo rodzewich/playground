@@ -25,8 +25,12 @@ function htmlEntities(str) {
         replace(/"/g, '&quot;');
 }
 
+
+charset = "utf-8";
+project = "../Class";
+
 deferred([
-    function (next) {
+    /*function (next) {
         configure({cwd: cwd}, function (error, result) {
             if (!error) {
                 charset = result.charset;
@@ -36,7 +40,7 @@ deferred([
                 console.log(error);
             }
         });
-    },
+    },*/
     function () {
 
         var contentDirectory = path.join(project, "public"),
@@ -86,7 +90,7 @@ deferred([
                     if (useTypescript) {
 
                         deferred([
-                            function (next) {
+                            /*function (next) {
                                 var extension = filename.substr(-3).toLowerCase(),
                                     filepath = filename.substr(0, filename.length - 3);
                                 if (extension === ".js") {
@@ -121,7 +125,7 @@ deferred([
                                 } else {
                                     next();
                                 }
-                            },
+                            },*/
 
                             function (next) {
                                 var extension = filename.substr(-3).toLowerCase(),
@@ -161,7 +165,7 @@ deferred([
                                 }
                             },
 
-                            function (next) {
+                            /*function (next) {
                                 var extension = filename.substr(-4).toLowerCase(),
                                     filepath = filename.substr(0, filename.length - 4);
                                 if (extension === ".map") {
@@ -196,7 +200,7 @@ deferred([
                                 } else {
                                     next();
                                 }
-                            },
+                            },*/
 
                             function () {
                                 next();
@@ -324,7 +328,7 @@ deferred([
 
             ]);
 
-        }).listen(1337, '127.0.0.1');
+        }).listen(3000, '127.0.0.1');
 
     }
 ]);
