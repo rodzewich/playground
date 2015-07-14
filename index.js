@@ -132,8 +132,8 @@ deferred([
                                     filepath = filename.substr(0, filename.length - 3);
                                 if (extension === ".ts") {
                                     typescriptCompile({
-                                        basedir: contentDirectory,
-                                        filename: filepath
+                                        basedir  : contentDirectory,
+                                        filename : filepath
                                     }, function (error, result) {
                                         if (!error) {
                                             if (result) {
@@ -147,7 +147,7 @@ deferred([
                                                         "Content-Type"  : "text/plain",
                                                         "Last-Modified" : result.date.toUTCString()
                                                     });
-                                                    response.end(result.typescript.content);
+                                                    response.end(result.typescript);
                                                 }
                                             } else {
                                                 next();
@@ -328,7 +328,7 @@ deferred([
 
             ]);
 
-        }).listen(3000, '127.0.0.1');
+        }).listen(1337, '127.0.0.1');
 
     }
 ]);
