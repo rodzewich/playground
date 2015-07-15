@@ -129,11 +129,11 @@ deferred([
 
                             function (next) {
                                 var extension = filename.substr(-3).toLowerCase(),
-                                    filepath = filename.substr(0, filename.length - 3);
+                                    pathname = filename.substr(0, filename.length - 3);
                                 if (extension === ".ts") {
                                     typescriptCompile({
                                         basedir  : contentDirectory,
-                                        filename : filepath
+                                        filename : pathname
                                     }, function (error, result) {
                                         if (!error) {
                                             if (result) {
