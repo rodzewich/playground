@@ -90,12 +90,13 @@ deferred([
                     if (useTypescript) {
 
                         deferred([
-                            /*function (next) {
+                            function (next) {
                                 var extension = filename.substr(-3).toLowerCase(),
-                                    filepath = filename.substr(0, filename.length - 3);
+                                    pathname = filename.substr(0, filename.length - 3);
                                 if (extension === ".js") {
                                     typescriptCompile({
-
+                                        basedir  : contentDirectory,
+                                        filename : pathname
                                     }, function (error, result) {
                                         if (!error) {
                                             if (result) {
@@ -106,10 +107,10 @@ deferred([
                                                     response.end();
                                                 } else {
                                                     response.writeHead(200, http.STATUS_CODES[200], {
-                                                        "Content-Type"  : result.javascript.type,
-                                                        "Last-Modified" : result.javascript.date.toUTCString()
+                                                        "Content-Type"  : "application/javascript",
+                                                        "Last-Modified" : result.date.toUTCString()
                                                     });
-                                                    response.end(result.javascript.content);
+                                                    response.end(result.javascript);
                                                 }
                                             } else {
                                                 next();
@@ -125,7 +126,7 @@ deferred([
                                 } else {
                                     next();
                                 }
-                            },*/
+                            },
 
                             function (next) {
                                 var extension = filename.substr(-3).toLowerCase(),
@@ -165,12 +166,13 @@ deferred([
                                 }
                             },
 
-                            /*function (next) {
+                            function (next) {
                                 var extension = filename.substr(-4).toLowerCase(),
-                                    filepath = filename.substr(0, filename.length - 4);
+                                    pathname = filename.substr(0, filename.length - 4);
                                 if (extension === ".map") {
                                     typescriptCompile({
-
+                                        basedir  : contentDirectory,
+                                        filename : pathname
                                     }, function (error, result) {
                                         if (!error) {
                                             if (result) {
@@ -181,10 +183,10 @@ deferred([
                                                     response.end();
                                                 } else {
                                                     response.writeHead(200, http.STATUS_CODES[200], {
-                                                        "Content-Type"  : result.sourcemap.type,
-                                                        "Last-Modified" : result.sourcemap.date.toUTCString()
+                                                        "Content-Type"  : "text/json",
+                                                        "Last-Modified" : result.date.toUTCString()
                                                     });
-                                                    response.end(result.sourcemap.content);
+                                                    response.end(result.sourcemap);
                                                 }
                                             } else {
                                                 next();
@@ -200,7 +202,7 @@ deferred([
                                 } else {
                                     next();
                                 }
-                            },*/
+                            },
 
                             function () {
                                 next();
