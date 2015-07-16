@@ -167,9 +167,9 @@ deferred([
                             },
 
                             function (next) {
-                                var extension = filename.substr(-4).toLowerCase(),
-                                    pathname = filename.substr(0, filename.length - 4);
-                                if (extension === ".map") {
+                                var extension = filename.substr(-7).toLowerCase(),
+                                    pathname = filename.substr(0, filename.length - 7);
+                                if (extension === ".js.map") {
                                     typescriptCompile({
                                         basedir  : contentDirectory,
                                         filename : pathname
