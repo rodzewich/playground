@@ -107,7 +107,8 @@ deferred([
                                                     response.end();
                                                 } else {
                                                     response.writeHead(200, http.STATUS_CODES[200], {
-                                                        "Content-Type"  : "application/javascript",
+                                                        "Content-Type"  : "application/javascript; charset=utf-8",
+                                                        "X-SourceMap"   : pathname + ".js.map",
                                                         "Last-Modified" : result.date.toUTCString()
                                                     });
                                                     response.end(result.javascript);
@@ -145,7 +146,7 @@ deferred([
                                                     response.end();
                                                 } else {
                                                     response.writeHead(200, http.STATUS_CODES[200], {
-                                                        "Content-Type"  : "text/plain",
+                                                        "Content-Type"  : "text/plain; charset=utf-8",
                                                         "Last-Modified" : result.date.toUTCString()
                                                     });
                                                     response.end(result.typescript);
@@ -183,7 +184,7 @@ deferred([
                                                     response.end();
                                                 } else {
                                                     response.writeHead(200, http.STATUS_CODES[200], {
-                                                        "Content-Type"  : "text/json",
+                                                        "Content-Type"  : "application/json; charset=utf-8",
                                                         "Last-Modified" : result.date.toUTCString()
                                                     });
                                                     response.end(result.sourcemap);
