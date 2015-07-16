@@ -92,7 +92,7 @@ deferred([
                         deferred([
                             function (next) {
                                 var extension = filename.substr(-3).toLowerCase(),
-                                    pathname = filename.substr(0, filename.length - 3);
+                                    pathname  = filename.substr(0, filename.length - 3);
                                 if (extension === ".js") {
                                     typescriptCompile({
                                         basedir  : contentDirectory,
