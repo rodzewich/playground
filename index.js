@@ -101,7 +101,7 @@ deferred([
                                         if (!error) {
                                             if (result) {
                                                 var modified = Date.parse(request.headers["if-modified-since"]),
-                                                    date     = 1000 * parseInt(String(Number(result.javascript.date) / 1000), 10);
+                                                    date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
                                                 if (modified && modified === date) {
                                                     response.writeHead(304, http.STATUS_CODES[304]);
                                                     response.end();
@@ -177,7 +177,7 @@ deferred([
                                         if (!error) {
                                             if (result) {
                                                 var modified = Date.parse(request.headers["if-modified-since"]),
-                                                    date     = 1000 * parseInt(String(Number(result.sourcemap.date) / 1000), 10);
+                                                    date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
                                                 if (modified && modified === date) {
                                                     response.writeHead(304, http.STATUS_CODES[304]);
                                                     response.end();
