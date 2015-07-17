@@ -13,18 +13,6 @@ var fs     = require("fs"),
     useTypescript = true,
     charset;
 
-lock({
-    temp: "./temp",
-    filename: "user/path/to/file"
-}, function (error, unlock) {
-    //unlock();
-    console.log("exit");
-});
-
-return;
-
-require("./lib/typescriptCompile");
-
 var staticContent     = require("./lib/staticContent"),
     typescriptCompile = require("./lib/typescriptContent");
 
@@ -55,6 +43,7 @@ deferred([
     function () {
 
         var contentDirectory = path.join(project, "public"),
+            tempDirectory = path.join(project, "temp"),
             libDirectory = path.join(project, "xlib");
 
         http.createServer(function (request, response) {
@@ -100,131 +89,6 @@ deferred([
 
                     if (useTypescript) {
 
-                        deferred([
-                            function (next) {
-                                var extension = filename.substr(-3).toLowerCase(),
-                                    pathname  = filename.substr(0, filename.length - 3);
-                                if (extension === ".js") {
-                                    typescriptCompile({
-                                        basedir  : contentDirectory,
-                                        filename : pathname
-                                    }, function (error, result) {
-                                        if (!error) {
-                                            if (result) {
-                                                var modified = Date.parse(request.headers["if-modified-since"]),
-                                                    date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
-
-                                                console.log("modified", modified);
-                                                console.log("date", date);
-
-                                                if (modified && modified === date) {
-                                                    response.writeHead(304, http.STATUS_CODES[304]);
-                                                    response.end();
-                                                } else {
-                                                    response.writeHead(200, http.STATUS_CODES[200], {
-                                                        "Content-Type"  : "application/javascript; charset=utf-8",
-                                                        "X-SourceMap"   : pathname + ".js.map",
-                                                        "Last-Modified" : result.date.toUTCString()
-                                                    });
-                                                    response.end(result.javascript);
-                                                }
-                                            } else {
-                                                next();
-                                            }
-                                        } else {
-                                            if (error.code === "EACCES") {
-                                                displayError(403);
-                                            } else {
-                                                displayError(500, error);
-                                            }
-                                        }
-                                    });
-                                } else {
-                                    next();
-                                }
-                            },
-
-                            function (next) {
-                                var extension = filename.substr(-3).toLowerCase(),
-                                    pathname = filename.substr(0, filename.length - 3);
-                                if (extension === ".ts") {
-                                    typescriptCompile({
-                                        basedir  : contentDirectory,
-                                        filename : pathname
-                                    }, function (error, result) {
-                                        if (!error) {
-                                            if (result) {
-                                                var modified = Date.parse(request.headers["if-modified-since"]),
-                                                    date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
-                                                if (modified && modified === date) {
-                                                    response.writeHead(304, http.STATUS_CODES[304]);
-                                                    response.end();
-                                                } else {
-                                                    response.writeHead(200, http.STATUS_CODES[200], {
-                                                        "Content-Type"  : "text/plain; charset=utf-8",
-                                                        "Last-Modified" : result.date.toUTCString()
-                                                    });
-                                                    response.end(result.typescript);
-                                                }
-                                            } else {
-                                                next();
-                                            }
-                                        } else {
-                                            if (error.code === "EACCES") {
-                                                displayError(403);
-                                            } else {
-                                                displayError(500, error);
-                                            }
-                                        }
-                                    });
-                                } else {
-                                    next();
-                                }
-                            },
-
-                            function (next) {
-                                var extension = filename.substr(-7).toLowerCase(),
-                                    pathname = filename.substr(0, filename.length - 7);
-                                if (extension === ".js.map") {
-                                    typescriptCompile({
-                                        basedir  : contentDirectory,
-                                        filename : pathname
-                                    }, function (error, result) {
-                                        if (!error) {
-                                            if (result) {
-                                                var modified = Date.parse(request.headers["if-modified-since"]),
-                                                    date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
-                                                if (modified && modified === date) {
-                                                    response.writeHead(304, http.STATUS_CODES[304]);
-                                                    response.end();
-                                                } else {
-                                                    response.writeHead(200, http.STATUS_CODES[200], {
-                                                        "Content-Type"  : "application/json; charset=utf-8",
-                                                        "Last-Modified" : result.date.toUTCString()
-                                                    });
-                                                    response.end(result.sourcemap);
-                                                }
-                                            } else {
-                                                next();
-                                            }
-                                        } else {
-                                            if (error.code === "EACCES") {
-                                                displayError(403);
-                                            } else {
-                                                displayError(500, error);
-                                            }
-                                        }
-                                    });
-                                } else {
-                                    next();
-                                }
-                            },
-
-                            function () {
-                                next();
-                            }
-
-                        ]);
 
                     } else {
                         next();
