@@ -1,3 +1,6 @@
+/*jslint */
+/*global require */
+
 var fs     = require("fs"),
     http   = require("http"),
     path   = require("path"),
@@ -11,10 +14,14 @@ var fs     = require("fs"),
     deferred  = require("./lib/deferred"),
     configure = require("./lib/configure"),
     useTypescript = true,
+    spawn = require("child_process").spawn,
     charset;
 
-var staticContent     = require("./lib/staticContent"),
-    typescriptCompile = require("./lib/typescriptContent");
+var routers = {
+    typescript : require("./routers/typescript")
+};
+
+var staticContent = require("./lib/staticContent");
 
 function htmlEntities(str) {
     return String(str).
@@ -22,6 +29,15 @@ function htmlEntities(str) {
         replace(/</g, '&lt;').
         replace(/>/g, '&gt;').
         replace(/"/g, '&quot;');
+}
+
+function cleanTemp(callback) {
+    var temp = path.join(project, "temp"),
+        rm   = spawn("rm", ["-rf", temp], {});
+    rm.on('close', function (code) {
+        console.log('remove temp with code: ' + code);
+        callback();
+    });
 }
 
 
@@ -40,6 +56,7 @@ deferred([
             }
         });
     },*/
+    cleanTemp,
     function () {
 
         var contentDirectory = path.join(project, "public"),
@@ -57,31 +74,37 @@ deferred([
             var extname  = path.extname(filename).toLowerCase();
             var basename = path.basename(filename, extname);
 
-            function displayError(code, error) {
-                var stack = [
-                        "<pre>",
-                        htmlEntities(error ? error.stack : ""),
-                        "</pre>"
-                    ],
-                    content = [
-                        "<!DOCTYPE html>",
-                        "<html>",
-                        "<head>",
-                        "<title>", code, " ", http.STATUS_CODES[code], "</title>",
-                        "</head>",
-                        "<body bgcolor=\"white\">",
-                        "<center><h1>", code, " ", http.STATUS_CODES[code], "</h1></center>",
-                        "<pre>", error ? stack : "", "</pre>",
-                        "<hr />",
-                        "<center>phantom 0.0.1</center>",
-                        "</body>",
-                        "</html>"
-                    ];
+            function displayError(code, errors) {
+                var list, content;
+                if (errors && errors.length) {
+                    list = "<ul><li>" + errors.map(function (error) {
+                        return [
+                            "<h3>", htmlEntities(error.message), "</h3>",
+                            "<pre>",
+                            htmlEntities(error.stack),
+                            "</pre>"
+                        ].join("");
+                    }).join("</li><li>") + "</li></ul>";
+                }
+                content = [
+                    "<!DOCTYPE html>",
+                    "<html>",
+                    "<head>",
+                    "<title>", code, " ", http.STATUS_CODES[code], "</title>",
+                    "</head>",
+                    "<body bgcolor=\"white\">",
+                    "<center><h1>", code, " ", http.STATUS_CODES[code], "</h1></center>",
+                    list,
+                    "<hr />",
+                    "<center>phantom 0.0.1</center>",
+                    "</body>",
+                    "</html>"
+                ];
                 response.writeHead(code, {"Content-Type": [types.text.html, "; charset=", charset].join("")});
                 response.end(content.join(""));
 
             }
-            
+
             deferred([
 
                 // typescript
@@ -89,6 +112,15 @@ deferred([
 
                     if (useTypescript) {
 
+                        routers.typescript({
+                            temp     : tempDirectory,
+                            content  : contentDirectory,
+                            filename : filename,
+                            request  : request,
+                            response : response,
+                            error    : displayError,
+                            http     : http
+                        }, next);
 
                     } else {
                         next();
@@ -127,7 +159,7 @@ deferred([
                             if (error.code === "EACCES") {
                                 displayError(403);
                             } else {
-                                displayError(500, error);
+                                displayError(500, [error]);
                             }
                         }
                     });
