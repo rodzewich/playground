@@ -2,12 +2,13 @@
 /*global require, module */
 
 var deferred = require("../lib/deferred"),
-    compiler = require("../lib/typescriptCompiler");
+    compiler = require("../lib/typescript/compiler");
 
 function route(options, next) {
     "use strict";
 
-    var temp     = options.temp,
+    var root     = options.root,
+        temp     = options.temp,
         content  = options.content,
         request  = options.request,
         response = options.response,
@@ -18,6 +19,13 @@ function route(options, next) {
     deferred([
 
         function (next) {
+            if (filename === "/loader.js") {
+
+            }
+            next();
+        },
+
+        function (next) {
             var extension = filename.substr(-3).toLowerCase(),
                 pathname  = filename.substr(0, filename.length - 3);
             if (extension === ".js") {
@@ -26,7 +34,7 @@ function route(options, next) {
                     basedir  : content,
                     filename : pathname
                 }, function (errors, result) {
-                    if (!errors && !errors.length) {
+                    if (!errors || !errors.length) {
                         if (result) {
                             var modified = Date.parse(request.headers["if-modified-since"]),
                                 date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
