@@ -74,20 +74,20 @@ deferred([
                         htmlEntities(error ? error.stack : ""),
                         "</pre>"
                     ],
-                content = [
-                    "<!DOCTYPE html>",
-                    "<html>",
-                    "<head>",
-                    "<title>", code, " ", http.STATUS_CODES[code], "</title>",
-                    "</head>",
-                    "<body bgcolor=\"white\">",
-                    "<center><h1>", code, " ", http.STATUS_CODES[code], "</h1></center>",
-                    "<pre>", error ? stack : "" , "</pre>",
-                    "<hr />",
-                    "<center>phantom 0.0.1</center>",
-                    "</body>",
-                    "</html>"
-                ];
+                    content = [
+                        "<!DOCTYPE html>",
+                        "<html>",
+                        "<head>",
+                        "<title>", code, " ", http.STATUS_CODES[code], "</title>",
+                        "</head>",
+                        "<body bgcolor=\"white\">",
+                        "<center><h1>", code, " ", http.STATUS_CODES[code], "</h1></center>",
+                        "<pre>", error ? stack : "", "</pre>",
+                        "<hr />",
+                        "<center>phantom 0.0.1</center>",
+                        "</body>",
+                        "</html>"
+                    ];
                 response.writeHead(code, {"Content-Type": [types.text.html, "; charset=", charset].join("")});
                 response.end(content.join(""));
 
@@ -103,7 +103,7 @@ deferred([
                         deferred([
                             function (next) {
                                 var extension = filename.substr(-3).toLowerCase(),
-                                    pathname = filename.substr(0, filename.length - 3);
+                                    pathname  = filename.substr(0, filename.length - 3);
                                 if (extension === ".js") {
                                     typescriptCompile({
                                         basedir  : contentDirectory,
@@ -113,6 +113,10 @@ deferred([
                                             if (result) {
                                                 var modified = Date.parse(request.headers["if-modified-since"]),
                                                     date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
+
+                                                console.log("modified", modified);
+                                                console.log("date", date);
+
                                                 if (modified && modified === date) {
                                                     response.writeHead(304, http.STATUS_CODES[304]);
                                                     response.end();
