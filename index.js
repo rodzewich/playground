@@ -7,10 +7,21 @@ var fs     = require("fs"),
     project,
     cwd       = process.env.PWD,
     types     = require("./lib/types"),
+    lock     = require("./lib/lock"),
     deferred  = require("./lib/deferred"),
     configure = require("./lib/configure"),
     useTypescript = true,
     charset;
+
+lock({
+    temp: "./temp",
+    filename: "user/path/to/file"
+}, function (error, unlock) {
+    //unlock();
+    console.log("exit");
+});
+
+return;
 
 require("./lib/typescriptCompile");
 
