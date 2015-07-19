@@ -1,7 +1,10 @@
 /*jslint */
 /*global require, module */
 
-var deferred = require("../lib/deferred"),
+var fs       = require("fs"),
+    events   = require("events"),
+    path   = require("path"),
+    deferred = require("../lib/deferred"),
     compiler = require("../lib/typescript/compiler");
 
 function route(options, next) {
@@ -16,14 +19,47 @@ function route(options, next) {
         error    = options.error,
         http     = options.http;
 
+    var date = null;
+    var loader = null;
+    var lock = null;
+
     deferred([
 
-        function (next) {
+        /*function (next) {
             if (filename === "/loader.js") {
-
+                if (loader) {
+                    response.writeHead(200, http.STATUS_CODES[200], {
+                        "Content-Type"  : "application/javascript; charset=utf-8"
+                        //"Last-Modified" : result.date.toUTCString()
+                    });
+                    response.end(loader);
+                } else if (lock) {
+                    lock.addListener("complete", function () {
+                        response.writeHead(200, http.STATUS_CODES[200], {
+                            "Content-Type"  : "application/javascript; charset=utf-8"
+                            //"Last-Modified" : result.date.toUTCString()
+                        });
+                        response.end(loader);
+                    });
+                } else {
+                    lock = new events.EventEmitter();
+                    fs.readFile(path.resolve(__dirname, "../lib/typescript/loader.js"), function (error, content) {
+                        if (!error) {
+                            loader = content.toString("utf8");
+                            response.writeHead(200, http.STATUS_CODES[200], {
+                                "Content-Type"  : "application/javascript; charset=utf-8"
+                                //"Last-Modified" : result.date.toUTCString()
+                            });
+                            response.end(loader);
+                            lock.emit("complete");
+                            lock = null;
+                        }
+                    });
+                }
+            } else {
+                next();
             }
-            next();
-        },
+        },*/
 
         function (next) {
             var extension = filename.substr(-3).toLowerCase(),

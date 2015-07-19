@@ -31937,9 +31937,9 @@ function getCompiler() {
                 var generatedNameSet    = {};
                 var nodeToGeneratedName = [];
                 var computedPropertyNamesToGeneratedNames;
-                var extendsEmitted      = false;
-                var decorateEmitted     = false;
-                var paramEmitted        = false;
+                var extendsEmitted      = true;
+                var decorateEmitted     = true;
+                var paramEmitted        = true;
                 var tempFlags           = 0;
                 var tempVariables;
                 var tempParameters;

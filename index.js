@@ -59,7 +59,7 @@ deferred([
     cleanTemp,
     function () {
 
-        var contentDirectory = path.join(project, "public"),
+        var contentDirectory = path.join(project, "xlib"),
             tempDirectory = path.join(project, "temp"),
             libDirectory = path.join(project, "xlib");
 
