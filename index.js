@@ -77,14 +77,14 @@ deferred([
             function displayError(code, errors) {
                 var list, content;
                 if (errors && errors.length) {
-                    list = "<ul><li>" + errors.map(function (error) {
+                    list = "<ol><li>" + errors.map(function (error) {
                         return [
                             "<h3 style=\"color: red;\">", htmlEntities(error.message), "</h3>",
                             "<pre>",
                             htmlEntities(error.stack),
                             "</pre>"
                         ].join("");
-                    }).join("</li><li>") + "</li></ul>";
+                    }).join("</li><li>") + "</li></ol>";
                 }
                 content = [
                     "<!DOCTYPE html>",
