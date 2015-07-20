@@ -66,9 +66,13 @@ function route(options, next) {
                 pathname  = filename.substr(0, filename.length - 3);
             if (extension === ".js") {
                 compiler({
-                    temp     : temp,
-                    basedir  : content,
-                    filename : pathname
+                    temp          : temp,
+                    basedir       : content,
+                    filename      : pathname,
+                    lockTemp      : "../playground/temp",
+                    lockTimeout   : 100,
+                    scriptsTarget : "es5",
+                    webRoot       : ""
                 }, function (errors, result) {
                     if (!errors || !errors.length) {
                         if (result) {
@@ -106,9 +110,13 @@ function route(options, next) {
                 pathname  = filename.substr(0, filename.length - 3);
             if (extension === ".ts") {
                 compiler({
-                    temp     : temp,
-                    basedir  : content,
-                    filename : pathname
+                    temp          : temp,
+                    basedir       : content,
+                    filename      : pathname,
+                    lockTemp      : "../playground/temp",
+                    lockTimeout   : 100,
+                    scriptsTarget : "es5",
+                    webRoot       : ""
                 }, function (errors, result) {
                     if (!errors || !errors.length) {
                         if (result) {
@@ -145,9 +153,13 @@ function route(options, next) {
                 pathname  = filename.substr(0, filename.length - 7);
             if (extension === ".js.map") {
                 compiler({
-                    temp     : temp,
-                    basedir  : content,
-                    filename : pathname
+                    temp          : temp,
+                    basedir       : content,
+                    filename      : pathname,
+                    lockTemp      : "../playground/temp",
+                    lockTimeout   : 100,
+                    scriptsTarget : "es5",
+                    webRoot       : ""
                 }, function (errors, result) {
                     if (!errors || !errors.length) {
                         if (result) {
