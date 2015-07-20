@@ -79,7 +79,7 @@ deferred([
                 if (errors && errors.length) {
                     list = "<ul><li>" + errors.map(function (error) {
                         return [
-                            "<h3>", htmlEntities(error.message), "</h3>",
+                            "<h3 style=\"color: red;\">", htmlEntities(error.message), "</h3>",
                             "<pre>",
                             htmlEntities(error.stack),
                             "</pre>"
