@@ -113,13 +113,13 @@ deferred([
                     if (useTypescript) {
 
                         routers.typescript({
-                            temp     : tempDirectory,
-                            content  : contentDirectory,
-                            filename : filename,
-                            request  : request,
-                            response : response,
-                            error    : displayError,
-                            http     : http
+                            rootDirectory    : "",
+                            tempDirectory    : tempDirectory,
+                            sourcesDirectory : contentDirectory,
+                            httpRequest      : request,
+                            httpResponse     : response,
+                            errorHandler     : displayError,
+                            httpServer       : http
                         }, next);
 
                     } else {

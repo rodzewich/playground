@@ -2,22 +2,24 @@
 /*global require, module */
 
 var fs       = require("fs"),
+    url      = require("url"),
     events   = require("events"),
-    path   = require("path"),
+    path     = require("path"),
     deferred = require("../lib/deferred"),
     compiler = require("../lib/typescript/compiler");
 
 function route(options, next) {
     "use strict";
 
-    var root     = options.root,
-        temp     = options.temp,
-        content  = options.content,
-        request  = options.request,
-        response = options.response,
-        filename = options.filename,
-        error    = options.error,
-        http     = options.http;
+    var rootDirectory    = options.rootDirectory,
+        tempDirectory    = options.tempDirectory,
+        sourcesDirectory = options.sourcesDirectory,
+        httpServer       = options.httpServer,
+        httpRequest      = options.httpRequest,
+        httpResponse     = options.httpResponse,
+        errorHandler     = options.errorHandler,
+        request          = url.parse(httpRequest.url, true) || {},
+        filename         = String(request.pathname || "/");
 
     var date = null;
     var loader = null;
@@ -28,29 +30,29 @@ function route(options, next) {
         /*function (next) {
             if (filename === "/loader.js") {
                 if (loader) {
-                    response.writeHead(200, http.STATUS_CODES[200], {
+         httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
                         "Content-Type"  : "application/javascript; charset=utf-8"
                         //"Last-Modified" : result.date.toUTCString()
                     });
-                    response.end(loader);
+         httpResponse.end(loader);
                 } else if (lock) {
                     lock.addListener("complete", function () {
-                        response.writeHead(200, http.STATUS_CODES[200], {
+         httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
                             "Content-Type"  : "application/javascript; charset=utf-8"
                             //"Last-Modified" : result.date.toUTCString()
                         });
-                        response.end(loader);
+         httpResponse.end(loader);
                     });
                 } else {
                     lock = new events.EventEmitter();
                     fs.readFile(path.resolve(__dirname, "../lib/typescript/loader.js"), function (error, content) {
                         if (!error) {
                             loader = content.toString("utf8");
-                            response.writeHead(200, http.STATUS_CODES[200], {
+         httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
                                 "Content-Type"  : "application/javascript; charset=utf-8"
                                 //"Last-Modified" : result.date.toUTCString()
                             });
-                            response.end(loader);
+         httpResponse.end(loader);
                             lock.emit("complete");
                             lock = null;
                         }
@@ -66,37 +68,36 @@ function route(options, next) {
                 pathname  = filename.substr(0, filename.length - 3);
             if (extension === ".js") {
                 compiler({
-                    temp          : temp,
-                    basedir       : content,
+                    basedir       : sourcesDirectory,
                     filename      : pathname,
-                    lockTemp      : "../playground/temp",
+                    lockTemp      : tempDirectory,
                     lockTimeout   : 100,
                     scriptsTarget : "es5",
                     webRoot       : ""
                 }, function (errors, result) {
                     if (!errors || !errors.length) {
                         if (result) {
-                            var modified = Date.parse(request.headers["if-modified-since"]),
+                            var modified = Date.parse(httpRequest.headers["if-modified-since"]),
                                 date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
                             if (modified && modified === date) {
-                                response.writeHead(304, http.STATUS_CODES[304]);
-                                response.end();
+                                httpResponse.writeHead(304, httpServer.STATUS_CODES[304]);
+                                httpResponse.end();
                             } else {
-                                response.writeHead(200, http.STATUS_CODES[200], {
+                                httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
                                     "Content-Type"  : "application/javascript; charset=utf-8",
                                     "X-SourceMap"   : pathname + ".js.map",
                                     "Last-Modified" : result.date.toUTCString()
                                 });
-                                response.end(result.javascript);
+                                httpResponse.end(result.javascript);
                             }
                         } else {
                             next();
                         }
                     } else {
                         if (errors[0].code === "EACCES") {
-                            error(403);
+                            errorHandler(403);
                         } else {
-                            error(500, errors);
+                            errorHandler(500, errors);
                         }
                     }
                 });
@@ -110,36 +111,35 @@ function route(options, next) {
                 pathname  = filename.substr(0, filename.length - 3);
             if (extension === ".ts") {
                 compiler({
-                    temp          : temp,
-                    basedir       : content,
+                    basedir       : sourcesDirectory,
                     filename      : pathname,
-                    lockTemp      : "../playground/temp",
+                    lockTemp      : tempDirectory,
                     lockTimeout   : 100,
                     scriptsTarget : "es5",
                     webRoot       : ""
                 }, function (errors, result) {
                     if (!errors || !errors.length) {
                         if (result) {
-                            var modified = Date.parse(request.headers["if-modified-since"]),
+                            var modified = Date.parse(httpRequest.headers["if-modified-since"]),
                                 date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
                             if (modified && modified === date) {
-                                response.writeHead(304, http.STATUS_CODES[304]);
-                                response.end();
+                                httpResponse.writeHead(304, httpServer.STATUS_CODES[304]);
+                                httpResponse.end();
                             } else {
-                                response.writeHead(200, http.STATUS_CODES[200], {
+                                httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
                                     "Content-Type"  : "text/plain; charset=utf-8",
                                     "Last-Modified" : result.date.toUTCString()
                                 });
-                                response.end(result.typescript);
+                                httpResponse.end(result.typescript);
                             }
                         } else {
                             next();
                         }
                     } else {
                         if (errors[0].code === "EACCES") {
-                            error(403);
+                            errorHandler(403);
                         } else {
-                            error(500, errors);
+                            errorHandler(500, errors);
                         }
                     }
                 });
@@ -153,36 +153,35 @@ function route(options, next) {
                 pathname  = filename.substr(0, filename.length - 7);
             if (extension === ".js.map") {
                 compiler({
-                    temp          : temp,
-                    basedir       : content,
+                    basedir       : sourcesDirectory,
                     filename      : pathname,
-                    lockTemp      : "../playground/temp",
+                    lockTemp      : tempDirectory,
                     lockTimeout   : 100,
                     scriptsTarget : "es5",
                     webRoot       : ""
                 }, function (errors, result) {
                     if (!errors || !errors.length) {
                         if (result) {
-                            var modified = Date.parse(request.headers["if-modified-since"]),
+                            var modified = Date.parse(httpRequest.headers["if-modified-since"]),
                                 date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
                             if (modified && modified === date) {
-                                response.writeHead(304, http.STATUS_CODES[304]);
-                                response.end();
+                                httpResponse.writeHead(304, httpServer.STATUS_CODES[304]);
+                                httpResponse.end();
                             } else {
-                                response.writeHead(200, http.STATUS_CODES[200], {
+                                httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
                                     "Content-Type"  : "application/json; charset=utf-8",
                                     "Last-Modified" : result.date.toUTCString()
                                 });
-                                response.end(result.sourcemap);
+                                httpResponse.end(result.sourcemap);
                             }
                         } else {
                             next();
                         }
                     } else {
                         if (errors[0].code === "EACCES") {
-                            error(403);
+                            errorHandler(403);
                         } else {
-                            error(500, errors);
+                            errorHandler(500, errors);
                         }
                     }
                 });
