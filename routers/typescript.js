@@ -11,7 +11,7 @@ var fs       = require("fs"),
 function route(options, next) {
     "use strict";
 
-    var rootDirectory    = options.rootDirectory,
+    var rootDirectory    = path.join("/", options.rootDirectory || ""),
         tempDirectory    = options.tempDirectory,
         sourcesDirectory = options.sourcesDirectory,
         httpServer       = options.httpServer,
@@ -19,49 +19,49 @@ function route(options, next) {
         httpResponse     = options.httpResponse,
         errorHandler     = options.errorHandler,
         request          = url.parse(httpRequest.url, true) || {},
-        filename         = String(request.pathname || "/");
-
-    var date = null;
-    var loader = null;
-    var lock = null;
+        filename         = path.relative(rootDirectory, String(request.pathname || "/")),
+        loaderDate       = null,
+        loaderContent    = null,
+        loaderLock       = null;
 
     deferred([
 
-        /*function (next) {
-            if (filename === "/loader.js") {
-                if (loader) {
-         httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
-                        "Content-Type"  : "application/javascript; charset=utf-8"
+        // todo: use simple content module
+        function (next) {
+            if (filename === "loader.js") {
+                if (loaderContent) {
+                    httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
+                        "Content-Type" : "application/javascript; charset=utf-8"
                         //"Last-Modified" : result.date.toUTCString()
                     });
-         httpResponse.end(loader);
-                } else if (lock) {
-                    lock.addListener("complete", function () {
-         httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
-                            "Content-Type"  : "application/javascript; charset=utf-8"
+                    httpResponse.end(loaderContent);
+                } else if (loaderLock) {
+                    loaderLock.addListener("complete", function () {
+                        httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
+                            "Content-Type" : "application/javascript; charset=utf-8"
                             //"Last-Modified" : result.date.toUTCString()
                         });
-         httpResponse.end(loader);
+                        httpResponse.end(loaderContent);
                     });
                 } else {
-                    lock = new events.EventEmitter();
+                    loaderLock = new events.EventEmitter();
                     fs.readFile(path.resolve(__dirname, "../lib/typescript/loader.js"), function (error, content) {
                         if (!error) {
-                            loader = content.toString("utf8");
-         httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
-                                "Content-Type"  : "application/javascript; charset=utf-8"
+                            loaderContent = content.toString("utf8");
+                            httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
+                                "Content-Type" : "application/javascript; charset=utf-8"
                                 //"Last-Modified" : result.date.toUTCString()
                             });
-         httpResponse.end(loader);
-                            lock.emit("complete");
-                            lock = null;
+                            httpResponse.end(loaderContent);
+                            loaderLock.emit("complete");
+                            loaderLock   = null;
                         }
                     });
                 }
             } else {
                 next();
             }
-        },*/
+        },
 
         function (next) {
             var extension = filename.substr(-3).toLowerCase(),
@@ -72,8 +72,7 @@ function route(options, next) {
                     filename      : pathname,
                     lockTemp      : tempDirectory,
                     lockTimeout   : 100,
-                    scriptsTarget : "es5",
-                    webRoot       : ""
+                    scriptsTarget : "es5"
                 }, function (errors, result) {
                     if (!errors || !errors.length) {
                         if (result) {
@@ -115,8 +114,7 @@ function route(options, next) {
                     filename      : pathname,
                     lockTemp      : tempDirectory,
                     lockTimeout   : 100,
-                    scriptsTarget : "es5",
-                    webRoot       : ""
+                    scriptsTarget : "es5"
                 }, function (errors, result) {
                     if (!errors || !errors.length) {
                         if (result) {
@@ -157,8 +155,7 @@ function route(options, next) {
                     filename      : pathname,
                     lockTemp      : tempDirectory,
                     lockTimeout   : 100,
-                    scriptsTarget : "es5",
-                    webRoot       : ""
+                    scriptsTarget : "es5"
                 }, function (errors, result) {
                     if (!errors || !errors.length) {
                         if (result) {
