@@ -77,7 +77,7 @@ function route(options, next) {
                     if (!errors || !errors.length) {
                         if (result) {
                             var modified = Date.parse(httpRequest.headers["if-modified-since"]),
-                                date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
+                                date     = 1000 * result.date;
                             if (modified && modified === date) {
                                 httpResponse.writeHead(304, httpServer.STATUS_CODES[304]);
                                 httpResponse.end();
@@ -85,7 +85,7 @@ function route(options, next) {
                                 httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
                                     "Content-Type"  : "application/javascript; charset=utf-8",
                                     "X-SourceMap"   : pathname + ".js.map",
-                                    "Last-Modified" : result.date.toUTCString()
+                                    "Last-Modified" : (new Date(result.date * 1000)).toUTCString()
                                 });
                                 httpResponse.end(result.javascript);
                             }
@@ -119,14 +119,14 @@ function route(options, next) {
                     if (!errors || !errors.length) {
                         if (result) {
                             var modified = Date.parse(httpRequest.headers["if-modified-since"]),
-                                date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
+                                date     = 1000 * result.date;
                             if (modified && modified === date) {
                                 httpResponse.writeHead(304, httpServer.STATUS_CODES[304]);
                                 httpResponse.end();
                             } else {
                                 httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
                                     "Content-Type"  : "text/plain; charset=utf-8",
-                                    "Last-Modified" : result.date.toUTCString()
+                                    "Last-Modified" : (new Date(result.date * 1000)).toUTCString()
                                 });
                                 httpResponse.end(result.typescript);
                             }
@@ -160,14 +160,14 @@ function route(options, next) {
                     if (!errors || !errors.length) {
                         if (result) {
                             var modified = Date.parse(httpRequest.headers["if-modified-since"]),
-                                date     = 1000 * parseInt(String(Number(result.date) / 1000), 10);
+                                date     = 1000 * result.date;
                             if (modified && modified === date) {
                                 httpResponse.writeHead(304, httpServer.STATUS_CODES[304]);
                                 httpResponse.end();
                             } else {
                                 httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
                                     "Content-Type"  : "application/json; charset=utf-8",
-                                    "Last-Modified" : result.date.toUTCString()
+                                    "Last-Modified" : (new Date(result.date * 1000)).toUTCString()
                                 });
                                 httpResponse.end(result.sourcemap);
                             }
