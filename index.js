@@ -32,19 +32,63 @@ function htmlEntities(str) {
 }
 
 function cleanTemp(callback) {
-    var temp = path.join(project, "temp"),
-        rm   = spawn("rm", ["-rf", temp], {});
-    rm.on('close', function (code) {
-        console.log('remove temp with code: ' + code);
-        callback();
-    });
+    var temp = path.join(project, "temp");
+    deferred([
+        function (next) {
+            var rm = spawn("rm", ["-rf", temp], {});
+            rm.on('close', function (code) {
+                console.log('remove temp with code: ' + code);
+                next();
+            });
+        },
+        function () {
+            fs.mkdir(temp, function () {
+                console.log('create temp');
+                callback();
+            });
+        }
+    ]);
 }
 
 
 charset = "utf-8";
-project = "../Class";
+//project = "../Class";
+project = "../playground";
+
+var memorySocketAddress = "/home/rodzewich/Projects/playground/temp/memory.sock";
+
+function createMemorySocket(callback) {
+    var proc = spawn(process.execPath, [path.join(__dirname, "./lib/memory/WorkerProcess.js"), memorySocketAddress]);
+    proc.stderr.on("data", function (data) {
+        console.log(data.toString("utf8").red);
+    });
+    proc.stdout.on("data", function (data) {
+        console.log(data.toString("utf8").red);
+    });
+    setTimeout(function () {
+        console.log("created memory socket");
+        callback();
+    }, 300);
+}
+
 
 deferred([
+
+    createMemorySocket,
+
+    function (next) {
+        routers.typescript.init({
+            numberOfProcesses  : 10,
+            sourcesDirectory   : "/home/rodzewich/Projects/Class/public",
+            temporaryDirectory : "/home/rodzewich/Projects/playground/temp",
+            scriptsTarget      : "es5",
+            useCache           : false
+        }, function (errors) {
+            console.log("INITED!!!");
+            next();
+        });
+    },
+
     /*function (next) {
         configure({cwd: cwd}, function (error, result) {
             if (!error) {

@@ -1,12 +1,31 @@
 /*jslint */
 /*global require, module */
 
-var fs       = require("fs"),
-    url      = require("url"),
-    events   = require("events"),
-    path     = require("path"),
-    deferred = require("../lib/deferred"),
-    compiler = require("../lib/typescript/compiler");
+var fs            = require("fs"),
+    url           = require("url"),
+    events        = require("events"),
+    path          = require("path"),
+    typeOf        = require("../lib/typeOf"),
+    deferred      = require("../lib/deferred"),
+    compiler      = require("../lib/typescript/compiler"),
+    WorkerManager = require("../lib/typescript/WorkerManager"),
+    manager;
+
+function init(options, callback) {
+    "use strict";
+    manager = new WorkerManager({
+        numberOfProcesses  : options.numberOfProcesses,
+        temporaryDirectory : options.temporaryDirectory,
+        sourcesDirectory   : options.sourcesDirectory,
+        scriptsTarget      : options.scriptsTarget,
+        useCache           : options.useCache
+    });
+    manager.connect(function (errors) {
+        if (typeOf(callback) === "function") {
+            callback(errors && errors.length ? errors : null);
+        }
+    });
+}
 
 function route(options, next) {
     "use strict";
@@ -67,13 +86,7 @@ function route(options, next) {
             var extension = filename.substr(-3).toLowerCase(),
                 pathname  = filename.substr(0, filename.length - 3);
             if (extension === ".js") {
-                compiler({
-                    basedir       : sourcesDirectory,
-                    filename      : pathname,
-                    lockTemp      : tempDirectory,
-                    lockTimeout   : 100,
-                    scriptsTarget : "es5"
-                }, function (errors, result) {
+                manager.compile(pathname, function (errors, result) {
                     if (!errors || !errors.length) {
                         if (result) {
                             var modified = Date.parse(httpRequest.headers["if-modified-since"]),
@@ -109,13 +122,7 @@ function route(options, next) {
             var extension = filename.substr(-3).toLowerCase(),
                 pathname  = filename.substr(0, filename.length - 3);
             if (extension === ".ts") {
-                compiler({
-                    basedir       : sourcesDirectory,
-                    filename      : pathname,
-                    lockTemp      : tempDirectory,
-                    lockTimeout   : 100,
-                    scriptsTarget : "es5"
-                }, function (errors, result) {
+                manager.compile(pathname, function (errors, result) {
                     if (!errors || !errors.length) {
                         if (result) {
                             var modified = Date.parse(httpRequest.headers["if-modified-since"]),
@@ -150,13 +157,7 @@ function route(options, next) {
             var extension = filename.substr(-7).toLowerCase(),
                 pathname  = filename.substr(0, filename.length - 7);
             if (extension === ".js.map") {
-                compiler({
-                    basedir       : sourcesDirectory,
-                    filename      : pathname,
-                    lockTemp      : tempDirectory,
-                    lockTimeout   : 100,
-                    scriptsTarget : "es5"
-                }, function (errors, result) {
+                manager.compile(pathname, function (errors, result) {
                     if (!errors || !errors.length) {
                         if (result) {
                             var modified = Date.parse(httpRequest.headers["if-modified-since"]),
@@ -195,4 +196,7 @@ function route(options, next) {
 
 }
 
-module.exports = route;
+module.exports = {
+    init  : init,
+    route : route
+};
