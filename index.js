@@ -55,7 +55,8 @@ charset = "utf-8";
 //project = "../Class";
 project = "../playground";
 
-var memorySocketAddress = "/home/rodzewich/Projects/playground/temp/memory.sock";
+var temporaryDirectory = "/home/rodzewich/Projects/playground/temp";
+var memorySocketAddress = path.join(temporaryDirectory, "memory.sock");
 
 function createMemorySocket(callback) {
     var proc = spawn(process.execPath, [path.join(__dirname, "./lib/memory/WorkerProcess.js"), memorySocketAddress]);
@@ -72,22 +73,35 @@ function createMemorySocket(callback) {
 }
 
 
-deferred([
-
-    createMemorySocket,
-
-    function (next) {
+function createTypescriptSockets(callback) {
+    if (useTypescript) {
         routers.typescript.init({
             numberOfProcesses  : 10,
-            sourcesDirectory   : "/home/rodzewich/Projects/Class/public",
-            temporaryDirectory : "/home/rodzewich/Projects/playground/temp",
+            sourcesDirectory   : "/home/rodzewich/Projects/Class/xlib",
+            temporaryDirectory : temporaryDirectory,
+            memorySocketLocation: memorySocketAddress,
             scriptsTarget      : "es5",
             useCache           : false
         }, function (errors) {
-            console.log("INITED!!!");
-            next();
+            // todo: обрабатывать ошибки
+            if (errors && errors.length) {
+                errors.forEach(function (error) {
+                    console.log(error);
+                });
+            }
+            console.log("call callback");
+            callback();
         });
-    },
+    } else {
+        callback();
+    }
+}
+
+deferred([
+
+    cleanTemp,
+    createMemorySocket,
+    createTypescriptSockets,
 
     /*function (next) {
         configure({cwd: cwd}, function (error, result) {
@@ -100,7 +114,6 @@ deferred([
             }
         });
     },*/
-    cleanTemp,
     function () {
 
         var contentDirectory = path.join(project, "xlib"),
@@ -153,10 +166,8 @@ deferred([
 
                 // typescript
                 function (next) {
-
                     if (useTypescript) {
-
-                        routers.typescript({
+                        routers.typescript.route({
                             rootDirectory    : "",
                             tempDirectory    : tempDirectory,
                             sourcesDirectory : contentDirectory,
@@ -165,11 +176,9 @@ deferred([
                             errorHandler     : displayError,
                             httpServer       : http
                         }, next);
-
                     } else {
                         next();
                     }
-
                 },
 
                 // static

@@ -7,39 +7,54 @@ var fs            = require("fs"),
     path          = require("path"),
     typeOf        = require("../lib/typeOf"),
     deferred      = require("../lib/deferred"),
-    compiler      = require("../lib/typescript/compiler"),
+    //compiler      = require("../lib/typescript/compiler"),
     WorkerManager = require("../lib/typescript/WorkerManager"),
     manager;
 
+// todo: использовать tslint https://github.com/palantir/tslint
+
 function init(options, callback) {
     "use strict";
-    manager = new WorkerManager({
-        numberOfProcesses  : options.numberOfProcesses,
-        temporaryDirectory : options.temporaryDirectory,
-        sourcesDirectory   : options.sourcesDirectory,
-        scriptsTarget      : options.scriptsTarget,
-        useCache           : options.useCache
-    });
-    manager.connect(function (errors) {
-        if (typeOf(callback) === "function") {
-            callback(errors && errors.length ? errors : null);
+    var temporaryDirectory = path.join(options.temporaryDirectory, "typescript");
+    // todo: check is absolute
+    deferred([
+        function (next) {
+            // todo: рекурсивно создавать директорию
+            fs.mkdir(temporaryDirectory, function () {
+                next();
+            });
+        },
+        function () {
+            manager = new WorkerManager({
+                numberOfProcesses  : options.numberOfProcesses,
+                temporaryDirectory : temporaryDirectory,
+                sourcesDirectory   : options.sourcesDirectory,
+                memorySocketLocation: options.memorySocketLocation,
+                scriptsTarget      : options.scriptsTarget,
+                useCache           : options.useCache
+            });
+            manager.connect(function (errors) {
+                if (typeOf(callback) === "function") {
+                    callback(errors && errors.length ? errors : null);
+                }
+            });
         }
-    });
+    ]);
 }
 
 function route(options, next) {
     "use strict";
 
     var rootDirectory    = path.join("/", options.rootDirectory || ""),
-        tempDirectory    = options.tempDirectory,
-        sourcesDirectory = options.sourcesDirectory,
+        //tempDirectory    = options.tempDirectory,
+        //sourcesDirectory = options.sourcesDirectory,
         httpServer       = options.httpServer,
         httpRequest      = options.httpRequest,
         httpResponse     = options.httpResponse,
         errorHandler     = options.errorHandler,
         request          = url.parse(httpRequest.url, true) || {},
         filename         = path.relative(rootDirectory, String(request.pathname || "/")),
-        loaderDate       = null,
+        //loaderDate       = null,
         loaderContent    = null,
         loaderLock       = null;
 
