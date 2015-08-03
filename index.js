@@ -61,10 +61,10 @@ var memorySocketAddress = path.join(temporaryDirectory, "memory.sock");
 function createMemorySocket(callback) {
     var proc = spawn(process.execPath, [path.join(__dirname, "./lib/memory/WorkerProcess.js"), memorySocketAddress]);
     proc.stderr.on("data", function (data) {
-        console.log(data.toString("utf8").red);
+        console.log(("Memory socket say:\n" + data.toString("utf8")).red);
     });
     proc.stdout.on("data", function (data) {
-        console.log(data.toString("utf8").red);
+        console.log(("Memory socket say:\n" + data.toString("utf8")).green);
     });
     setTimeout(function () {
         console.log("created memory socket");
@@ -76,7 +76,7 @@ function createMemorySocket(callback) {
 function createTypescriptSockets(callback) {
     if (useTypescript) {
         routers.typescript.init({
-            numberOfProcesses  : 10,
+            numberOfProcesses  : 4,
             sourcesDirectory   : "/home/rodzewich/Projects/Class/xlib",
             temporaryDirectory : temporaryDirectory,
             memorySocketLocation: memorySocketAddress,
@@ -89,7 +89,7 @@ function createTypescriptSockets(callback) {
                     console.log(error);
                 });
             }
-            console.log("call callback");
+            console.log("Typescript sockets created!");
             callback();
         });
     } else {

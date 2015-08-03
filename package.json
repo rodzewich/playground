@@ -2,6 +2,7 @@
   "version": "0.0.1",
   "dependencies": {
     "colors": "^1.1.2",
+    "less": "^2.5.1",
     "source-map": "^0.4.4"
   }
 }
