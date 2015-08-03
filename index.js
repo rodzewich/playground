@@ -13,12 +13,16 @@ var fs     = require("fs"),
     lock     = require("./lib/lock"),
     deferred  = require("./lib/deferred"),
     configure = require("./lib/configure"),
-    useTypescript = true,
+    processingTypescript = true,
+    processingLess = true,
+    processingStylus = true,
     spawn = require("child_process").spawn,
     charset;
 
 var routers = {
-    typescript : require("./routers/typescript")
+    typescript : require("./routers/typescript"),
+    stylus     : require("./routers/stylus"),
+    less       : require("./routers/less")
 };
 
 var staticContent = require("./lib/staticContent");
@@ -74,7 +78,7 @@ function createMemorySocket(callback) {
 
 
 function createTypescriptSockets(callback) {
-    if (useTypescript) {
+    if (processingTypescript) {
         routers.typescript.init({
             numberOfProcesses  : 4,
             sourcesDirectory   : "/home/rodzewich/Projects/Class/xlib",
@@ -164,13 +168,47 @@ deferred([
 
             deferred([
 
-                // typescript
+                // processing *.ts files
                 function (next) {
-                    if (useTypescript) {
+                    if (processingTypescript) {
                         routers.typescript.route({
                             rootDirectory    : "",
                             tempDirectory    : tempDirectory,
-                            sourcesDirectory : contentDirectory,
+                            sourcesDirectory : contentDirectory, // todo: ???
+                            httpRequest      : request,
+                            httpResponse     : response,
+                            errorHandler     : displayError,
+                            httpServer       : http
+                        }, next);
+                    } else {
+                        next();
+                    }
+                },
+
+                // processing *.less files
+                function (next) {
+                    if (processingLess) {
+                        routers.less.route({
+                            rootDirectory    : "",
+                            tempDirectory    : tempDirectory,
+                            sourcesDirectory : contentDirectory, // todo: ???
+                            httpRequest      : request,
+                            httpResponse     : response,
+                            errorHandler     : displayError,
+                            httpServer       : http
+                        }, next);
+                    } else {
+                        next();
+                    }
+                },
+
+                // processing *.styl files
+                function (next) {
+                    if (processingStylus) {
+                        routers.stylus.route({
+                            rootDirectory    : "",
+                            tempDirectory    : tempDirectory,
+                            sourcesDirectory : contentDirectory, // todo: ???
                             httpRequest      : request,
                             httpResponse     : response,
                             errorHandler     : displayError,
