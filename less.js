@@ -22,8 +22,8 @@ var less = require('less');
 
 
 less.render('@import (less) "index.less"; .class { width: (1 + 1) }', {
-    paths    : ['.', './lib'],  // Specify search paths for @import directives
-    filename : 'style.less', // Specify a filename, for better error messages
+    paths    : ['/home/rodzewich/Projects/playground'],  // Specify search paths for @import directives
+    filename : 'styles.less', // Specify a filename, for better error messages
     compress : true,          // Minify CSS output
     sourceMap: true,
     lint: true
