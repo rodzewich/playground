@@ -1,5 +1,6 @@
 {
   "version": "0.0.1",
+  "description": "bla bla bla",
   "dependencies": {
     "colors": "^1.1.2",
     "less": "^2.5.1",
