@@ -15,8 +15,10 @@ var fs            = require("fs"),
 
 function init(options, callback) {
     "use strict";
-    var temporaryDirectory = path.join(options.temporaryDirectory, "typescript");
+
+    var temporaryDirectory = String(options.temporaryDirectory);
     // todo: check is absolute
+
     deferred([
         function (next) {
             // todo: рекурсивно создавать директорию

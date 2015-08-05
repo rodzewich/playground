@@ -12,16 +12,17 @@ var fs     = require("fs"),
     types     = require("./lib/types"),
     lock     = require("./lib/lock"),
     deferred  = require("./lib/deferred"),
+    parallel  = require("./lib/parallel"),
     configure = require("./lib/configure"),
     processingTypescript = true,
     processingLess = true,
-    processingStylus = true,
+    processingStylus = false,
     spawn = require("child_process").spawn,
     charset;
 
 var routers = {
     typescript : require("./routers/typescript"),
-    stylus     : require("./routers/stylus"),
+    /*stylus     : require("./routers/stylus"),*/
     less       : require("./routers/less")
 };
 
@@ -62,7 +63,7 @@ project = "../playground";
 var temporaryDirectory = "/home/rodzewich/Projects/playground/temp";
 var memorySocketAddress = path.join(temporaryDirectory, "memory.sock");
 
-function createMemorySocket(callback) {
+function createSocketForMemory(callback) {
     var proc = spawn(process.execPath, [path.join(__dirname, "./lib/memory/WorkerProcess.js"), memorySocketAddress]);
     proc.stderr.on("data", function (data) {
         console.log(("Memory socket say:\n" + data.toString("utf8")).red);
@@ -77,7 +78,7 @@ function createMemorySocket(callback) {
 }
 
 
-function createTypescriptSockets(callback) {
+function createSocketsForTypescript(callback) {
     if (processingTypescript) {
         routers.typescript.init({
             numberOfProcesses  : 4,
@@ -101,11 +102,44 @@ function createTypescriptSockets(callback) {
     }
 }
 
+function createSocketsForLess(callback) {
+    if (processingLess) {
+        routers.less.init({
+            numberOfProcesses    : 4,
+            sourcesDirectory     : "/home/rodzewich/Projects/Class/styles",
+            importDirectories    : [],
+            temporaryDirectory   : temporaryDirectory,
+            memorySocketLocation : memorySocketAddress,
+            useCache             : false
+        }, function (errors) {
+            // todo: обрабатывать ошибки
+            if (errors && errors.length) {
+                errors.forEach(function (error) {
+                    console.log(error);
+                });
+            }
+            console.log("Less sockets created!");
+            callback();
+        });
+    } else {
+        callback();
+    }
+}
+
 deferred([
 
     cleanTemp,
-    createMemorySocket,
-    createTypescriptSockets,
+
+    function (next) {
+        parallel([
+                createSocketForMemory,
+                createSocketsForTypescript,
+                createSocketsForLess
+            ],
+            function () {
+                next();
+            });
+    },
 
     /*function (next) {
         configure({cwd: cwd}, function (error, result) {

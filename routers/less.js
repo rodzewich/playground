@@ -11,27 +11,15 @@ var fs            = require("fs"),
 
 function init(options, callback) {
     "use strict";
-
-    var temporaryDirectory = path.join(options.temporaryDirectory, "less");
-    // todo: check is absolute
-
     deferred([
-
-        function (next) {
-            // todo: рекурсивно создавать директорию
-            fs.mkdir(temporaryDirectory, function () {
-                next();
-            });
-        },
-
         function () {
             manager = new WorkerManager({
-                temporaryDirectory : temporaryDirectory/*,
-                numberOfProcesses  : options.numberOfProcesses,
-                sourcesDirectory   : options.sourcesDirectory,
-                memorySocketLocation: options.memorySocketLocation,
-                scriptsTarget      : options.scriptsTarget,
-                useCache           : options.useCache*/
+                numberOfProcesses    : options.numberOfProcesses, // todo: check value
+                sourcesDirectory     : options.sourcesDirectory, // todo: check directory
+                importDirectories    : options.importDirectories, // todo: check directories
+                temporaryDirectory   : options.temporaryDirectory, // todo: check directory
+                memorySocketLocation : options.memorySocketLocation, // todo: check location
+                useCache             : !!options.useCache
             });
             manager.connect(function (errors) {
                 if (typeOf(callback) === "function") {
@@ -39,7 +27,6 @@ function init(options, callback) {
                 }
             });
         }
-
     ]);
 }
 
