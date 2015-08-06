@@ -107,7 +107,7 @@ function createSocketsForLess(callback) {
         routers.less.init({
             numberOfProcesses    : 4,
             sourcesDirectory     : "/home/rodzewich/Projects/Class/styles",
-            importDirectories    : [],
+            importDirectories    : ["/home/rodzewich/Projects/playground/less_include_dir"],
             temporaryDirectory   : temporaryDirectory,
             memorySocketLocation : memorySocketAddress,
             useCache             : false
