@@ -16,16 +16,18 @@ var fs            = require("fs"),
 function init(options, callback) {
     "use strict";
 
-    var temporaryDirectory = String(options.temporaryDirectory);
+    var temporaryDirectory = path.join(options.temporaryDirectory, "typescript");
     // todo: check is absolute
 
     deferred([
+
         function (next) {
             // todo: рекурсивно создавать директорию
             fs.mkdir(temporaryDirectory, function () {
                 next();
             });
         },
+
         function () {
             manager = new WorkerManager({
                 numberOfProcesses  : options.numberOfProcesses,

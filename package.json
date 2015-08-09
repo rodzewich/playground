@@ -3,6 +3,7 @@
   "description": "bla bla bla",
   "dependencies": {
     "colors": "^1.1.2",
+    "ejs": "^2.3.3",
     "less": "^2.5.1",
     "source-map": "^0.4.4"
   }

@@ -17,13 +17,15 @@ var fs     = require("fs"),
     processingTypescript = true,
     processingLess = true,
     processingStylus = false,
+    processingSoy = true,
     spawn = require("child_process").spawn,
     charset;
 
 var routers = {
     typescript : require("./routers/typescript"),
     /*stylus     : require("./routers/stylus"),*/
-    less       : require("./routers/less")
+    less       : require("./routers/less"),
+    soy : require("./routers/soy")
 };
 
 var staticContent = require("./lib/staticContent");
@@ -63,7 +65,7 @@ project = "../playground";
 var temporaryDirectory = "/home/rodzewich/Projects/playground/temp";
 var memorySocketAddress = path.join(temporaryDirectory, "memory.sock");
 
-function createSocketForMemory(callback) {
+function initMemory(callback) {
     var proc = spawn(process.execPath, [path.join(__dirname, "./lib/memory/WorkerProcess.js"), memorySocketAddress]);
     proc.stderr.on("data", function (data) {
         console.log(("Memory socket say:\n" + data.toString("utf8")).red);
@@ -78,7 +80,7 @@ function createSocketForMemory(callback) {
 }
 
 
-function createSocketsForTypescript(callback) {
+function initTypescript(callback) {
     if (processingTypescript) {
         routers.typescript.init({
             numberOfProcesses  : 4,
@@ -102,7 +104,7 @@ function createSocketsForTypescript(callback) {
     }
 }
 
-function createSocketsForLess(callback) {
+function initLess(callback) {
     if (processingLess) {
         routers.less.init({
             numberOfProcesses    : 4,
@@ -126,15 +128,40 @@ function createSocketsForLess(callback) {
     }
 }
 
+function initSoy(callback) {
+    if (processingSoy) {
+        routers.soy.init({
+            numberOfProcesses    : 4,
+            sourcesDirectory     : "/home/rodzewich/Projects/Class/views",
+            temporaryDirectory   : temporaryDirectory,
+            memorySocketLocation : memorySocketAddress,
+            useCache             : false
+        }, function (errors) {
+            // todo: обрабатывать ошибки
+            if (errors && errors.length) {
+                errors.forEach(function (error) {
+                    console.log(error);
+                });
+            } else {
+                console.log("Soy inited!");
+                callback();
+            }
+        });
+    } else {
+        callback();
+    }
+}
+
 deferred([
 
     cleanTemp,
 
     function (next) {
         parallel([
-                createSocketForMemory,
-                createSocketsForTypescript,
-                createSocketsForLess
+                initMemory,
+                initTypescript,
+                initLess,
+                initSoy
             ],
             function () {
                 next();
@@ -223,13 +250,10 @@ deferred([
                 function (next) {
                     if (processingLess) {
                         routers.less.route({
-                            rootDirectory    : "",
-                            tempDirectory    : tempDirectory,
-                            sourcesDirectory : contentDirectory, // todo: ???
-                            httpRequest      : request,
-                            httpResponse     : response,
-                            errorHandler     : displayError,
-                            httpServer       : http
+                            rootDirectory : "/",
+                            httpRequest   : request,
+                            httpResponse  : response,
+                            httpServer    : http
                         }, next);
                     } else {
                         next();
@@ -240,13 +264,24 @@ deferred([
                 function (next) {
                     if (processingStylus) {
                         routers.stylus.route({
-                            rootDirectory    : "",
-                            tempDirectory    : tempDirectory,
-                            sourcesDirectory : contentDirectory, // todo: ???
-                            httpRequest      : request,
-                            httpResponse     : response,
-                            errorHandler     : displayError,
-                            httpServer       : http
+                            rootDirectory : "/",
+                            httpRequest   : request,
+                            httpResponse  : response,
+                            httpServer    : http
+                        }, next);
+                    } else {
+                        next();
+                    }
+                },
+
+                // processing *.less files
+                function (next) {
+                    if (processingSoy) {
+                        routers.soy.route({
+                            rootDirectory : "/",
+                            httpRequest   : request,
+                            httpResponse  : response,
+                            httpServer    : http
                         }, next);
                     } else {
                         next();
