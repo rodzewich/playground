@@ -105,31 +105,23 @@ function route(options, next) {
             var extension = filename.substr(-3).toLowerCase(),
                 pathname  = filename.substr(0, filename.length - 3);
             if (extension === ".js") {
-                manager.compile(pathname, function (errors, result) {
-                    if (!errors || !errors.length) {
-                        if (result) {
-                            var modified = Date.parse(httpRequest.headers["if-modified-since"]),
-                                date     = 1000 * result.date;
-                            if (modified && modified === date) {
-                                httpResponse.writeHead(304, httpServer.STATUS_CODES[304]);
-                                httpResponse.end();
-                            } else {
-                                httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
-                                    "Content-Type"  : "application/javascript; charset=utf-8",
-                                    "X-SourceMap"   : pathname + ".js.map",
-                                    "Last-Modified" : (new Date(result.date * 1000)).toUTCString()
-                                });
-                                httpResponse.end(result.javascript);
-                            }
+                manager.compile(pathname, function (result) {
+                    if (result) {
+                        var modified = Date.parse(httpRequest.headers["if-modified-since"]),
+                            date     = 1000 * result.date;
+                        if (modified && modified === date) {
+                            httpResponse.writeHead(304, httpServer.STATUS_CODES[304]);
+                            httpResponse.end();
                         } else {
-                            next();
+                            httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
+                                "Content-Type"  : "application/javascript; charset=utf-8",
+                                "X-SourceMap"   : path.join(rootDirectory, pathname + ".js.map"),
+                                "Last-Modified" : (new Date(result.date * 1000)).toUTCString()
+                            });
+                            httpResponse.end(result.javascript);
                         }
                     } else {
-                        if (errors[0].code === "EACCES") {
-                            errorHandler(403);
-                        } else {
-                            errorHandler(500, errors);
-                        }
+                        next();
                     }
                 });
             } else {
@@ -141,30 +133,22 @@ function route(options, next) {
             var extension = filename.substr(-3).toLowerCase(),
                 pathname  = filename.substr(0, filename.length - 3);
             if (extension === ".ts") {
-                manager.compile(pathname, function (errors, result) {
-                    if (!errors || !errors.length) {
-                        if (result) {
-                            var modified = Date.parse(httpRequest.headers["if-modified-since"]),
-                                date     = 1000 * result.date;
-                            if (modified && modified === date) {
-                                httpResponse.writeHead(304, httpServer.STATUS_CODES[304]);
-                                httpResponse.end();
-                            } else {
-                                httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
-                                    "Content-Type"  : "text/plain; charset=utf-8",
-                                    "Last-Modified" : (new Date(result.date * 1000)).toUTCString()
-                                });
-                                httpResponse.end(result.typescript);
-                            }
+                manager.compile(pathname, function (result) {
+                    if (result) {
+                        var modified = Date.parse(httpRequest.headers["if-modified-since"]),
+                            date     = 1000 * result.date;
+                        if (modified && modified === date) {
+                            httpResponse.writeHead(304, httpServer.STATUS_CODES[304]);
+                            httpResponse.end();
                         } else {
-                            next();
+                            httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
+                                "Content-Type"  : "text/plain; charset=utf-8",
+                                "Last-Modified" : (new Date(result.date * 1000)).toUTCString()
+                            });
+                            httpResponse.end(result.typescript);
                         }
                     } else {
-                        if (errors[0].code === "EACCES") {
-                            errorHandler(403);
-                        } else {
-                            errorHandler(500, errors);
-                        }
+                        next();
                     }
                 });
             } else {
@@ -176,30 +160,22 @@ function route(options, next) {
             var extension = filename.substr(-7).toLowerCase(),
                 pathname  = filename.substr(0, filename.length - 7);
             if (extension === ".js.map") {
-                manager.compile(pathname, function (errors, result) {
-                    if (!errors || !errors.length) {
-                        if (result) {
-                            var modified = Date.parse(httpRequest.headers["if-modified-since"]),
-                                date     = 1000 * result.date;
-                            if (modified && modified === date) {
-                                httpResponse.writeHead(304, httpServer.STATUS_CODES[304]);
-                                httpResponse.end();
-                            } else {
-                                httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
-                                    "Content-Type"  : "application/json; charset=utf-8",
-                                    "Last-Modified" : (new Date(result.date * 1000)).toUTCString()
-                                });
-                                httpResponse.end(result.sourcemap);
-                            }
+                manager.compile(pathname, function (result) {
+                    if (result) {
+                        var modified = Date.parse(httpRequest.headers["if-modified-since"]),
+                            date     = 1000 * result.date;
+                        if (modified && modified === date) {
+                            httpResponse.writeHead(304, httpServer.STATUS_CODES[304]);
+                            httpResponse.end();
                         } else {
-                            next();
+                            httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
+                                "Content-Type"  : "application/json; charset=utf-8",
+                                "Last-Modified" : (new Date(result.date * 1000)).toUTCString()
+                            });
+                            httpResponse.end(result.sourcemap);
                         }
                     } else {
-                        if (errors[0].code === "EACCES") {
-                            errorHandler(403);
-                        } else {
-                            errorHandler(500, errors);
-                        }
+                        next();
                     }
                 });
             } else {
