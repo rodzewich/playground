@@ -1,6 +1,15 @@
 (function () {
     "use strict";
 
+    function typescript() {}
+
+    typescript("my/module", function (exports) {
+
+    });
+
+    typescript(123, function () {});
+
+
     var Module           = "<%= module/Module %>";
     var Builder          = "<%= module/builder/Builder %>";
     var NodeBuilder      = "<%= module/builder/node/Builder %>";

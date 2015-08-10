@@ -50,10 +50,37 @@ export interface IUsedBuilder<S,G> {
     getBuilder(): G;
 }
 
-/**
- * @param value
- * @returns {string}
- */
+export function deferred(actions:((next:() => void) => void)[]):void {
+    var index:number,
+        length:number,
+        action:(next:() => void) => void,
+        temp:((next:() => void) => void)[] = [];
+
+    function iterate():void {
+        var timeout = setTimeout(function () {
+            var action:(next:() => void) => void = temp.shift();
+            if (typeOf(action) === "function") {
+                action(iterate);
+            }
+        }, 0);
+        if (typeof window === "undefined") {
+            timeout.ref();
+        }
+    }
+
+    if (typeOf(actions) !== "undefined") {
+        throw new Error("bla bla bla");
+    }
+    length = actions.length;
+    for (index = 0; index < length; index++) {
+        action = actions[index];
+        if (typeOf(action) === "function") {
+            temp.push(action);
+        }
+    }
+    iterate();
+}
+
 export function typeOf(value:any):string {
     var type:string = String(Object.prototype.toString.call(value) || '').slice(8, -1) || 'Object',
         types:string[] = ['Arguments', 'Array', 'Boolean', 'Date', 'Error', 'Function', 'Null', 'Number', 'Object', 'String', 'Undefined'];
