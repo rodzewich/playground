@@ -1,0 +1,24 @@
+{
+    "fields": [
+        ["table1.col1"],
+        ["table2.col2", "alias2"],
+        ["table2.col3", "alias3"]
+    ],
+    "from": [
+        ["table1"],
+        ["table2", "t2"],
+        ["table3", "t3"]
+    ],
+    "join": [
+        [
+            "LEFT",
+            ["table4", "t4"],
+            [
+                "AND",
+                "BETWEEN",
+                ["COLUMN", "t2.col4"],
+                ["LITERAL", "INTEGER", 123]
+            ]
+        ]
+    ]
+}

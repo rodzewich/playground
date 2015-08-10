@@ -1,0 +1,5 @@
+
+interface IOptions {
+}
+
+export = IOptions;

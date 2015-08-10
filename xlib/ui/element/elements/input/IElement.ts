@@ -1,0 +1,103 @@
+/// <reference path="../IElement.ts" />
+
+module xlib.ui.element.elements.input {
+
+  import IEvent = elements.IEvent;
+
+  export interface IElement<T> extends elements.IElement<T> {
+    getTitle(): string;
+    setTitle(value: string): void;
+    getLang(): string;
+    setLang(value: string): void;
+    getXmlLang(): string;
+    setXmlLang(value: string): void;
+    getDir(): string;
+    setDir(value: string): void;
+    getAccessKey(): string;
+    setAccessKey(value: string): void;
+    getTabIndex(): string;
+    setTabIndex(value: string): void;
+    getType(): string;
+    setType(value: string): void;
+    getName(): string;
+    setName(value: string): void;
+    getValue(): string;
+    setValue(value: string): void;
+    getChecked(): boolean;
+    isChecked(): boolean;
+    setChecked(value: string): void;
+    getDisabled(): boolean;
+    isDisabled(): boolean;
+    setDisabled(value: string): void;
+    getSize(): string;
+    setSize(value: string): void;
+    getMaxLength(): string;
+    setMaxLength(value: string): void;
+    getSrc(): string;
+    setSrc(value: string): void;
+    getAlt(): string;
+    setAlt(value: string): void;
+    getUseMap(): string;
+    setUseMap(value: string): void;
+    getAccept(): string;
+    setAccept(value: string): void;
+    getAlign(): string;
+    setAlign(value: string): void;
+    getAutoComplete(): boolean;
+    isAutoComplete(): boolean;
+    setAutoComplete(value: string): void;
+    getAutoFocus(): boolean;
+    isAutoFocus(): boolean;
+    setAutoFocus(value: string): void;
+    getBorder(): string;
+    setBorder(value: string): void;
+    getForm(): string;
+    setForm(value: string): void;
+    getFormAction(): string;
+    setFormAction(value: string): void;
+    getFormEncType(): string;
+    setFormEncType(value: string): void;
+    getFormMethod(): string;
+    setFormMethod(value: string): void;
+    getFormNoValidate(): string;
+    setFormNoValidate(value: string): void;
+    getFormTarget(): string;
+    setFormTarget(value: string): void;
+    getList(): string;
+    setList(value: string): void;
+    getMax(): string;
+    setMax(value: string): void;
+    getMin(): string;
+    setMin(value: string): void;
+    getMultiple(): boolean;
+    isMultiple(): boolean;
+    setMultiple(value: string): void;
+    getPattern(): string;
+    setPattern(value: string): void;
+    getPlaceholder(): string;
+    setPlaceholder(value: string): void;
+    getReadonly(): boolean;
+    isReadonly(): boolean;
+    setReadonly(value: string): void;
+    getRequired(): boolean;
+    isRequired(): boolean;
+    setRequired(value: string): void;
+    onClick(listener: (event?: IEvent<T>) => void): void;
+    onDblClick(listener: (event?: IEvent<T>) => void): void;
+    onMouseDown(listener: (event?: IEvent<T>) => void): void;
+    onMouseUp(listener: (event?: IEvent<T>) => void): void;
+    onMouseOver(listener: (event?: IEvent<T>) => void): void;
+    onMouseMove(listener: (event?: IEvent<T>) => void): void;
+    onMouseOut(listener: (event?: IEvent<T>) => void): void;
+    onKeyPress(listener: (event?: IEvent<T>) => void): void;
+    onKeyDown(listener: (event?: IEvent<T>) => void): void;
+    onKeyUp(listener: (event?: IEvent<T>) => void): void;
+    onFocus(listener: (event?: IEvent<T>) => void): void;
+    onFocusIn(listener: (event?: IEvent<T>) => void): void;
+    onFocusOut(listener: (event?: IEvent<T>) => void): void;
+    onBlur(listener: (event?: IEvent<T>) => void): void;
+    onSelect(listener: (event?: IEvent<T>) => void): void;
+    onChange(listener: (event?: IEvent<T>) => void): void;
+  }
+
+}

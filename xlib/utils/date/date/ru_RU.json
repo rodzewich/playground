@@ -1,0 +1,68 @@
+{
+  "DATE_FORMAT": "dd.mm.yy",
+  "DAY_NAMES": {
+    "FULL": {
+      "MONDAY":    "Понедельник",
+      "TUESDAY":   "Вторник",
+      "WEDNESDAY": "Среда",
+      "THURSDAY":  "Четверг",
+      "FRIDAY":    "Пятница",
+      "SATURDAY":  "Суббота",
+      "SUNDAY":    "Воскресенье"
+    },
+    "SHORT": {
+      "MONDAY":    "Пнд",
+      "TUESDAY":   "Втр",
+      "WEDNESDAY": "Срд",
+      "THURSDAY":  "Чтв",
+      "FRIDAY":    "Птн",
+      "SATURDAY":  "Сбт",
+      "SUNDAY":    "Вск"
+    },
+    "MIN": {
+      "MONDAY":    "Пн",
+      "TUESDAY":   "Вт",
+      "WEDNESDAY": "Ср",
+      "THURSDAY":  "Чт",
+      "FRIDAY":    "Пт",
+      "SATURDAY":  "Сб",
+      "SUNDAY":    "Вс"
+    }
+  },
+  "MONTH_NAMES": {
+    "FULL": {
+      "JANUARY":   "Январь",
+      "FEBRUARY":  "Февраль",
+      "MARCH":     "Март",
+      "APRIL":     "Апрель",
+      "MAY":       "Май",
+      "JUNE":      "Июнь",
+      "JULY":      "Июль",
+      "AUGUST":    "Август",
+      "SEPTEMBER": "Сентябрь",
+      "OCTOBER":   "Октябрь",
+      "NOVEMBER":  "Ноябрь",
+      "DECEMBER":  "Декабрь"
+    },
+    "SHORT": {
+      "JANUARY":   "Янв",
+      "FEBRUARY":  "Фев",
+      "MARCH":     "Мар",
+      "APRIL":     "Апр",
+      "MAY":       "Май",
+      "JUNE":      "Июн",
+      "JULY":      "Июл",
+      "AUGUST":    "Авг",
+      "SEPTEMBER": "Сен",
+      "OCTOBER":   "Окт",
+      "NOVEMBER":  "Ноя",
+      "DECEMBER":  "Дек"
+    }
+  },
+  "SEASON_NAMES": {
+    "WINTER": "Зима",
+    "SPRING": "Весна",
+    "SUMMER": "Лето",
+    "AUTUMN": "Осень"
+  }
+}

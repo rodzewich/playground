@@ -1,0 +1,68 @@
+{
+  "DATE_FORMAT": "dd.mm.yy",
+  "DAY_NAMES": {
+    "FULL": {
+      "MONDAY":    "Monday",
+      "TUESDAY":   "Tuesday",
+      "WEDNESDAY": "Wednesday",
+      "THURSDAY":  "Thursday",
+      "FRIDAY":    "Friday",
+      "SATURDAY":  "Saturday",
+      "SUNDAY":    "Sunday"
+    },
+    "SHORT": {
+      "MONDAY":    "Mon",
+      "TUESDAY":   "Tue",
+      "WEDNESDAY": "Wed",
+      "THURSDAY":  "Thu",
+      "FRIDAY":    "Fri",
+      "SATURDAY":  "Sat",
+      "SUNDAY":    "Sun"
+    },
+    "MIN": {
+      "MONDAY":    "Mo",
+      "TUESDAY":   "Tu",
+      "WEDNESDAY": "We",
+      "THURSDAY":  "Th",
+      "FRIDAY":    "Fr",
+      "SATURDAY":  "Sa",
+      "SUNDAY":    "Su"
+    }
+  },
+  "MONTH_NAMES": {
+    "FULL": {
+      "JANUARY":   "January",
+      "FEBRUARY":  "February",
+      "MARCH":     "March",
+      "APRIL":     "April",
+      "MAY":       "May",
+      "JUNE":      "June",
+      "JULY":      "July",
+      "AUGUST":    "August",
+      "SEPTEMBER": "September",
+      "OCTOBER":   "October",
+      "NOVEMBER":  "November",
+      "DECEMBER":  "December"
+    },
+    "SHORT": {
+      "JANUARY":   "Jan",
+      "FEBRUARY":  "Feb",
+      "MARCH":     "Mar",
+      "APRIL":     "Apr",
+      "MAY":       "May",
+      "JUNE":      "Jun",
+      "JULY":      "Jul",
+      "AUGUST":    "Aug",
+      "SEPTEMBER": "Sep",
+      "OCTOBER":   "Oct",
+      "NOVEMBER":  "Nov",
+      "DECEMBER":  "Dec"
+    }
+  },
+  "SEASON_NAMES": {
+    "WINTER": "winter",
+    "SPRING": "spring",
+    "SUMMER": "summer",
+    "AUTUMN": "autumn"
+  }
+}
