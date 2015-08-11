@@ -84,7 +84,7 @@ function initTypescript(callback) {
     if (processingTypescript) {
         routers.typescript.init({
             numberOfProcesses  : 4,
-            sourcesDirectory   : "/home/rodzewich/Projects/playground/xlib",
+            sourcesDirectory   : "/home/rodzewich/Projects/playground",
             temporaryDirectory : temporaryDirectory,
             memorySocketLocation: memorySocketAddress,
             scriptsTarget      : "es5",
@@ -108,7 +108,7 @@ function initLess(callback) {
     if (processingLess) {
         routers.less.init({
             numberOfProcesses    : 4,
-            sourcesDirectory     : "/home/rodzewich/Projects/Class/styles",
+            sourcesDirectory     : "/home/rodzewich/Projects/playground/styles",
             importDirectories    : ["/home/rodzewich/Projects/playground/less_include_dir"],
             temporaryDirectory   : temporaryDirectory,
             memorySocketLocation : memorySocketAddress,
@@ -181,7 +181,7 @@ deferred([
     },*/
     function () {
 
-        var contentDirectory = path.join(__dirname, "xlib"),
+        var contentDirectory = path.join(__dirname, "."),
             tempDirectory = path.join(__dirname, "temp"),
             libDirectory = path.join(__dirname, "xlib");
 
