@@ -2,8 +2,8 @@
 /// <reference path="../../core.ts" />
 /// <reference path="../../node.d.ts" />
 /// <reference path="./module.d.ts" />
+/// <reference path="./define.d.ts" />
 
-import IModule = require("./IModule");
 import ILoader = require("./loader/ILoader");
 import core = require("../../core");
 
@@ -39,7 +39,7 @@ class Module {
         });
     }
 
-    public register(module:string, exports:any):void {
+    public static register(module:string, dependency: string[], exports:any):void {
         var temp:string = String(module || "");
         if (!temp) {
             throw new Error("bla bla bla");
@@ -47,13 +47,13 @@ class Module {
         if (/\s/.test(temp)) {
             throw new Error("bla bla bla");
         }
-        if (core.typeOf(Module._modules[temp]) !== "undefined") {
+        if (core.typeOf(modules[temp]) !== "undefined") {
             throw new Error("bla bla bla");
         }
         if (["object", "function"].indexOf(core.typeOf(exports)) !== -1) {
-            Module._modules[temp] = exports;
+            modules[temp] = exports;
         } else {
-            Module._modules[temp] = {};
+            modules[temp] = {};
         }
     }
 
@@ -71,7 +71,7 @@ class Module {
         if (!Module.getCwd()) {
             throw new Error("bla bla bla");
         }
-        if (core.typeOf(Module._modules[temp]) === "undefined") {
+        if (core.typeOf(modules[temp]) === "undefined") {
             throw new Error("Module " + JSON.stringify(temp) + " not found");
         }
         if (path.length > 1 && path[0] === "") {
@@ -79,7 +79,7 @@ class Module {
         }
         if (path.length === 1) {
             // load node internal module
-            return nodeRequire(temp);
+            //return nodeRequire(temp);
         }
         while (path.length) {
             element = path.shift();
@@ -96,9 +96,19 @@ class Module {
         if (cwd.join("/") === String(Module.getCwd())) {
             throw new Error("bla bla bla");
         }
-        return Module._modules[cwd.join("/")];
+        return modules[cwd.join("/")];
     }
 
+}
+
+if (typeof window !== "undefined") {
+    window.define = (module:string, dependency:string[], exports:any):void => {
+        Module.register(module, dependency, exports);
+    };
+} else if (typeof global !== "undefined") {
+    global.define = (module:string, dependency:string[], exports:any):void => {
+        Module.register(module, dependency, exports);
+    };
 }
 
 export = Module;

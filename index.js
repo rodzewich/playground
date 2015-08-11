@@ -84,7 +84,7 @@ function initTypescript(callback) {
     if (processingTypescript) {
         routers.typescript.init({
             numberOfProcesses  : 4,
-            sourcesDirectory   : "/home/rodzewich/Projects/Class/xlib",
+            sourcesDirectory   : "/home/rodzewich/Projects/playground/xlib",
             temporaryDirectory : temporaryDirectory,
             memorySocketLocation: memorySocketAddress,
             scriptsTarget      : "es5",
@@ -132,7 +132,7 @@ function initSoy(callback) {
     if (processingSoy) {
         routers.soy.init({
             numberOfProcesses    : 4,
-            sourcesDirectory     : "/home/rodzewich/Projects/Class/views",
+            sourcesDirectory     : "/home/rodzewich/Projects/playground/views",
             temporaryDirectory   : temporaryDirectory,
             memorySocketLocation : memorySocketAddress,
             useCache             : false
@@ -181,9 +181,9 @@ deferred([
     },*/
     function () {
 
-        var contentDirectory = path.join(project, "xlib"),
-            tempDirectory = path.join(project, "temp"),
-            libDirectory = path.join(project, "xlib");
+        var contentDirectory = path.join(__dirname, "xlib"),
+            tempDirectory = path.join(__dirname, "temp"),
+            libDirectory = path.join(__dirname, "xlib");
 
         http.createServer(function (request, response) {
 

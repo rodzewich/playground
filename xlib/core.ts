@@ -50,7 +50,7 @@ export interface IUsedBuilder<S,G> {
     getBuilder(): G;
 }
 
-export function deferred(actions:((next:() => void) => void)[]):void {
+/*export function deferred(actions:((next:() => void) => void)[]):void {
     var index:number,
         length:number,
         action:(next:() => void) => void,
@@ -79,7 +79,7 @@ export function deferred(actions:((next:() => void) => void)[]):void {
         }
     }
     iterate();
-}
+}*/
 
 export function typeOf(value:any):string {
     var type:string = String(Object.prototype.toString.call(value) || '').slice(8, -1) || 'Object',
