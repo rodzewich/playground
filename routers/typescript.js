@@ -11,12 +11,16 @@ var fs            = require("fs"),
     WorkerManager = require("../lib/typescript/WorkerManager"),
     manager;
 
+var glob = require("glob");
+var loaderContent    = null;
+
 // todo: использовать tslint https://github.com/palantir/tslint
 
 function init(options, callback) {
     "use strict";
 
     var temporaryDirectory = path.join(options.temporaryDirectory, "typescript");
+    var sourcesDirectory = String(options.sourcesDirectory);
     // todo: check is absolute
 
     deferred([
@@ -28,11 +32,21 @@ function init(options, callback) {
             });
         },
 
+        function (next) {
+            console.log("start glob");
+            glob("**/*.ts", {cwd: path.join(sourcesDirectory, "utils/module")}, function (error, files) {
+                loaderContent = files.join("\n");
+                console.log(path.join(sourcesDirectory, "utils/module"));
+                console.log("loaderContent", files);
+                next();
+            });
+        },
+
         function () {
             manager = new WorkerManager({
                 numberOfProcesses  : options.numberOfProcesses,
                 temporaryDirectory : temporaryDirectory,
-                sourcesDirectory   : options.sourcesDirectory,
+                sourcesDirectory   : sourcesDirectory,
                 memorySocketLocation: options.memorySocketLocation,
                 scriptsTarget      : options.scriptsTarget,
                 useCache           : options.useCache
@@ -55,11 +69,9 @@ function route(options, next) {
         httpServer       = options.httpServer,
         httpRequest      = options.httpRequest,
         httpResponse     = options.httpResponse,
-        errorHandler     = options.errorHandler,
         request          = url.parse(httpRequest.url, true) || {},
         filename         = path.relative(rootDirectory, String(request.pathname || "/")),
         //loaderDate       = null,
-        loaderContent    = null,
         loaderLock       = null;
 
     deferred([
@@ -68,6 +80,7 @@ function route(options, next) {
         function (next) {
             if (filename === "loader.js") {
                 if (loaderContent) {
+                    console.log("show loader");
                     httpResponse.writeHead(200, httpServer.STATUS_CODES[200], {
                         "Content-Type" : "application/javascript; charset=utf-8"
                         //"Last-Modified" : result.date.toUTCString()
@@ -92,7 +105,7 @@ function route(options, next) {
                             });
                             httpResponse.end(loaderContent);
                             loaderLock.emit("complete");
-                            loaderLock   = null;
+                            loaderLock    = null;
                         }
                     });
                 }

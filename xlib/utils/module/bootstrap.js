@@ -3,13 +3,6 @@
 
     function typescript() {}
 
-    typescript("my/module", function (exports) {
-
-    });
-
-    typescript(123, function () {});
-
-
     var Module           = "<%= module/Module %>";
     var Builder          = "<%= module/builder/Builder %>";
     var NodeBuilder      = "<%= module/builder/node/Builder %>";
@@ -57,8 +50,7 @@
     if (typeof window !== "undefined") {
         builder   = new BrowserBuilder();
         transport = new BrowserTransport();
-        window.loadTypescript     = loadTypescript;
-        window.callbackTypescript = callbackTypescript;
+        window.typescript = typescript;
     } else {
         builder = new NodeBuilder();
         transport = new NodeTransport();
