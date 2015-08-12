@@ -13,6 +13,7 @@ var fs            = require("fs"),
 
 var glob = require("glob");
 var loaderContent    = null;
+var Logger = require("../lib/Logger");
 
 // todo: использовать tslint https://github.com/palantir/tslint
 
@@ -119,8 +120,11 @@ function route(options, next) {
                 pathname  = filename.substr(0, filename.length - 3);
             if (extension === ".js") {
                 manager.compile(pathname, function (result) {
-                    console.log("manager.compile(%s)", pathname);
-                    console.log("filename", filename);
+                    Logger.getLogger("typescript").debug("Typescript router", {
+                        filename : filename,
+                        pathname : pathname,
+                        result   : !!result
+                    });
                     if (result) {
                         var modified = Date.parse(httpRequest.headers["if-modified-since"]),
                             date     = 1000 * result.date;
@@ -149,8 +153,11 @@ function route(options, next) {
                 pathname  = filename.substr(0, filename.length - 3);
             if (extension === ".ts") {
                 manager.compile(pathname, function (result) {
-                    console.log("manager.compile(%s)", pathname);
-                    console.log("filename", filename);
+                    Logger.getLogger("typescript").debug("Typescript router", {
+                        filename : filename,
+                        pathname : pathname,
+                        result   : !!result
+                    });
                     if (result) {
                         var modified = Date.parse(httpRequest.headers["if-modified-since"]),
                             date     = 1000 * result.date;
@@ -178,8 +185,11 @@ function route(options, next) {
                 pathname  = filename.substr(0, filename.length - 7);
             if (extension === ".js.map") {
                 manager.compile(pathname, function (result) {
-                    console.log("manager.compile(%s)", pathname);
-                    console.log("filename", filename);
+                    Logger.getLogger("typescript").debug("Typescript router", {
+                        filename : filename,
+                        pathname : pathname,
+                        result   : !!result
+                    });
                     if (result) {
                         var modified = Date.parse(httpRequest.headers["if-modified-since"]),
                             date     = 1000 * result.date;
