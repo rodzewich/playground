@@ -1,114 +1,37 @@
-/// <reference path="./loader/ILoader.ts" />
-/// <reference path="../../core.ts" />
-/// <reference path="../../node.d.ts" />
-/// <reference path="./module.d.ts" />
-/// <reference path="./define.d.ts" />
+/// <reference path="./IModule.ts" />
+/// <reference path="./builder/IBuilder.ts" />
+/// <reference path="./transport/ITransport.ts" />
 
-import ILoader = require("./loader/ILoader");
-import core = require("../../core");
+import IBuilder = require("./builder/IBuilder");
+import ITransport = require("./transport/ITransport");
+import IModule = require("./IModule");
 
-var cwd:string,
-    modules:any = {},
-    loader:ILoader;
+class Module implements IModule {
 
-class Module {
+    protected _builder:IBuilder;
 
-    public static getCwd():string {
-        return cwd;
+    protected _transport:ITransport;
+
+    public setBuilder(value:IBuilder):void {
+        this._builder = value;
     }
 
-    public static setCwd(value:string):void {
-        cwd = value;
+    public getBuilder():IBuilder {
+        return this._builder;
     }
 
-    public static resetCwd():void {
-        cwd = undefined;
+    public setTransport(value:ITransport):void {
+        this._transport = value;
     }
 
-    public static setLoader(value:ILoader):void {
-        loader = value;
+    public getTransport():ITransport {
+        return this._transport;
     }
 
-    public static getLoader():ILoader {
-        return loader;
+    public load(filename:string, callback:(error?:Error) => void):void {
+        this.getTransport().load(this.getBuilder().transform(filename), callback);
     }
 
-    public static load(module:string, dependency:string[], callback:(error?:Error, exports?:any) => void):void {
-        Module.getLoader().load(module, function (error:Error) {
-
-        });
-    }
-
-    public static register(module:string, dependency: string[], exports:any):void {
-        var temp:string = String(module || "");
-        if (!temp) {
-            throw new Error("bla bla bla");
-        }
-        if (/\s/.test(temp)) {
-            throw new Error("bla bla bla");
-        }
-        if (core.typeOf(modules[temp]) !== "undefined") {
-            throw new Error("bla bla bla");
-        }
-        if (["object", "function"].indexOf(core.typeOf(exports)) !== -1) {
-            modules[temp] = exports;
-        } else {
-            modules[temp] = {};
-        }
-    }
-
-    public static require(module:string):any {
-        var temp:string = String(module || ""),
-            cwd:string[] = String(Module.getCwd()).split("/"),
-            path:string[] = temp.split("/"),
-            element:string;
-        if (!temp) {
-            throw new Error("bla bla bla");
-        }
-        if (/\s/.test(temp)) {
-            throw new Error("bla bla bla");
-        }
-        if (!Module.getCwd()) {
-            throw new Error("bla bla bla");
-        }
-        if (core.typeOf(modules[temp]) === "undefined") {
-            throw new Error("Module " + JSON.stringify(temp) + " not found");
-        }
-        if (path.length > 1 && path[0] === "") {
-            throw new Error("bla bla bla");
-        }
-        if (path.length === 1) {
-            // load node internal module
-            //return nodeRequire(temp);
-        }
-        while (path.length) {
-            element = path.shift();
-            if (element === ".." && cwd.length !== 0) {
-                cwd.pop();
-            } else if (element === ".." && cwd.length === 0) {
-                throw new Error("bla bla bla");
-            } else if (element === "") {
-                throw new Error("bla bla bla");
-            } else if (element !== ".") {
-                cwd.push(element);
-            }
-        }
-        if (cwd.join("/") === String(Module.getCwd())) {
-            throw new Error("bla bla bla");
-        }
-        return modules[cwd.join("/")];
-    }
-
-}
-
-if (typeof window !== "undefined") {
-    window.define = (module:string, dependency:string[], exports:any):void => {
-        Module.register(module, dependency, exports);
-    };
-} else if (typeof global !== "undefined") {
-    global.define = (module:string, dependency:string[], exports:any):void => {
-        Module.register(module, dependency, exports);
-    };
 }
 
 export = Module;

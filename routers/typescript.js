@@ -33,12 +33,19 @@ function init(options, callback) {
             });
         },
 
-        function (next) {
+        /*function (next) {
             console.log("start glob");
-            glob("**/*.ts", {cwd: path.join(sourcesDirectory, "utils/module")}, function (error, files) {
+            glob("**!/!*.ts", {cwd: path.join(sourcesDirectory, "utils/module")}, function (error, files) {
                 loaderContent = files.join("\n");
                 console.log(path.join(sourcesDirectory, "utils/module"));
                 console.log("loaderContent", files);
+                next();
+            });
+        },*/
+
+        function (next) {
+            fs.readFile(path.join(__dirname, "../lib/typescript/LoaderTemplate.js"), function (error, buffer) {
+                loaderContent = buffer;
                 next();
             });
         },
