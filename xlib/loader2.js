@@ -1,12 +1,13 @@
 /*jslint */
 /*global window, global */
 
+var modules = {};
+
 (function () {
 
     "use strict";
 
-    var modules = {},
-        config = {},
+    var config = {},
         cwd = [],
         locks = [];
 
@@ -76,7 +77,41 @@
         }
     }
 
+    var defineIndex = 0;
+
     function define(module, dependency, callback) {
+        var names;
+        var index;
+        var length;
+
+        function call(module) {
+            var name;
+            var index;
+            var position;
+            var names;
+            var length;
+            if (!module.inited) {
+                names = Object.keys(modules);
+                length = module.dependency.length;
+                for (index = 0; index < length; index++) {
+                    name = module.dependency[index];
+                    position = names.indexOf(name);
+                    if (position === -1) {
+                        break;
+                    }
+                    if (!modules[name].dependency.length) {
+                        break;
+                    }
+                    module.dependency.splice(position, 1);
+                }
+                if (!module.dependency.length && !module.inited) {
+                    module.inited = true;
+                    //console.log("%d. call: %s", ++defineIndex, module.name);
+                    callback.call(null, module, createRequire(module.name));
+                }
+            }
+        }
+
         if (typeof module !== "string") {
             throw new Error("bal bla bla");
         }
@@ -85,33 +120,23 @@
         /*if (modules[module]) {
             throw new Error("Module " + JSON.stringify(module) + " already defined.");
         }*/
+        console.log("%d. define: %s", ++defineIndex, module);
         modules[module] = {
             name       : module,
             dependency : dependency,
             callback   : callback,
-            exports    : null
+            exports    : {},
+            inited     : false
         };
-        var names = Object.keys(modules);
-        if (!dependency.length) {
-            callback.call(null, modules[module], createRequire(module));
-            var name;
-            var index;
-            var length = names.length;
-            for (index = 0; index < length; index++) {
-                name = names[index];
-                var position = modules[name].dependency.indexOf(module);
-                if (position === -1) {
-                    continue;
-                }
-                modules[name].dependency.splice(position, 1);
-                if (!modules[name].dependency.length) {
-                    modules[name].callback.call(null, modules[name], createRequire(name));
-                }
-            }
-        } else {
-            length = dependency.length;
-            for (index = 0; index < length; index++) {
-            }
+
+        call(modules[module]);
+
+
+        names = Object.keys(modules);
+        length = names.length;
+
+        for (index = 0; index < length; index++) {
+            call(modules[names[index]]);
         }
     }
 
