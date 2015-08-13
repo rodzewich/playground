@@ -1,8 +1,8 @@
 /// <reference path="../daemon/IDaemon.ts" />
-/// <reference path="./Daemon.ts" />
+/// <reference path="../daemon/Daemon.ts" />
 
-import IDaemon = require("../IDaemon");
-import Daemon = require("./Daemon");
+import IDaemon = require("./daemon/IDaemon");
+import Daemon = require("./daemon/Daemon");
 
 if (process.argv.length !== 3) {
     throw new Error("bla bla bla");

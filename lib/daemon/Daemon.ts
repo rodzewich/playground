@@ -100,3 +100,5 @@ class Daemon implements IDaemon {
     }
 
 }
+
+export = Daemon;

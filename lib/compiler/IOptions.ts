@@ -3,4 +3,4 @@ interface IOptions {
     useCache?: boolean;
 }
 
-//export = IOptions;
+export = IOptions;
