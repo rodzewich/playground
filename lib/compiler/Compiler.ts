@@ -11,15 +11,15 @@ class Compiler implements ICompiler {
         this.setMemoryLocation(options.memoryLocation);
     }
 
-    setMemoryLocation(value: string): void {
+    protected setMemoryLocation(value: string): void {
         this._memoryLocation = String(value);
     }
 
-    getMemoryLocation(): string {
+    protected getMemoryLocation(): string {
         return this._memoryLocation;
     }
 
-    public compile(filename:string, callback:(error?:Error, data:any) => void):void {
+    public compile(filename:string, callback:(error?:Error, data?:any) => void):void {
     }
 
 }
