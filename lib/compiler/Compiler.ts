@@ -1,3 +1,4 @@
+/*
 /// <reference path="./ICompiler.ts" />
 
 import ICompiler = require("./ICompiler");
@@ -23,3 +24,4 @@ class Compiler implements ICompiler {
     }
 
 }
+*/
