@@ -1,5 +1,6 @@
 /// <reference path="../daemon/IDaemon.ts" />
 /// <reference path="../daemon/Daemon.ts" />
+/// <reference path="../node.d.ts" />
 
 import IDaemon = require("./daemon/IDaemon");
 import Daemon = require("./daemon/Daemon");
@@ -11,6 +12,7 @@ if (process.argv.length !== 3) {
 var daemon:IDaemon = new Daemon({
     location: process.argv[2]
 });
+
 daemon.start((error:Error):void => {
     // todo: log info
 });
