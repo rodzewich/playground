@@ -15,6 +15,7 @@ tsc --preserveConstEnums --target es5 --module commonjs lib/memory/daemon/IOptio
 tsc --preserveConstEnums --target es5 --module commonjs lib/memory/daemon/IDaemon.ts
 tsc --preserveConstEnums --target es5 --module commonjs lib/memory/daemon/Daemon.ts
 tsc --preserveConstEnums --target es5 --module commonjs lib/memory/daemon.ts
+tsc --preserveConstEnums --target es5 --module commonjs lib/memory/init.ts
 
 tsc --preserveConstEnums --target es5 --module commonjs lib/client/IOptions.ts
 tsc --preserveConstEnums --target es5 --module commonjs lib/client/IClient.ts
