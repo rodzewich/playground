@@ -7,10 +7,10 @@ import IDaemon = require("./daemon/IDaemon");
 import Daemon = require("./daemon/Daemon");
 import optimist = require("optimist");
 
-var argv = require('optimist')
-    .usage('Usage: $0 -x [num] -y [num]')
-    .demand(['x','y'])
-    .argv;
+var argv = require('optimist').
+    usage('Usage: $0 -x [num] -y [num]').
+    demand(['x', 'y']).
+    argv;
 
 if (process.argv.length !== 3) {
     throw new Error("bla bla bla");
