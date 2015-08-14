@@ -61,38 +61,37 @@ class Daemon extends AbstractDaemon implements IDaemon {
                     response.result = this.getKeys();
                     break;
                 case "getItem":
-                    response.result = this.getItem(request);
+                    //response.result = this.getItem(request);
                     break;
                 case "getItems":
-                    response.result = this.getItems(request);
+                    //response.result = this.getItems(request);
                     break;
                 case "hasItem":
-                    response.result = this.hasItem(request);
+                    //response.result = this.hasItem(request);
                     break;
                 case "hasItems":
-                    response.result = this.hasItems(request);
+                    //response.result = this.hasItems(request);
                     break;
                 case "setItem":
-                    response.result = this.setItem(request);
+                    //response.result = this.setItem(request);
                     break;
                 case "setItems":
-                    response.result = this.setItems(request);
+                    //response.result = this.setItems(request);
                     break;
                 case "removeItem":
-                    response.result = this.removeItem(request);
+                    //response.result = this.removeItem(request);
                     break;
                 case "removeItems":
-                    response.result = this.removeItems(request);
+                    //response.result = this.removeItems(request);
                     break;
                 case "lock":
-                    response.result = this.lock(request);
+                    //response.result = this.lock(request);
                     break;
                 case "unlock":
-                    response.result = this.unlock(request);
+                    //response.result = this.unlock(request);
                     break;
                 default:
                     response.result = null;
-                    response.error = "Command not found!";
                     break;
             }
             callback(response);
