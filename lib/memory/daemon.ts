@@ -13,6 +13,8 @@ var daemon:IDaemon = new Daemon({
     location: process.argv[2]
 });
 
+// todo: using optimist module
+
 daemon.start((error:Error):void => {
     // todo: log info
 });
