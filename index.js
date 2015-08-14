@@ -21,16 +21,15 @@ var fs     = require("fs"),
     spawn = require("child_process").spawn,
     charset;
 
-var routers = {
-    typescript : require("./routers/typescript"),
-    /*stylus     : require("./routers/stylus"),*/
-    less       : require("./routers/less"),
-    soy : require("./routers/soy")
-};
-
-var initialization = {
-    memory: require("./lib/memory/initialization")
-};
+var routers        = {
+        typescript : require("./routers/typescript"),
+        /*stylus     : require("./routers/stylus"),*/
+        less       : require("./routers/less"),
+        soy        : require("./routers/soy")
+    },
+    initialization = {
+        memory : require("./lib/memory/initialization")
+    };
 
 var staticContent = require("./lib/staticContent");
 
