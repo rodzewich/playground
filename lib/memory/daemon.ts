@@ -14,6 +14,21 @@ var daemon:IDaemon = new Daemon({
 });
 
 // todo: using optimist module
+/*
+nginx version: nginx/1.6.2 (Ubuntu)
+Usage: nginx [-?hvVtq] [-s signal] [-c filename] [-p prefix] [-g directives]
+
+Options:
+-?,-h         : this help
+-v            : show version and exit
+-V            : show version and configure options then exit
+-t            : test configuration and exit
+-q            : suppress non-error messages during configuration testing
+-s signal     : send signal to a master process: stop, quit, reopen, reload
+-p prefix     : set prefix path (default: /usr/share/nginx/)
+-c filename   : set configuration file (default: /etc/nginx/nginx.conf)
+-g directives : set global directives out of configuration file
+*/
 
 daemon.start((error:Error):void => {
     // todo: log info
