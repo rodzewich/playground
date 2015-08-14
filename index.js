@@ -28,6 +28,10 @@ var routers = {
     soy : require("./routers/soy")
 };
 
+var initialization = {
+    memory: require("./lib/memory/initialization")
+};
+
 var staticContent = require("./lib/staticContent");
 
 function htmlEntities(str) {
@@ -64,21 +68,6 @@ project = "../playground";
 
 var temporaryDirectory = "/home/rodzewich/Projects/playground/temp";
 var memorySocketAddress = path.join(temporaryDirectory, "memory.sock");
-
-function initMemory(callback) {
-    var proc = spawn(process.execPath, [path.join(__dirname, "./lib/memory/WorkerProcess.js"), memorySocketAddress]);
-    proc.stderr.on("data", function (data) {
-        console.log(("Memory socket say:\n" + data.toString("utf8")).red);
-    });
-    proc.stdout.on("data", function (data) {
-        console.log(("Memory socket say:\n" + data.toString("utf8")).green);
-    });
-    setTimeout(function () {
-        console.log("created memory socket");
-        callback();
-    }, 300);
-}
-
 
 function initTypescript(callback) {
     if (processingTypescript) {
@@ -158,7 +147,14 @@ deferred([
 
     function (next) {
         parallel([
-                initMemory,
+                function (done) {
+                    initialization.memory(memorySocketAddress, function (error) {
+                        // todo: обрабатывать ошибки
+                        if (!error) {
+                            done();
+                        }
+                    });
+                },
                 initTypescript,
                 initLess,
                 initSoy
