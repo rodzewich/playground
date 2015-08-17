@@ -2,6 +2,7 @@
   "version": "0.0.1",
   "description": "bla bla bla",
   "dependencies": {
+    "blessed": "^0.1.80",
     "colors": "^1.1.2",
     "ejs": "^2.3.3",
     "glob": "^5.0.14",

@@ -21,5 +21,9 @@ tsc --preserveConstEnums --target es5 --module commonjs lib/client/IOptions.ts
 tsc --preserveConstEnums --target es5 --module commonjs lib/client/IClient.ts
 tsc --preserveConstEnums --target es5 --module commonjs lib/client/Client.ts
 
+tsc --preserveConstEnums --target es5 --module commonjs lib/CommonError.ts
+
+tsc --preserveConstEnums --target es5 --module commonjs logger.ts
+
 
 #node ./index.js

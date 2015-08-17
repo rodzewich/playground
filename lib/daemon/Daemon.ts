@@ -1,5 +1,5 @@
 /// <reference path="./IDaemon.ts" />
-/// <reference path="./../node.d.ts" />
+/// <reference path="../../types/node/node.d.ts" />
 
 import IDaemon = require("./IDaemon");
 import IOptions = require("./IOptions");
@@ -26,7 +26,7 @@ class Daemon implements IDaemon {
         return this._location;
     }
 
-    protected requestHandler(request:any, callback:(response:any) => void):void {
+    protected handler(request:any, callback:(response:any) => void):void {
         var id:number;
         if (!request) {
             setTimeout(():void => {
@@ -73,7 +73,7 @@ class Daemon implements IDaemon {
                         if (index !== -1) {
                             request = str.slice(0, index + 1);
                             data = data.slice((new Buffer(request, "utf8")).length + 1);
-                            this.requestHandler(parseRequest(request), (response:any):void => {
+                            this.handler(parseRequest(request), (response:any):void => {
                                 socket.write(JSON.stringify(response));
                                 socket.write("\n");
                             });

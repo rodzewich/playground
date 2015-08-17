@@ -140,6 +140,36 @@ function initSoy(callback) {
     }
 }
 
+
+var MemoryClient = require("./lib/memory/client/Client");
+var memory = new MemoryClient({location: memorySocketAddress});
+deferred([
+    cleanTemp,
+    function (next) {
+        initialization.memory(memorySocketAddress, function (error) {
+            next();
+        });
+    },
+    function (next) {
+        memory.connect(function () {
+            next();
+        });
+    },
+    function (next) {
+        memory.setItem("myKey", "myValue", function () {
+            next();
+        })
+    },
+    function () {
+        memory.getItem("myKey", function (error, value) {
+            console.log("error", error);
+            console.log("value", value);
+        })
+    }
+]);
+
+return;
+
 deferred([
 
     cleanTemp,
@@ -149,9 +179,32 @@ deferred([
                 function (done) {
                     initialization.memory(memorySocketAddress, function (error) {
                         // todo: обрабатывать ошибки
-                        if (!error) {
+                        /*if (!error) {
                             done();
-                        }
+                        }*/
+
+                        var MemoryClient = require("./lib/memory/client/Client");
+                        var memory = new MemoryClient({location : memorySocketAddress});
+
+                        deferred([
+                            function(next) {
+                                memory.connect(function () {
+                                    next();
+                                });
+                            },
+                            function(next) {
+                                memory.setItem("myKey", "myValue", function (error) {
+                                    next();
+                                });
+                            },
+                            function() {
+                                memory.setItem("myKey", function (error, value) {
+                                    console.log("error", error);
+                                    console.log("value", value);
+                                });
+                            }
+                        ]);
+
                     });
                 },
                 initTypescript,

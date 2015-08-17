@@ -8,93 +8,227 @@ import IOptions = require("./IOptions");
 
 class Daemon extends AbstractDaemon implements IDaemon {
 
+    private _memory: any = {};
+
+    private _locks:any = {};
+
+    private _queues:any = {};
+
     constructor(options: IOptions) {
         super(options);
     }
 
-    protected getLength(): number {
+    protected getItem(namespace:string, key:string):any {
+        if (this._memory[namespace] && typeof this._memory[namespace][key] !== "undefined") {
+            return this._memory[namespace][key];
+        }
         return null;
     }
 
-    protected getKey(index: number): string {
-        return null;
+    protected getItems(namespace:string, keys:string[]):any {
+        var index:number,
+            length = keys.length,
+            result:any = {};
+        for (index = 0; index < length; index++) {
+            if (!this._memory[namespace]) {
+                result[keys[index]] = null;
+                continue;
+            }
+            result[keys[index]] = this._memory[namespace][keys[index]] || null;
+        }
+        return result;
     }
 
-    protected getKeys() {
-
+    protected setItem(namespace:string, key:string, value:any):void {
+        if (!this._memory[namespace]) {
+            this._memory[namespace] = {};
+        }
+        this._memory[namespace][key] = value;
     }
 
-    protected getItem() {
-
+    protected setItems(namespace:string, data:any):void {
+        var property: string;
+        if (!this._memory[namespace]) {
+            this._memory[namespace] = {};
+        }
+        for (property in data) {
+            if (!data.hasOwnProperty(property)) {
+                continue;
+            }
+            this._memory[namespace][property] = data[property];
+        }
     }
 
-    protected getItems() {}
+    protected removeItem(namespace:string, key:string):void {
+        if (this._memory[namespace]) {
+            delete this._memory[namespace][key];
+        }
+    }
 
-    protected hasItem() {}
+    protected removeItems(namespace:string, keys:string[]):void {
+        var index: number,
+            length: number;
+        if (this._memory[namespace]) {
+            length = keys.length;
+            for (index = 0; index < length; index++) {
+                delete this._memory[namespace][keys[index]];
+            }
+        }
+    }
 
-    protected hasItems() {}
+    protected hasItem(namespace:string, key:string):boolean {
+        return !!(this._memory[namespace] && this._memory[namespace][key]);
+    }
 
-    protected setItem() {}
+    protected hasItems(namespace:string, keys:string[]):boolean[] {
+        var index:number,
+            length:number = keys.length,
+            result:any = {};
+        for (index = 0; index < length; index++) {
+            if (!this._memory[namespace]) {
+                result[keys[index]] = false;
+                continue;
+            }
+            result[keys[index]] = typeof this._memory[namespace][keys[index]] !== "undefined";
+        }
+        return result;
+    }
 
-    protected setItems() {}
+    protected getKey(namespace:string, index:number):string {
+        if (!this._memory[namespace]) {
+            return null;
+        }
+        return Object.keys(this._memory[namespace])[index];
+    }
 
-    protected removeItem() {}
+    protected getKeys(namespace:string, indexes:number[]):string[] {
+        var index:number,
+            length:number = indexes.length,
+            result:string[] = [],
+            keys:string[] = Object.keys(this._memory[namespace]);
+        for (index = 0; index < length; index++) {
+            result.push(keys[index] || null);
+        }
+        return result;
+    }
 
-    protected removeItems() {}
+    protected getLength(namespace:string):number {
+        if (!this._memory[namespace]) {
+            return 0;
+        }
+        return Object.keys(this._memory[namespace]).length;
+    }
 
-    protected lock() {}
+    protected lock(namespace:string, key:string, callback:(error?:Error) => void):void {
+        if (!this._locks[namespace]) {
+            this._locks[namespace] = {};
+        }
+        if (!this._queues[namespace]) {
+            this._queues[namespace] = {};
+        }
+        if (this._locks[namespace][key]) {
+            if (!this._queues[namespace][key]) {
+                this._queues[namespace][key] = [];
+            }
+            (<any[]>this._queues[namespace][key]).push(callback);
+        } else {
+            this._locks[namespace][key] = true;
+            callback(null);
+        }
+    }
 
-    protected unlock() {}
+    protected unlock(namespace:string, key:string):void {
+        var callback:(error?:Error) => void;
+        if (this._locks[namespace]) {
+            delete this._locks[namespace][key];
+        }
+        if (this._queues[namespace][key]) {
+            callback = (<((error?:Error) => void)[]>this._queues[namespace][key]).shift();
+            if (typeof callback === "function") {
+                this._locks[namespace][key] = true;
+                callback(null);
+            }
+            if (!(<((error?:Error) => void)[]>this._queues[namespace][key]).length) {
+                delete this._queues[namespace][key];
+            }
+        }
+    }
 
-    protected requestHandler(request:any, callback:(response:any) => void):void {
-        super.requestHandler(request, (response:any) => {
-            var command:string = request.command,
-                args:any[] = request.arguments;
+    protected handler(request:any, callback:(response:any) => void):void {
+        super.handler(request, (response:any) => {
+            var args: any[] = request.args || [],
+                namespace: string = <string>args.shift(),
+                command: string = <string>args.shift();
             switch (command) {
-                case "getLength":
-                    response.result = this.getLength();
-                    break;
-                case "getKey":
-                    response.result = this.getKey(<number>args[0]);
-                    break;
-                case "getKeys":
-                    response.result = this.getKeys();
-                    break;
                 case "getItem":
-                    //response.result = this.getItem(request);
+                    response.result = this.getItem(namespace, <string>args[0]);
+                    callback(response);
                     break;
                 case "getItems":
-                    //response.result = this.getItems(request);
-                    break;
-                case "hasItem":
-                    //response.result = this.hasItem(request);
-                    break;
-                case "hasItems":
-                    //response.result = this.hasItems(request);
+                    response.result = this.getItems(namespace, <string[]>args[0]);
+                    callback(response);
                     break;
                 case "setItem":
-                    //response.result = this.setItem(request);
+                    response.result = null;
+                    this.setItem(namespace, <string>args[0], <any>args[1]);
+                    callback(response);
                     break;
                 case "setItems":
-                    //response.result = this.setItems(request);
+                    response.result = null;
+                    this.setItems(namespace, <any>args[0]);
+                    callback(response);
                     break;
                 case "removeItem":
-                    //response.result = this.removeItem(request);
+                    response.result = null;
+                    this.removeItem(namespace, <string>args[0]);
+                    callback(response);
                     break;
                 case "removeItems":
-                    //response.result = this.removeItems(request);
+                    response.result = null;
+                    this.removeItems(namespace, <string[]>args[0]);
+                    callback(response);
+                    break;
+                case "hasItem":
+                    response.result = this.hasItem(namespace, <string>args[0]);
+                    callback(response);
+                    break;
+                case "hasItems":
+                    response.result = this.hasItems(namespace, <string[]>args[0]);
+                    callback(response);
+                    break;
+                case "getKey":
+                    response.result = this.getKey(namespace, <number>args[0]);
+                    callback(response);
+                    break;
+                case "getKeys":
+                    response.result = this.getKeys(namespace, <number[]>args[0]);
+                    callback(response);
+                    break;
+                case "getLength":
+                    response.result = this.getLength(namespace);
+                    callback(response);
                     break;
                 case "lock":
-                    //response.result = this.lock(request);
+                    response.result = null;
+                    this.lock(namespace, <string>args[0], (error?:Error):void => {
+                        if (error) {
+                            response.error = error;
+                        }
+                        callback(response);
+                    });
                     break;
                 case "unlock":
-                    //response.result = this.unlock(request);
+                    response.result = null;
+                    this.unlock(namespace, <string>args[0]);
                     break;
                 default:
-                    response.result = null;
+                    // todo: use CommonError
+                    response.error = {
+                        message: "Command not found"
+                    };
+                    callback(response);
                     break;
             }
-            callback(response);
         });
     }
 
