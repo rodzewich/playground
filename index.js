@@ -14,18 +14,18 @@ var fs                   = require("fs"),
     deferred             = require("./lib/deferred"),
     parallel             = require("./lib/parallel"),
     configure            = require("./lib/configure"),
-    processingTypescript = true,
+    processingTypescript = false,
     processingLess       = true,
     processingStylus     = false,
-    processingSoy        = true,
+    processingSoy        = false,
     spawn                = require("child_process").spawn,
     charset;
 
 var routers = {
-        typescript : require("./routers/typescript"),
+        /*typescript : require("./routers/typescript"),*/
         /*stylus     : require("./routers/stylus"),*/
         less       : require("./routers/less"),
-        soy        : require("./routers/soy")
+        /*soy        : require("./routers/soy")*/
     },
     initialization = {
         memory : require("./lib/memory/initialization")
@@ -155,9 +155,9 @@ deferred([
                         }
                     });
                 },
-                initTypescript,
+                /*initTypescript,*/
                 initLess,
-                initSoy
+                /*initSoy*/
             ],
             function () {
                 next();
