@@ -6,6 +6,13 @@
       "filename": "logs/worker.log",
       "maxLogSize": 20480,
       "category": "worker"
+    },
+    {
+      "type": "file",
+      "absolute": false,
+      "filename": "logs/client.log",
+      "maxLogSize": 20480,
+      "category": "client"
     }
   ]
 }
