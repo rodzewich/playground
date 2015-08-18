@@ -60,43 +60,36 @@ class Manger implements IManager {
     private _pool:IClient[] = [];
 
     connect(callback:(error?:Error) => void):void {
-        var errors: Error[] = [],
-            actions;
-        var index;
+        var errors:Error[] = [],
+            actions:((done:() => void) => void)[] = [],
+            numberOfProcesses: number = this.getNumberOfProcesses(),
+            processNumber:number;
 
-        var createClient:(processNumber:number, done:() => void) => void = (done:() => void):void => {
-            var client:IClient = this.createClient(this.formatLocationById(processNumber));
-            client.connect((error?:Error):void => {
-                if (!error) {
-                    this._pool.push(client);
-                } else {
-                    errors.push(error);
-                }
-                done();
-            })
+        var createAction:(processNumber:number) => ((done:() => void) => void) = (processNumber:number):((done:() => void) => void) => {
+            return (done:() => void):void => {
+                var client:IClient = this.createClient(this.formatLocationById(processNumber));
+                client.connect((error?:Error):void => {
+                    if (!error) {
+                        this._pool.push(client);
+                    } else {
+                        errors.push(error);
+                    }
+                    done();
+                })
+            };
         };
-        
-        if (typeOf(callback) === "function") {
-            self.once("connect", callback);
-        }
+
+
         if (!lock && !connected) {
             lock    = true;
-            errors  = [];
-            actions = [];
-            for (index = 0; index < numberOfProcesses; index++) {
-                actions.push(createClient);
+            for (processNumber = 0; processNumber < numberOfProcesses; processNumber++) {
+                actions.push(createAction(processNumber));
             }
             parallel(actions, function () {
                 if (!errors.length) {
                     lock = false;
                     connected = true;
                     self.emit("connect", null);
-                } else {
-                    self.destroy(function () {
-                        lock = false;
-                        connected = false;
-                        self.emit("connect", errors);
-                    });
                 }
             });
         } else if (connected) {
