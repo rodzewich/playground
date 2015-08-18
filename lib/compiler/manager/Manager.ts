@@ -3,6 +3,7 @@
 /// <reference path="../../client/IClient.ts" />
 /// <reference path="../client/Client.ts" />
 /// <reference path="../../parallel.ts" />
+/// <reference path="../../deferred.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
 
 import IManager = require("./IManager");
@@ -11,6 +12,7 @@ import IClient = require("../client/IClient");
 import Client = require("../client/Client");
 import path = require("path");
 import parallel = require("../../parallel");
+import deferred = require("../../deferred");
 
 class Manager implements IManager {
 
@@ -90,8 +92,8 @@ class Manager implements IManager {
                 });
             },
             ():void => {
-                this.pull((client: IClient):void =>  {
-                    client.compile(filename, (errors?: Error[], result: any): void => {
+                this.pull((client:IClient):void => {
+                    client.compile(filename, (errors?:Error[], result?:any):void => {
                         this.push(client);
                         if (typeof callback === "function") {
                             callback(errors && errors.length ? errors : null, result || null);
@@ -159,7 +161,7 @@ class Manager implements IManager {
                     callback(errors);
                 }
                 for (index = 0; index < length; index++) {
-                    element = this._connectionQueue.unshift();
+                    element = this._connectionQueue.shift();
                     handler(element);
                 }
             });
