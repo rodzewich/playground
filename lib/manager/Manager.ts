@@ -97,7 +97,6 @@ class Manger implements IManager {
                     })
                 };
             };
-
         if (this._connected) {
             setTimeout((): void => {
                 if (typeof callback === "function") {
