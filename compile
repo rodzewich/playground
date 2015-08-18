@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 for item in $(find ${PWD}/lib -type f | grep "\.ts$" | sort); do
-    tsc --preserveConstEnums --target es5 --module commonjs $item;
+    tsc --newLine LF --noImplicitAny --removeComments --preserveConstEnums --target es5 --module commonjs $item;
 done

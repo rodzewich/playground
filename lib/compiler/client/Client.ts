@@ -12,7 +12,7 @@ class Client extends AbstractClient implements IClient {
         super(options);
     }
 
-    compile(callback:(errors?:Error[], result:any) => void):void {
+    compile(callback:(errors?:Error[], result?:any) => void):void {
         setTimeout(():void => {
             if (typeof callback === "function") {
                 callback(null, null);
