@@ -55,6 +55,20 @@ class Manger implements IManager {
     }
 
     public compile(filename:string, callback:(errors?:Error[], result:any) => void):void {
+        deferred([
+            (next:() => void):void => {
+                this.connect((errors?:Error[]):void => {
+                    if (errors && errors.length) {
+                        callback(errors, null);
+                    } else {
+                        next();
+                    }
+                });
+            },
+            (next:() => void):void => {
+                // todo: do compile
+            }
+        ]);
     }
 
     private _clients:IClient[] = [];
@@ -129,7 +143,7 @@ class Manger implements IManager {
         }
     }
 
-    disconnect(callback:(errors?:Error[]) => void):void {
+    public disconnect(callback:(errors?:Error[]) => void):void {
     }
 
 }
