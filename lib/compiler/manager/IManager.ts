@@ -1,4 +1,4 @@
-/// <reference path="../client/IClient.ts" />
+/// <reference path="../../client/IClient.ts" />
 
 import IClient = require("../client/IClient");
 
