@@ -66,19 +66,38 @@ class Manager implements IManager {
         return this._location;
     }
 
+    protected pull(callback:(client:IClient) => void):void {
+    }
+
+    protected push(client:IClient):void {
+        if (this._clients.indexOf(client) !== -1 &&
+            this._pool.indexOf(client) === -1) {
+            this._pool.push(client);
+        }
+    }
+
     public compile(filename:string, callback:(errors?:Error[], result:any) => void):void {
         deferred([
             (next:() => void):void => {
                 this.connect((errors?:Error[]):void => {
                     if (errors && errors.length) {
-                        callback(errors, null);
+                        if (typeof callback === "function") {
+                            callback(errors, null);
+                        }
                     } else {
                         next();
                     }
                 });
             },
-            (next:() => void):void => {
-                // todo: do compile
+            ():void => {
+                this.pull((client: IClient):void =>  {
+                    client.compile((errors?: Error[], result: any): void => {
+                        this.push(client);
+                        if (typeof callback === "function") {
+                            callback(errors && errors.length ? errors : null, result || null);
+                        }
+                    });
+                });
             }
         ]);
     }
