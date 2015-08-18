@@ -67,7 +67,13 @@ class Manger implements IManager {
         this._pool.push(client);
     }
 
-    connect(callback:(error?:Error) => void):void {
+    private _connecting:boolean = false;
+
+    private _connected:boolean = false;
+
+    private _connectionQueue:((errors?:Error[]) => void)[] = [];
+
+    public connect(callback:(errors?:Error[]) => void):void {
         var errors:Error[] = [],
             actions:((done:() => void) => void)[] = [],
             numberOfProcesses:number = this.getNumberOfProcesses(),
@@ -85,6 +91,20 @@ class Manger implements IManager {
                     })
                 };
             };
+
+        if (this._connected) {
+            setTimeout((): void => {
+                if (typeof callback === "function") {
+                    callback(null);
+                }
+            }, 0);
+        } else if (this._connecting) {
+            if (typeof callback === "function") {
+                this._connectionQueue.push(callback);
+            }
+        } else {
+
+        }
 
 
         if (!lock && !connected) {
