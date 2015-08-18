@@ -54,18 +54,10 @@ class Manger implements IManager {
         return this._location;
     }
 
-    public compile(filename:string, callback:(error?:Error, result:any) => void):void {
+    public compile(filename:string, callback:(errors?:Error[], result:any) => void):void {
     }
 
-    private _pool:IClient[] = [];
-
-    public getClient(callback: (client: IClient) => void): void {
-
-    }
-
-    public putClient(client: IClient): void {
-        this._pool.push(client);
-    }
+    private _clients:IClient[] = [];
 
     private _connecting:boolean = false;
 
@@ -83,7 +75,7 @@ class Manger implements IManager {
                     var client:IClient = this.createClient(this.formatLocationById(processNumber));
                     client.connect((error?:Error):void => {
                         if (!error) {
-                            this.putClient(client);
+                            this._clients.push(client);
                         } else {
                             errors.push(error);
                         }
@@ -124,7 +116,7 @@ class Manger implements IManager {
         }
     }
 
-    disconnect(callback:(error?:Error) => void):void {
+    disconnect(callback:(errors?:Error[]) => void):void {
     }
 
 }
