@@ -1,11 +1,6 @@
-/*jslint */
-/*global module */
-
-"use strict";
-
 function parallel(actions:((done:() => void) => void)[], complete:() => void) {
     var index:number,
-        temp,
+        temp:(done:() => void) => void,
         length: number,
         type:string = Object.prototype.toString.call(actions),
         count1:number = 0,

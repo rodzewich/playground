@@ -2,6 +2,7 @@
 /// <reference path="./IOptions.ts" />
 /// <reference path="../client/IClient.ts" />
 /// <reference path="../client/Client.ts" />
+/// <reference path="../parallel.ts" />
 /// <reference path="../../types/node/node.d.ts" />
 
 import IManager = require("./IManager");
@@ -9,6 +10,7 @@ import IOptions = require("./IOptions");
 import IClient = require("../client/IClient");
 import Client = require("../client/Client");
 import path = require("path");
+import parallel = require("../parallel");
 
 class Manager implements IManager {
 
