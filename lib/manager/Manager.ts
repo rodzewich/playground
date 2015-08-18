@@ -59,25 +59,32 @@ class Manger implements IManager {
 
     private _pool:IClient[] = [];
 
+    public getClient(callback: (client: IClient) => void): void {
+
+    }
+
+    public putClient(client: IClient): void {
+        this._pool.push(client);
+    }
+
     connect(callback:(error?:Error) => void):void {
         var errors:Error[] = [],
             actions:((done:() => void) => void)[] = [],
-            numberOfProcesses: number = this.getNumberOfProcesses(),
-            processNumber:number;
-
-        var createAction:(processNumber:number) => ((done:() => void) => void) = (processNumber:number):((done:() => void) => void) => {
-            return (done:() => void):void => {
-                var client:IClient = this.createClient(this.formatLocationById(processNumber));
-                client.connect((error?:Error):void => {
-                    if (!error) {
-                        this._pool.push(client);
-                    } else {
-                        errors.push(error);
-                    }
-                    done();
-                })
+            numberOfProcesses:number = this.getNumberOfProcesses(),
+            processNumber:number,
+            createAction:(processNumber:number) => ((done:() => void) => void) = (processNumber:number):((done:() => void) => void) => {
+                return (done:() => void):void => {
+                    var client:IClient = this.createClient(this.formatLocationById(processNumber));
+                    client.connect((error?:Error):void => {
+                        if (!error) {
+                            this.putClient(client);
+                        } else {
+                            errors.push(error);
+                        }
+                        done();
+                    })
+                };
             };
-        };
 
 
         if (!lock && !connected) {
