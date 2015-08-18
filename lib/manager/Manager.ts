@@ -16,6 +16,16 @@ class Manger implements IManager {
 
     private _numberOfProcesses: number = 1;
 
+    private _pool:IClient[] = [];
+
+    private _clients:IClient[] = [];
+
+    private _connecting:boolean = false;
+
+    private _connected:boolean = false;
+
+    private _connectionQueue:((errors?:Error[]) => void)[] = [];
+
     constructor(options:IOptions) {
         if (options && typeof options.location !== "undefined") {
             this.setLocation(options.location);
@@ -71,14 +81,6 @@ class Manger implements IManager {
         ]);
     }
 
-    private _clients:IClient[] = [];
-
-    private _connecting:boolean = false;
-
-    private _connected:boolean = false;
-
-    private _connectionQueue:((errors?:Error[]) => void)[] = [];
-
     public connect(callback:(errors?:Error[]) => void):void {
         var errors:Error[] = [],
             actions:((done:() => void) => void)[] = [],
@@ -89,6 +91,7 @@ class Manger implements IManager {
                     var client:IClient = this.createClient(this.formatLocationById(processNumber));
                     client.connect((error?:Error):void => {
                         if (!error) {
+                            this._pool.push(client);
                             this._clients.push(client);
                         } else {
                             errors.push(error);
