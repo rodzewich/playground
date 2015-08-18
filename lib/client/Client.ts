@@ -34,7 +34,7 @@ class Client implements IClient {
         return this._increment++;
     }
 
-    protected registerHandler(callback:(error?:Error, response?:any) => void): number {
+    protected registerHandler(callback:(errors?:Error[], response?:any) => void): number {
         var id: number = null;
         if (typeof callback === "function") {
             id = this.generateIdentifier();
@@ -43,9 +43,9 @@ class Client implements IClient {
         return id;
     }
 
-    protected findHadlerById(id: number):(error?:Error, response?:any) => void {
+    protected findHandlerById(id: number):(errors?:Error[], response?:any) => void {
         if (this._callbacks[id]) {
-            return this._callbacks[id];
+            return <(errors?:Error[], response?:any) => void>this._callbacks[id];
         }
         return null;
     }
@@ -63,7 +63,7 @@ class Client implements IClient {
         }) + "\n");
     }
 
-    public connect(callback:(error?:Error) => void):void {
+    public connect(callback:(errors?:Error[]) => void):void {
         var data:Buffer = new Buffer(0),
             handler:(error?:Error) => void = (error?:Error):void => {
                 socket.removeListener("error", handler);
@@ -72,7 +72,7 @@ class Client implements IClient {
                 } else {
                     this._started = true;
                 }
-                callback(error || null);
+                callback(error ? [error] : null);
             },
             socket:net.Socket = net.createConnection(this.getLocation(), ():void => {
                 handler(null);
@@ -83,7 +83,7 @@ class Client implements IClient {
                 index:number,
                 response:string,
                 options:any,
-                callback:(error?:Error, response?:any) => void,
+                callback:(errors?:Error[], response?:any) => void,
                 string:string,
                 getOptions:() => any = ():any => {
                     try {
@@ -107,7 +107,7 @@ class Client implements IClient {
                 getCallback:() => ((error?:Error, response?:any) => void) = ():((error?:Error, response?:any) => void) => {
                     var options:any = getOptions(),
                         id:number = <number>options.id;
-                    return this.findHadlerById(id) || null;
+                    return this.findHandlerById(id) || null;
                 };
 
             data = Buffer.concat([data, buffer]);

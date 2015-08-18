@@ -2,15 +2,15 @@
 /// <reference path="./IOptions.ts" />
 /// <reference path="../../client/IClient.ts" />
 /// <reference path="../client/Client.ts" />
-/// <reference path="../parallel.ts" />
-/// <reference path="../../types/node/node.d.ts" />
+/// <reference path="../../parallel.ts" />
+/// <reference path="../../../types/node/node.d.ts" />
 
 import IManager = require("./IManager");
 import IOptions = require("./IOptions");
 import IClient = require("../client/IClient");
 import Client = require("../client/Client");
 import path = require("path");
-import parallel = require("../parallel");
+import parallel = require("../../parallel");
 
 class Manager implements IManager {
 
@@ -76,7 +76,7 @@ class Manager implements IManager {
         }
     }
 
-    public compile(filename:string, callback:(errors?:Error[], result:any) => void):void {
+    public compile(filename:string, callback:(errors?:Error[], result?:any) => void):void {
         deferred([
             (next:() => void):void => {
                 this.connect((errors?:Error[]):void => {
