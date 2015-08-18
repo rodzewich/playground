@@ -91,7 +91,7 @@ class Manager implements IManager {
             },
             ():void => {
                 this.pull((client: IClient):void =>  {
-                    client.compile((errors?: Error[], result: any): void => {
+                    client.compile(filename, (errors?: Error[], result: any): void => {
                         this.push(client);
                         if (typeof callback === "function") {
                             callback(errors && errors.length ? errors : null, result || null);
