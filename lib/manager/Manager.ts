@@ -10,7 +10,7 @@ import IClient = require("../client/IClient");
 import Client = require("../client/Client");
 import path = require("path");
 
-class Manger implements IManager {
+class Manager implements IManager {
 
     private _location: string;
 
@@ -150,4 +150,4 @@ class Manger implements IManager {
 
 }
 
-export = Manger;
+export = Manager;
