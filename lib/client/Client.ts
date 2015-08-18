@@ -5,6 +5,7 @@
 import IClient = require("./IClient");
 import IOptions = require("./IOptions");
 import net = require("net");
+import CommonError = require("../CommonError");
 
 class Client implements IClient {
 
@@ -50,7 +51,7 @@ class Client implements IClient {
         return null;
     }
 
-    protected call(callback:(error?:Error, response?:any) => void, ...args:any[]):void {
+    protected call(callback:(errors?:Error[], response?:any) => void, ...args:any[]):void {
         if (!this._socket) {
             throw new Error("bla bla bla");
         }
@@ -92,19 +93,25 @@ class Client implements IClient {
                         return {};
                     }
                 },
-                getError:() => Error = ():Error => {
-                    var options:any = getOptions(),
-                        error:any = options.error;
-                    if (error) {
-                        return new Error(error.message); // todo: писать правильную ошибку
+                getErrors:() => Error[] = ():Error[] => {
+                    var index:number,
+                        length:number,
+                        result:Error[] = [],
+                        options:any = getOptions(),
+                        errors:any[] = <any[]>options.errors;
+                    if (errors && errors.length) {
+                        length = errors.length;
+                        for (index = 0; index < length; index++) {
+                            result.push(new CommonError(errors[index]));
+                        }
                     }
-                    return null;
+                    return result.length ? result : null;
                 },
                 getResult:() => any = ():any => {
                     var options:any = getOptions();
                     return options.result || null;
                 },
-                getCallback:() => ((error?:Error, response?:any) => void) = ():((error?:Error, response?:any) => void) => {
+                getCallback:() => ((errors?:Error[], response?:any) => void) = ():((errors?:Error[], response?:any) => void) => {
                     var options:any = getOptions(),
                         id:number = <number>options.id;
                     return this.findHandlerById(id) || null;
@@ -118,7 +125,7 @@ class Client implements IClient {
                     response = string.slice(0, index + 1);
                     callback = getCallback();
                     if (typeof callback === "function") {
-                        callback(getError(), getResult());
+                        callback(getErrors(), getResult());
                     }
                     data = data.slice((new Buffer(response, "utf8")).length + 1);
                 }
@@ -128,7 +135,7 @@ class Client implements IClient {
         this._socket = socket;
     }
 
-    public disconnect(callback:(error?:Error) => void):void {
+    public disconnect(callback:(errors?:Error[]) => void):void {
         // todo: реализовать потом
         setTimeout(():void => {
             callback(null);

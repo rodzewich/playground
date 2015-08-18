@@ -110,12 +110,12 @@ class Manager implements IManager {
             createAction:(processNumber:number) => ((done:() => void) => void) = (processNumber:number):((done:() => void) => void) => {
                 return (done:() => void):void => {
                     var client:IClient = this.createClient(this.formatLocationById(processNumber));
-                    client.connect((error?:Error):void => {
-                        if (!error) {
+                    client.connect((errs?:Error[]):void => {
+                        if (!errors || !errors.length) {
                             this._pool.push(client);
                             this._clients.push(client);
                         } else {
-                            errors.push(error);
+                            errors.concat(errs);
                         }
                         done();
                     })
@@ -167,6 +167,17 @@ class Manager implements IManager {
     }
 
     public disconnect(callback:(errors?:Error[]) => void):void {
+        if (this._connected) {
+
+        } else if (this._connecting) {
+
+        } else {
+            setTimeout(():void => {
+                if (typeof callback === "function") {
+                    callback(null);
+                }
+            }, 0);
+        }
     }
 
 }
