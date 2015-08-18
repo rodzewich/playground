@@ -95,24 +95,37 @@ class Manger implements IManager {
                 this._connectionQueue.push(callback);
             }
         } else {
-
-        }
-
-
-        if (!lock && !connected) {
-            lock    = true;
+            this._connecting = true;
             for (processNumber = 0; processNumber < numberOfProcesses; processNumber++) {
                 actions.push(createAction(processNumber));
             }
-            parallel(actions, function () {
+            parallel(actions, (): void => {
+                var index:number,
+                    length:number = this._connectionQueue.length,
+                    element:(errors?:Error[]) => void,
+                    handler:(element:(errors?:Error[]) => void) => void = (element:(errors?:Error[]) => void):void => {
+                        setTimeout((): void => {
+                            if (!errors.length) {
+                                element(null);
+                            } else {
+                                element(errors);
+                            }
+                        }, 0);
+                    };
+
+                this._connecting = false;
                 if (!errors.length) {
-                    lock = false;
-                    connected = true;
-                    self.emit("connect", null);
+                    this._connected = true;
+                    callback(null);
+                } else {
+                    this._connected = false;
+                    callback(errors);
+                }
+                for (index = 0; index < length; index++) {
+                    element = this._connectionQueue.unshift();
+                    handler(element);
                 }
             });
-        } else if (connected) {
-            self.emit("connect", null);
         }
     }
 
