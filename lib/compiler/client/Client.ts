@@ -1,15 +1,21 @@
 /// <reference path="../../client/Client.ts" />
 /// <reference path="./IClient.ts" />
 /// <reference path="./IOptions.ts" />
+/// <reference path="../../../types/node/node.d.ts" />
 
 import AbstractClient = require("../../client/Client");
 import IOptions = require("./IOptions");
 import IClient = require("./IClient");
+import cp = require("child_process");
 
 class Client extends AbstractClient implements IClient {
 
     constructor(options:IOptions) {
         super(options);
+    }
+
+    protected getDaemonLocation(): string {
+        return null;
     }
 
     public compile(filename:string, callback:(errors?:Error[], result?:any) => void):void {
@@ -21,11 +27,10 @@ class Client extends AbstractClient implements IClient {
     }
 
     public connect(callback:(errors?:Error[]) => void): void {
-        var location: string = this.getLocation();
+        var location:string = this.getLocation();
 
 
-        var daemon:string = path.join(__dirname, "daemon.js"),
-            command:cp.ChildProcess = cp.spawn(process.execPath, [daemon, "--location", location]),
+        var command:cp.ChildProcess = cp.spawn(process.execPath, [this.getDaemonLocation(), "--location", this.getLocation()]),
             response: Buffer = new Buffer(0),
             echo:(stream:NodeJS.WritableStream, data:Buffer) => void = (stream:NodeJS.WritableStream, data:Buffer):void => {
                 stream.write(data);
@@ -62,7 +67,7 @@ class Client extends AbstractClient implements IClient {
                         logger.fatal("Something went wrong", error);
                         callback(error);
                     } else {
-                        logger.info("Memory daemon started");
+                        logger.info("Less daemon started");
                         callback(null);
                     }
                 }
