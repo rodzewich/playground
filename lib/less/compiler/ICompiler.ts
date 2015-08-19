@@ -1,0 +1,3 @@
+interface ICompiler {}
+
+export = ICompiler;

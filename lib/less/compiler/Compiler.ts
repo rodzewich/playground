@@ -1,0 +1,3 @@
+class Compiler {}
+
+export = Compiler;

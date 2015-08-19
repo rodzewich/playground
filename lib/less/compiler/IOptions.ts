@@ -1,0 +1,3 @@
+interface IOptions {}
+
+import = IOptions;

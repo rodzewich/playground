@@ -1,6 +1,6 @@
-/// <reference path="../../compiler/daemon/IDaemon.ts" />
+/// <reference path="../../daemon/IDaemon.js" />
 
-import IAbstractDaemon = require("../../compiler/daemon/IDaemon");
+import IAbstractDaemon = require("../../daemon/IDaemon");
 
 interface IDaemon extends IAbstractDaemon {
 }
