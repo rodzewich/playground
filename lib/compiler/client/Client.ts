@@ -14,7 +14,7 @@ class Client extends AbstractClient implements IClient {
         super(options);
     }
 
-    protected getDaemonLocation(): string {
+    protected getDaemon(): string {
         return null;
     }
 
@@ -27,10 +27,7 @@ class Client extends AbstractClient implements IClient {
     }
 
     public connect(callback:(errors?:Error[]) => void): void {
-        var location:string = this.getLocation();
-
-
-        var command:cp.ChildProcess = cp.spawn(process.execPath, [this.getDaemonLocation(), "--location", this.getLocation()]),
+        var command:cp.ChildProcess = cp.spawn(process.execPath, [this.getDaemon(), "--location", this.getLocation()]),
             response: Buffer = new Buffer(0),
             echo:(stream:NodeJS.WritableStream, data:Buffer) => void = (stream:NodeJS.WritableStream, data:Buffer):void => {
                 stream.write(data);
@@ -74,7 +71,6 @@ class Client extends AbstractClient implements IClient {
             };
         command.stderr.addListener("data", handler);
         command.stdout.addListener("data", handler);
-
     }
 
     public disconnect(callback:(errors?:Error[]) => void): void {
