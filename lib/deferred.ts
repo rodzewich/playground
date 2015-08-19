@@ -1,3 +1,8 @@
+/// <reference path="../types/node/node.d.ts" />
+/// <reference path="./typeOf.ts" />
+
+import typeOf = require("./typeOf");
+
 function deferred(actions:((next:() => void) => void)[]):void {
     var index:number,
         length:number,

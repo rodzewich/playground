@@ -1,6 +1,8 @@
+/// <reference path="../types/node/node.d.ts" />
+
 function parallel(actions:((done:() => void) => void)[], complete:() => void) {
     var index:number,
-        temp:(done:() => void) => void,
+        temp:((done:() => void) => void)[],
         length: number,
         type:string = Object.prototype.toString.call(actions),
         count1:number = 0,
@@ -19,7 +21,7 @@ function parallel(actions:((done:() => void) => void)[], complete:() => void) {
         }
     }
 
-    function call(func) {
+    function call(func:(done:() => void) => void) {
         count1 += 1;
         setTimeout(function () {
             func(callback);
@@ -36,7 +38,6 @@ function parallel(actions:((done:() => void) => void)[], complete:() => void) {
                 call(temp[index]);
             }
         }
-
     }
 
     if (count1 === count2) {
