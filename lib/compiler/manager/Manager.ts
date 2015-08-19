@@ -11,14 +11,17 @@ import IOptions = require("./IOptions");
 import IClient = require("../client/IClient");
 import Client = require("../client/Client");
 import path = require("path");
+import typeOf = require("../../typeOf");
 import parallel = require("../../parallel");
 import deferred = require("../../deferred");
 
 class Manager implements IManager {
 
-    private _location: string;
+    private _location:string;
 
-    private _numberOfProcesses: number = 1;
+    private _numberOfProcesses:number = 1;
+
+    private _queue:((client:IClient) => void)[] = [];
 
     private _pool:IClient[] = [];
 
@@ -39,15 +42,15 @@ class Manager implements IManager {
         }
     }
 
-    protected createClient(location: string): IClient {
+    protected createClient(location:string):IClient {
         return new Client({location: location});
     }
 
-    protected getNumberOfProcesses(): number {
+    protected getNumberOfProcesses():number {
         return this._numberOfProcesses;
     }
 
-    protected setNumberOfProcesses(value: number): void {
+    protected setNumberOfProcesses(value:number):void {
         this._numberOfProcesses = value;
     }
 
@@ -60,21 +63,43 @@ class Manager implements IManager {
         return path.join(directory, [filename, "-", identifier, extension].join(""));
     }
 
-    protected setLocation(value: string): void {
+    protected setLocation(value:string):void {
         this._location = value;
     }
 
-    protected getLocation(): string {
+    protected getLocation():string {
         return this._location;
     }
 
     protected pull(callback:(client:IClient) => void):void {
+        var client:IClient;
+        if (this._pool.length) {
+            client = this._pool.shift();
+            setTimeout(():void => {
+                if (typeOf(callback) === "function") {
+                    callback(client);
+                } else {
+                    this.push(client);
+                }
+            }, 0).ref();
+        } else if (typeOf(callback) === "function") {
+            this._queue.push(callback);
+        }
     }
 
     protected push(client:IClient):void {
+        var callback:(client:IClient, callback:(client:IClient) => void) => void =
+            (client:IClient, callback:(client:IClient) => void):void => {
+                setTimeout(():void => {
+                    callback(client);
+                }, 0);
+            };
         if (this._clients.indexOf(client) !== -1 &&
             this._pool.indexOf(client) === -1) {
             this._pool.push(client);
+        }
+        while (this._pool.length && this._queue.length) {
+            callback(this._pool.shift(), this._queue.shift());
         }
     }
 
@@ -124,7 +149,7 @@ class Manager implements IManager {
                 };
             };
         if (this._connected) {
-            setTimeout((): void => {
+            setTimeout(():void => {
                 if (typeof callback === "function") {
                     callback(null);
                 }
@@ -138,12 +163,12 @@ class Manager implements IManager {
             for (processNumber = 0; processNumber < numberOfProcesses; processNumber++) {
                 actions.push(createAction(processNumber));
             }
-            parallel(actions, (): void => {
+            parallel(actions, ():void => {
                 var index:number,
                     length:number = this._connectionQueue.length,
                     element:(errors?:Error[]) => void,
                     handler:(element:(errors?:Error[]) => void) => void = (element:(errors?:Error[]) => void):void => {
-                        setTimeout((): void => {
+                        setTimeout(():void => {
                             if (!errors.length) {
                                 element(null);
                             } else {
@@ -167,6 +192,10 @@ class Manager implements IManager {
             });
         }
     }
+
+    private _disconnecting:boolean = false;
+
+    private _disconnectionQueue:((errors?:Error[]) => void)[] = [];
 
     public disconnect(callback:(errors?:Error[]) => void):void {
         if (this._connected) {

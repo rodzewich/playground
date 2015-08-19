@@ -32,92 +32,92 @@ class Client extends AbstractClient implements IClient {
         return this._namespace;
     }
 
-    public getItem(key:string, callback:(error?:Error, response?:any) => void):void {
+    public getItem(key:string, callback:(errors?:Error[], response?:any) => void):void {
         // todo: проверять входящие параметры
-        this.call((error?:Error, response?:any):void => {
-            callback(error || null, response || null);
+        this.call((errors?:Error[], response?:any):void => {
+            callback(errors || null, response || null);
         }, this.getNamespace(), "getItem", key);
     }
 
-    public getItems(keys:string[], callback:(error?:Error, response?:any) => void):void {
+    public getItems(keys:string[], callback:(errors?:Error[], response?:any) => void):void {
         // todo: проверять входящие параметры
-        this.call((error?:Error, response?:any):void => {
-            callback(error || null, <any>response || null);
+        this.call((errors?:Error[], response?:any):void => {
+            callback(errors || null, <any>response || null);
         }, this.getNamespace(), "getItems", keys);
     }
 
-    public setItem(key:string, value:any, callback:(error?:Error) => void):void {
+    public setItem(key:string, value:any, callback:(errors?:Error[]) => void):void {
         // todo: проверять входящие параметры
-        this.call((error?:Error, response?:any):void => {
-            callback(error || null);
+        this.call((errors?:Error[], response?:any):void => {
+            callback(errors || null);
         }, this.getNamespace(), "setItem", key, value);
     }
 
-    public setItems(data:any, callback:(error?:Error) => void):void {
+    public setItems(data:any, callback:(errors?:Error[]) => void):void {
         // todo: проверять входящие параметры
-        this.call((error?:Error, response?:any):void => {
-            callback(error || null);
+        this.call((errors?:Error[], response?:any):void => {
+            callback(errors || null);
         }, this.getNamespace(), "setItems", data);
     }
 
-    public removeItem(key:string, callback:(error?:Error) => void):void {
+    public removeItem(key:string, callback:(errors?:Error[]) => void):void {
         // todo: проверять входящие параметры
-        this.call((error?:Error, response?:any):void => {
-            callback(error || null);
+        this.call((errors?:Error[], response?:any):void => {
+            callback(errors || null);
         }, this.getNamespace(), "removeItem", key);
     }
 
-    public removeItems(keys:string[], callback:(error?:Error) => void) {
+    public removeItems(keys:string[], callback:(errors?:Error[]) => void) {
         // todo: проверять входящие параметры
-        this.call((error?:Error, response?:any):void => {
-            callback(error || null);
+        this.call((errors?:Error[], response?:any):void => {
+            callback(errors || null);
         }, this.getNamespace(), "removeItems", keys);
     }
 
-    public hasItem(key:string, callback:(error?:Error, response?:boolean) => void):void {
+    public hasItem(key:string, callback:(errors?:Error[], response?:boolean) => void):void {
         // todo: проверять входящие параметры
-        this.call((error?:Error, response?:any):void => {
-            callback(error || null, error ? null : !!response);
+        this.call((errors?:Error[], response?:any):void => {
+            callback(errors || null, errors ? null : !!response);
         }, this.getNamespace(), "hasItem", key);
     }
 
-    public hasItems(keys:string[], callback:(error?:Error, response?:any) => void):void {
+    public hasItems(keys:string[], callback:(errors?:Error[], response?:any) => void):void {
         // todo: проверять входящие параметры
-        this.call((error?:Error, response?:any):void => {
-            callback(error || null, response || null);
+        this.call((errors?:Error[], response?:any):void => {
+            callback(errors || null, response || null);
         }, this.getNamespace(), "hasItems", keys);
     }
 
-    public getKey(index:number, callback:(error?:Error, response?:string) => void):void {
+    public getKey(index:number, callback:(errors?:Error[], response?:string) => void):void {
         // todo: проверять входящие параметры
-        this.call((error?:Error, response?:any):void => {
-            callback(error || null, <string>response || null);
+        this.call((errors?:Error[], response?:any):void => {
+            callback(errors || null, <string>response || null);
         }, this.getNamespace(), "getKey", index);
     }
 
-    public getKeys(indexes:number[], callback:(error?:Error, response?:string[]) => void):void {
+    public getKeys(indexes:number[], callback:(errors?:Error[], response?:string[]) => void):void {
         // todo: проверять входящие параметры
-        this.call((error?:Error, response?:any):void => {
-            callback(error || null, <string[]>response || null);
+        this.call((errors?:Error[], response?:any):void => {
+            callback(errors || null, <string[]>response || null);
         }, this.getNamespace(), "getKeys", indexes);
     }
 
-    public getLength(callback:(error?:Error, response?:number) => void):void {
+    public getLength(callback:(errors?:Error[], response?:number) => void):void {
         // todo: проверять входящие параметры
-        this.call((error?:Error, response?:any):void => {
-            callback(error || null, <number>response || null);
+        this.call((errors?:Error[], response?:any):void => {
+            callback(errors || null, <number>response || null);
         }, this.getNamespace(), "getLength");
     }
 
-    public lock(key:string, callback:(error?:Error, unlock?:(callback:(error?:Error) => void) => void) => void):void {
+    public lock(key:string, callback:(errors?:Error[], unlock?:(callback:(errors?:Error[]) => void) => void) => void):void {
         // todo: проверять входящие параметры
-        var unlock:(callback:(error?:Error) => void) => void = (callback:(error?:Error) => void):void => {
-            this.call((error?:Error, response?:any):void => {
-                callback(error || null);
+        var unlock:(callback:(errors?:Error[]) => void) => void = (callback:(errors?:Error[]) => void):void => {
+            this.call((errors?:Error[], response?:any):void => {
+                callback(errors || null);
             }, this.getNamespace(), "unlock", key);
         };
-        this.call((error?:Error, response?:any):void => {
-            callback(error || null, error ? null : unlock);
+        this.call((errors?:Error[], response?:any):void => {
+            callback(errors || null, errors ? null : unlock);
         }, this.getNamespace(), "lock", key);
     }
 

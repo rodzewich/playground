@@ -59,7 +59,7 @@ class Daemon implements IDaemon {
             },
             server:net.Server = net.createServer((socket:net.Socket):void => {
                 var data = new Buffer(0);
-                socket.addListener("error", (error):void => {
+                socket.addListener("error", (error: Error):void => {
                     console.log("error", error);
                 });
                 socket.addListener("data", (buffer:Buffer):void => {
