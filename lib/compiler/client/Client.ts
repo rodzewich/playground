@@ -2,6 +2,7 @@
 /// <reference path="./IClient.ts" />
 /// <reference path="./IOptions.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
+/// <reference path="../../deferred.ts" />
 
 import AbstractClient = require("../../client/Client");
 import IOptions = require("./IOptions");
@@ -27,11 +28,12 @@ class Client extends AbstractClient implements IClient {
     }
 
     public connect(callback:(errors?:Error[]) => void): void {
-        var command:cp.ChildProcess = cp.spawn(process.execPath, [this.getDaemon(), "--location", this.getLocation()]),
+        var command:cp.ChildProcess,
             response: Buffer = new Buffer(0),
-            echo:(stream:NodeJS.WritableStream, data:Buffer) => void = (stream:NodeJS.WritableStream, data:Buffer):void => {
-                stream.write(data);
-            },
+            echo:(stream:NodeJS.WritableStream, data:Buffer) => void =
+                (stream:NodeJS.WritableStream, data:Buffer):void => {
+                    stream.write(data);
+                },
             handler:(data:Buffer) => void = (data:Buffer):void => {
                 var result:any,
                     error:Error,
@@ -69,8 +71,19 @@ class Client extends AbstractClient implements IClient {
                     }
                 }
             };
-        command.stderr.addListener("data", handler);
-        command.stdout.addListener("data", handler);
+
+        deferred([
+            (next:() => void):void => {
+                command = cp.spawn(process.execPath, [this.getDaemon(), "--location", this.getLocation()]);
+                command.stderr.addListener("data", handler);
+                command.stdout.addListener("data", handler);
+            },
+            (next:() => void):void => {
+                super.connect((errors?:Error[]):void => {
+                });
+            }
+        ]);
+
     }
 
     public disconnect(callback:(errors?:Error[]) => void): void {
