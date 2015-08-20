@@ -1,24 +1,8 @@
-class Exception extends Error {
+/// <reference path="../Exception.ts" />
 
-    public name:string = "Exception";
+import AbstractException = require("../Exception");
 
-    public message:string;
-
-    constructor(message?:string) {
-        super();
-        if (message) {
-            this.message = message;
-        }
-    }
-
-    public getName():string {
-        return this.name;
-    }
-
-    public getMessage():string {
-        return this.message;
-    }
-
+class Exception extends AbstractException {
 }
 
 export = Exception;
