@@ -10,7 +10,7 @@ function deferred(actions:((next:() => void) => void)[]):void {
         temp:((next:() => void) => void)[] = [];
 
     function iterate():void {
-        var timeout = setTimeout(function () {
+        var timeout = setTimeout(():void => {
             var action:(next:() => void) => void = temp.shift();
             if (typeOf(action) === "function") {
                 action(iterate);
