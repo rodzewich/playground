@@ -15,6 +15,8 @@ import AbstractClient = require("../../client/Client");
 import IOptions = require("./IOptions");
 import Exception = require("../Exception");
 import IClient = require("./IClient");
+import IResponse = require("./IResponse");
+import IRequest = require("./IRequest");
 import cp = require("child_process");
 import log4js      = require("../../../logger");
 var logger:log4js.Logger = log4js.getLogger("worker");
@@ -23,23 +25,28 @@ class Client extends AbstractClient implements IClient {
 
     constructor(options:IOptions) {
         super(options);
+        if (options && options.sourcesDirectory) {
+
+        }
     }
 
     protected getDaemon(): string {
         return null;
     }
 
-    protected getOptions(): any {
-        return {};
+    protected getRequest():IRequest {
+        return <IRequest>{
+            filename: null
+        };
     }
 
-    public compile(filename:string, callback?:(errors?:Error[], result?:any) => void):void {
-        var options:any;
+    public compile(filename:string, callback?:(errors?:Error[], result?:IResponse) => void):void {
+        var request:IRequest;
         if (typeOf(filename) !== "string") {
             throw new Exception("bla bla bla");
         }
-        options = this.getOptions();
-        options.filename = filename;
+        request = this.getRequest();
+        request.filename = filename;
         this.call((errors?:Error[], response?:any):void => {
             var temp:Error[] = null,
                 result:any = null;
@@ -49,9 +56,9 @@ class Client extends AbstractClient implements IClient {
                 result = response || null;
             }
             if (typeOf(callback) === "function") {
-                callback(temp, result);
+                callback(temp, <IResponse>result);
             }
-        }, "compile");
+        }, "compile", request);
     }
 
     public connect(callback:(errors?:Error[]) => void): void {

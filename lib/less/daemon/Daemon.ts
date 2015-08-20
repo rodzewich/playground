@@ -12,6 +12,23 @@ class Daemon extends AbstractDaemon implements IDaemon {
         super(options);
     }
 
+    public compile(options:IRequest, callback:(errors?:Error[], result?:IResponse) => void):void {
+        var compiler = new Compiler(options);
+        compiler.compile((errors?:Error[], result?:any):void => {
+            var temp:Error[],
+                data:IResponse;
+            if (errors && errors.length) {
+                temp = errors;
+            } else {
+                data = <IResponse>result || null;
+            }
+            if (typeOf(callback) === "function") {
+                callback(temp, data);
+            }
+        });
+    }
+
+
 }
 
 export = Daemon;

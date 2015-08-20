@@ -1,0 +1,4 @@
+interface IResponse {
+}
+
+export = IResponse;

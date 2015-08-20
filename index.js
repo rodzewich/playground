@@ -21,6 +21,13 @@ var fs                   = require("fs"),
     spawn                = require("child_process").spawn,
     charset;
 
+var Exception = require("./lib/Exception");
+
+var error = new Exception("sdfsdfs");
+console.log(error.getStack());
+
+return;
+
 var routers = {
         /*typescript : require("./routers/typescript"),*/
         /*stylus     : require("./routers/stylus"),*/
