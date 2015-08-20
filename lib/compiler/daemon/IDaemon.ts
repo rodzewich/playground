@@ -1,4 +1,4 @@
-/// <reference path="../../daemon/IDaemon.js" />
+/// <reference path="../../daemon/IDaemon.ts" />
 
 import IAbstractDaemon = require("../../daemon/IDaemon");
 

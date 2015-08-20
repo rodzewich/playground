@@ -1,3 +1,4 @@
-interface IOptions {}
+interface IOptions {
+}
 
-import = IOptions;
+export = IOptions;

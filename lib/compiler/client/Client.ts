@@ -3,12 +3,18 @@
 /// <reference path="./IOptions.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
 /// <reference path="../../deferred.ts" />
+/// <reference path="../../../types/log4js/log4js.d.ts" />
+/// <reference path="../../../logger" />
 
 import typeOf = require("../../typeOf");
+import deferred = require("../../deferred");
+import CommonError = require("../../CommonError");
 import AbstractClient = require("../../client/Client");
 import IOptions = require("./IOptions");
 import IClient = require("./IClient");
 import cp = require("child_process");
+import log4js      = require("../../../logger");
+var logger:log4js.Logger = log4js.getLogger("worker");
 
 class Client extends AbstractClient implements IClient {
 

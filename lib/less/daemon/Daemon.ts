@@ -1,6 +1,6 @@
 /// <reference path="../../compiler/daemon/Daemon.ts" />
 /// <reference path="./IOptions.ts" />
-/// <reference path="./IDaemon.js" />
+/// <reference path="./IDaemon.ts" />
 
 import AbstractDaemon = require("../../compiler/daemon/Daemon");
 import IOptions = require("./IOptions");
