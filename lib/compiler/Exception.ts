@@ -1,18 +1,21 @@
-/// <reference path="../../types/node/node.d.ts" />
-
 class Exception extends Error {
 
-    public name: string = "Exception";
+    public name:string = "Exception";
 
-    public message: string;
+    public message:string;
 
-    constructor(message: string) {
-        super(message);
-        this.message = message;
-        (<(error:Exception, func:any) => void>Error['captureStackTrace']).call(Error, this, Exception);
+    constructor(message?:string) {
+        super();
+        if (message) {
+            this.message = message;
+        }
     }
 
-    public getMessage(): string {
+    public getName():string {
+        return this.name;
+    }
+
+    public getMessage():string {
         return this.message;
     }
 
