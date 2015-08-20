@@ -3,7 +3,7 @@
 import IAbstractClient = require("../../client/IClient");
 
 interface IClient extends IAbstractClient {
-    compile(filename:string, callback:(errors?:Error[], result?:any) => void): void;
+    compile(filename:string, callback?:(errors?:Error[], result?:any) => void): void;
 }
 
 export = IClient;

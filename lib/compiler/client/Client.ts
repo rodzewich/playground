@@ -1,8 +1,10 @@
 /// <reference path="../../client/Client.ts" />
 /// <reference path="./IClient.ts" />
 /// <reference path="./IOptions.ts" />
+/// <reference path="../Exception.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
 /// <reference path="../../deferred.ts" />
+/// <reference path="../../typeOf" />
 /// <reference path="../../../types/log4js/log4js.d.ts" />
 /// <reference path="../../../logger" />
 
@@ -11,6 +13,7 @@ import deferred = require("../../deferred");
 import CommonError = require("../../CommonError");
 import AbstractClient = require("../../client/Client");
 import IOptions = require("./IOptions");
+import Exception = require("../Exception");
 import IClient = require("./IClient");
 import cp = require("child_process");
 import log4js      = require("../../../logger");
@@ -26,12 +29,29 @@ class Client extends AbstractClient implements IClient {
         return null;
     }
 
-    public compile(filename:string, callback:(errors?:Error[], result?:any) => void):void {
-        setTimeout(():void => {
-            if (typeof callback === "function") {
-                callback(null, null);
+    protected getOptions(): any {
+        return {};
+    }
+
+    public compile(filename:string, callback?:(errors?:Error[], result?:any) => void):void {
+        var options:any;
+        if (typeOf(filename) !== "string") {
+            throw new Exception("bla bla bla");
+        }
+        options = this.getOptions();
+        options.filename = filename;
+        this.call((errors?:Error[], response?:any):void => {
+            var temp:Error[] = null,
+                result:any = null;
+            if (errors && errors.length) {
+                temp = errors;
+            } else {
+                result = response || null;
             }
-        }, 0);
+            if (typeOf(callback) === "function") {
+                callback(temp, result);
+            }
+        }, "compile");
     }
 
     public connect(callback:(errors?:Error[]) => void): void {

@@ -103,7 +103,7 @@ class Manager implements IManager {
         }
     }
 
-    public compile(filename:string, callback:(errors?:Error[], result?:any) => void):void {
+    public compile(filename:string, callback?:(errors?:Error[], result?:any) => void):void {
         deferred([
             (next:() => void):void => {
                 this.connect((errors?:Error[]):void => {

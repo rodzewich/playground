@@ -12,7 +12,7 @@ class Compiler extends AbstractCompiler implements ICompiler {
         super(options);
     }
 
-    compile(filename:string, callback:(error?:Error, data:any) => void):void {
+    compile(filename:string, callback?:(error?:Error, data:any) => void):void {
     }
 
 }

@@ -2,11 +2,14 @@
 /// <reference path="./IClient.ts" />
 /// <reference path="../../compiler/client/Client.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
+/// <reference path="./IResult.ts" />
+/// <reference path="../../typeOf.ts" />
 
-
+import typeOf = require("../../typeOf");
 import IOptions = require("./IOptions");
 import IClient = require("./IClient");
 import AbstractClient = require("../../compiler/client/Client");
+import IResult = require("./IResult");
 import path = require("path");
 
 class Client extends AbstractClient {
@@ -15,11 +18,12 @@ class Client extends AbstractClient {
         return path.join(__dirname, "../daemon.js");
     }
 
-    public compile(filename:string, callback:(errors?:Error[], result?:any) => void):void {
-        // todo: check filename
-        this.call((errors?:Error[], response?:any): void => {
-
-        }, "compile", filename);
+    public compile(filename:string, callback?:(errors?:Error[], result?:IResult) => void):void {
+        super.compile(filename, (errors?:Error[], result?:any):void => {
+            if (typeOf(callback) === "function") {
+                callback(errors, <IResult>result);
+            }
+        });
     }
 
 }
