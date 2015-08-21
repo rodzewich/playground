@@ -23,10 +23,12 @@ var logger:log4js.Logger = log4js.getLogger("worker");
 
 class Client extends AbstractClient implements IClient {
 
+    private _sourcesDirectory: string;
+
     constructor(options:IOptions) {
         super(options);
-        if (options && options.sourcesDirectory) {
-
+        if (options && typeOf(options.sourcesDirectory) !== "undefined") {
+            this.setSourcesDirectory(options.sourcesDirectory);
         }
     }
 
@@ -36,8 +38,17 @@ class Client extends AbstractClient implements IClient {
 
     protected getRequest():IRequest {
         return <IRequest>{
-            filename: null
+            filename: null,
+            sourcesDirectory: this.getSourcesDirectory()
         };
+    }
+
+    protected setSourcesDirectory(value: string): void {
+        this._sourcesDirectory = value;
+    }
+
+    protected getSourcesDirectory(): string {
+        return this._sourcesDirectory;
     }
 
     public compile(filename:string, callback?:(errors?:Error[], result?:IResponse) => void):void {

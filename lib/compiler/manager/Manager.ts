@@ -33,17 +33,26 @@ class Manager implements IManager {
 
     private _connectionQueue:((errors?:Error[]) => void)[] = [];
 
+    private _sourcesDirectory: string;
+
     constructor(options:IOptions) {
-        if (options && typeof options.location !== "undefined") {
+        if (options && typeOf(options.location) !== "undefined") {
             this.setLocation(options.location);
         }
-        if (options && typeof options.numberOfProcesses !== "undefined") {
+        if (options && typeOf(options.numberOfProcesses) !== "undefined") {
             this.setNumberOfProcesses(options.numberOfProcesses);
+        }
+        if (options && typeOf(options.sourcesDirectory) !== "undefined") {
+            this.setSourcesDirectory(options.sourcesDirectory);
         }
     }
 
-    protected createClient(location:string):IClient {
-        return new Client({location: location});
+    protected setSourcesDirectory(value: string): void {
+        this._sourcesDirectory = value;
+    }
+
+    protected getSourcesDirectory(): string {
+        return this._sourcesDirectory;
     }
 
     protected getNumberOfProcesses():number {
@@ -52,6 +61,13 @@ class Manager implements IManager {
 
     protected setNumberOfProcesses(value:number):void {
         this._numberOfProcesses = value;
+    }
+
+    protected createClient(location:string):IClient {
+        return new Client({
+            location: location,
+            sourcesDirectory: this.getSourcesDirectory()
+        });
     }
 
     protected formatLocationById(id:any):string {

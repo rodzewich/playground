@@ -3,11 +3,11 @@
 import IAbstractRequest = require("../../compiler/client/IRequest");
 
 interface IRequest extends IAbstractRequest {
-    includeDirectories?: string[];
-    errorBackgroundColor?: string;
-    errorTextColor?: string;
-    errorBlockPadding?: string;
-    errorFontSize?: string;
+    includeDirectories: string[];
+    errorBackgroundColor: string;
+    errorTextColor: string;
+    errorBlockPadding: string;
+    errorFontSize: string;
 }
 
 export = IRequest;

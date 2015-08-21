@@ -1,10 +1,18 @@
 /// <reference path="../../compiler/daemon/Daemon.ts" />
 /// <reference path="./IOptions.ts" />
 /// <reference path="./IDaemon.ts" />
+/// <reference path="../../compiler/client/IRequest.ts" />
+/// <reference path="../../compiler/client/IResponse.ts" />
+/// <reference path="../compiler/Compiler.ts" />
+/// <reference path="../../typeOf.ts" />
 
 import AbstractDaemon = require("../../compiler/daemon/Daemon");
 import IOptions = require("./IOptions");
 import IDaemon = require("./IDaemon");
+import IRequest = require("../client/IRequest");
+import IResponse = require("../client/IResponse");
+import Compiler = require("../compiler/Compiler");
+import typeOf = require("../../typeOf");
 
 class Daemon extends AbstractDaemon implements IDaemon {
 
