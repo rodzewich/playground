@@ -36,6 +36,10 @@ class Exception extends Error {
         return this.message;
     }
 
+    public getStack():string {
+        return this.stack;
+    }
+
     public static captureStackTrace(error:any, func:any):void {
         Error.captureStackTrace(error, func);
     }
