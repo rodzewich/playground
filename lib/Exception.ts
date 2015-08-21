@@ -25,6 +25,7 @@ class Exception extends Error {
         if (message) {
             this.message = message;
         }
+        Exception.captureStackTrace(this, Exception);
     }
 
     public getName():string {
