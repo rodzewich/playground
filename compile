@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
-for item in $(find ${PWD}/lib -type f | grep "\.ts$" | sort); do
-    tsc --newLine LF --noImplicitAny --removeComments --preserveConstEnums --target es5 --module commonjs $item;
+for item in $(find ./lib -type f | grep "\.ts$" | sort); do
+    tsc --newLine LF --noImplicitAny --removeComments --preserveConstEnums --target es5 --module commonjs ${item} --out ./server/${item};
 done
+
