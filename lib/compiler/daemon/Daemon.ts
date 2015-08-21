@@ -4,7 +4,7 @@
 /// <reference path="../client/IResponse.ts" />
 /// <reference path="../client/IRequest.ts" />
 
-import AbstractDaemon = require("../../daemon/Daemon");
+import BaseDaemon = require("../../daemon/Daemon");
 import IOptions = require("./IOptions");
 import IDaemon = require("./IDaemon");
 import IResponse = require("../client/IResponse");
@@ -13,7 +13,7 @@ import Compiler = require("../compiler/Compiler");
 import typeOf = require("../../typeOf");
 import CommonError = require("../../CommonError");
 
-class Daemon extends AbstractDaemon implements IDaemon {
+class Daemon extends BaseDaemon implements IDaemon {
 
     constructor(options:IOptions) {
         super(options);
