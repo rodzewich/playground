@@ -72,10 +72,10 @@ class Manager implements IManager {
 
     protected formatLocationById(id:any):string {
         var location:string = this.getLocation(),
-            identifier:string = String(id || ""),
+            identifier:string = String(id),
             extension:string = path.extname(location),
             directory:string = path.dirname(location),
-            filename:string = path.basename(location);
+            filename:string = path.basename(location, extension);
         return path.join(directory, [filename, "-", identifier, extension].join(""));
     }
 
