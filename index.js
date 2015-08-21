@@ -21,10 +21,17 @@ var fs                   = require("fs"),
     spawn                = require("child_process").spawn,
     charset;
 
-var Exception = require("./lib/Exception");
 
-var error = new Exception("sdfsdfs");
-console.log(error.getStack());
+var Manager = require("./lib/less/manager/Manager");
+var manager = new Manager({
+    location: path.join(__dirname, "temp/less.sock"),
+    sourcesDirectory: path.join(__dirname, "styles"),
+    numberOfProcesses: 4
+});
+manager.connect(function (errors) {
+    console.log("errors", errors);
+    console.log("connected");
+});
 
 return;
 

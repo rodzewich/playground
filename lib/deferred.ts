@@ -21,7 +21,7 @@ function deferred(actions:((next:() => void) => void)[]):void {
         }
     }
 
-    if (typeOf(actions) !== "undefined") {
+    if (typeOf(actions) !== "array") {
         throw new Error("bla bla bla");
     }
     length = actions.length;
