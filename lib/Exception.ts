@@ -8,7 +8,7 @@ declare class Error {
 
     constructor(message?:string);
 
-    static captureStackTrace(error:Error, func:any):void;
+    static captureStackTrace(error:any, func:any):void;
 
 }
 
@@ -35,7 +35,7 @@ class Exception extends Error {
         return this.message;
     }
 
-    public static captureStackTrace(error:Error, func:any):void {
+    public static captureStackTrace(error:any, func:any):void {
         Error.captureStackTrace(error, func);
     }
 
