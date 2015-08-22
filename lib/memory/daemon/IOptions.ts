@@ -1,8 +1,8 @@
 /// <reference path="../../daemon/IOptions.ts" />
 
-import IAbstractOptions = require("../../daemon/IOptions");
+import IBaseOptions = require("../../daemon/IOptions");
 
-interface IOptions extends IAbstractOptions {
+interface IOptions extends IBaseOptions {
 }
 
 export = IOptions;

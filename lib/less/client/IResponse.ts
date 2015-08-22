@@ -1,8 +1,8 @@
 /// <reference path="../../compiler/client/IResponse.ts" />
 
-import IAbstractResponse = require("../../compiler/client/IResponse");
+import IBaseResponse = require("../../compiler/client/IResponse");
 
-interface IResponse extends IAbstractResponse {
+interface IResponse extends IBaseResponse {
     source: string;
     result: string;
     imports: string;

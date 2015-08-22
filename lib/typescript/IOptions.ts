@@ -1,8 +1,8 @@
 /// <reference path="../compiler/IOptions.ts" />
 
-import IAbstractOptions = require("../compiler/IOptions");
+import IBaseOptions = require("../compiler/IOptions");
 
-interface IOptions extends IAbstractOptions {
+interface IOptions extends IBaseOptions {
     sourcesDirectory: string;
     scriptsTarget?: string;
     errorBackgroundColor?: string;

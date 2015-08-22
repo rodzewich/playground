@@ -11,7 +11,7 @@
 import typeOf = require("../../typeOf");
 import deferred = require("../../deferred");
 import CommonError = require("../../CommonError");
-import AbstractClient = require("../../client/Client");
+import BaseClient = require("../../client/Client");
 import IOptions = require("./IOptions");
 import Exception = require("../Exception");
 import IClient = require("./IClient");
@@ -21,7 +21,7 @@ import cp = require("child_process");
 import log4js      = require("../../../logger");
 var logger:log4js.Logger = log4js.getLogger("worker");
 
-class Client extends AbstractClient implements IClient {
+class Client extends BaseClient implements IClient {
 
     private _sourcesDirectory: string;
 
@@ -29,6 +29,9 @@ class Client extends AbstractClient implements IClient {
         super(options);
         if (options && typeOf(options.sourcesDirectory) !== "undefined") {
             this.setSourcesDirectory(options.sourcesDirectory);
+        }
+        if (options && typeOf(options.memoryLocation) !== "undefined") {
+            this.setMemoryLocation(options.memoryLocation);
         }
     }
 
@@ -41,6 +44,16 @@ class Client extends AbstractClient implements IClient {
             filename: null,
             sourcesDirectory: this.getSourcesDirectory()
         };
+    }
+
+    private _memoryLocation: string;
+
+    protected getMemoryLocation(): string {
+        return this._memoryLocation;
+    }
+
+    protected setMemoryLocation(value: string): void {
+        this._memoryLocation = value;
     }
 
     protected setSourcesDirectory(value: string): void {
@@ -75,7 +88,10 @@ class Client extends AbstractClient implements IClient {
     public connect(callback:(errors?:Error[]) => void): void {
         deferred([
             (next:() => void):void => {
-                var command:cp.ChildProcess = cp.spawn(process.execPath, [this.getDaemon(), "--location", this.getLocation()]),
+                var command:cp.ChildProcess = cp.spawn(process.execPath, [this.getDaemon(),
+                        "--location", this.getLocation(),
+                        "--memoryLocation", this.getMemoryLocation()
+                    ]),
                     data:Buffer = new Buffer(0),
                     echo:(stream:NodeJS.WritableStream, data:Buffer) => void =
                         (stream:NodeJS.WritableStream, data:Buffer):void => {

@@ -1,8 +1,8 @@
 /// <reference path="../../client/IClient.ts" />
 
-import IAbstractClient = require("../../client/IClient");
+import IBaseClient = require("../../client/IClient");
 
-interface IClient extends IAbstractClient {
+interface IClient extends IBaseClient {
     getItem(key:string, callback:(errors?:Error[], response?:any) => void): void;
     getItems(keys:string[], callback:(errors?:Error[], response?:any) => void): void;
     setItem(key:string, value:any, callback:(errors?:Error[]) => void): void;

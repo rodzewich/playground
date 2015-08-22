@@ -21,6 +21,17 @@ var fs                   = require("fs"),
     spawn                = require("child_process").spawn,
     charset;
 
+require('source-map-support').install({
+    retrieveSourceMap : function (source) {
+        if (fs.existsSync(source + ".map")) {
+            return {
+                url : source,
+                map : fs.readFileSync(source + ".map", 'utf8')
+            };
+        }
+        return null;
+    }
+});
 
 var Manager = require("./lib/less/manager/Manager");
 var manager = new Manager({
@@ -28,10 +39,21 @@ var manager = new Manager({
     sourcesDirectory: path.join(__dirname, "styles"),
     numberOfProcesses: 4
 });
-manager.connect(function (errors) {
-    console.log("errors", errors);
-    console.log("connected");
-});
+
+deferred([
+    function (done) {
+        manager.connect(function (errors) {
+            console.log("connected");
+            done();
+        });
+    },
+    function () {
+        manager.compile("index.less", function (errors, result) {
+            console.log("compiled");
+            console.log("result", result);
+        });
+    }
+]);
 
 return;
 

@@ -1,8 +1,8 @@
 /// <reference path="../../compiler/compiler/ICompiler.ts" />
 
-import IAbstractCompiler = require("../../compiler/compiler/ICompiler");
+import IBaseCompiler = require("../../compiler/compiler/ICompiler");
 
-interface ICompiler extends IAbstractCompiler {
+interface ICompiler extends IBaseCompiler {
 }
 
 export = ICompiler;

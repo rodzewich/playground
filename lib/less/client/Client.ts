@@ -9,12 +9,12 @@
 import typeOf = require("../../typeOf");
 import IOptions = require("./IOptions");
 import IClient = require("./IClient");
-import AbstractClient = require("../../compiler/client/Client");
+import BaseClient = require("../../compiler/client/Client");
 import IResponse = require("./IResponse");
 import IRequest = require("./IRequest");
 import path = require("path");
 
-class Client extends AbstractClient {
+class Client extends BaseClient {
 
     constructor(options:IOptions) {
         super(options);

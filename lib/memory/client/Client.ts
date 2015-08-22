@@ -4,7 +4,7 @@
 
 import IClient = require("./IClient");
 import IOptions = require("./IOptions");
-import AbstractClient = require("../../client/Client");
+import BaseClient = require("../../client/Client");
 import typeOf = require("../../typeOf");
 import Exception = require("../Exception");
 
@@ -15,7 +15,7 @@ import Exception = require("../Exception");
 // todo: 5. сделать пинг
 // todo: 6. implement smart connect (чтобы само соединялось, если не соеденено)
 
-class Client extends AbstractClient implements IClient {
+class Client extends BaseClient implements IClient {
 
     private _namespace:string = "default";
 

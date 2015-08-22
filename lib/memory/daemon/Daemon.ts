@@ -2,11 +2,11 @@
 /// <reference path="./IDaemon.ts" />
 /// <reference path="./IOptions.ts" />
 
-import AbstractDaemon = require("../../daemon/Daemon");
+import BaseDaemon = require("../../daemon/Daemon");
 import IDaemon = require("./IDaemon");
 import IOptions = require("./IOptions");
 
-class Daemon extends AbstractDaemon implements IDaemon {
+class Daemon extends BaseDaemon implements IDaemon {
 
     private _memory: any = {};
 

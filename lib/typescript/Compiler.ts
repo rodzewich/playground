@@ -2,11 +2,11 @@
 /// <reference path="./ICompiler.ts" />
 /// <reference path="./IOptions.ts" />
 
-import AbstractCompiler = require("../compiler/Compiler");
+import BaseCompiler = require("../compiler/Compiler");
 import ICompiler = require("./ICompiler");
 import IOptions = require("./IOptions");
 
-class Compiler extends AbstractCompiler implements ICompiler {
+class Compiler extends BaseCompiler implements ICompiler {
 
     constructor(options:IOptions) {
         super(options);

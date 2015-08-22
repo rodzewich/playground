@@ -3,12 +3,12 @@
 /// <reference path="./ICompiler.ts" />
 /// <reference path="../../typeOf.ts" />
 
-import AbstractCompiler = require("../../compiler/compiler/Compiler");
+import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
 import typeOf = require("../../typeOf");
 
-class Compiler extends AbstractCompiler implements ICompiler {
+class Compiler extends BaseCompiler implements ICompiler {
 
     private _includeDirectories:string[];
 

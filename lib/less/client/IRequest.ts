@@ -1,8 +1,8 @@
 /// <reference path="../../compiler/client/IRequest.ts" />
 
-import IAbstractRequest = require("../../compiler/client/IRequest");
+import IBaseRequest = require("../../compiler/client/IRequest");
 
-interface IRequest extends IAbstractRequest {
+interface IRequest extends IBaseRequest {
     includeDirectories: string[];
     errorBackgroundColor: string;
     errorTextColor: string;

@@ -45,6 +45,19 @@ class Manager implements IManager {
         if (options && typeOf(options.sourcesDirectory) !== "undefined") {
             this.setSourcesDirectory(options.sourcesDirectory);
         }
+        if (options && typeOf(options.memoryLocation) !== "undefined") {
+            this.setMemoryLocation(options.memoryLocation);
+        }
+    }
+
+    private _memoryLocation: string;
+
+    protected getMemoryLocation(): string {
+        return this._memoryLocation;
+    }
+
+    protected setMemoryLocation(value: string): void {
+        this._memoryLocation = value;
     }
 
     protected setSourcesDirectory(value: string): void {
@@ -66,6 +79,7 @@ class Manager implements IManager {
     protected createClient(location:string):IClient {
         return new Client({
             location: location,
+            memoryLocation: this.getMemoryLocation(),
             sourcesDirectory: this.getSourcesDirectory()
         });
     }

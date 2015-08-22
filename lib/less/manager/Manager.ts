@@ -7,12 +7,12 @@
 
 import IManager = require("./IManager");
 import IOptions = require("./IOptions");
-import AbstractManager = require("../../compiler/manager/Manager");
+import BaseManager = require("../../compiler/manager/Manager");
 import IClient = require("../client/IClient");
 import Client = require("../client/Client");
 import typeOf = require("../../typeOf");
 
-class Manager extends AbstractManager {
+class Manager extends BaseManager {
 
     constructor(options: IOptions) {
         super(options);
@@ -86,6 +86,7 @@ class Manager extends AbstractManager {
     protected createClient(location:string):IClient {
         return new Client({
             location: location,
+            memoryLocation: this.getMemoryLocation(),
             sourcesDirectory: this.getSourcesDirectory(),
             includeDirectories: this.getIncludeDirectories(),
             errorBackgroundColor: this.getErrorBackgroundColor(),

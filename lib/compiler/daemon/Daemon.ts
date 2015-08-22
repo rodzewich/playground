@@ -3,6 +3,8 @@
 /// <reference path="./IDaemon.ts" />
 /// <reference path="../client/IResponse.ts" />
 /// <reference path="../client/IRequest.ts" />
+/// <reference path="../../memory/client/IClient" />
+
 
 import BaseDaemon = require("../../daemon/Daemon");
 import IOptions = require("./IOptions");
@@ -12,11 +14,25 @@ import IRequest = require("../client/IRequest");
 import Compiler = require("../compiler/Compiler");
 import typeOf = require("../../typeOf");
 import CommonError = require("../../CommonError");
+import IMemory = require("../../memory/client/IClient");
 
 class Daemon extends BaseDaemon implements IDaemon {
 
+    private _memory: IMemory;
+
     constructor(options:IOptions) {
         super(options);
+        if (options && typeOf(options.memory) !== "undefined") {
+            this.setMemory(options.memory);
+        }
+    }
+
+    protected setMemory(value: IMemory): void {
+        this._memory = value;
+    }
+
+    protected getMemory(): IMemory {
+        return this._memory;
     }
 
     public compile(options:IRequest, callback:(errors?:Error[], result?:IResponse) => void):void {
