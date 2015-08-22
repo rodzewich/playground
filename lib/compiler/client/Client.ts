@@ -90,7 +90,7 @@ class Client extends BaseClient implements IClient {
             (next:() => void):void => {
                 var command:cp.ChildProcess = cp.spawn(process.execPath, [this.getDaemon(),
                         "--location", this.getLocation(),
-                        "--memoryLocation", this.getMemoryLocation()
+                        "--memory", this.getMemoryLocation()
                     ]),
                     data:Buffer = new Buffer(0),
                     echo:(stream:NodeJS.WritableStream, data:Buffer) => void =
