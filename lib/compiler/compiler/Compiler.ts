@@ -2,12 +2,16 @@
 /// <reference path="./ICompiler.ts" />
 /// <reference path="../../typeOf.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
+/// <reference path="../../memory/client/IClient" />
 
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
 import typeOf = require("../../typeOf");
+import IMemory = require("../../memory/client/IClient");
 
 class Compiler implements ICompiler {
+
+    private _memory: IMemory;
 
     private _filename:string;
 
@@ -20,6 +24,17 @@ class Compiler implements ICompiler {
         if (options && options.sourcesDirectory) {
             this.setSourcesDirectory(options.sourcesDirectory);
         }
+        if (options && typeOf(options.memory)) {
+            this.setMemory(options.memory);
+        }
+    }
+
+    public setMemory(value: IMemory): void {
+        this._memory = value;
+    }
+
+    public getMemory(): IMemory {
+        return this._memory;
     }
 
     protected getFilename():string {

@@ -1,6 +1,7 @@
 /// <reference path="../../daemon/Daemon.ts" />
 /// <reference path="./IOptions.ts" />
 /// <reference path="./IDaemon.ts" />
+/// <reference path="../compiler/Compiler" />
 /// <reference path="../client/IResponse.ts" />
 /// <reference path="../client/IRequest.ts" />
 /// <reference path="../../memory/client/IClient" />
@@ -36,7 +37,8 @@ class Daemon extends BaseDaemon implements IDaemon {
     }
 
     public compile(options:IRequest, callback:(errors?:Error[], result?:IResponse) => void):void {
-        var compiler = new Compiler(options);
+        var compiler:Compiler = new Compiler(options);
+        compiler.setMemory(this.getMemory());
         compiler.compile((errors?:Error[], result?:any):void => {
             var temp:Error[],
                 data:IResponse;
