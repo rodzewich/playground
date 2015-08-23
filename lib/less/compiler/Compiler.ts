@@ -273,31 +273,39 @@ class Compiler extends BaseCompiler implements ICompiler {
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
                             imports: imports
                         };
-                        if (errors.length) {
-                            done({
-                                css: errorHandler(errors),
-                                map: "{}",
-                                less: content,
-                                date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
-                                imports: []
-                            });
-                            unlock();
-                        } else {
-                            memory.setItem(filename, value, function (error) {
-                                if (!error) {
-                                    done(value);
-                                    unlock();
-                                } else {
-                                    done({
-                                        css: errorHandler([error]),
-                                        map: "{}",
-                                        less: content,
-                                        date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
-                                        imports: []
+
+                        if (!errors || !errors.length) {
+                            deferred([
+                                (next:() => void):void => {
+                                    memory.setItem(filename, value, (errors?:Error[]):void => {
+                                        if (errors && errors.length) {
+                                            temp.concat(errors);
+                                        }
+                                        next();
                                     });
-                                    unlock();
-                                }
-                            });
+                                },
+                                (next:() => void):void => {
+                                    unlock((errors:Error[]):void => {
+                                        if (errors && errors.length) {
+                                            temp.concat(errors);
+                                        }
+                                        next();
+                                    });
+                                },
+                                ():void => {
+                                    if (temp.length) {
+                                        callback(null, <IResponse>{
+                                            source: null,
+                                            result: this.createCssErrors(temp),
+                                            imports: [],
+                                            map: {},
+                                            date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
+                                        });
+                                    } else {
+                                        callback(null, value);
+                                    }
+                                },
+                            ]);
                         }
                     } else {
                         temp.push(new LessException(error));
