@@ -14,7 +14,7 @@ import IResponse = require("../client/IResponse");
 import IRequest = require("../client/IRequest");
 import Compiler = require("../compiler/Compiler");
 import typeOf = require("../../typeOf");
-import CommonError = require("../../CommonError");
+import WrapperException = require("../../WrapperException");
 import IMemory = require("../../memory/client/IClient");
 
 class Daemon extends BaseDaemon implements IDaemon {
@@ -63,7 +63,7 @@ class Daemon extends BaseDaemon implements IDaemon {
                     this.compile(<IRequest>args[0], (errors?:Error[], result?:IResponse):void => {
                         if (errors && errors.length) {
                             response.errors = errors.map((error:Error):any => {
-                                return CommonError.convertToObject(error);
+                                return WrapperException.convertToObject(error);
                             });
                         } else {
                             response.result = result || null;
@@ -72,7 +72,7 @@ class Daemon extends BaseDaemon implements IDaemon {
                     });
                     break;
                 default:
-                    // todo: use CommonError
+                    // todo: use WrapperException
                     response.errors = [{
                         message: "Command not found"
                     }];

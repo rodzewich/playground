@@ -4,7 +4,7 @@
 import cp                = require("child_process");
 import path              = require("path");
 import log4js            = require("log4js");
-import CommonError       = require("../CommonError");
+import WrapperException       = require("../WrapperException");
 var logger:log4js.Logger = log4js.getLogger("client");
 
 function init(location:string, callback:(error?:Error) => void):void {
@@ -42,7 +42,7 @@ function init(location:string, callback:(error?:Error) => void):void {
                 }
                 response = response.slice((new Buffer(json, "utf8")).length + 1);
                 if (!result.started) {
-                    error = new CommonError(result.error);
+                    error = new WrapperException(result.error);
                     logger.fatal("Something went wrong", error);
                     callback(error);
                 } else {

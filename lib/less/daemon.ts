@@ -1,6 +1,6 @@
 /// <reference path="./daemon/IDaemon.ts" />
 /// <reference path="./daemon/Daemon.ts" />
-/// <reference path="../CommonError.ts" />
+/// <reference path="../WrapperException.ts" />
 /// <reference path="../memory/client/IClient" />
 /// <reference path="../memory/client/Client" />
 /// <reference path="../../types/node/node.d.ts" />
@@ -12,7 +12,7 @@ import optimist    = require("optimist");
 import IDaemon     = require("./daemon/IDaemon");
 import Daemon      = require("./daemon/Daemon");
 import log4js      = require("../../logger");
-import CommonError = require("../CommonError");
+import WrapperException = require("../WrapperException");
 import IMemory = require("../memory/client/IClient");
 import Memory = require("../memory/client/Client");
 import deferred = require("../deferred");
@@ -28,7 +28,7 @@ var logger:log4js.Logger = log4js.getLogger("worker"),
             process.stderr.write(JSON.stringify({
                 started: false,
                 errors: errors.map((error:Error):any => {
-                    return CommonError.convertToObject(error)
+                    return WrapperException.convertToObject(error)
                 })
             }) + "\n");
             logger.fatal("Something went wrong", errors);

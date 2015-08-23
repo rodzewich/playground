@@ -5,7 +5,7 @@
 import IClient = require("./IClient");
 import IOptions = require("./IOptions");
 import net = require("net");
-import CommonError = require("../CommonError");
+import WrapperException = require("../WrapperException");
 
 class Client implements IClient {
 
@@ -102,7 +102,7 @@ class Client implements IClient {
                     if (errors && errors.length) {
                         length = errors.length;
                         for (index = 0; index < length; index++) {
-                            result.push(new CommonError(errors[index]));
+                            result.push(new WrapperException(errors[index]));
                         }
                     }
                     return result.length ? result : null;

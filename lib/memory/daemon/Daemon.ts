@@ -222,7 +222,7 @@ class Daemon extends BaseDaemon implements IDaemon {
                     this.unlock(namespace, <string>args[0]);
                     break;
                 default:
-                    // todo: use CommonError
+                    // todo: use WrapperException
                     response.error = {
                         message: "Command not found"
                     };

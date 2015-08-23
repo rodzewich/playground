@@ -10,7 +10,7 @@
 
 import typeOf = require("../../typeOf");
 import deferred = require("../../deferred");
-import CommonError = require("../../CommonError");
+import WrapperException = require("../../WrapperException");
 import BaseClient = require("../../client/Client");
 import IOptions = require("./IOptions");
 import Exception = require("../Exception");
@@ -122,13 +122,13 @@ class Client extends BaseClient implements IClient {
                             } catch (err) {
                                 logger.warn("Worker send error content", data.toString("utf8"));
                                 process.stderr.write(data);
-                                result = {started: false, errors: [CommonError.convertToObject(err)]};
+                                result = {started: false, errors: [WrapperException.convertToObject(err)]};
                             }
                             data = data.slice((new Buffer(json, "utf8")).length + 1);
                             if (!result.started) {
                                 if (typeOf(result.errors) === "array") {
                                     errors = (<any[]>result.errors).map((item:any):Error => {
-                                        return new CommonError(item);
+                                        return new WrapperException(item);
                                     });
                                 }
                                 logger.fatal("Something went wrong", errors); // todo: по другому выводить ошибки
