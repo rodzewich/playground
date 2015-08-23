@@ -23,17 +23,19 @@ var argv:any = require('optimist').
         location: argv.location
     });
 
-daemon.start((error:Error):void => {
-    if (error) {
+daemon.start((errors:Error[]):void => {
+    if (errors && errors.length) {
         process.stderr.write(JSON.stringify({
             started: false,
-                error: CommonError
-        })+ "\n");
-        logger.fatal("Something went wrong", error);
+            errors: errors.map((error:Error):any => {
+                return CommonError.convertToObject(error)
+            })
+        }) + "\n");
+        logger.fatal("Something went wrong", errors);
     } else {
         process.stderr.write(JSON.stringify({
             started: true
-        })+ "\n");
+        }) + "\n");
         logger.info("Memory daemon started");
     }
 });

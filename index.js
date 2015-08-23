@@ -33,30 +33,6 @@ require('source-map-support').install({
     }
 });
 
-var Manager = require("./lib/less/manager/Manager");
-var manager = new Manager({
-    location: path.join(__dirname, "temp/less.sock"),
-    sourcesDirectory: path.join(__dirname, "styles"),
-    numberOfProcesses: 4
-});
-
-deferred([
-    function (done) {
-        manager.connect(function (errors) {
-            console.log("connected");
-            done();
-        });
-    },
-    function () {
-        manager.compile("index.less", function (errors, result) {
-            console.log("compiled");
-            console.log("result", result);
-        });
-    }
-]);
-
-return;
-
 var routers = {
         /*typescript : require("./routers/typescript"),*/
         /*stylus     : require("./routers/stylus"),*/
@@ -103,6 +79,60 @@ project = "../playground";
 
 var temporaryDirectory = "/home/rodzewich/Projects/playground/temp";
 var memorySocketAddress = path.join(temporaryDirectory, "memory.sock");
+
+
+
+
+
+
+var Manager = require("./lib/less/manager/Manager");
+var manager = new Manager({
+    location: path.join(__dirname, "temp/less.sock"),
+    memoryLocation: memorySocketAddress,
+    sourcesDirectory: path.join(__dirname, "styles"),
+    numberOfProcesses: 4
+});
+
+deferred([
+    cleanTemp,
+    function (done) {
+        initialization.memory(memorySocketAddress, function (error) {
+            if (!error) {
+                console.log("memory created");
+                done();
+            }
+        });
+    },
+    function (done) {
+        manager.connect(function (errors) {
+            if (errors && errors.length) {
+                errors.map(function (error) {
+                    console.log("error", error);
+                });
+            }
+            console.log("connected!!!");
+            done();
+        });
+    },
+    function () {
+        manager.compile("index.less", function (errors, result) {
+            console.log("compiled");
+            console.log("result", result);
+        });
+    }
+]);
+
+return;
+
+
+
+
+
+
+
+
+
+
 
 function initTypescript(callback) {
     if (processingTypescript) {

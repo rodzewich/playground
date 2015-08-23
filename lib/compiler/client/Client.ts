@@ -88,7 +88,8 @@ class Client extends BaseClient implements IClient {
     public connect(callback:(errors?:Error[]) => void): void {
         deferred([
             (next:() => void):void => {
-                var command:cp.ChildProcess = cp.spawn(process.execPath, [this.getDaemon(),
+                var command:cp.ChildProcess = cp.spawn(process.execPath, [
+                        this.getDaemon(),
                         "--location", this.getLocation(),
                         "--memory", this.getMemoryLocation()
                     ]),
@@ -141,7 +142,7 @@ class Client extends BaseClient implements IClient {
                 command.stderr.addListener("data", handler);
                 command.stdout.addListener("data", handler);
             },
-            (next:() => void):void => {
+            ():void => {
                 super.connect(callback);
             }
         ]);

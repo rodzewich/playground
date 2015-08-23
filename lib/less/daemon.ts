@@ -15,6 +15,7 @@ import log4js      = require("../../logger");
 import CommonError = require("../CommonError");
 import IMemory = require("../memory/client/IClient");
 import Memory = require("../memory/client/Client");
+import deferred = require("../deferred");
 
 var logger:log4js.Logger = log4js.getLogger("worker"),
     argv:any = require("optimist").
@@ -22,26 +23,46 @@ var logger:log4js.Logger = log4js.getLogger("worker"),
         demand("l").alias("l", "location").describe("l", "Less worker unix socket path").
         demand("m").alias("m", "memory").describe("m", "Memory worker unix socket path").
         argv,
-    memory:IMemory = new Memory({
-        location: argv.memory,
-        namespace: "less"
-    }),
-    daemon:IDaemon = new Daemon({
-        location: argv.location,
-        memory: memory
-    });
-
-daemon.start((error:Error):void => {
-    if (error) {
-        process.stderr.write(JSON.stringify({
+    handler: (errors: Error[]) => void = (errors: Error[]): void => {
+        if (errors && errors.length) {
+            process.stderr.write(JSON.stringify({
                 started: false,
-                error: CommonError
-            })+ "\n");
-        logger.fatal("Something went wrong", error);
-    } else {
-        process.stderr.write(JSON.stringify({
+                errors: errors.map((error:Error):any => {
+                    return CommonError.convertToObject(error)
+                })
+            }) + "\n");
+            logger.fatal("Something went wrong", errors);
+        } else {
+            process.stderr.write(JSON.stringify({
                 started: true
-            })+ "\n");
-        logger.info("Less daemon started");
+            }) + "\n");
+            logger.info("Memory daemon started");
+        }
+    },
+    memory:IMemory,
+    daemon:IDaemon;
+
+deferred([
+    (next:() => void):void => {
+        memory = new Memory({
+            location: argv.memory,
+            namespace: "less"
+        });
+        memory.connect((errors?:Error[]):void => {
+            if (!errors || !errors.length) {
+                next();
+            } else {
+                handler(errors);
+            }
+        });
+    },
+    ():void => {
+        daemon = new Daemon({
+            location: argv.location,
+            memory: memory
+        });
+        daemon.start((errors:Error[]):void => {
+            handler(errors);
+        });
     }
-});
+]);

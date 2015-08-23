@@ -40,15 +40,16 @@ class Daemon implements IDaemon {
         }
     }
 
-    public start(callback?:(error?:Error) => void):void {
+    public start(callback?:(errors?:Error[]) => void):void {
         var handler:(error?:Error) => void = (error?:Error):void => {
                 server.removeListener("error", handler);
                 if (error) {
                     this._server = undefined;
+                    callback([error]);
                 } else {
                     this._started = true;
+                    callback(null);
                 }
-                callback(error || null);
             },
             parseRequest:(request:string) => void = (request:string):void => {
                 try {
