@@ -71,22 +71,22 @@ class Compiler extends BaseCompiler implements ICompiler {
             (next:() => void):void => {
                 var errors:Error[] = [],
                     actions:((next:() => void) => void)[] =
-                    this.getIncludeDirectories().map((directory:string):((next:() => void) => void) => {
-                        return (callback:() => void):void => {
-                            resolve = path.join(directory, filename + ".less");
-                            fs.stat(resolve, (error: Error, stats: fs.Stats): void => {
-                                if (!error && stats.isFile()) {
-                                    mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
-                                    next();
-                                } else {
-                                    if (error && BaseException.getCode(error) !== "ENOENT") {
-                                        errors.push(error);
+                        this.getIncludeDirectories().map((directory:string):((next:() => void) => void) => {
+                            return (callback:() => void):void => {
+                                resolve = path.join(directory, filename + ".less");
+                                fs.stat(resolve, (error:Error, stats:fs.Stats):void => {
+                                    if (!error && stats.isFile()) {
+                                        mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
+                                        next();
+                                    } else {
+                                        if (error && BaseException.getCode(error) !== "ENOENT") {
+                                            errors.push(error);
+                                        }
+                                        callback();
                                     }
-                                    callback();
-                                }
-                            });
-                        };
-                    });
+                                });
+                            };
+                        });
                 actions.push(():void => {
                     if (errors.length) {
                         callback(null, <IResponse>{
@@ -111,12 +111,12 @@ class Compiler extends BaseCompiler implements ICompiler {
                     } else if ((!errors || !errors.length) && response && response.date >= mtime && response.imports.length !== 0) {
                         directories = this.getIncludeDirectories().slice(0);
                         directories.unshift(this.getSourcesDirectory());
-                        parallel(response.imports.map((filename: string):((next:() => void) => void) => {
+                        parallel(response.imports.map((filename:string):((next:() => void) => void) => {
                             return (done:() => void):void => {
                                 var actions:((next:() => void) => void)[] = directories.map((directory:string):((next:() => void) => void) => {
-                                    var temp: string = path.join(directory, filename);
+                                    var temp:string = path.join(directory, filename);
                                     return (next:() => void):void => {
-                                        fs.stat(temp, function (error: Error, stats:fs.Stats) {
+                                        fs.stat(temp, function (error:Error, stats:fs.Stats) {
                                             if (!error && stats.isFile()) {
                                                 mtime = Math.max(mtime, parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10));
                                             }
@@ -124,7 +124,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                         });
                                     };
                                 });
-                                actions.push((): void => {
+                                actions.push(():void => {
                                     done();
                                 });
                                 deferred(actions);
@@ -168,29 +168,39 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
-                fs.readFile(resolve, (error: Error, buffer: Buffer): void => {
+                var temp:Error[] = [];
+                fs.readFile(resolve, (error:Error, buffer:Buffer):void => {
                     if (!error) {
                         content = buffer.toString("utf8");
                         next();
                     } else {
-                        unlock((errors: Error[]): void => {
-                            var temp: Error[] = [error];
-                            if (errors && errors.length) {
-                                temp.concat(errors);
-                            }
-                            callback(null, <IResponse>{
-                                source: null,
-                                result: this.createCssErrors(temp),
-                                imports: [],
-                                map: {},
-                                date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
-                            });
-                        });
+                        temp.push(error);
+                        deferred([
+                            (next:() => void):void => {
+                                unlock((errors:Error[]):void => {
+                                    if (errors && errors.length) {
+                                        temp.concat(errors);
+                                    }
+                                    next();
+                                });
+                            },
+                            ():void => {
+                                callback(null, <IResponse>{
+                                    source: null,
+                                    result: this.createCssErrors(temp),
+                                    imports: [],
+                                    map: {},
+                                    date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
+                                });
+                            },
+                        ]);
                     }
                 });
             },
 
             ():void => {
+                var includeDirectories = this.getIncludeDirectories().slice(0);
+                includeDirectories.unshift(this.getSourcesDirectory());
                 less.render(content, <less.Options>{
                     paths: this.getIncludeDirectories(),
                     filename: path.join(this.getSourcesDirectory(), filename + ".less"),
@@ -198,19 +208,19 @@ class Compiler extends BaseCompiler implements ICompiler {
                     sourceMap: true,
                     lint: true
                 }, (error:Error, result:less.Result):void => {
-                    var value:IResponse,
+                    var temp:Error[] = [],
+                        value:IResponse,
                         imports:string[],
                         errors:Error[] = [];
                     if (!error) {
-                        /*imports = result.imports.map((item: string): string => {
-                            var index,
-                                length    = importDirs.length,
-                                directory = path.dirname(filename),
-                                importDirectory,
-                                relative;
-
+                        imports = result.imports.map((item:string):string => {
+                            var index:number,
+                                length:number = includeDirectories.length,
+                                directory:string = path.dirname(filename),
+                                importDirectory:string,
+                                relative:string;
                             for (index = 0; index < length; index++) {
-                                importDirectory = importDirs[index];
+                                importDirectory = includeDirectories[index];
                                 relative = path.relative(importDirectory, item);
                                 if (index === 0) {
                                     relative = path.join(directory, relative);
@@ -219,28 +229,97 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     break;
                                 }
                             }
-
                             if (relative.slice(0, 2) === "..") {
                                 errors.push(new Error("bla bla bla"));
                                 return null;
                             }
-
                             return relative;
-                        });*/
-                    } else {
-                        unlock((errors:Error[]):void => {
-                            var temp:Error[] = [new LessException(error)];
-                            if (errors && errors.length) {
-                                temp.concat(errors);
-                            }
-                            callback(null, <IResponse>{
-                                source: null,
-                                result: this.createCssErrors(temp),
-                                imports: [],
-                                map: {},
-                                date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
-                            });
                         });
+                        value = {
+                            css: result.css,
+                            map: (function (map) {
+                                if (!map.sources) {
+                                    return "{}";
+                                }
+                                map.sources = map.sources.map(function (item) {
+                                    var index,
+                                        length = importDirs.length,
+                                        directory = path.dirname(filename),
+                                        importDirectory,
+                                        relative;
+
+                                    for (index = 0; index < length; index++) {
+                                        importDirectory = importDirs[index];
+                                        relative = path.relative(importDirectory, item);
+                                        if (index === 0) {
+                                            relative = path.join(directory, relative);
+                                        }
+                                        if (relative.slice(0, 2) !== "..") {
+                                            break;
+                                        }
+                                    }
+
+                                    if (relative.slice(0, 2) === "..") {
+                                        errors.push(new Error("bla bla bla"));
+                                        return null;
+                                    }
+
+                                    return path.join(rootDirectory, relative);
+                                });
+
+                                return JSON.stringify(map);
+                            }(JSON.parse(String(result.map || "{}")))),
+                            less: content,
+                            date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
+                            imports: imports
+                        };
+                        if (errors.length) {
+                            done({
+                                css: errorHandler(errors),
+                                map: "{}",
+                                less: content,
+                                date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
+                                imports: []
+                            });
+                            unlock();
+                        } else {
+                            memory.setItem(filename, value, function (error) {
+                                if (!error) {
+                                    done(value);
+                                    unlock();
+                                } else {
+                                    done({
+                                        css: errorHandler([error]),
+                                        map: "{}",
+                                        less: content,
+                                        date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
+                                        imports: []
+                                    });
+                                    unlock();
+                                }
+                            });
+                        }
+                    } else {
+                        temp.push(new LessException(error));
+                        deferred([
+                            (next:() => void):void => {
+                                unlock((errors:Error[]):void => {
+                                    if (errors && errors.length) {
+                                        temp.concat(errors);
+                                    }
+                                    next();
+                                });
+                            },
+                            ():void => {
+                                callback(null, <IResponse>{
+                                    source: null,
+                                    result: this.createCssErrors(temp),
+                                    imports: [],
+                                    map: {},
+                                    date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
+                                });
+                            },
+                        ]);
                     }
                 });
             }
