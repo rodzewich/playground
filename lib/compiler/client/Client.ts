@@ -61,7 +61,8 @@ class Client extends BaseClient implements IClient {
             errorBackgroundColor: this.getErrorBackgroundColor(),
             errorTextColor: this.getErrorTextColor(),
             errorBlockPadding: this.getErrorBlockPadding(),
-            errorFontSize: this.getErrorFontSize()
+            errorFontSize: this.getErrorFontSize(),
+            useCache: this.isUseCache()
         };
     }
 
@@ -116,7 +117,7 @@ class Client extends BaseClient implements IClient {
     }
 
     protected isUseCache(): boolean {
-        return this._useCache;
+        return !!this._useCache;
     }
 
     private _memoryLocation: string;

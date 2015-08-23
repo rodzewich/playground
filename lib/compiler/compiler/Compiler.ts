@@ -13,11 +13,11 @@ import Exception = require("../../Exception");
 
 class Compiler implements ICompiler {
 
-    private _memory: IMemory;
+    private _memory:IMemory;
 
     private _filename:string;
 
-    private _sourcesDirectory: string;
+    private _sourcesDirectory:string;
 
     private _errorBackgroundColor:string = "#ffff00";
 
@@ -28,13 +28,13 @@ class Compiler implements ICompiler {
     private _errorFontSize:string = "13px";
 
     constructor(options?:IOptions) {
-        if (options && options.filename) {
+        if (options && typeOf(options.filename) !== "undefined") {
             this.setFilename(options.filename);
         }
-        if (options && options.sourcesDirectory) {
+        if (options && typeOf(options.sourcesDirectory) !== "undefined") {
             this.setSourcesDirectory(options.sourcesDirectory);
         }
-        if (options && typeOf(options.memory)) {
+        if (options && typeOf(options.memory) !== "undefined") {
             this.setMemory(options.memory);
         }
         if (options && typeOf(options.errorBackgroundColor) !== "undefined") {
@@ -49,6 +49,23 @@ class Compiler implements ICompiler {
         if (options && typeOf(options.errorFontSize) !== "undefined") {
             this.setErrorFontSize(options.errorFontSize);
         }
+        if (options && typeOf(options.useCache) !== "undefined") {
+            this.setUseCache(options.useCache);
+        }
+    }
+
+    private _useCache:boolean;
+
+    protected setUseCache(value:boolean):void {
+        this._useCache = value;
+    }
+
+    protected getUseCache():boolean {
+        return this._useCache;
+    }
+
+    protected isUseCache():boolean {
+        return !!this._useCache;
     }
 
     protected setErrorBackgroundColor(value:string):void {
@@ -83,15 +100,15 @@ class Compiler implements ICompiler {
         this._errorFontSize = value;
     }
 
-    public setMemory(value: IMemory): void {
+    public setMemory(value:IMemory):void {
         this._memory = value;
     }
 
-    public getMemory(): IMemory {
+    public getMemory():IMemory {
         return this._memory;
     }
 
-    protected createCssErrors(errors: Error[]): string {
+    protected createCssErrors(errors:Error[]):string {
         var property:string,
             content:string[] = [],
             bodyBefore:any = {
@@ -112,10 +129,10 @@ class Compiler implements ICompiler {
                     return String(index + 1) + ". " + Exception.getStack(error);
                 }).join("\n\n")).
                     replace(/\\n/g, "\\A ")/*.
-                    replace(/&/g, '&amp;').
-                    replace(/</g, '&lt;').
-                    replace(/>/g, '&gt;').
-                    replace(/"/g, '&quot;')*/ + " !important"
+                 replace(/&/g, '&amp;').
+                 replace(/</g, '&lt;').
+                 replace(/>/g, '&gt;').
+                 replace(/"/g, '&quot;')*/ + " !important"
                 // todo: доделать реализацию
             };
         for (property in bodyBefore) {
@@ -134,11 +151,11 @@ class Compiler implements ICompiler {
         this._filename = value;
     }
 
-    protected setSourcesDirectory(value: string): void {
+    protected setSourcesDirectory(value:string):void {
         this._sourcesDirectory = value;
     }
 
-    protected getSourcesDirectory(): string {
+    protected getSourcesDirectory():string {
         return this._sourcesDirectory;
     }
 

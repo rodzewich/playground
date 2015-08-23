@@ -45,7 +45,8 @@ class Client extends BaseClient {
             errorBackgroundColor: this.getErrorBackgroundColor(),
             errorTextColor: this.getErrorTextColor(),
             errorBlockPadding: this.getErrorBlockPadding(),
-            errorFontSize: this.getErrorFontSize()
+            errorFontSize: this.getErrorFontSize(),
+            useCache: this.isUseCache()
         };
     }
 

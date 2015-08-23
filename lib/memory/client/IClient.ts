@@ -14,7 +14,7 @@ interface IClient extends IBaseClient {
     getKey(index:number, callback:(errors?:Error[], response?:string) => void): void;
     getKeys(indexes:number[], callback:(errors?:Error[], response?:string[]) => void): void;
     getLength(callback:(errors?:Error[], response?:number) => void):void;
-    lock(key:string, callback:(errors?:Error[], unlock?:(callback:(errors?:Error[]) => void) => void) => void):void;
+    lock(key:string, callback:(errors?:Error[], unlock?:(callback?:(errors?:Error[]) => void) => void) => void):void;
 }
 
 export = IClient;
