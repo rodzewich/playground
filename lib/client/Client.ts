@@ -1,11 +1,14 @@
 /// <reference path="./IClient.ts" />
 /// <reference path="./IOptions.ts" />
 /// <reference path="../../types/node/node.d.ts" />
+/// <reference path="../WrapperException.ts" />
+/// <reference path="../Exception.ts" />
 
 import IClient = require("./IClient");
 import IOptions = require("./IOptions");
 import net = require("net");
 import WrapperException = require("../WrapperException");
+import Exception = require("../Exception");
 
 class Client implements IClient {
 
@@ -53,10 +56,10 @@ class Client implements IClient {
 
     protected call(callback:(errors?:Error[], response?:any) => void, ...args:any[]):void {
         if (!this._socket) {
-            throw new Error("bla bla bla");
+            throw new Exception("bla bla bla");
         }
         if (typeof callback !== "function") {
-            throw new Error("bla bla bla");
+            throw new Exception("bla bla bla");
         }
         this._socket.write(JSON.stringify({
             id: this.registerHandler(callback),

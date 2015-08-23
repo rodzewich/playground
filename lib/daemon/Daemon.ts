@@ -1,10 +1,12 @@
 /// <reference path="./IDaemon.ts" />
 /// <reference path="../../types/node/node.d.ts" />
+/// <reference path="../Exception.ts" />
 
 import IDaemon = require("./IDaemon");
 import IOptions = require("./IOptions");
 import path = require("path");
 import net = require("net");
+import Exception = require("../Exception");
 
 class Daemon implements IDaemon {
 
@@ -92,7 +94,7 @@ class Daemon implements IDaemon {
 
     public stop(callback?:() => void):void {
         if (!this._started) {
-            throw new Error("bla bla bla");
+            throw new Exception("bla bla bla");
         }
         this._server.close((): void => {
             this._server = undefined;

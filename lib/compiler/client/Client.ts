@@ -33,6 +33,21 @@ class Client extends BaseClient implements IClient {
         if (options && typeOf(options.memoryLocation) !== "undefined") {
             this.setMemoryLocation(options.memoryLocation);
         }
+        if (options && typeOf(options.useCache) !== "undefined") {
+            this.setUseCache(options.useCache);
+        }
+        if (options && typeOf(options.errorBackgroundColor) !== "undefined") {
+            this.setErrorBackgroundColor(options.errorBackgroundColor);
+        }
+        if (options && typeOf(options.errorTextColor) !== "undefined") {
+            this.setErrorTextColor(options.errorTextColor);
+        }
+        if (options && typeOf(options.errorBlockPadding) !== "undefined") {
+            this.setErrorBlockPadding(options.errorBlockPadding);
+        }
+        if (options && typeOf(options.errorFontSize) !== "undefined") {
+            this.setErrorFontSize(options.errorFontSize);
+        }
     }
 
     protected getDaemon(): string {
@@ -42,8 +57,66 @@ class Client extends BaseClient implements IClient {
     protected getRequest():IRequest {
         return <IRequest>{
             filename: null,
-            sourcesDirectory: this.getSourcesDirectory()
+            sourcesDirectory: this.getSourcesDirectory(),
+            errorBackgroundColor: this.getErrorBackgroundColor(),
+            errorTextColor: this.getErrorTextColor(),
+            errorBlockPadding: this.getErrorBlockPadding(),
+            errorFontSize: this.getErrorFontSize()
         };
+    }
+
+    private _errorBackgroundColor: string = "#ffff00";
+
+    protected getErrorBackgroundColor(): string {
+        return this._errorBackgroundColor;
+    }
+
+    protected setErrorBackgroundColor(value: string): void {
+        this._errorBackgroundColor = value;
+    }
+
+    private _errorTextColor: string = "#000000";
+
+    protected getErrorTextColor(): string {
+        return this._errorTextColor;
+    }
+
+    protected setErrorTextColor(value: string): void {
+        this._errorTextColor = value;
+    }
+
+    private _errorBlockPadding: string = "10px";
+
+    protected getErrorBlockPadding(): string {
+        return this._errorBlockPadding;
+    }
+
+    protected setErrorBlockPadding(value: string): void {
+        this._errorBlockPadding = value;
+    }
+
+    private _errorFontSize: string = "13px";
+
+    protected getErrorFontSize(): string {
+        return this._errorFontSize;
+    }
+
+    protected setErrorFontSize(value: string): void {
+        this._errorFontSize = value;
+    }
+
+    private _useCache: boolean;
+
+    protected setUseCache(value: boolean): void {
+        this._useCache = value;
+    }
+
+    protected getUseCache(): boolean {
+        return this._useCache;
+    }
+
+    protected isUseCache(): boolean {
+        return this._useCache;
     }
 
     private _memoryLocation: string;

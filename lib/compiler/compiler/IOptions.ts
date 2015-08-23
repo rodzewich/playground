@@ -6,6 +6,10 @@ interface IOptions {
     filename: string;
     sourcesDirectory: string;
     memory?: IMemory;
+    errorBackgroundColor?: string;
+    errorTextColor?: string;
+    errorBlockPadding?: string;
+    errorFontSize?: string;
 }
 
 export = IOptions;

@@ -15,9 +15,7 @@ import typeOf = require("../../typeOf");
 import parallel = require("../../parallel");
 import deferred = require("../../deferred");
 
-class Manager implements IManager {
-
-    private _location:string;
+class Manager extends Client implements IManager {
 
     private _numberOfProcesses:number = 1;
 
@@ -33,39 +31,11 @@ class Manager implements IManager {
 
     private _connectionQueue:((errors?:Error[]) => void)[] = [];
 
-    private _sourcesDirectory: string;
-
     constructor(options:IOptions) {
-        if (options && typeOf(options.location) !== "undefined") {
-            this.setLocation(options.location);
-        }
+        super(options);
         if (options && typeOf(options.numberOfProcesses) !== "undefined") {
             this.setNumberOfProcesses(options.numberOfProcesses);
         }
-        if (options && typeOf(options.sourcesDirectory) !== "undefined") {
-            this.setSourcesDirectory(options.sourcesDirectory);
-        }
-        if (options && typeOf(options.memoryLocation) !== "undefined") {
-            this.setMemoryLocation(options.memoryLocation);
-        }
-    }
-
-    private _memoryLocation: string;
-
-    protected getMemoryLocation(): string {
-        return this._memoryLocation;
-    }
-
-    protected setMemoryLocation(value: string): void {
-        this._memoryLocation = value;
-    }
-
-    protected setSourcesDirectory(value: string): void {
-        this._sourcesDirectory = value;
-    }
-
-    protected getSourcesDirectory(): string {
-        return this._sourcesDirectory;
     }
 
     protected getNumberOfProcesses():number {
@@ -80,7 +50,12 @@ class Manager implements IManager {
         return new Client({
             location: location,
             memoryLocation: this.getMemoryLocation(),
-            sourcesDirectory: this.getSourcesDirectory()
+            sourcesDirectory: this.getSourcesDirectory(),
+            errorBackgroundColor: this.getErrorBackgroundColor(),
+            errorTextColor: this.getErrorTextColor(),
+            errorBlockPadding: this.getErrorBlockPadding(),
+            errorFontSize: this.getErrorFontSize(),
+            useCache: this.isUseCache()
         });
     }
 
@@ -91,14 +66,6 @@ class Manager implements IManager {
             directory:string = path.dirname(location),
             filename:string = path.basename(location, extension);
         return path.join(directory, [filename, "-", identifier, extension].join(""));
-    }
-
-    protected setLocation(value:string):void {
-        this._location = value;
-    }
-
-    protected getLocation():string {
-        return this._location;
     }
 
     protected pull(callback:(client:IClient) => void):void {

@@ -2,12 +2,14 @@
 /// <reference path="./ICompiler.ts" />
 /// <reference path="../../typeOf.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
-/// <reference path="../../memory/client/IClient" />
+/// <reference path="../../memory/client/IClient.ts" />
+/// <reference path="../../Exception.ts" />
 
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
 import typeOf = require("../../typeOf");
 import IMemory = require("../../memory/client/IClient");
+import Exception = require("../../Exception");
 
 class Compiler implements ICompiler {
 
@@ -16,6 +18,14 @@ class Compiler implements ICompiler {
     private _filename:string;
 
     private _sourcesDirectory: string;
+
+    private _errorBackgroundColor:string = "#ffff00";
+
+    private _errorTextColor:string = "#000000";
+
+    private _errorBlockPadding:string = "10px";
+
+    private _errorFontSize:string = "13px";
 
     constructor(options?:IOptions) {
         if (options && options.filename) {
@@ -27,6 +37,50 @@ class Compiler implements ICompiler {
         if (options && typeOf(options.memory)) {
             this.setMemory(options.memory);
         }
+        if (options && typeOf(options.errorBackgroundColor) !== "undefined") {
+            this.setErrorBackgroundColor(options.errorBackgroundColor);
+        }
+        if (options && typeOf(options.errorTextColor) !== "undefined") {
+            this.setErrorTextColor(options.errorTextColor);
+        }
+        if (options && typeOf(options.errorBlockPadding) !== "undefined") {
+            this.setErrorBlockPadding(options.errorBlockPadding);
+        }
+        if (options && typeOf(options.errorFontSize) !== "undefined") {
+            this.setErrorFontSize(options.errorFontSize);
+        }
+    }
+
+    protected setErrorBackgroundColor(value:string):void {
+        this._errorBackgroundColor = value;
+    }
+
+    protected getErrorBackgroundColor():string {
+        return this._errorBackgroundColor;
+    }
+
+    protected getErrorTextColor():string {
+        return this._errorTextColor;
+    }
+
+    protected setErrorTextColor(value:string):void {
+        this._errorTextColor = value;
+    }
+
+    protected getErrorBlockPadding():string {
+        return this._errorBlockPadding;
+    }
+
+    protected setErrorBlockPadding(value:string):void {
+        this._errorBlockPadding = value;
+    }
+
+    protected getErrorFontSize():string {
+        return this._errorFontSize;
+    }
+
+    protected setErrorFontSize(value:string):void {
+        this._errorFontSize = value;
     }
 
     public setMemory(value: IMemory): void {
@@ -35,6 +89,41 @@ class Compiler implements ICompiler {
 
     public getMemory(): IMemory {
         return this._memory;
+    }
+
+    protected createCssErrors(errors: Error[]): string {
+        var property:string,
+            content:string[] = [],
+            bodyBefore:any = {
+                "margin": "0 !important",
+                "overflow": "hidden !important",
+                "display": "block !important",
+                "padding": this.getErrorBlockPadding() + " !important",
+                "color": this.getErrorTextColor() + " !important",
+                "background-color": this.getErrorBackgroundColor() + " !important",
+                "white-space": "pre !important",
+                "font-family": "'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace !important",
+                "font-size": this.getErrorFontSize() + " !important",
+                "font-style": "normal !important",
+                "font-variant": "normal !important",
+                "font-weight": "400 !important",
+                "word-wrap": "break-word !important",
+                "content": JSON.stringify(errors.map(function (error:Error, index:number) {
+                    return String(index + 1) + ". " + Exception.getStack(error);
+                }).join("\n\n")).
+                    replace(/\\n/g, "\\A ")/*.
+                    replace(/&/g, '&amp;').
+                    replace(/</g, '&lt;').
+                    replace(/>/g, '&gt;').
+                    replace(/"/g, '&quot;')*/ + " !important"
+                // todo: доделать реализацию
+            };
+        for (property in bodyBefore) {
+            if (bodyBefore.hasOwnProperty(property)) {
+                content.push(property + ":" + bodyBefore[property] + ";");
+            }
+        }
+        return "body:before{" + content.join("") + "}";
     }
 
     protected getFilename():string {

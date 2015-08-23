@@ -1,7 +1,9 @@
 /// <reference path="../types/node/node.d.ts" />
 /// <reference path="./typeOf.ts" />
+/// <reference path="./Exception.ts" />
 
 import typeOf = require("./typeOf");
+import Exception = require("./Exception");
 
 function deferred(actions:((next:() => void) => void)[]):void {
     var index:number,
@@ -10,19 +12,16 @@ function deferred(actions:((next:() => void) => void)[]):void {
         temp:((next:() => void) => void)[] = [];
 
     function iterate():void {
-        var timeout = setTimeout(():void => {
+        setTimeout(():void => {
             var action:(next:() => void) => void = temp.shift();
             if (typeOf(action) === "function") {
                 action(iterate);
             }
-        }, 0);
-        if (typeof window === "undefined") {
-            timeout.ref();
-        }
+        }, 0).ref();
     }
 
     if (typeOf(actions) !== "array") {
-        throw new Error("bla bla bla");
+        throw new Exception("bla bla bla");
     }
     length = actions.length;
     for (index = 0; index < length; index++) {

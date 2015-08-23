@@ -55,12 +55,12 @@ class Exception extends BaseException {
         return super.toString();
     }
 
-    public static convertToObject(error:Error):any {
+    public static convertToObject(error:any):any {
         return {
-            name: error.name,
-            message: error.message,
-            stack: error.message,
-            asString: error.toString()
+            name: error.name || null,
+            message: error.message || null,
+            stack: error.message || null,
+            asString: error.toString() || null
         };
     }
 

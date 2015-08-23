@@ -48,6 +48,10 @@ class Exception extends Error {
         Error.captureStackTrace(error, func);
     }
 
+    public static getStack(error:any):void {
+        return error ? error.stack || null : null;
+    }
+
 }
 
 export = Exception;
