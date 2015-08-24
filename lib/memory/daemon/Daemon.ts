@@ -220,6 +220,7 @@ class Daemon extends BaseDaemon implements IDaemon {
                 case "unlock":
                     response.result = null;
                     this.unlock(namespace, <string>args[0]);
+                    callback(response);
                     break;
                 default:
                     // todo: use WrapperException

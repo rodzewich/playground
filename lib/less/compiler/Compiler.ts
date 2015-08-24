@@ -106,7 +106,6 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
-                console.log(">>", 33);
                 var directories:string[];
                 memory.getItem(filename, (errors:Error[], response:IResponse):void => {
                     if ((!errors || !errors.length) && response && response.date >= mtime && response.imports.length === 0) {
@@ -154,7 +153,6 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
-                console.log(">>", 44);
                 memory.lock(filename, (errors?:Error[], result?:(callback?:(errors?:Error[]) => void) => void):void => {
                     if (!errors || !errors.length) {
                         unlock = result;
@@ -172,7 +170,6 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
-                console.log(">>", 55);
                 var temp:Error[] = [];
                 fs.readFile(resolve, (error:Error, buffer:Buffer):void => {
                     if (!error) {
@@ -307,6 +304,14 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     }
                                 },
                             ]);
+                        } else {
+                            callback(null, <IResponse>{
+                                source: null,
+                                result: this.createCssErrors(errors),
+                                imports: [],
+                                map: {},
+                                date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
+                            });
                         }
                     } else {
                         temp.push(new LessException(error));

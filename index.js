@@ -90,6 +90,7 @@ var manager = new Manager({
     location: path.join(__dirname, "temp/less.sock"),
     memoryLocation: memorySocketAddress,
     sourcesDirectory: path.join(__dirname, "styles"),
+    includeDirectories: ["/home/rodzewich/Projects/playground/less_include_dir"],
     numberOfProcesses: 4
 });
 
