@@ -69,24 +69,26 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
-                var errors:Error[] = [],
-                    actions:((next:() => void) => void)[] =
-                        this.getIncludeDirectories().map((directory:string):((next:() => void) => void) => {
-                            return (callback:() => void):void => {
-                                resolve = path.join(directory, filename + ".less");
-                                fs.stat(resolve, (error:Error, stats:fs.Stats):void => {
-                                    if (!error && stats.isFile()) {
-                                        mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
-                                        next();
-                                    } else {
-                                        if (error && BaseException.getCode(error) !== "ENOENT") {
-                                            errors.push(error);
-                                        }
-                                        callback();
-                                    }
-                                });
-                            };
+                var directories:string[] = this.getIncludeDirectories().slice(0),
+                    errors:Error[] = [],
+                    actions:((next:() => void) => void)[];
+                directories.unshift(this.getSourcesDirectory());
+                actions = directories.map((directory:string):((next:() => void) => void) => {
+                    return (callback:() => void):void => {
+                        resolve = path.join(directory, filename + ".less");
+                        fs.stat(resolve, (error:Error, stats:fs.Stats):void => {
+                            if (!error && stats.isFile()) {
+                                mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
+                                next();
+                            } else {
+                                if (error && BaseException.getCode(error) !== "ENOENT") {
+                                    errors.push(error);
+                                }
+                                callback();
+                            }
                         });
+                    };
+                });
                 actions.push(():void => {
                     if (errors.length) {
                         callback(null, <IResponse>{
@@ -104,6 +106,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
+                console.log(">>", 33);
                 var directories:string[];
                 memory.getItem(filename, (errors:Error[], response:IResponse):void => {
                     if ((!errors || !errors.length) && response && response.date >= mtime && response.imports.length === 0) {
@@ -151,6 +154,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
+                console.log(">>", 44);
                 memory.lock(filename, (errors?:Error[], result?:(callback?:(errors?:Error[]) => void) => void):void => {
                     if (!errors || !errors.length) {
                         unlock = result;
@@ -168,6 +172,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
+                console.log(">>", 55);
                 var temp:Error[] = [];
                 fs.readFile(resolve, (error:Error, buffer:Buffer):void => {
                     if (!error) {
