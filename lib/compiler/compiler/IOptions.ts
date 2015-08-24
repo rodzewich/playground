@@ -10,6 +10,7 @@ interface IOptions {
     errorTextColor?: string;
     errorBlockPadding?: string;
     errorFontSize?: string;
+    webRootDirectory?: string;
     useCache?: boolean;
 }
 

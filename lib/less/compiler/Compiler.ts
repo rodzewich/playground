@@ -236,20 +236,22 @@ class Compiler extends BaseCompiler implements ICompiler {
                             return relative;
                         });
                         value = {
-                            css: result.css,
+                            result: result.css,
+                            source: content,
+                            imports: imports,
                             map: (function (map) {
                                 if (!map.sources) {
                                     return "{}";
                                 }
                                 map.sources = map.sources.map(function (item) {
                                     var index,
-                                        length = importDirs.length,
+                                        length = includeDirectories.length,
                                         directory = path.dirname(filename),
                                         importDirectory,
                                         relative;
 
                                     for (index = 0; index < length; index++) {
-                                        importDirectory = importDirs[index];
+                                        importDirectory = includeDirectories[index];
                                         relative = path.relative(importDirectory, item);
                                         if (index === 0) {
                                             relative = path.join(directory, relative);
@@ -264,14 +266,12 @@ class Compiler extends BaseCompiler implements ICompiler {
                                         return null;
                                     }
 
-                                    return path.join(rootDirectory, relative);
+                                    return path.join("/", this.getWebRootDirectory(), relative);
                                 });
 
                                 return JSON.stringify(map);
                             }(JSON.parse(String(result.map || "{}")))),
-                            less: content,
-                            date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
-                            imports: imports
+                            date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                         };
 
                         if (!errors || !errors.length) {

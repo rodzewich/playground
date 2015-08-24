@@ -41,6 +41,7 @@ class Manager extends BaseManager {
             errorBackgroundColor: this.getErrorBackgroundColor(),
             errorTextColor: this.getErrorTextColor(),
             errorBlockPadding: this.getErrorBlockPadding(),
+            webRootDirectory: this.getWebRootDirectory(),
             errorFontSize: this.getErrorFontSize()
         });
     }

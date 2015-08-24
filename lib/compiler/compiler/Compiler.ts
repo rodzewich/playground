@@ -52,6 +52,19 @@ class Compiler implements ICompiler {
         if (options && typeOf(options.useCache) !== "undefined") {
             this.setUseCache(options.useCache);
         }
+        if (options && typeOf(options.webRootDirectory) !== "undefined") {
+            this.setWebRootDirectory(options.webRootDirectory);
+        }
+    }
+
+    private _webRootDirectory: string = "";
+
+    protected getWebRootDirectory(): string {
+        return this._webRootDirectory;
+    }
+
+    protected setWebRootDirectory(value: string): void {
+        this._webRootDirectory = value;
     }
 
     private _useCache:boolean;

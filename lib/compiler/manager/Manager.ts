@@ -55,6 +55,7 @@ class Manager extends Client implements IManager {
             errorTextColor: this.getErrorTextColor(),
             errorBlockPadding: this.getErrorBlockPadding(),
             errorFontSize: this.getErrorFontSize(),
+            webRootDirectory: this.getWebRootDirectory(),
             useCache: this.isUseCache()
         });
     }

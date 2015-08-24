@@ -48,6 +48,9 @@ class Client extends BaseClient implements IClient {
         if (options && typeOf(options.errorFontSize) !== "undefined") {
             this.setErrorFontSize(options.errorFontSize);
         }
+        if (options && typeOf(options.webRootDirectory) !== "undefined") {
+            this.setWebRootDirectory(options.webRootDirectory);
+        }
     }
 
     protected getDaemon(): string {
@@ -62,8 +65,19 @@ class Client extends BaseClient implements IClient {
             errorTextColor: this.getErrorTextColor(),
             errorBlockPadding: this.getErrorBlockPadding(),
             errorFontSize: this.getErrorFontSize(),
+            webRootDirectory: this.getWebRootDirectory(),
             useCache: this.isUseCache()
         };
+    }
+
+    private _webRootDirectory: string = "";
+
+    protected getWebRootDirectory(): string {
+        return this._webRootDirectory;
+    }
+
+    protected setWebRootDirectory(value: string): void {
+        this._webRootDirectory = value;
     }
 
     private _errorBackgroundColor: string = "#ffff00";

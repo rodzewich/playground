@@ -10,6 +10,7 @@ interface IOptions extends IBaseOptions {
     errorTextColor?: string;
     errorBlockPadding?: string;
     errorFontSize?: string;
+    webRootDirectory: string;
 }
 
 export = IOptions;

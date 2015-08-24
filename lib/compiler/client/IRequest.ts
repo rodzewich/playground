@@ -5,6 +5,7 @@ interface IRequest {
     errorTextColor: string;
     errorBlockPadding: string;
     errorFontSize: string;
+    webRootDirectory: string;
     useCache: boolean;
 }
 
