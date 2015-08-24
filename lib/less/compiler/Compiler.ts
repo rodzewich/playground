@@ -235,21 +235,20 @@ class Compiler extends BaseCompiler implements ICompiler {
                             }
                             return relative;
                         });
-                        value = {
+                        value = <IResponse>{
                             result: result.css,
                             source: content,
                             imports: imports,
-                            map: (function (map) {
+                            map: (((map:any):any => {
                                 if (!map.sources) {
-                                    return "{}";
+                                    return {};
                                 }
-                                map.sources = map.sources.map(function (item) {
-                                    var index,
-                                        length = includeDirectories.length,
-                                        directory = path.dirname(filename),
-                                        importDirectory,
-                                        relative;
-
+                                map.sources = map.sources.map((item:string):string => {
+                                    var index:number,
+                                        length:number = includeDirectories.length,
+                                        directory:string = path.dirname(filename),
+                                        importDirectory:string,
+                                        relative:string;
                                     for (index = 0; index < length; index++) {
                                         importDirectory = includeDirectories[index];
                                         relative = path.relative(importDirectory, item);
@@ -260,17 +259,14 @@ class Compiler extends BaseCompiler implements ICompiler {
                                             break;
                                         }
                                     }
-
                                     if (relative.slice(0, 2) === "..") {
                                         errors.push(new Error("bla bla bla"));
                                         return null;
                                     }
-
                                     return path.join("/", this.getWebRootDirectory(), relative);
                                 });
-
-                                return JSON.stringify(map);
-                            }(JSON.parse(String(result.map || "{}")))),
+                                return map;
+                            })(JSON.parse(String(result.map || "{}")))),
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                         };
 

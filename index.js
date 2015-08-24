@@ -115,9 +115,9 @@ deferred([
         });
     },
     function () {
-        manager.compile("index.less", function (errors, result) {
+        manager.compile("index", function (errors, result) {
             console.log("compiled");
-            console.log("result", result);
+            console.log(">>> result", result);
         });
     }
 ]);
