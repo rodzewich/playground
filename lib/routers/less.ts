@@ -1,28 +1,76 @@
 /// <reference path="./base.ts" />
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../deferred.ts" />
+/// <reference path="../typeOf.ts" />
 /// <reference path="../less/manager/IManager.ts" />
+/// <reference path="../less/manager/Manager.ts" />
+/// <reference path="../mkdir.ts" />
 
 import url = require("url");
 import http = require("http");
 import path = require("path");
 import base = require("./base");
 import deferred = require("../deferred");
+import mkdir = require("../mkdir");
+import typeOf = require("../typeOf");
 import IManager = require("../less/manager/IManager");
+import Manager = require("../less/manager/Manager");
 
-var manager: IManager;
+var manager:IManager;
 
 export interface RouterOptions extends base.RouterOptions {
     webRootDirectory: string;
 }
 
 export interface InitOptions extends base.InitOptions {
+    temporaryDirectory: string;
+    sourcesDirectory: string;
+    memoryLocation: string;
+    useCache: boolean;
+    errorBackgroundColor: string;
+    errorTextColor: string;
+    errorBlockPadding: string;
+    errorFontSize: string;
+    webRootDirectory: string;
+    numberOfProcesses: number;
+    sourcesDirectory: string;
 }
 
-export function init(options:InitOptions, done:() => void):void => {
+export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
+    var temporaryDirectory:string = options.temporaryDirectory,
+        memoryLocation:string = options.memoryLocation,
+        sourcesDirectory:string = options.sourcesDirectory,
+        webRootDirectory:string = options.webRootDirectory,
+        useCache:boolean = options.useCache,
+        errorBackgroundColor:string = options.errorBackgroundColor,
+        errorTextColor:string = options.errorTextColor,
+        errorBlockPadding:string = options.errorBlockPadding,
+        errorFontSize:string = options.errorFontSize,
+        numberOfProcesses:number = options.numberOfProcesses;
+    if (useCache) {
+        // todo: отдельный кейс сборки
+    } else {
+        manager = new Manager({
+            location: path.join(temporaryDirectory, "less.sock"),
+            memoryLocation: memoryLocation,
+            sourcesDirectory: sourcesDirectory,
+            webRootDirectory: webRootDirectory,
+            errorBackgroundColor: errorBackgroundColor,
+            errorTextColor: errorTextColor,
+            errorBlockPadding: errorBlockPadding,
+            errorFontSize: errorFontSize,
+            numberOfProcesses: numberOfProcesses,
+            useCache: false
+        });
+        manager.connect((errors:Error[]):void => {
+            if (typeOf(done) === "function") {
+                done(errors && errors.length ? errors : null);
+            }
+        });
+    }
 }
 
-export function route(options:RouterOptions, next:() => void):void => {
+export function route(options:RouterOptions, next:() => void):void {
     var server:http.Server = options.server,
         request:http.ServerRequest = options.request,
         response:http.ServerResponse = options.response,
