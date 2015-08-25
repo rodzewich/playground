@@ -9,7 +9,7 @@
 /// <reference path="../client/IResponse" />
 /// <reference path="../../../types/node/node.d.ts" />
 /// <reference path="./less.d.ts" />
-/// <reference path="../Exception.ts" />
+/// <reference path="../LessException.ts" />
 
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
@@ -23,7 +23,7 @@ import less = require("less");
 import path = require("path");
 import fs = require("fs");
 import BaseException = require("../../Exception");
-import LessException = require("../Exception");
+import LessException = require("../LessException");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
