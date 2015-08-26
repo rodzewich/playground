@@ -8,7 +8,7 @@
 /// <reference path="../../memory/client/IClient.ts" />
 /// <reference path="../client/IResponse" />
 /// <reference path="../../../types/node/node.d.ts" />
-/// <reference path="./less.d.ts" />
+/// <reference path="../../../types/stylus/stylus.d.ts" />
 /// <reference path="../Exception.ts" />
 
 import BaseCompiler = require("../../compiler/compiler/Compiler");
@@ -19,7 +19,7 @@ import deferred = require("../../deferred");
 import parallel = require("../../parallel");
 import IMemory = require("../../memory/client/IClient");
 import IResponse = require("../client/IResponse");
-import less = require("less");
+import stylus = require("stylus");
 import path = require("path");
 import fs = require("fs");
 import BaseException = require("../../Exception");
