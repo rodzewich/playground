@@ -85,8 +85,8 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                             errorTextColor: errorTextColor,
                             errorBlockPadding: errorBlockPadding,
                             errorFontSize: errorFontSize,
-                            numberOfProcesses: 4,
-                            useCache: true
+                            numberOfProcesses: 10,
+                            useCache: false
                         });
                         manager.connect((errors:Error[]):void => {
                             if (!errors || !errors.length) {
