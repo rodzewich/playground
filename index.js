@@ -33,26 +33,19 @@ require('source-map-support').install({
     }
 });
 
-var glob = require("glob");
 
-glob("**/*.less", {
-    cwd: "/home/rodzewich/Projects/playground/styles"
-}, function (error, files) {
-    console.log("error", error);
-    console.log("files", files);
-});
+var less = require("./lib/routers/less");
 
-return;
 
-var routers = {
-        /*typescript : require("./routers/typescript"),*/
-        /*stylus     : require("./routers/stylus"),*/
+/*var routers = {
+        /!*typescript : require("./routers/typescript"),*!/
+        /!*stylus     : require("./routers/stylus"),*!/
         less       : require("./routers/less"),
-        /*soy        : require("./routers/soy")*/
-    },
-    initialization = {
-        memory : require("./lib/memory/initialization")
-    };
+        /!*soy        : require("./routers/soy")*!/
+    },*/
+var initialization = {
+    memory : require("./lib/memory/initialization")
+};
 
 var staticContent = require("./lib/staticContent");
 
@@ -90,56 +83,6 @@ project = "../playground";
 
 var temporaryDirectory = "/home/rodzewich/Projects/playground/temp";
 var memorySocketAddress = path.join(temporaryDirectory, "memory.sock");
-
-
-
-
-
-
-var Manager = require("./lib/less/manager/Manager");
-var manager = new Manager({
-    location: path.join(__dirname, "temp/less.sock"),
-    memoryLocation: memorySocketAddress,
-    sourcesDirectory: path.join(__dirname, "styles"),
-    includeDirectories: ["/home/rodzewich/Projects/playground/less_include_dir"],
-    numberOfProcesses: 4
-});
-
-deferred([
-    cleanTemp,
-    function (done) {
-        initialization.memory(memorySocketAddress, function (error) {
-            if (!error) {
-                console.log("memory created");
-                done();
-            }
-        });
-    },
-    function (done) {
-        manager.connect(function (errors) {
-            if (errors && errors.length) {
-                errors.map(function (error) {
-                    console.log("error", error);
-                });
-            }
-            console.log("connected!!!");
-            done();
-        });
-    },
-    function () {
-        manager.compile("index", function (errors, result) {
-            console.log("compiled");
-            console.log(">>> result", result);
-        });
-    }
-]);
-
-return;
-
-
-
-
-
 
 
 
@@ -234,7 +177,21 @@ deferred([
                     });
                 },
                 /*initTypescript,*/
-                initLess,
+                function (done) {
+                    less.init({
+                        temporaryDirectory   : temporaryDirectory,
+                        memoryLocation       : memorySocketAddress,
+                        sourcesDirectory     : path.join(__dirname, "styles"),
+                        includeDirectories   : [path.join(__dirname, "less_include_dir")],
+                        webRootDirectory     : "/",
+                        useCache             : false,
+                        errorBackgroundColor : "#ffff00",
+                        errorTextColor       : "#000000",
+                        errorBlockPadding    : "10px",
+                        errorFontSize        : "13px",
+                        numberOfProcesses    : 5
+                    }, done);
+                },
                 /*initSoy*/
             ],
             function () {
@@ -304,7 +261,7 @@ deferred([
             deferred([
 
                 // processing *.ts files
-                function (next) {
+                /*function (next) {
                     if (processingTypescript) {
                         routers.typescript.route({
                             rootDirectory    : "",
@@ -318,16 +275,16 @@ deferred([
                     } else {
                         next();
                     }
-                },
+                },*/
 
                 // processing *.less files
                 function (next) {
                     if (processingLess) {
-                        routers.less.route({
-                            rootDirectory : "/",
-                            httpRequest   : request,
-                            httpResponse  : response,
-                            httpServer    : http
+                        less.route({
+                            request          : request,
+                            response         : response,
+                            webRootDirectory : "/",
+                            useCache         : false
                         }, next);
                     } else {
                         next();
@@ -335,7 +292,7 @@ deferred([
                 },
 
                 // processing *.styl files
-                function (next) {
+                /*function (next) {
                     if (processingStylus) {
                         routers.stylus.route({
                             rootDirectory : "/",
@@ -346,10 +303,10 @@ deferred([
                     } else {
                         next();
                     }
-                },
+                },*/
 
-                // processing *.less files
-                function (next) {
+                // processing *.soy files
+                /*function (next) {
                     if (processingSoy) {
                         routers.soy.route({
                             rootDirectory : "/",
@@ -360,7 +317,7 @@ deferred([
                     } else {
                         next();
                     }
-                },
+                },*/
 
                 // static
                 function (next) {

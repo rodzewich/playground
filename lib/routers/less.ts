@@ -34,6 +34,7 @@ export interface RouterOptions extends base.RouterOptions {
 
 export interface InitOptions extends base.InitOptions {
     temporaryDirectory: string;
+    includeDirectories: string[];
     sourcesDirectory: string;
     memoryLocation: string;
     useCache: boolean;
@@ -48,6 +49,7 @@ export interface InitOptions extends base.InitOptions {
 export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
     var temporaryDirectory:string = options.temporaryDirectory,
         memoryLocation:string = options.memoryLocation,
+        includeDirectories: string[] = options.includeDirectories,
         sourcesDirectory:string = options.sourcesDirectory,
         webRootDirectory:string = options.webRootDirectory,
         useCache:boolean = options.useCache,
@@ -77,6 +79,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                             location: path.join(temporaryDirectory, "temp-less.sock"),
                             memoryLocation: memoryLocation,
                             sourcesDirectory: sourcesDirectory,
+                            includeDirectories: includeDirectories,
                             webRootDirectory: webRootDirectory,
                             errorBackgroundColor: errorBackgroundColor,
                             errorTextColor: errorTextColor,
@@ -145,6 +148,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                 location: path.join(temporaryDirectory, "less.sock"),
                 memoryLocation: memoryLocation,
                 sourcesDirectory: sourcesDirectory,
+                includeDirectories: includeDirectories,
                 webRootDirectory: webRootDirectory,
                 errorBackgroundColor: errorBackgroundColor,
                 errorTextColor: errorTextColor,
@@ -169,6 +173,7 @@ export function route(options:RouterOptions, next:() => void):void {
         useCache: boolean = options.useCache,
         object:url.Url = url.parse(request.url, true),
         filename:string = path.relative(webRootDirectory, String(object.pathname || "/"));
+
     deferred([
 
         (next:() => void):void => {
@@ -281,4 +286,5 @@ export function route(options:RouterOptions, next:() => void):void {
         }
 
     ]);
+
 }
