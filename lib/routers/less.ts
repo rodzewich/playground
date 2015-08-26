@@ -82,7 +82,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                             errorTextColor: errorTextColor,
                             errorBlockPadding: errorBlockPadding,
                             errorFontSize: errorFontSize,
-                            numberOfProcesses: numberOfProcesses,
+                            numberOfProcesses: 4,
                             useCache: true
                         });
                         manager.connect((errors:Error[]):void => {
