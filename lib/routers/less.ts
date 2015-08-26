@@ -29,6 +29,7 @@ var manager:IManager,
 
 export interface RouterOptions extends base.RouterOptions {
     webRootDirectory: string;
+    useCache: boolean;
 }
 
 export interface InitOptions extends base.InitOptions {
@@ -165,15 +166,18 @@ export function route(options:RouterOptions, next:() => void):void {
     var request:http.ServerRequest = options.request,
         response:http.ServerResponse = options.response,
         webRootDirectory:string = options.webRootDirectory,
+        useCache: boolean = options.useCache,
         object:url.Url = url.parse(request.url, true),
         filename:string = path.relative(webRootDirectory, String(object.pathname || "/"));
     deferred([
+
         (next:() => void):void => {
             var extension:string = filename.substr(-4).toLowerCase(),
                 pathname:string = filename.substr(0, filename.length - 4);
             if (extension === ".css") {
                 manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
-                    var modified:number,
+                    var header: any = {},
+                        modified:number,
                         date:number;
                     if ((!errors || !errors.length) && result) {
                         modified = Date.parse(request.headers["if-modified-since"]);
@@ -182,11 +186,12 @@ export function route(options:RouterOptions, next:() => void):void {
                             response.writeHead(304);
                             response.end();
                         } else {
-                            response.writeHead(200, {
-                                "Content-Type": "text/css; charset=utf-8",
-                                "Last-Modified": (new Date(result.date * 1000)).toUTCString(),
-                                "X-SourceMap": path.join(webRootDirectory, pathname + ".css.map")
-                            });
+                            header["Content-Type"] = "text/css; charset=utf-8";
+                            header["Last-Modified"] = (new Date(result.date * 1000)).toUTCString();
+                            if (useCache) {
+                                header["X-SourceMap"] = path.join(webRootDirectory, pathname + ".css.map");
+                            }
+                            response.writeHead(200, header);
                             response.end(result.result);
                         }
                     } else if (errors && errors.length) {
@@ -202,14 +207,78 @@ export function route(options:RouterOptions, next:() => void):void {
                 next();
             }
         },
-        (next:() => void):void => {
 
-        },
         (next:() => void):void => {
-
+            var extension = filename.substr(-5).toLowerCase(),
+                pathname  = filename.substr(0, filename.length - 5);
+            if (useCache) {
+                next();
+            } else if (extension === ".less") {
+                manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
+                    if ((!errors || !errors.length) && result) {
+                        var header: any = {},
+                            modified = Date.parse(request.headers["if-modified-since"]),// todo: error place
+                            date     = 1000 * result.date;
+                        if (modified && modified === date) {
+                            response.writeHead(304);
+                            response.end();
+                        } else {
+                            header["Content-Type"] = "text/plain; charset=utf-8";
+                            header["Last-Modified"] = (new Date(result.date * 1000)).toUTCString();
+                            response.writeHead(200, header);
+                            response.end(result.source);
+                        }
+                    } else if (errors && errors.length) {
+                        errors.forEach((error:Error):void => {
+                            logger.error("Something went wrong", error);
+                        });
+                        next();
+                    } else {
+                        next();
+                    }
+                });
+            } else {
+                next();
+            }
         },
+
+        (next:() => void):void => {
+            var extension = filename.substr(-8).toLowerCase(),
+                pathname  = filename.substr(0, filename.length - 8);
+            if (useCache) {
+                next();
+            } else if (extension === ".css.map") {
+                manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
+                    if ((!errors || !errors.length) && result) {
+                        var header: any = {},
+                            modified = Date.parse(request.headers["if-modified-since"]),
+                            date     = 1000 * result.date;
+                        if (modified && modified === date) {
+                            response.writeHead(304);
+                            response.end();
+                        } else {
+                            header["Content-Type"] = "application/json; charset=utf-8";
+                            header["Last-Modified"] = (new Date(result.date * 1000)).toUTCString();
+                            response.writeHead(200, header);
+                            response.end(result.map);
+                        }
+                    } else if (errors && errors.length) {
+                        errors.forEach((error:Error):void => {
+                            logger.error("Something went wrong", error);
+                        });
+                        next();
+                    } else {
+                        next();
+                    }
+                });
+            } else {
+                next();
+            }
+        },
+
         ():void => {
             next();
-        },
+        }
+
     ]);
 }
