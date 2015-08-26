@@ -222,7 +222,7 @@ export function route(options:RouterOptions, next:() => void):void {
                 manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
                     if ((!errors || !errors.length) && result) {
                         var header: any = {},
-                            modified = Date.parse(request.headers["if-modified-since"]),// todo: error place
+                            modified = Date.parse(request.headers["if-modified-since"]),
                             date     = 1000 * result.date;
                         if (modified && modified === date) {
                             response.writeHead(304);
