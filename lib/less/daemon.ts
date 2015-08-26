@@ -31,7 +31,7 @@ var logger:log4js.Logger = log4js.getLogger("worker"),
                     return WrapperException.convertToObject(error)
                 })
             }) + "\n");
-            logger.fatal("Something went wrong", errors);
+            logger.fatal("Something went wrong", errors); // todo: list errors
         } else {
             process.stderr.write(JSON.stringify({
                 started: true

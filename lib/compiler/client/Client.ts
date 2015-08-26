@@ -122,15 +122,15 @@ class Client extends BaseClient implements IClient {
 
     private _useCache: boolean;
 
-    protected setUseCache(value: boolean): void {
+    public setUseCache(value: boolean): void {
         this._useCache = value;
     }
 
-    protected getUseCache(): boolean {
+    public getUseCache(): boolean {
         return this._useCache;
     }
 
-    protected isUseCache(): boolean {
+    public isUseCache(): boolean {
         return !!this._useCache;
     }
 

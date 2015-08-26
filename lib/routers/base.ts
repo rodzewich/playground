@@ -3,7 +3,6 @@
 import http = require("http");
 
 export interface RouterOptions {
-    server: http.Server;
     request: http.ServerRequest;
     response: http.ServerResponse;
 }
