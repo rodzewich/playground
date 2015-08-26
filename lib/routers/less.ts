@@ -2,6 +2,7 @@
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../../types/glob/glob.d.ts" />
 /// <reference path="../deferred.ts" />
+/// <reference path="../deferred.ts" />
 /// <reference path="../typeOf.ts" />
 /// <reference path="../less/manager/IManager.ts" />
 /// <reference path="../less/client/IResponse.ts" />
@@ -14,12 +15,13 @@ import http = require("http");
 import path = require("path");
 import base = require("./base");
 import deferred = require("../deferred");
+import parallel = require("../parallel");
 import mkdir = require("../mkdir");
 import typeOf = require("../typeOf");
 import IManager = require("../less/manager/IManager");
 import Manager = require("../less/manager/Manager");
 import IResponse = require("../less/client/IResponse");
-import log4js      = require("../../logger");
+import log4js = require("../../logger");
 import glob = require("glob");
 
 var manager:IManager,
@@ -40,7 +42,6 @@ export interface InitOptions extends base.InitOptions {
     errorFontSize: string;
     webRootDirectory: string;
     numberOfProcesses: number;
-    sourcesDirectory: string;
 }
 
 export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
@@ -58,7 +59,9 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
         (next:() => void):void => {
             mkdir(temporaryDirectory, (error?:Error):void => {
                 if (error) {
-                    done([error]);
+                    if (typeOf(done) === "function") {
+                        done([error]);
+                    }
                 } else {
                     next();
                 }
@@ -85,18 +88,42 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                             if (!errors || !errors.length) {
                                 next();
                             } else if (typeOf(done) === "function") {
-                                done(errors && errors.length ? errors : null);
+                                done(errors);
                             }
                         });
                     },
                     (next:() => void):void => {
-                        // todo: compile
-                        glob("**/*.js", options, function (er, files) {
-                            // files is an array of filenames.
-                            // If the `nonull` option is set, and nothing
-                            // was found, then files is ["**/*.js"]
-                            // er is an error object or null.
-                        })
+                        var actions:((done:() => void) => void)[] = [],
+                            errors:Error[] = [];
+                        glob("**/*.less", {
+                            cwd: sourcesDirectory
+                        }, (error?: Error, files?: string[]): void => {
+                            if (error) {
+                                if (typeOf(done) === "function") {
+                                    done([error]);
+                                }
+                            } else {
+                                files.forEach((filename:string):void => {
+                                    actions.push((done:() => void):void => {
+                                        manager.compile(filename, (errs?:Error[]):void => {
+                                            if (errs && errs.length) {
+                                                errors.concat(errs);
+                                            }
+                                            done();
+                                        });
+                                    });
+                                });
+                            }
+                        });
+                        parallel(actions, ():void => {
+                            if (errors.length) {
+                                if (typeOf(done) === "function") {
+                                    done(errors);
+                                }
+                            } else {
+                                next();
+                            }
+                        });
                     },
                     (next:() => void):void => {
                         manager.disconnect((errors?: Error[]): void => {
@@ -138,7 +165,7 @@ export function route(options:RouterOptions, next:() => void):void {
     var request:http.ServerRequest = options.request,
         response:http.ServerResponse = options.response,
         webRootDirectory:string = options.webRootDirectory,
-        object:url.Url = url.parse(request.url, true) || {},
+        object:url.Url = url.parse(request.url, true),
         filename:string = path.relative(webRootDirectory, String(object.pathname || "/"));
     deferred([
         (next:() => void):void => {

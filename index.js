@@ -33,6 +33,17 @@ require('source-map-support').install({
     }
 });
 
+var glob = require("glob");
+
+glob("**/*.less", {
+    cwd: "/home/rodzewich/Projects/playground/styles"
+}, function (error, files) {
+    console.log("error", error);
+    console.log("files", files);
+});
+
+return;
+
 var routers = {
         /*typescript : require("./routers/typescript"),*/
         /*stylus     : require("./routers/stylus"),*/
