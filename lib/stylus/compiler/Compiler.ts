@@ -94,7 +94,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         callback(null, <IResponse>{
                             source: null,
                             result: this.createCssErrors(errors),
-                            imports: [],
+                            deps: [],
                             map: {},
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                         });
@@ -108,12 +108,12 @@ class Compiler extends BaseCompiler implements ICompiler {
             (next:() => void):void => {
                 var directories:string[];
                 memory.getItem(filename, (errors:Error[], response:IResponse):void => {
-                    if ((!errors || !errors.length) && response && response.date >= mtime && response.imports.length === 0) {
+                    if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length === 0) {
                         callback(null, response);
-                    } else if ((!errors || !errors.length) && response && response.date >= mtime && response.imports.length !== 0) {
+                    } else if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length !== 0) {
                         directories = this.getIncludeDirectories().slice(0);
                         directories.unshift(this.getSourcesDirectory());
-                        parallel(response.imports.map((filename:string):((next:() => void) => void) => {
+                        parallel(response.deps.map((filename:string):((next:() => void) => void) => {
                             return (done:() => void):void => {
                                 var actions:((next:() => void) => void)[] = directories.map((directory:string):((next:() => void) => void) => {
                                     var temp:string = path.join(directory, filename);
@@ -142,7 +142,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         callback(null, <IResponse>{
                             source: null,
                             result: this.createCssErrors(errors),
-                            imports: [],
+                            deps: [],
                             map: {},
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                         });
@@ -161,7 +161,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         callback(null, <IResponse>{
                             source: null,
                             result: this.createCssErrors(errors),
-                            imports: [],
+                            deps: [],
                             map: {},
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                         });
@@ -190,7 +190,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 callback(null, <IResponse>{
                                     source: null,
                                     result: this.createCssErrors(temp),
-                                    imports: [],
+                                    deps: [],
                                     map: {},
                                     date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                                 });
@@ -212,10 +212,10 @@ class Compiler extends BaseCompiler implements ICompiler {
                 }, (error:Error, result:less.Result):void => {
                     var temp:Error[] = [],
                         value:IResponse,
-                        imports:string[],
+                        deps:string[],
                         errors:Error[] = [];
                     if (!error) {
-                        imports = result.imports.map((item:string):string => {
+                        deps = result.imports.map((item:string):string => {
                             var index:number,
                                 length:number = includeDirectories.length,
                                 directory:string = path.dirname(filename),
@@ -240,7 +240,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         value = <IResponse>{
                             result: result.css,
                             source: content,
-                            imports: imports,
+                            deps: deps,
                             map: (((map:any):any => {
                                 if (!map.sources) {
                                     return {};
@@ -295,7 +295,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                         callback(null, <IResponse>{
                                             source: null,
                                             result: this.createCssErrors(temp),
-                                            imports: [],
+                                            deps: [],
                                             map: {},
                                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                                         });
@@ -308,7 +308,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             callback(null, <IResponse>{
                                 source: null,
                                 result: this.createCssErrors(errors),
-                                imports: [],
+                                deps: [],
                                 map: {},
                                 date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                             });
@@ -328,7 +328,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 callback(null, <IResponse>{
                                     source: null,
                                     result: this.createCssErrors(temp),
-                                    imports: [],
+                                    deps: [],
                                     map: {},
                                     date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                                 });

@@ -5,7 +5,7 @@ import IBaseResponse = require("../../compiler/client/IResponse");
 interface IResponse extends IBaseResponse {
     source: string;
     result: string;
-    imports: string[];
+    deps: string[];
     map: any;
     date: number;
 }
