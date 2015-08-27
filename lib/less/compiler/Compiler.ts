@@ -11,6 +11,10 @@
 /// <reference path="./less.d.ts" />
 /// <reference path="../LessException.ts" />
 
+// todo: уметь устанавливать переменные
+// todo: уметь устанавливать дефолтные импорты
+// todo: уметь устанавливать плагины
+
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");

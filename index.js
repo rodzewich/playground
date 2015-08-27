@@ -33,6 +33,27 @@ require('source-map-support').install({
     }
 });
 
+/*var stylus = require("stylus");
+var deps = stylus('@import "a";\n@require "b.styl"').
+    deps("nesting.css");
+console.log("deps", deps);*/
+
+
+/*stylus.render(str, {
+    filename: 'nesting.css',
+    sourcemap: {
+        comment: false,
+        inline: false,
+        sourceRoot: null,
+        basePath: "."
+    },
+    paths: []
+}, function (err, css) {
+    if (err) throw err;
+    console.log(css);
+});*/
+
+/*return;*/
 
 var less = require("./lib/routers/less");
 
