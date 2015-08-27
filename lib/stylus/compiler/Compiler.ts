@@ -10,6 +10,7 @@
 /// <reference path="../../../types/node/node.d.ts" />
 /// <reference path="../../../types/stylus/stylus.d.ts" />
 /// <reference path="../Exception.ts" />
+/// <reference path="../../../types/stylus/stylus.d.ts" />
 
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
@@ -75,7 +76,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                 directories.unshift(this.getSourcesDirectory());
                 actions = directories.map((directory:string):((next:() => void) => void) => {
                     return (callback:() => void):void => {
-                        resolve = path.join(directory, filename + ".less");
+                        resolve = path.join(directory, filename + ".styl");
                         fs.stat(resolve, (error:Error, stats:fs.Stats):void => {
                             if (!error && stats.isFile()) {
                                 mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
@@ -203,9 +204,22 @@ class Compiler extends BaseCompiler implements ICompiler {
             ():void => {
                 var includeDirectories = this.getIncludeDirectories().slice(0);
                 includeDirectories.unshift(this.getSourcesDirectory());
+
+                var instance = stylus(content).
+                    set("filename", path.join(this.getSourcesDirectory(), filename + ".styl")).
+                    set("compress", true).
+                    set("sourcemap", {
+                        comment: true,
+                        inline: false,
+                        sourceRoot: null,
+                        basePath: "/"
+                    }).
+                    set("paths", this.getIncludeDirectories());
+
+
                 less.render(content, <less.Options>{
                     paths: this.getIncludeDirectories(),
-                    filename: path.join(this.getSourcesDirectory(), filename + ".less"),
+                    filename: path.join(this.getSourcesDirectory(), filename + ".styl"),
                     compress: true,
                     sourceMap: true,
                     lint: true
