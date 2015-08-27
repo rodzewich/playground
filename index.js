@@ -33,27 +33,26 @@ require('source-map-support').install({
     }
 });
 
-/*var stylus = require("stylus");
-var deps = stylus('@import "a";\n@require "b.styl"').
-    deps("nesting.css");
-console.log("deps", deps);*/
+var stylus = require("stylus");
 
-
-/*stylus.render(str, {
-    filename: 'nesting.css',
-    sourcemap: {
-        comment: false,
+var instance = stylus(fs.readFileSync("/home/rodzewich/Projects/playground/styles/index.styl").toString())
+    .set("filename", '/home/rodzewich/Projects/playground/styles/index.styl')
+    .set("compress", true)
+    .set("sourcemap", {
+        comment: true,
         inline: false,
         sourceRoot: null,
-        basePath: "."
-    },
-    paths: []
-}, function (err, css) {
+        basePath: "/"
+    })
+    .set("paths", ["/home/rodzewich/Projects/playground/less_include_dir"]);
+
+instance.render(function(err, css) {
     if (err) throw err;
     console.log(css);
-});*/
-
-/*return;*/
+    console.log(instance.sourcemap);
+    console.log(instance.deps());
+});
+return;
 
 var less = require("./lib/routers/less");
 
