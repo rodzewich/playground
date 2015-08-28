@@ -11,9 +11,11 @@ import IDaemon     = require("./daemon/IDaemon");
 import Daemon      = require("./daemon/Daemon");
 import log4js      = require("../../logger");
 import WrapperException = require("../WrapperException");
-var logger:log4js.Logger = log4js.getLogger("worker");
 
-var argv:any = require('optimist').
+require("../mapping");
+
+var logger:log4js.Logger = log4js.getLogger("worker"),
+    argv:any = require('optimist').
         usage('Usage: daemon -l [filename]').
         demand('l').
         alias('l', 'location').

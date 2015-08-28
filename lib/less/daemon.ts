@@ -17,6 +17,8 @@ import IMemory = require("../memory/client/IClient");
 import Memory = require("../memory/client/Client");
 import deferred = require("../deferred");
 
+require("../mapping");
+
 var logger:log4js.Logger = log4js.getLogger("worker"),
     argv:any = require("optimist").
         usage("Usage: daemon -l [worker] -m [memory]\nLess compilation daemon").

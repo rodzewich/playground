@@ -16,7 +16,7 @@ var fs                   = require("fs"),
     configure            = require("./lib/configure"),
     processingTypescript = false,
     processingLess       = true,
-    processingStylus     = false,
+    processingStylus     = true,
     processingSoy        = false,
     spawn                = require("child_process").spawn,
     charset;
@@ -33,28 +33,8 @@ require('source-map-support').install({
     }
 });
 
-var stylus = require("stylus");
-
-var instance = stylus(fs.readFileSync("/home/rodzewich/Projects/playground/styles/index.styl").toString())
-    .set("filename", '/home/rodzewich/Projects/playground/styles/index.styl')
-    .set("compress", true)
-    .set("sourcemap", {
-        comment: true,
-        inline: false,
-        sourceRoot: null,
-        basePath: "/"
-    })
-    .set("paths", ["/home/rodzewich/Projects/playground/less_include_dir"]);
-
-instance.render(function(err, css) {
-    if (err) throw err;
-    console.log(css);
-    console.log(instance.sourcemap);
-    console.log(instance.deps());
-});
-return;
-
-var less = require("./lib/routers/less");
+var less = require("./lib/routers/less"),
+    stylus = require("./lib/routers/stylus");
 
 
 /*var routers = {
@@ -212,6 +192,21 @@ deferred([
                         numberOfProcesses    : 5
                     }, done);
                 },
+                function (done) {
+                    stylus.init({
+                        temporaryDirectory   : temporaryDirectory,
+                        memoryLocation       : memorySocketAddress,
+                        sourcesDirectory     : path.join(__dirname, "styles"),
+                        includeDirectories   : [path.join(__dirname, "less_include_dir")],
+                        webRootDirectory     : "/",
+                        useCache             : false,
+                        errorBackgroundColor : "#ffff00",
+                        errorTextColor       : "#000000",
+                        errorBlockPadding    : "10px",
+                        errorFontSize        : "13px",
+                        numberOfProcesses    : 5
+                    }, done);
+                },
                 /*initSoy*/
             ],
             function () {
@@ -312,18 +307,18 @@ deferred([
                 },
 
                 // processing *.styl files
-                /*function (next) {
+                function (next) {
                     if (processingStylus) {
-                        routers.stylus.route({
-                            rootDirectory : "/",
-                            httpRequest   : request,
-                            httpResponse  : response,
-                            httpServer    : http
+                        stylus.route({
+                            request          : request,
+                            response         : response,
+                            webRootDirectory : "/",
+                            useCache         : false
                         }, next);
                     } else {
                         next();
                     }
-                },*/
+                },
 
                 // processing *.soy files
                 /*function (next) {

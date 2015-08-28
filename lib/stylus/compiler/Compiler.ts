@@ -203,10 +203,10 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             ():void => {
+                var compiler:any;
                 var includeDirectories = this.getIncludeDirectories().slice(0);
                 includeDirectories.unshift(this.getSourcesDirectory());
-
-                var compiler: any = stylus(content).
+                compiler = stylus(content).
                     set("filename", path.join(this.getSourcesDirectory(), filename + ".styl")).
                     set("compress", true).
                     set("sourcemap", {
@@ -216,28 +216,13 @@ class Compiler extends BaseCompiler implements ICompiler {
                         basePath: "/"
                     }).
                     set("paths", this.getIncludeDirectories());
-                compiler.render((err?: Error, css?: string): void => {
-                    if (err) throw err;
-                    console.log(css);
-                    console.log(compiler.sourcemap);
-                    console.log(compiler.deps());
-                });
-
-
-
-                less.render(content, <less.Options>{
-                    paths: this.getIncludeDirectories(),
-                    filename: path.join(this.getSourcesDirectory(), filename + ".styl"),
-                    compress: true,
-                    sourceMap: true,
-                    lint: true
-                }, (error:Error, result:less.Result):void => {
+                compiler.render((error?: Error, result?: string): void => {
                     var temp:Error[] = [],
                         value:IResponse,
                         deps:string[],
                         errors:Error[] = [];
                     if (!error) {
-                        deps = result.imports.map((item:string):string => {
+                        deps = compiler.deps().map((item:string):string => {
                             var index:number,
                                 length:number = includeDirectories.length,
                                 directory:string = path.dirname(filename),
@@ -259,8 +244,9 @@ class Compiler extends BaseCompiler implements ICompiler {
                             }
                             return relative;
                         });
+
                         value = <IResponse>{
-                            result: result.css,
+                            result: result,
                             source: content,
                             deps: deps,
                             map: (((map:any):any => {
@@ -273,6 +259,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                         directory:string = path.dirname(filename),
                                         importDirectory:string,
                                         relative:string;
+                                    item = path.join("/", item);
                                     for (index = 0; index < length; index++) {
                                         importDirectory = includeDirectories[index];
                                         relative = path.relative(importDirectory, item);
@@ -290,7 +277,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     return path.join("/", this.getWebRootDirectory(), relative);
                                 });
                                 return map;
-                            })(JSON.parse(String(result.map || "{}")))),
+                            })(compiler.sourcemap || {})),
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                         };
 

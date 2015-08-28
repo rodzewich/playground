@@ -4,10 +4,10 @@
 /// <reference path="../deferred.ts" />
 /// <reference path="../deferred.ts" />
 /// <reference path="../typeOf.ts" />
-/// <reference path="../less/manager/IManager.ts" />
-/// <reference path="../less/client/IResponse.ts" />
+/// <reference path="../stylus/manager/IManager.ts" />
+/// <reference path="../stylus/client/IResponse.ts" />
 /// <reference path="../../types/log4js/log4js.d.ts" />
-/// <reference path="../less/manager/Manager.ts" />
+/// <reference path="../stylus/manager/Manager.ts" />
 /// <reference path="../mkdir.ts" />
 
 import url = require("url");
@@ -18,9 +18,9 @@ import deferred = require("../deferred");
 import parallel = require("../parallel");
 import mkdir = require("../mkdir");
 import typeOf = require("../typeOf");
-import IManager = require("../less/manager/IManager");
-import Manager = require("../less/manager/Manager");
-import IResponse = require("../less/client/IResponse");
+import IManager = require("../stylus/manager/IManager");
+import Manager = require("../stylus/manager/Manager");
+import IResponse = require("../stylus/client/IResponse");
 import log4js = require("../../logger");
 import glob = require("glob");
 
@@ -76,7 +76,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                 deferred([
                     (next:() => void):void => {
                         manager = new Manager({
-                            location: path.join(temporaryDirectory, "less-temp.sock"),
+                            location: path.join(temporaryDirectory, "stylus-temp.sock"),
                             memoryLocation: memoryLocation,
                             sourcesDirectory: sourcesDirectory,
                             includeDirectories: includeDirectories,
@@ -145,7 +145,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
         },
         ():void => {
             manager = new Manager({
-                location: path.join(temporaryDirectory, "less.sock"),
+                location: path.join(temporaryDirectory, "stylus.sock"),
                 memoryLocation: memoryLocation,
                 sourcesDirectory: sourcesDirectory,
                 includeDirectories: includeDirectories,
@@ -218,7 +218,7 @@ export function route(options:RouterOptions, next:() => void):void {
                 pathname  = filename.substr(0, filename.length - 5);
             if (useCache) {
                 next();
-            } else if (extension === ".less") {
+            } else if (extension === ".styl") {
                 manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
                     if ((!errors || !errors.length) && result) {
                         var header: any = {},
