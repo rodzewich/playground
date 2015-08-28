@@ -193,7 +193,7 @@ export function route(options:RouterOptions, next:() => void):void {
                         } else {
                             header["Content-Type"] = "text/css; charset=utf-8";
                             header["Last-Modified"] = (new Date(result.date * 1000)).toUTCString();
-                            if (useCache) {
+                            if (!useCache) {
                                 header["X-SourceMap"] = path.join(webRootDirectory, pathname + ".css.map");
                             }
                             response.writeHead(200, header);
