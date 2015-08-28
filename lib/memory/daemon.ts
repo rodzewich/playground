@@ -9,10 +9,11 @@
 import optimist    = require("optimist");
 import IDaemon     = require("./daemon/IDaemon");
 import Daemon      = require("./daemon/Daemon");
-import log4js      = require("../../logger");
+import log4js      = require("log4js");
 import WrapperException = require("../WrapperException");
 
 require("../mapping");
+require("../../logger");
 
 var logger:log4js.Logger = log4js.getLogger("worker"),
     argv:any = require("optimist").

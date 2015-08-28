@@ -8,6 +8,7 @@
 /// <reference path="../../memory/client/IClient.ts" />
 /// <reference path="../client/IResponse" />
 /// <reference path="../../../types/node/node.d.ts" />
+/// <reference path="./autoprefixer.d.ts" />
 /// <reference path="./stylus.d.ts" />
 /// <reference path="../Exception.ts" />
 
@@ -15,6 +16,7 @@
 // todo: уметь устанавливать переменные
 // todo: уметь устанавливать дефолтные импорты
 // todo: уметь устанавливать плагины
+// todo: уметь управлять браузерами Autoprefixer'а
 
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
@@ -29,6 +31,7 @@ import path = require("path");
 import fs = require("fs");
 import BaseException = require("../../Exception");
 import LessException = require("../Exception");
+import autoprefixer = require('autoprefixer-stylus');
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -212,6 +215,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                 compiler = stylus(content).
                     set("filename", path.join(this.getSourcesDirectory(), filename + ".styl")).
                     set("compress", true).
+                    use(autoprefixer()).
                     set("sourcemap", {
                         comment: false,
                         inline: false,

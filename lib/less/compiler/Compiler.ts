@@ -14,6 +14,7 @@
 // todo: уметь устанавливать переменные
 // todo: уметь устанавливать дефолтные импорты
 // todo: уметь устанавливать плагины
+// todo: уметь использовать Autoprefixer
 
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");

@@ -18,7 +18,10 @@ import IClient = require("./IClient");
 import IResponse = require("./IResponse");
 import IRequest = require("./IRequest");
 import cp = require("child_process");
-import log4js      = require("../../../logger");
+import log4js = require("log4js");
+
+require("../../../logger");
+
 var logger:log4js.Logger = log4js.getLogger("worker");
 
 class Client extends BaseClient implements IClient {
