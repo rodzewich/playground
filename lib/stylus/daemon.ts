@@ -21,7 +21,7 @@ require("../mapping");
 
 var logger:log4js.Logger = log4js.getLogger("worker"),
     argv:any = require("optimist").
-        usage("Usage: daemon -l [worker] -m [memory]\nLess compilation daemon").
+        usage("Usage: daemon -l [worker] -m [memory]\nStylus daemon").
         demand("l").alias("l", "location").describe("l", "Less worker unix socket path").
         demand("m").alias("m", "memory").describe("m", "Memory worker unix socket path").
         argv,
@@ -43,6 +43,8 @@ var logger:log4js.Logger = log4js.getLogger("worker"),
     },
     memory:IMemory,
     daemon:IDaemon;
+
+process.title = "Stylus daemon";
 
 deferred([
     (next:() => void):void => {

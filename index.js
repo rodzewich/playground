@@ -15,7 +15,7 @@ var fs                   = require("fs"),
     parallel             = require("./lib/parallel"),
     configure            = require("./lib/configure"),
     processingTypescript = false,
-    processingLess       = false,
+    processingLess       = true,
     processingStylus     = true,
     processingSoy        = false,
     spawn                = require("child_process").spawn,
@@ -113,30 +113,6 @@ function initTypescript(callback) {
     }
 }
 
-function initLess(callback) {
-    if (processingLess) {
-        routers.less.init({
-            numberOfProcesses    : 4,
-            sourcesDirectory     : "/home/rodzewich/Projects/playground/styles",
-            importDirectories    : ["/home/rodzewich/Projects/playground/less_include_dir"],
-            temporaryDirectory   : temporaryDirectory,
-            memorySocketLocation : memorySocketAddress,
-            useCache             : false
-        }, function (errors) {
-            // todo: обрабатывать ошибки
-            if (errors && errors.length) {
-                errors.forEach(function (error) {
-                    console.log(error);
-                });
-            }
-            console.log("Less sockets created!");
-            callback();
-        });
-    } else {
-        callback();
-    }
-}
-
 function initSoy(callback) {
     if (processingSoy) {
         routers.soy.init({
@@ -210,6 +186,7 @@ deferred([
                 /*initSoy*/
             ],
             function () {
+                console.log("server inited!!!");
                 next();
             });
     },

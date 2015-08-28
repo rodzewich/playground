@@ -15,15 +15,17 @@ import WrapperException = require("../WrapperException");
 require("../mapping");
 
 var logger:log4js.Logger = log4js.getLogger("worker"),
-    argv:any = require('optimist').
-        usage('Usage: daemon -l [filename]').
-        demand('l').
-        alias('l', 'location').
-        describe('l', 'Unix socket location').
+    argv:any = require("optimist").
+        usage("Usage: daemon -l [filename]\nMemory daemon").
+        demand("l").
+        alias("l", "location").
+        describe("l", "Unix socket location").
         argv,
     daemon:IDaemon = new Daemon({
         location: argv.location
     });
+
+process.title = "Memory daemon";
 
 daemon.start((errors:Error[]):void => {
     if (errors && errors.length) {
