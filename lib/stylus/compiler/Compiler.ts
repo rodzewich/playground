@@ -8,9 +8,10 @@
 /// <reference path="../../memory/client/IClient.ts" />
 /// <reference path="../client/IResponse" />
 /// <reference path="../../../types/node/node.d.ts" />
-/// <reference path="../../../types/stylus/stylus.d.ts" />
+/// <reference path="./stylus.d.ts" />
 /// <reference path="../Exception.ts" />
-/// <reference path="../../../types/stylus/stylus.d.ts" />
+
+// todo: уметь использовать globals, functions, imports
 
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
@@ -205,16 +206,23 @@ class Compiler extends BaseCompiler implements ICompiler {
                 var includeDirectories = this.getIncludeDirectories().slice(0);
                 includeDirectories.unshift(this.getSourcesDirectory());
 
-                var instance = stylus(content).
+                var compiler: any = stylus(content).
                     set("filename", path.join(this.getSourcesDirectory(), filename + ".styl")).
                     set("compress", true).
                     set("sourcemap", {
-                        comment: true,
+                        comment: false,
                         inline: false,
                         sourceRoot: null,
                         basePath: "/"
                     }).
                     set("paths", this.getIncludeDirectories());
+                compiler.render((err?: Error, css?: string): void => {
+                    if (err) throw err;
+                    console.log(css);
+                    console.log(compiler.sourcemap);
+                    console.log(compiler.deps());
+                });
+
 
 
                 less.render(content, <less.Options>{
