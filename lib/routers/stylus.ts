@@ -99,7 +99,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                     (next:() => void):void => {
                         var actions:((done:() => void) => void)[] = [],
                             errors:Error[] = [];
-                        glob("**/*.less", {
+                        glob("**/*.styl", {
                             cwd: sourcesDirectory
                         }, (error?: Error, files?: string[]): void => {
                             if (error) {
