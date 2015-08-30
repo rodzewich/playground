@@ -2,7 +2,7 @@
   "version": "0.0.1",
   "description": "bla bla bla",
   "dependencies": {
-    "autoprefixer-stylus": "^0.7.1",
+    "autoprefixer-core": "^5.2.1",
     "blessed": "^0.1.80",
     "colors": "^1.1.2",
     "ejs": "^2.3.3",
@@ -12,6 +12,8 @@
     "less": "^2.5.1",
     "log4js": "^0.6.26",
     "optimist": "^0.6.1",
+    "postcss": "^5.0.3",
+    "postcss-safe-parser": "^1.0.1",
     "source-map": "^0.4.4",
     "source-map-support": "^0.3.2",
     "stylus": "^0.52.0"

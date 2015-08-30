@@ -16,7 +16,7 @@
 // todo: уметь устанавливать переменные
 // todo: уметь устанавливать дефолтные импорты
 // todo: уметь устанавливать плагины
-// todo: уметь управлять браузерами Autoprefixer'а
+// todo: подружить с Autoprefixer
 
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
@@ -31,7 +31,10 @@ import path = require("path");
 import fs = require("fs");
 import BaseException = require("../../Exception");
 import LessException = require("../Exception");
-import autoprefixer = require('autoprefixer-stylus');
+
+import postcss = require('postcss');
+import postcssSafeParser = require('postcss-safe-parser');
+import autoprefixer = require("autoprefixer-core");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -52,6 +55,26 @@ class Compiler extends BaseCompiler implements ICompiler {
         this._includeDirectories = value;
     }
 
+    protected getPostcssPlugins(): any[] {
+        return [
+            autoprefixer()
+        ];
+    }
+
+    protected postcss(options:{content: string; map: any}, callback:(errors?:Error[], result?:{content: string; map: any}) => void):void {
+        postcss(this.getPostcssPlugins()).process(options.content, {
+            parser: postcssSafeParser,
+            map: {
+                inline: false,
+                prev: options.map || false,
+                sourcesContent: false,
+                annotation: false
+            }
+        }).then((result:any):void => {
+            callback(null, {content: result.css, map: result.map});
+        });
+    }
+
     public compile(callback:(errors?:Error[], result?:IResponse) => void):void {
         var filename:string = this.getFilename(),
             resolve:string,
@@ -60,15 +83,34 @@ class Compiler extends BaseCompiler implements ICompiler {
             unlock:(callback?:(errors?:Error[]) => void) => void,
             content:string;
 
+        var postcss:((errors?:Error[], result?:IResponse) => void) = (errors?:Error[], result?:IResponse):void => {
+            if (result && typeOf(result.result) === "string") {
+                this.postcss({
+                    content: result.result,
+                    map: result.map
+                }, (errors?: Error[], res?:{content: string; map: any}): void => {
+                    callback(errors, {
+                        source: result.source,
+                        result: res.content,
+                        deps: result.deps,
+                        map: res.map,
+                        date: result.date
+                    });
+                });
+            } else {
+                callback(errors, result);
+            }
+        };
+
         deferred([
 
             (next:() => void):void => {
                 if (this.isUseCache()) {
                     memory.getItem(filename, (errors?:Error[], response?:IResponse):void => {
                         if (!errors || errors.length) {
-                            callback(null, response || null);
+                            postcss(null, response || null);
                         } else {
-                            callback(errors, null);
+                            postcss(errors, null);
                         }
                     });
                 } else {
@@ -99,7 +141,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                 });
                 actions.push(():void => {
                     if (errors.length) {
-                        callback(null, <IResponse>{
+                        postcss(null, <IResponse>{
                             source: null,
                             result: this.createCssErrors(errors),
                             deps: [],
@@ -107,7 +149,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                         });
                     } else {
-                        callback(null, null);
+                        postcss(null, null);
                     }
                 });
                 deferred(actions);
@@ -117,7 +159,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                 var directories:string[];
                 memory.getItem(filename, (errors:Error[], response:IResponse):void => {
                     if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length === 0) {
-                        callback(null, response);
+                        postcss(null, response);
                     } else if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length !== 0) {
                         directories = this.getIncludeDirectories().slice(0);
                         directories.unshift(this.getSourcesDirectory());
@@ -141,13 +183,13 @@ class Compiler extends BaseCompiler implements ICompiler {
                             };
                         }), ():void => {
                             if (response.date >= mtime) {
-                                callback(null, response);
+                                postcss(null, response);
                             } else {
                                 next();
                             }
                         });
                     } else if (errors && errors.length) {
-                        callback(null, <IResponse>{
+                        postcss(null, <IResponse>{
                             source: null,
                             result: this.createCssErrors(errors),
                             deps: [],
@@ -166,7 +208,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         unlock = result;
                         next();
                     } else {
-                        callback(null, <IResponse>{
+                        postcss(null, <IResponse>{
                             source: null,
                             result: this.createCssErrors(errors),
                             deps: [],
@@ -195,7 +237,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 });
                             },
                             ():void => {
-                                callback(null, <IResponse>{
+                                postcss(null, <IResponse>{
                                     source: null,
                                     result: this.createCssErrors(temp),
                                     deps: [],
@@ -209,13 +251,13 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             ():void => {
-                var compiler:any;
-                var includeDirectories = this.getIncludeDirectories().slice(0);
+                var compiler:any,
+                    postError:string = "",
+                    includeDirectories = this.getIncludeDirectories().slice(0);
                 includeDirectories.unshift(this.getSourcesDirectory());
                 compiler = stylus(content).
-                    set("filename", path.join(this.getSourcesDirectory(), filename + ".styl")).
+                    set("filename", resolve).
                     set("compress", true).
-                    use(autoprefixer()).
                     set("sourcemap", {
                         comment: false,
                         inline: false,
@@ -223,7 +265,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         basePath: "/"
                     }).
                     set("paths", this.getIncludeDirectories());
-                compiler.render((error?: Error, result?: string): void => {
+                compiler.render((error?:Error, result?:string):void => {
                     var temp:Error[] = [],
                         value:IResponse,
                         deps:string[],
@@ -253,7 +295,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         });
 
                         value = <IResponse>{
-                            result: result,
+                            result: result + String(postError || ""),
                             source: content,
                             deps: deps,
                             map: (((map:any):any => {
@@ -308,7 +350,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 },
                                 ():void => {
                                     if (temp.length) {
-                                        callback(null, <IResponse>{
+                                        postcss(null, <IResponse>{
                                             source: null,
                                             result: this.createCssErrors(temp),
                                             deps: [],
@@ -316,12 +358,12 @@ class Compiler extends BaseCompiler implements ICompiler {
                                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                                         });
                                     } else {
-                                        callback(null, value);
+                                        postcss(null, value);
                                     }
                                 },
                             ]);
                         } else {
-                            callback(null, <IResponse>{
+                            postcss(null, <IResponse>{
                                 source: null,
                                 result: this.createCssErrors(errors),
                                 deps: [],
@@ -341,7 +383,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 });
                             },
                             ():void => {
-                                callback(null, <IResponse>{
+                                postcss(null, <IResponse>{
                                     source: null,
                                     result: this.createCssErrors(temp),
                                     deps: [],
