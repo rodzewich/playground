@@ -25,6 +25,8 @@ import log4js = require("../../logger");
 import glob = require("glob");
 
 var manager:IManager,
+    memory:any = {},
+    startDate:string = (new Date()).toUTCString(),
     logger:log4js.Logger = log4js.getLogger("router");
 
 export interface RouterOptions extends base.RouterOptions {
@@ -166,7 +168,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
     ]);
 }
 
-export function route(options:RouterOptions, next:() => void):void {
+export function route(options:RouterOptions, complete:() => void):void {
     var request:http.ServerRequest = options.request,
         response:http.ServerResponse = options.response,
         webRootDirectory:string = options.webRootDirectory,
@@ -178,8 +180,33 @@ export function route(options:RouterOptions, next:() => void):void {
 
         (next:() => void):void => {
             var extension:string = filename.substr(-4).toLowerCase(),
+                pathname:string = filename.substr(0, filename.length - 4),
+                modified:string = request.headers["if-modified-since"],
+                header:any = {};
+            if (useCache && extension === ".css" &&
+                typeOf(memory[pathname]) !== "undefined" &&
+                modified && modified === startDate) {
+                response.writeHead(304);
+                response.end();
+            } else if (useCache && extension === ".css" &&
+                typeOf(memory[pathname]) !== "undefined") {
+                header["Content-Type"] = "text/css; charset=utf-8";
+                header["Last-Modified"] = startDate;
+                response.writeHead(200, header);
+                response.end(memory[pathname]);
+            } else if (useCache) {
+                complete();
+            } else {
+                next()
+            }
+        },
+
+        (next:() => void):void => {
+            var extension:string = filename.substr(-4).toLowerCase(),
                 pathname:string = filename.substr(0, filename.length - 4);
-            if (extension === ".css") {
+            if (useCache) {
+                next();
+            } else if (extension === ".css") {
                 manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
                     var header: any = {},
                         modified:number,
@@ -282,7 +309,7 @@ export function route(options:RouterOptions, next:() => void):void {
         },
 
         ():void => {
-            next();
+            complete();
         }
 
     ]);
