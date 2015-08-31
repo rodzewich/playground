@@ -32,8 +32,15 @@ import fs = require("fs");
 import BaseException = require("../../Exception");
 import LessException = require("../Exception");
 
-import postcss = require('postcss');
-import postcssSafeParser = require('postcss-safe-parser');
+import browserslist = require("browserslist");
+
+import postcss = require("postcss");
+import postcssSafeParser = require("postcss-safe-parser");
+
+// Fallbacks
+import postcssPseudoElements = require("postcss-pseudoelements");
+import postcssOpacity = require("postcss-opacity");
+import cssgrace = require("cssgrace");
 import autoprefixer = require("autoprefixer-core");
 
 class Compiler extends BaseCompiler implements ICompiler {
@@ -55,14 +62,155 @@ class Compiler extends BaseCompiler implements ICompiler {
         this._includeDirectories = value;
     }
 
-    protected getPostcssPlugins(): any[] {
-        return [
-            autoprefixer()
-        ];
+    private _pseudoElementsSelectors: string[] = ["before", "after", "first-letter", "first-line"];
+
+    protected setPseudoElementsSelectors(value: string[]): void {
+        this._pseudoElementsSelectors = value;
+    }
+
+    protected getPseudoElementsSelectors():string[] {
+        return this._pseudoElementsSelectors;
+    }
+
+    private _autoprefixerBrowsers: string[] = browserslist.defaults;
+
+    protected getAutoprefixerBrowsers(): string[] {
+        return this._autoprefixerBrowsers;
+    }
+
+    protected setAutoprefixerBrowsers(value: string[]): void {
+        this._autoprefixerBrowsers = value;
+    }
+
+    private _autoprefixerCascade: boolean = true;
+
+    protected isAutoprefixerCascade(): boolean {
+        return this.getAutoprefixerCascade();
+    }
+
+    protected getAutoprefixerCascade(): boolean {
+        return this._autoprefixerCascade;
+    }
+
+    protected setAutoprefixerCascade(value: boolean): void {
+        this._autoprefixerCascade = value;
+    }
+
+    private _autoprefixerAdd: boolean = true;
+
+    protected isAutoprefixerAdd(): boolean {
+        return this.getAutoprefixerAdd();
+    }
+
+    protected getAutoprefixerAdd(): boolean {
+        return this._autoprefixerAdd;
+    }
+
+    protected setAutoprefixerAdd(value: boolean): void {
+        this._autoprefixerAdd = value;
+    }
+
+    private _autoprefixerRemove: boolean = true;
+
+    protected isAutoprefixerRemove(): boolean {
+        return this.getAutoprefixerRemove();
+    }
+
+    protected getAutoprefixerRemove(): boolean {
+        return this._autoprefixerRemove;
+    }
+
+    protected setAutoprefixerRemove(value: boolean): void {
+        this._autoprefixerRemove = value;
+    }
+
+    private _usePseudoElements: boolean = true;
+
+    protected isUsePseudoElements(): boolean {
+        return this.getUsePseudoElements();
+    }
+
+    protected getUsePseudoElements(): boolean {
+        return this._usePseudoElements;
+    }
+
+    protected setUsePseudoElements(value: boolean): void {
+        this._usePseudoElements = value;
+    }
+
+    private _useAutoprefixer: boolean = true;
+
+    protected isUseAutoprefixer(): boolean {
+        return this.getUseAutoprefixer();
+    }
+
+    protected getUseAutoprefixer(): boolean {
+        return this._useAutoprefixer;
+    }
+
+    protected setUseAutoprefixer(value: boolean): void {
+        this._useAutoprefixer = value;
+    }
+
+    private _useCssgrace: boolean = true;
+
+    protected isUseCssgrace(): boolean {
+        return this.getUseCssgrace();
+    }
+
+    protected getUseCssgrace(): boolean {
+        return this._useCssgrace;
+    }
+
+    protected setUseCssgrace(value: boolean): void {
+        this._useCssgrace = value;
+    }
+
+    private _useOpacity: boolean = true;
+
+    protected isUseOpacity(): boolean {
+        return this.getUseOpacity();
+    }
+
+    protected getUseOpacity(): boolean {
+        return this._useOpacity;
+    }
+
+    protected setUseOpacity(value: boolean): void {
+        this._useOpacity = value;
+    }
+
+    protected postcssFallbacks(): any[] {
+        var fallbacks: any[] = [];
+        if (this.isUsePseudoElements()) {
+            fallbacks.push(postcssPseudoElements(this.getPseudoElementsSelectors()));
+        }
+
+        if (this.isUseAutoprefixer()) {
+            fallbacks.push(autoprefixer({
+                browsers: this.getAutoprefixerBrowsers(),
+                cascade: this.isAutoprefixerCascade(),
+                add: this.isAutoprefixerAdd(),
+                remove: this.isAutoprefixerRemove()
+            }));
+        }
+        if (this.isUseCssgrace()) {
+            fallbacks.push(cssgrace);
+        }
+        if (this.isUseOpacity()) {
+            fallbacks.push(postcssOpacity);
+        }
+        return fallbacks;
+    }
+
+    protected postcssPlugins(): any[] {
+        var plugins: any[] = [];
+        plugins = plugins.concat(this.postcssFallbacks());
+        return plugins;
     }
 
     protected postcss(options:{content: string; map: any}, callback:(errors?:Error[], result?:{content: string; map: any}) => void):void {
-        postcss(this.getPostcssPlugins()).process(options.content, {
+        postcss(this.postcssPlugins()).process(options.content, {
             parser: postcssSafeParser,
             map: {
                 inline: false,
