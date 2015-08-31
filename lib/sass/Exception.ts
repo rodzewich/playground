@@ -12,7 +12,6 @@ class Exception extends BaseException {
 
     constructor(error:any) {
         super();
-
         if (error && error.name) {
             this.name = String(<string>error.name) + "Exception";
         }

@@ -8,13 +8,15 @@
 /// <reference path="../../memory/client/IClient.ts" />
 /// <reference path="../client/IResponse" />
 /// <reference path="../../../types/node/node.d.ts" />
-/// <reference path="./less.d.ts" />
-/// <reference path="../LessException.ts" />
+/// <reference path="./autoprefixer.d.ts" />
+/// <reference path="./stylus.d.ts" />
+/// <reference path="../Exception.ts" />
 
+// todo: уметь использовать globals, functions, imports
 // todo: уметь устанавливать переменные
 // todo: уметь устанавливать дефолтные импорты
 // todo: уметь устанавливать плагины
-// todo: уметь использовать Autoprefixer
+// todo: уметь управлять браузерами Autoprefixer'а
 
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
@@ -24,11 +26,12 @@ import deferred = require("../../deferred");
 import parallel = require("../../parallel");
 import IMemory = require("../../memory/client/IClient");
 import IResponse = require("../client/IResponse");
-import less = require("less");
+import stylus = require("stylus");
 import path = require("path");
 import fs = require("fs");
 import BaseException = require("../../Exception");
-import LessException = require("../LessException");
+import LessException = require("../Exception");
+import autoprefixer = require('autoprefixer-stylus');
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -49,13 +52,44 @@ class Compiler extends BaseCompiler implements ICompiler {
         this._includeDirectories = value;
     }
 
+    private dependencies(filename:string, callback?:(errors?:Error[], result?:string[]) => void):void {
+        var dependencies:(filename:string, callback?:(errors?:Error[], result?:string[]) => void) => void =
+            (filename:string, callback?:(errors?:Error[], result?:string[]) => void):void => {
+
+            };
+        dependencies(filename, callback);
+    }
+
     public compile(callback:(errors?:Error[], result?:IResponse) => void):void {
         var filename:string = this.getFilename(),
             resolve:string,
             mtime:number,
             memory:IMemory = this.getMemory(),
             unlock:(callback?:(errors?:Error[]) => void) => void,
-            content:string;
+            content:string,
+            dependencies:(filename:string, callback?:(errors?:Error[], result?:string[]) => void) => void =
+                (filename:string, callback?:(errors?:Error[], result?:string[]) => void):void => {
+                    var directory:string = path.dirname(filename),
+                        dependencies:(filename:string, callback?:(errors?:Error[], result?:string[]) => void) => void =
+                            (filename:string, callback?:(errors?:Error[], result?:string[]) => void):void => {
+                                var imports:() => string[] = ():string[] => {
+                                    var singleComments:RegExp = /\/\/(.*)$/gm,
+                                        multiLineComments:RegExp = /(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm,
+                                        sassImports:RegExp = /(?:@import)(?:\s+)(?:(["'])([^"')]+)\1|([^\'\"\s)]+))/ig,
+                                        temp:string = String(content).
+                                            replace(singleComments, "").
+                                            replace(multiLineComments, ""),
+                                        result:string[] = [],
+                                        element:any;
+                                    while (element = sassImports.exec(temp)) {
+                                        result.push(path.join(directory, <string>element[2] || <string>element[3]));
+                                    }
+                                    return result;
+                                };
+
+                            };
+                    dependencies(filename, callback);
+                };
 
         deferred([
 
@@ -78,9 +112,9 @@ class Compiler extends BaseCompiler implements ICompiler {
                     errors:Error[] = [],
                     actions:((next:() => void) => void)[];
                 directories.unshift(this.getSourcesDirectory());
-                actions = directories.map((directory:string):((next:() => void) => void) => {
-                    return (callback:() => void):void => {
-                        resolve = path.join(directory, filename + ".less");
+                directories.forEach((directory:string):void => {
+                    actions.push((callback:() => void):void => {
+                        resolve = path.join(directory, filename + ".sass");
                         fs.stat(resolve, (error:Error, stats:fs.Stats):void => {
                             if (!error && stats.isFile()) {
                                 mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
@@ -92,7 +126,21 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 callback();
                             }
                         });
-                    };
+                    });
+                    actions.push((callback:() => void):void => {
+                        resolve = path.join(directory, filename + ".scss");
+                        fs.stat(resolve, (error:Error, stats:fs.Stats):void => {
+                            if (!error && stats.isFile()) {
+                                mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
+                                next();
+                            } else {
+                                if (error && BaseException.getCode(error) !== "ENOENT") {
+                                    errors.push(error);
+                                }
+                                callback();
+                            }
+                        });
+                    });
                 });
                 actions.push(():void => {
                     if (errors.length) {
@@ -206,21 +254,27 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             ():void => {
-                var includeDirectories = this.getIncludeDirectories().slice(0);
+                var compiler:any,
+                    includeDirectories = this.getIncludeDirectories().slice(0);
                 includeDirectories.unshift(this.getSourcesDirectory());
-                less.render(content, <less.Options>{
-                    paths: this.getIncludeDirectories(),
-                    filename: path.join(resolve),
-                    compress: true,
-                    sourceMap: true,
-                    lint: true
-                }, (error:Error, result:less.Result):void => {
+                compiler = stylus(content).
+                    set("filename", path.join(this.getSourcesDirectory(), filename + ".styl")).
+                    set("compress", true).
+                    use(autoprefixer()).
+                    set("sourcemap", {
+                        comment: false,
+                        inline: false,
+                        sourceRoot: null,
+                        basePath: "/"
+                    }).
+                    set("paths", this.getIncludeDirectories());
+                compiler.render((error?: Error, result?: string): void => {
                     var temp:Error[] = [],
                         value:IResponse,
                         deps:string[],
                         errors:Error[] = [];
                     if (!error) {
-                        deps = result.imports.map((item:string):string => {
+                        deps = compiler.deps().map((item:string):string => {
                             var index:number,
                                 length:number = includeDirectories.length,
                                 directory:string = path.dirname(filename),
@@ -242,8 +296,9 @@ class Compiler extends BaseCompiler implements ICompiler {
                             }
                             return relative;
                         });
+
                         value = <IResponse>{
-                            result: result.css,
+                            result: result,
                             source: content,
                             deps: deps,
                             map: (((map:any):any => {
@@ -256,6 +311,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                         directory:string = path.dirname(filename),
                                         importDirectory:string,
                                         relative:string;
+                                    item = path.join("/", item);
                                     for (index = 0; index < length; index++) {
                                         importDirectory = includeDirectories[index];
                                         relative = path.relative(importDirectory, item);
@@ -273,7 +329,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     return path.join("/", this.getWebRootDirectory(), relative);
                                 });
                                 return map;
-                            })(JSON.parse(String(result.map || "{}")))),
+                            })(compiler.sourcemap || {})),
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                         };
 

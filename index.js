@@ -33,6 +33,24 @@ require('source-map-support').install({
     }
 });
 
+/*var postcss = require('postcss');
+var postcssSafeParser = require('postcss-safe-parser');
+var autoprefixer = require("autoprefixer-core");
+postcss([]).process("a{color:red;border-radius;display:flex}", {
+    parser : postcssSafeParser,
+    map : {
+        inline         : false,
+        prev           : false, // todo
+        sourcesContent : false,
+        annotation     : false
+    }
+}).then(function (result) {
+    console.log(result.css); //=> 'a {}'
+    console.log(result.map.toString()); //=> 'a {}'
+});
+
+return;*/
+
 var less = require("./lib/routers/less"),
     stylus = require("./lib/routers/stylus");
 

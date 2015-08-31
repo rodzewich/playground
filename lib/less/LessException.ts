@@ -1,8 +1,10 @@
 /// <reference path="../compiler/Exception.ts" />
+/// <reference path="./Exception.ts" />
 
 import BaseException = require("../compiler/Exception");
+import CompilerException = require("./Exception");
 
-class Exception extends BaseException {
+class Exception extends CompilerException {
 
     public filename:string;
 
