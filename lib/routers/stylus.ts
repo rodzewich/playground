@@ -25,7 +25,7 @@ import log4js = require("../../logger");
 import glob = require("glob");
 
 var manager:IManager,
-    memory:any = {},
+    memory:base.Memory = {},
     startDate:string = (new Date()).toUTCString(),
     logger:log4js.Logger = log4js.getLogger("router");
 
