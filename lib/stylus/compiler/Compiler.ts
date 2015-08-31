@@ -39,9 +39,13 @@ import postcssSafeParser = require("postcss-safe-parser");
 
 // Fallbacks
 import postcssPseudoElements = require("postcss-pseudoelements");
+import postcssEpub = require("postcss-epub");
 import postcssOpacity = require("postcss-opacity");
 import cssgrace = require("cssgrace");
 import autoprefixer = require("autoprefixer-core");
+//import postcssWillChange = require("postcss-will-change");
+import postcssVmin = require("postcss-vmin");
+import postcssColorRgba = require("postcss-color-rgba-fallback");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -180,11 +184,135 @@ class Compiler extends BaseCompiler implements ICompiler {
         this._useOpacity = value;
     }
 
+    protected _useEpub: boolean = false;
+
+    protected isUseEpub(): boolean {
+        return this.getUseEpub();
+    }
+
+    protected getUseEpub(): boolean {
+        return this._useEpub;
+    }
+
+    protected setUseEpub(value: boolean): void {
+        this._useEpub = value;
+    }
+
+    private _epubFonts:boolean = true;
+
+    protected isEpubFonts(): boolean {
+        this.getEpubFonts();
+    }
+
+    protected getEpubFonts(): boolean {
+        return this._epubFonts;
+    }
+
+    protected setEpubFonts(value: boolean): void {
+        this._epubFonts = value;
+    }
+
+    private _epubStrip: boolean = true;
+
+    protected isEpubStrip(): boolean {
+        return this.getEpubStrip();
+    }
+
+    protected getEpubStrip(): boolean {
+        return this._epubStrip;
+    }
+
+    protected setEpubStrip(value: boolean): void {
+        this._epubStrip = value;
+    }
+
+    private _epubStrict: boolean = true;
+
+    protected isEpubStrict(): boolean {
+        return this.getEpubStrict();
+    }
+
+    protected getEpubStrict(): boolean {
+        return this._epubStrict;
+    }
+
+    protected setEpubStrict(value: boolean): void {
+        this._epubStrict = value;
+    }
+
+    /*private _useWillChange: boolean = false;
+
+    protected isUseWillChange(): boolean {
+        return this.getUseWillChange();
+    }
+
+    protected getUseWillChange(): boolean {
+        return this._useWillChange;
+    }
+
+    protected setUseWillChange(value: boolean): void {
+        this._useWillChange = value;
+    }*/
+
+    private _useVmin: boolean = true;
+
+    protected isUseVmin(): boolean {
+        return this.getUseVmin();
+    }
+
+    protected getUseVmin(): boolean {
+        return this._useVmin;
+    }
+
+    protected setUseVmin(value: boolean): void {
+        this._useVmin = value;
+    }
+
+    private _useColorRgba: boolean = true;
+
+    protected isUseColorRgba(): boolean {
+        return this.getUseColorRgba();
+    }
+
+    protected getUseColorRgba(): boolean {
+        return this._useColorRgba;
+    }
+
+    protected setUseColorRgba(value: boolean): void {
+        this._useColorRgba = value;
+    }
+
+    private _colorRgbaProperties: string[] = ["background-color","background","color","border","border-color","outline","outline-color"];
+
+    protected getColorRgbaProperties(): string[] {
+        return this._colorRgbaProperties;
+    }
+
+    protected setColorRgbaProperties(value: string[]): void {
+        this._colorRgbaProperties = value;
+    }
+
+    /**
+     pixrem generates pixel fallbacks for rem units.
+     */
+
     protected postcssFallbacks(): any[] {
         var fallbacks: any[] = [];
         if (this.isUsePseudoElements()) {
-            fallbacks.push(postcssPseudoElements(this.getPseudoElementsSelectors()));
+            fallbacks.push(postcssPseudoElements({
+                selectors: this.getPseudoElementsSelectors()
+            }));
         }
+        if (this.isUseEpub()) {
+            fallbacks.push(postcssEpub({
+                fonts: this.isEpubFonts(),
+                strip: this.isEpubStrip(),
+                strict: this.isEpubStrict()
+            }));
+        }
+        /*if (this.isUseWillChange()) {
+            fallbacks.push(postcssWillChange);
+        }*/
 
         if (this.isUseAutoprefixer()) {
             fallbacks.push(autoprefixer({
@@ -199,6 +327,14 @@ class Compiler extends BaseCompiler implements ICompiler {
         }
         if (this.isUseOpacity()) {
             fallbacks.push(postcssOpacity);
+        }
+        if (this.isUseVmin()) {
+            fallbacks.push(postcssVmin);
+        }
+        if (this.isUseColorRgba()) {
+            fallbacks.push(postcssColorRgba({
+                properties: this.getColorRgbaProperties()
+            }));
         }
         return fallbacks;
     }

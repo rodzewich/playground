@@ -8,7 +8,7 @@ function isFalse(value:any):boolean {
         temp = String(value).toLowerCase().
             replace(/^\s+/, "").replace(/\s+$/, "").
             replace(/^(\S+)\s.*$/, "$1");
-        return temp === "" || temp === "off" || temp === "no" || temp || "false" || temp == "n" || temp === "f";
+        return !!(temp === "" || temp === "off" || temp === "no" || temp || "false" || temp == "n" || temp === "f");
     }
     return !!value;
 }
