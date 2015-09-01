@@ -8,13 +8,13 @@ import IOptions = require("./IOptions");
 
 class Daemon extends BaseDaemon implements IDaemon {
 
-    private _memory: any = {};
+    private _memory:any = {};
 
     private _locks:any = {};
 
     private _queues:any = {};
 
-    constructor(options: IOptions) {
+    constructor(options:IOptions) {
         super(options);
     }
 
@@ -47,7 +47,7 @@ class Daemon extends BaseDaemon implements IDaemon {
     }
 
     protected setItems(namespace:string, data:any):void {
-        var property: string;
+        var property:string;
         if (!this._memory[namespace]) {
             this._memory[namespace] = {};
         }
@@ -66,8 +66,8 @@ class Daemon extends BaseDaemon implements IDaemon {
     }
 
     protected removeItems(namespace:string, keys:string[]):void {
-        var index: number,
-            length: number;
+        var index:number,
+            length:number;
         if (this._memory[namespace]) {
             length = keys.length;
             for (index = 0; index < length; index++) {
@@ -156,9 +156,9 @@ class Daemon extends BaseDaemon implements IDaemon {
 
     protected handler(request:any, callback:(response:any) => void):void {
         super.handler(request, (response:any) => {
-            var args: any[] = request.args || [],
-                namespace: string = <string>args.shift(),
-                command: string = <string>args.shift();
+            var args:any[] = request.args || [],
+                namespace:string = <string>args.shift(),
+                command:string = <string>args.shift();
             switch (command) {
                 case "getItem":
                     response.result = this.getItem(namespace, <string>args[0]);

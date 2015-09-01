@@ -5,6 +5,8 @@
 /// <reference path="./IResponse.ts" />
 /// <reference path="./IRequest.ts" />
 /// <reference path="../../typeOf.ts" />
+/// <reference path="../../helpers/IIncludeDirectoriesHelper.ts" />
+/// <reference path="../../helpers/IncludeDirectoriesHelper.ts" />
 
 import typeOf = require("../../typeOf");
 import IOptions = require("./IOptions");
@@ -13,24 +15,22 @@ import BaseClient = require("../../compiler/client/Client");
 import IResponse = require("./IResponse");
 import IRequest = require("./IRequest");
 import path = require("path");
+import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
+import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
 
 class Client extends BaseClient {
+
+    private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
 
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
-            this.setIncludeDirectories(options.includeDirectories);
+            this.getIncludeDirectories().setDirectories(options.includeDirectories);
         }
     }
 
-    private _includeDirectories:string[] = [];
-
-    protected getIncludeDirectories(): string[] {
+    protected getIncludeDirectories():IIncludeDirectoriesHelper {
         return this._includeDirectories;
-    }
-
-    protected setIncludeDirectories(value: string[]): void {
-        this._includeDirectories = value;
     }
 
     protected getDaemon(): string {
@@ -40,14 +40,14 @@ class Client extends BaseClient {
     protected getRequest():IRequest {
         return <IRequest>{
             filename: null,
-            sourcesDirectory: this.getSourcesDirectory(),
-            includeDirectories: this.getIncludeDirectories(),
-            errorBackgroundColor: this.getErrorBackgroundColor(),
-            errorTextColor: this.getErrorTextColor(),
-            errorBlockPadding: this.getErrorBlockPadding(),
-            errorFontSize: this.getErrorFontSize(),
-            webRootDirectory: this.getWebRootDirectory(),
-            useCache: this.isUseCache()
+            sourcesDirectory: this.getSourcesDirectory().getLocation(),
+            includeDirectories: this.getIncludeDirectories().getDirectories(),
+            errorBackgroundColor: this.getCssErrors().getBackgroundColor(),
+            errorTextColor: this.getCssErrors().getTextColor(),
+            errorBlockPadding: this.getCssErrors().getBlockPadding(),
+            errorFontSize: this.getCssErrors().getFontSize(),
+            webRootDirectory: this.getWebRootDirectory().getLocation(),
+            useCache: this.getCache().isUse()
         };
     }
 

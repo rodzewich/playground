@@ -11,6 +11,8 @@
 /// <reference path="./autoprefixer.d.ts" />
 /// <reference path="./stylus.d.ts" />
 /// <reference path="../Exception.ts" />
+/// <reference path="../../helpers/PostcssEpubHelper.ts" />
+/// <reference path="../../helpers/IPostcssEpubHelper.ts" />
 
 // todo: уметь использовать globals, functions, imports
 // todo: уметь устанавливать переменные
@@ -47,7 +49,16 @@ import autoprefixer = require("autoprefixer-core");
 import postcssVmin = require("postcss-vmin");
 import postcssColorRgba = require("postcss-color-rgba-fallback");
 
+import PostcssEpubHelper = require("../../helpers/PostcssEpubHelper");
+import IPostcssEpubHelper = require("../../helpers/IPostcssEpubHelper");
+
 class Compiler extends BaseCompiler implements ICompiler {
+
+    private _postcssEpub:IPostcssEpubHelper = new PostcssEpubHelper();
+
+    public getPostcssEpub():IPostcssEpubHelper {
+        return this._postcssEpub;
+    }
 
     private _includeDirectories:string[] = [];
 
@@ -66,9 +77,9 @@ class Compiler extends BaseCompiler implements ICompiler {
         this._includeDirectories = value;
     }
 
-    private _pseudoElementsSelectors: string[] = ["before", "after", "first-letter", "first-line"];
+    private _pseudoElementsSelectors:string[] = ["before", "after", "first-letter", "first-line"];
 
-    protected setPseudoElementsSelectors(value: string[]): void {
+    protected setPseudoElementsSelectors(value:string[]):void {
         this._pseudoElementsSelectors = value;
     }
 
@@ -76,219 +87,164 @@ class Compiler extends BaseCompiler implements ICompiler {
         return this._pseudoElementsSelectors;
     }
 
-    private _autoprefixerBrowsers: string[] = browserslist.defaults;
+    private _autoprefixerBrowsers:string[] = browserslist.defaults;
 
-    protected getAutoprefixerBrowsers(): string[] {
+    protected getAutoprefixerBrowsers():string[] {
         return this._autoprefixerBrowsers;
     }
 
-    protected setAutoprefixerBrowsers(value: string[]): void {
+    protected setAutoprefixerBrowsers(value:string[]):void {
         this._autoprefixerBrowsers = value;
     }
 
-    private _autoprefixerCascade: boolean = true;
+    private _autoprefixerCascade:boolean = true;
 
-    protected isAutoprefixerCascade(): boolean {
+    protected isAutoprefixerCascade():boolean {
         return this.getAutoprefixerCascade();
     }
 
-    protected getAutoprefixerCascade(): boolean {
+    protected getAutoprefixerCascade():boolean {
         return this._autoprefixerCascade;
     }
 
-    protected setAutoprefixerCascade(value: boolean): void {
+    protected setAutoprefixerCascade(value:boolean):void {
         this._autoprefixerCascade = value;
     }
 
-    private _autoprefixerAdd: boolean = true;
+    private _autoprefixerAdd:boolean = true;
 
-    protected isAutoprefixerAdd(): boolean {
+    protected isAutoprefixerAdd():boolean {
         return this.getAutoprefixerAdd();
     }
 
-    protected getAutoprefixerAdd(): boolean {
+    protected getAutoprefixerAdd():boolean {
         return this._autoprefixerAdd;
     }
 
-    protected setAutoprefixerAdd(value: boolean): void {
+    protected setAutoprefixerAdd(value:boolean):void {
         this._autoprefixerAdd = value;
     }
 
-    private _autoprefixerRemove: boolean = true;
+    private _autoprefixerRemove:boolean = true;
 
-    protected isAutoprefixerRemove(): boolean {
+    protected isAutoprefixerRemove():boolean {
         return this.getAutoprefixerRemove();
     }
 
-    protected getAutoprefixerRemove(): boolean {
+    protected getAutoprefixerRemove():boolean {
         return this._autoprefixerRemove;
     }
 
-    protected setAutoprefixerRemove(value: boolean): void {
+    protected setAutoprefixerRemove(value:boolean):void {
         this._autoprefixerRemove = value;
     }
 
-    private _usePseudoElements: boolean = true;
+    private _usePseudoElements:boolean = true;
 
-    protected isUsePseudoElements(): boolean {
+    protected isUsePseudoElements():boolean {
         return this.getUsePseudoElements();
     }
 
-    protected getUsePseudoElements(): boolean {
+    protected getUsePseudoElements():boolean {
         return this._usePseudoElements;
     }
 
-    protected setUsePseudoElements(value: boolean): void {
+    protected setUsePseudoElements(value:boolean):void {
         this._usePseudoElements = value;
     }
 
-    private _useAutoprefixer: boolean = true;
+    private _useAutoprefixer:boolean = true;
 
-    protected isUseAutoprefixer(): boolean {
+    protected isUseAutoprefixer():boolean {
         return this.getUseAutoprefixer();
     }
 
-    protected getUseAutoprefixer(): boolean {
+    protected getUseAutoprefixer():boolean {
         return this._useAutoprefixer;
     }
 
-    protected setUseAutoprefixer(value: boolean): void {
+    protected setUseAutoprefixer(value:boolean):void {
         this._useAutoprefixer = value;
     }
 
-    private _useCssgrace: boolean = true;
+    private _useCssgrace:boolean = true;
 
-    protected isUseCssgrace(): boolean {
+    protected isUseCssgrace():boolean {
         return this.getUseCssgrace();
     }
 
-    protected getUseCssgrace(): boolean {
+    protected getUseCssgrace():boolean {
         return this._useCssgrace;
     }
 
-    protected setUseCssgrace(value: boolean): void {
+    protected setUseCssgrace(value:boolean):void {
         this._useCssgrace = value;
     }
 
-    private _useOpacity: boolean = true;
+    private _useOpacity:boolean = true;
 
-    protected isUseOpacity(): boolean {
+    protected isUseOpacity():boolean {
         return this.getUseOpacity();
     }
 
-    protected getUseOpacity(): boolean {
+    protected getUseOpacity():boolean {
         return this._useOpacity;
     }
 
-    protected setUseOpacity(value: boolean): void {
+    protected setUseOpacity(value:boolean):void {
         this._useOpacity = value;
     }
 
-    protected _useEpub: boolean = false;
-
-    protected isUseEpub(): boolean {
-        return this.getUseEpub();
-    }
-
-    protected getUseEpub(): boolean {
-        return this._useEpub;
-    }
-
-    protected setUseEpub(value: boolean): void {
-        this._useEpub = value;
-    }
-
-    private _epubFonts:boolean = true;
-
-    protected isEpubFonts(): boolean {
-        this.getEpubFonts();
-    }
-
-    protected getEpubFonts(): boolean {
-        return this._epubFonts;
-    }
-
-    protected setEpubFonts(value: boolean): void {
-        this._epubFonts = value;
-    }
-
-    private _epubStrip: boolean = true;
-
-    protected isEpubStrip(): boolean {
-        return this.getEpubStrip();
-    }
-
-    protected getEpubStrip(): boolean {
-        return this._epubStrip;
-    }
-
-    protected setEpubStrip(value: boolean): void {
-        this._epubStrip = value;
-    }
-
-    private _epubStrict: boolean = true;
-
-    protected isEpubStrict(): boolean {
-        return this.getEpubStrict();
-    }
-
-    protected getEpubStrict(): boolean {
-        return this._epubStrict;
-    }
-
-    protected setEpubStrict(value: boolean): void {
-        this._epubStrict = value;
-    }
 
     /*private _useWillChange: boolean = false;
 
-    protected isUseWillChange(): boolean {
-        return this.getUseWillChange();
-    }
+     protected isUseWillChange(): boolean {
+     return this.getUseWillChange();
+     }
 
-    protected getUseWillChange(): boolean {
-        return this._useWillChange;
-    }
+     protected getUseWillChange(): boolean {
+     return this._useWillChange;
+     }
 
-    protected setUseWillChange(value: boolean): void {
-        this._useWillChange = value;
-    }*/
+     protected setUseWillChange(value: boolean): void {
+     this._useWillChange = value;
+     }*/
 
-    private _useVmin: boolean = true;
+    private _useVmin:boolean = true;
 
-    protected isUseVmin(): boolean {
+    protected isUseVmin():boolean {
         return this.getUseVmin();
     }
 
-    protected getUseVmin(): boolean {
+    protected getUseVmin():boolean {
         return this._useVmin;
     }
 
-    protected setUseVmin(value: boolean): void {
+    protected setUseVmin(value:boolean):void {
         this._useVmin = value;
     }
 
-    private _useColorRgba: boolean = true;
+    private _useColorRgba:boolean = true;
 
-    protected isUseColorRgba(): boolean {
+    protected isUseColorRgba():boolean {
         return this.getUseColorRgba();
     }
 
-    protected getUseColorRgba(): boolean {
+    protected getUseColorRgba():boolean {
         return this._useColorRgba;
     }
 
-    protected setUseColorRgba(value: boolean): void {
+    protected setUseColorRgba(value:boolean):void {
         this._useColorRgba = value;
     }
 
-    private _colorRgbaProperties: string[] = ["background-color","background","color","border","border-color","outline","outline-color"];
+    private _colorRgbaProperties:string[] = ["background-color", "background", "color", "border", "border-color", "outline", "outline-color"];
 
-    protected getColorRgbaProperties(): string[] {
+    protected getColorRgbaProperties():string[] {
         return this._colorRgbaProperties;
     }
 
-    protected setColorRgbaProperties(value: string[]): void {
+    protected setColorRgbaProperties(value:string[]):void {
         this._colorRgbaProperties = value;
     }
 
@@ -296,23 +252,23 @@ class Compiler extends BaseCompiler implements ICompiler {
      pixrem generates pixel fallbacks for rem units.
      */
 
-    protected postcssFallbacks(): any[] {
-        var fallbacks: any[] = [];
+    protected postcssFallbacks():any[] {
+        var fallbacks:any[] = [];
         if (this.isUsePseudoElements()) {
             fallbacks.push(postcssPseudoElements({
                 selectors: this.getPseudoElementsSelectors()
             }));
         }
-        if (this.isUseEpub()) {
+        if (this.getPostcssEpub().isUse()) {
             fallbacks.push(postcssEpub({
-                fonts: this.isEpubFonts(),
-                strip: this.isEpubStrip(),
-                strict: this.isEpubStrict()
+                fonts: this.getPostcssEpub().isFonts(),
+                strip: this.getPostcssEpub().isStrip(),
+                strict: this.getPostcssEpub().isStrict()
             }));
         }
         /*if (this.isUseWillChange()) {
-            fallbacks.push(postcssWillChange);
-        }*/
+         fallbacks.push(postcssWillChange);
+         }*/
 
         if (this.isUseAutoprefixer()) {
             fallbacks.push(autoprefixer({
@@ -339,8 +295,8 @@ class Compiler extends BaseCompiler implements ICompiler {
         return fallbacks;
     }
 
-    protected postcssPlugins(): any[] {
-        var plugins: any[] = [];
+    protected postcssPlugins():any[] {
+        var plugins:any[] = [];
         plugins = plugins.concat(this.postcssFallbacks());
         return plugins;
     }
@@ -372,7 +328,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                 this.postcss({
                     content: result.result,
                     map: result.map
-                }, (errors?: Error[], res?:{content: string; map: any}): void => {
+                }, (errors?:Error[], res?:{content: string; map: any}):void => {
                     callback(errors, {
                         source: result.source,
                         result: res.content,
@@ -389,7 +345,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         deferred([
 
             (next:() => void):void => {
-                if (this.isUseCache()) {
+                if (this.getCache().isUse()) {
                     memory.getItem(filename, (errors?:Error[], response?:IResponse):void => {
                         if (!errors || errors.length) {
                             postcss(null, response || null);
@@ -406,7 +362,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                 var directories:string[] = this.getIncludeDirectories().slice(0),
                     errors:Error[] = [],
                     actions:((next:() => void) => void)[];
-                directories.unshift(this.getSourcesDirectory());
+                directories.unshift(this.getSourcesDirectory().getLocation());
                 actions = directories.map((directory:string):((next:() => void) => void) => {
                     return (callback:() => void):void => {
                         resolve = path.join(directory, filename + ".styl");
@@ -427,7 +383,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     if (errors.length) {
                         postcss(null, <IResponse>{
                             source: null,
-                            result: this.createCssErrors(errors),
+                            result: this.getCssErrors().create(errors),
                             deps: [],
                             map: {},
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -446,7 +402,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         postcss(null, response);
                     } else if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length !== 0) {
                         directories = this.getIncludeDirectories().slice(0);
-                        directories.unshift(this.getSourcesDirectory());
+                        directories.unshift(this.getSourcesDirectory().getLocation());
                         parallel(response.deps.map((filename:string):((next:() => void) => void) => {
                             return (done:() => void):void => {
                                 var actions:((next:() => void) => void)[] = directories.map((directory:string):((next:() => void) => void) => {
@@ -475,7 +431,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     } else if (errors && errors.length) {
                         postcss(null, <IResponse>{
                             source: null,
-                            result: this.createCssErrors(errors),
+                            result: this.getCssErrors().create(errors),
                             deps: [],
                             map: {},
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -494,7 +450,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     } else {
                         postcss(null, <IResponse>{
                             source: null,
-                            result: this.createCssErrors(errors),
+                            result: this.getCssErrors().create(errors),
                             deps: [],
                             map: {},
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -523,7 +479,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             ():void => {
                                 postcss(null, <IResponse>{
                                     source: null,
-                                    result: this.createCssErrors(temp),
+                                    result: this.getCssErrors().create(temp),
                                     deps: [],
                                     map: {},
                                     date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -538,7 +494,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                 var compiler:any,
                     postError:string = "",
                     includeDirectories = this.getIncludeDirectories().slice(0);
-                includeDirectories.unshift(this.getSourcesDirectory());
+                includeDirectories.unshift(this.getSourcesDirectory().getLocation());
                 compiler = stylus(content).
                     set("filename", resolve).
                     set("compress", true).
@@ -636,7 +592,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     if (temp.length) {
                                         postcss(null, <IResponse>{
                                             source: null,
-                                            result: this.createCssErrors(temp),
+                                            result: this.getCssErrors().create(temp),
                                             deps: [],
                                             map: {},
                                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -649,7 +605,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         } else {
                             postcss(null, <IResponse>{
                                 source: null,
-                                result: this.createCssErrors(errors),
+                                result: this.getCssErrors().create(errors),
                                 deps: [],
                                 map: {},
                                 date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -669,7 +625,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             ():void => {
                                 postcss(null, <IResponse>{
                                     source: null,
-                                    result: this.createCssErrors(temp),
+                                    result: this.getCssErrors().create(temp),
                                     deps: [],
                                     map: {},
                                     date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)

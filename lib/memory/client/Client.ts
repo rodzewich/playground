@@ -1,12 +1,18 @@
 /// <reference path="./IClient.ts" />
 /// <reference path="./IOptions.ts" />
 /// <reference path="../../client/Client.ts" />
+/// <reference path="../../typeOf.ts" />
+/// <reference path="../Exception.ts" />
+/// <reference path="../../helpers/INamespaceHelper.ts" />
+/// <reference path="../../helpers/NamespaceHelper.ts" />
 
-import IClient = require("./IClient");
-import IOptions = require("./IOptions");
-import BaseClient = require("../../client/Client");
-import typeOf = require("../../typeOf");
-import Exception = require("../Exception");
+import IClient        = require("./IClient");
+import IOptions       = require("./IOptions");
+import BaseClient     = require("../../client/Client");
+import typeOf         = require("../../typeOf");
+import Exception      = require("../Exception");
+import NamespaceHelper  = require("../../helpers/NamespaceHelper");
+import INamespaceHelper = require("../../helpers/INamespaceHelper");
 
 // todo: 1. добавить логирование!
 // todo: 2. дописать дисконект
@@ -17,20 +23,16 @@ import Exception = require("../Exception");
 
 class Client extends BaseClient implements IClient {
 
-    private _namespace:string = "default";
+    protected _namespace:INamespaceHelper = new NamespaceHelper("default");
 
     constructor(options:IOptions) {
         super(options);
         if (options && typeof options.namespace !== "undefined") {
-            this.setNamespace(options.namespace);
+            this.getNamespace().setValue(options.namespace);
         }
     }
 
-    protected setNamespace(value:string):void {
-        this._namespace = String(value);
-    }
-
-    protected getNamespace():string {
+    public getNamespace():INamespaceHelper {
         return this._namespace;
     }
 
@@ -45,7 +47,7 @@ class Client extends BaseClient implements IClient {
                 result = response || null
             }
             callback(temp, result);
-        }, this.getNamespace(), "getItem", key);
+        }, this.getNamespace().getValue(), "getItem", key);
     }
 
     public getItems(keys:string[], callback:(errors?:Error[], response?:any) => void):void {
@@ -59,7 +61,7 @@ class Client extends BaseClient implements IClient {
                 result = response || null
             }
             callback(temp, result);
-        }, this.getNamespace(), "getItems", keys);
+        }, this.getNamespace().getValue(), "getItems", keys);
     }
 
     public setItem(key:string, value:any, callback:(errors?:Error[]) => void):void {
@@ -70,7 +72,7 @@ class Client extends BaseClient implements IClient {
                 temp = errors;
             }
             callback(temp);
-        }, this.getNamespace(), "setItem", key, value);
+        }, this.getNamespace().getValue(), "setItem", key, value);
     }
 
     public setItems(data:any, callback:(errors?:Error[]) => void):void {
@@ -81,7 +83,7 @@ class Client extends BaseClient implements IClient {
                 temp = errors;
             }
             callback(temp);
-        }, this.getNamespace(), "setItems", data);
+        }, this.getNamespace().getValue(), "setItems", data);
     }
 
     public removeItem(key:string, callback:(errors?:Error[]) => void):void {
@@ -92,7 +94,7 @@ class Client extends BaseClient implements IClient {
                 temp = errors;
             }
             callback(temp);
-        }, this.getNamespace(), "removeItem", key);
+        }, this.getNamespace().getValue(), "removeItem", key);
     }
 
     public removeItems(keys:string[], callback:(errors?:Error[]) => void) {
@@ -103,7 +105,7 @@ class Client extends BaseClient implements IClient {
                 temp = errors;
             }
             callback(temp);
-        }, this.getNamespace(), "removeItems", keys);
+        }, this.getNamespace().getValue(), "removeItems", keys);
     }
 
     public hasItem(key:string, callback:(errors?:Error[], response?:boolean) => void):void {
@@ -117,7 +119,7 @@ class Client extends BaseClient implements IClient {
                 result = !!<boolean>response;
             }
             callback(temp, result);
-        }, this.getNamespace(), "hasItem", key);
+        }, this.getNamespace().getValue(), "hasItem", key);
     }
 
     public hasItems(keys:string[], callback:(errors?:Error[], response?:any) => void):void {
@@ -131,7 +133,7 @@ class Client extends BaseClient implements IClient {
                 result = response || null;
             }
             callback(temp, result);
-        }, this.getNamespace(), "hasItems", keys);
+        }, this.getNamespace().getValue(), "hasItems", keys);
     }
 
     public getKey(index:number, callback:(errors?:Error[], response?:string) => void):void {
@@ -145,7 +147,7 @@ class Client extends BaseClient implements IClient {
                 result = String(<string>response || "");
             }
             callback(temp, result);
-        }, this.getNamespace(), "getKey", index);
+        }, this.getNamespace().getValue(), "getKey", index);
     }
 
     public getKeys(indexes:number[], callback:(errors?:Error[], response?:string[]) => void):void {
@@ -166,7 +168,7 @@ class Client extends BaseClient implements IClient {
                 }
             }
             callback(temp, result);
-        }, this.getNamespace(), "getKeys", indexes);
+        }, this.getNamespace().getValue(), "getKeys", indexes);
     }
 
     public getLength(callback:(errors?:Error[], response?:number) => void):void {
@@ -180,10 +182,11 @@ class Client extends BaseClient implements IClient {
                 result = Math.max(0, parseInt(String(<any>response), 10) || 0);
             }
             callback(temp, result);
-        }, this.getNamespace(), "getLength");
+        }, this.getNamespace().getValue(), "getLength");
     }
 
     public lock(key:string, callback:(errors?:Error[], unlock?:(callback:(errors?:Error[]) => void) => void) => void):void {
+        // todo: проверять входящие параметры
         var unlock:(callback:(errors?:Error[]) => void) => void = (callback:(errors?:Error[]) => void):void => {
             this.call((errors?:Error[], response?:any):void => {
                 var temp:Error[] = null;
@@ -191,7 +194,7 @@ class Client extends BaseClient implements IClient {
                     temp = errors;
                 }
                 callback(temp);
-            }, this.getNamespace(), "unlock", key);
+            }, this.getNamespace().getValue(), "unlock", key);
         };
         if (typeOf(key) !== "string") {
             throw new Exception("bla bla bla");
@@ -202,7 +205,7 @@ class Client extends BaseClient implements IClient {
                 temp = errors;
             }
             callback(temp, unlock);
-        }, this.getNamespace(), "lock", key);
+        }, this.getNamespace().getValue(), "lock", key);
     }
 
 }

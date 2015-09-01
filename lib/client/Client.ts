@@ -3,43 +3,47 @@
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../WrapperException.ts" />
 /// <reference path="../Exception.ts" />
+/// <reference path="../typeOf.ts" />
+/// <reference path="../helpers/MeLocationHelper.ts" />
+/// <reference path="../helpers/IMeLocationHelper.ts" />
 
 import IClient = require("./IClient");
 import IOptions = require("./IOptions");
 import net = require("net");
 import WrapperException = require("../WrapperException");
 import Exception = require("../Exception");
+import typeOf = require("../typeOf");
+import MeLocationHelper = require("../helpers/MeLocationHelper");
+import IMeLocationHelper = require("../helpers/IMeLocationHelper");
 
 class Client implements IClient {
 
-    private _location:string;
+    private _meLocation:IMeLocationHelper = new MeLocationHelper();
 
     private _socket:net.Socket;
 
     private _started:boolean;
 
-    private _increment: number = 0;
+    private _increment:number = 0;
 
-    private _callbacks: any = {};
+    private _callbacks:any = {};
 
     constructor(options:IOptions) {
-        this.setLocation(options.location);
+        if (options&& typeOf(options.location) !== "undefined") {
+            this.getMeLocation().setLocation(options.location);
+        }
     }
 
-    protected setLocation(value:string):void {
-        this._location = value;
+    public getMeLocation():IMeLocationHelper {
+        return this._meLocation;
     }
 
-    protected getLocation():string {
-        return this._location;
-    }
-
-    protected generateIdentifier(): number {
+    private generateIdentifier():number {
         return this._increment++;
     }
 
-    protected registerHandler(callback:(errors?:Error[], response?:any) => void): number {
-        var id: number = null;
+    private registerHandler(callback:(errors?:Error[], response?:any) => void):number {
+        var id:number = null;
         if (typeof callback === "function") {
             id = this.generateIdentifier();
             this._callbacks[id] = callback;
@@ -47,7 +51,7 @@ class Client implements IClient {
         return id;
     }
 
-    protected findHandlerById(id: number):(errors?:Error[], response?:any) => void {
+    private findHandlerById(id:number):(errors?:Error[], response?:any) => void {
         if (this._callbacks[id]) {
             return <(errors?:Error[], response?:any) => void>this._callbacks[id];
         }
@@ -62,9 +66,9 @@ class Client implements IClient {
             throw new Exception("bla bla bla");
         }
         this._socket.write(JSON.stringify({
-            id: this.registerHandler(callback),
-            args: args
-        }) + "\n");
+                id: this.registerHandler(callback),
+                args: args
+            }) + "\n");
     }
 
     public connect(callback:(errors?:Error[]) => void):void {
@@ -78,7 +82,7 @@ class Client implements IClient {
                 }
                 callback(error ? [error] : null);
             },
-            socket:net.Socket = net.createConnection(this.getLocation(), ():void => {
+            socket:net.Socket = net.createConnection(this.getMeLocation().getLocation(), ():void => {
                 handler(null);
             });
         socket.addListener("error", handler);

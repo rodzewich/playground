@@ -49,19 +49,19 @@ class Manager extends Client implements IManager {
     protected createClient(location:string):IClient {
         return new Client({
             location: location,
-            memoryLocation: this.getMemoryLocation(),
-            sourcesDirectory: this.getSourcesDirectory(),
-            errorBackgroundColor: this.getErrorBackgroundColor(),
-            errorTextColor: this.getErrorTextColor(),
-            errorBlockPadding: this.getErrorBlockPadding(),
-            errorFontSize: this.getErrorFontSize(),
-            webRootDirectory: this.getWebRootDirectory(),
-            useCache: this.isUseCache()
+            memoryLocation: this.getMemoryLocation().getLocation(),
+            sourcesDirectory: this.getSourcesDirectory().getLocation(),
+            errorBackgroundColor: this.getCssErrors().getBackgroundColor(),
+            errorTextColor: this.getCssErrors().getTextColor(),
+            errorBlockPadding: this.getCssErrors().getBlockPadding(),
+            errorFontSize: this.getCssErrors().getFontSize(),
+            webRootDirectory: this.getWebRootDirectory().getLocation(),
+            useCache: this.getCache().isUse()
         });
     }
 
     protected formatLocationById(id:any):string {
-        var location:string = this.getLocation(),
+        var location:string = this.getMeLocation().getLocation(),
             identifier:string = String(id),
             extension:string = path.extname(location),
             directory:string = path.dirname(location),

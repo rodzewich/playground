@@ -60,7 +60,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         deferred([
 
             (next:() => void):void => {
-                if (this.isUseCache()) {
+                if (this.getCache().isUse()) {
                     memory.getItem(filename, (errors?:Error[], response?:IResponse):void => {
                         if (!errors || errors.length) {
                             callback(null, response || null);
@@ -77,7 +77,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                 var directories:string[] = this.getIncludeDirectories().slice(0),
                     errors:Error[] = [],
                     actions:((next:() => void) => void)[];
-                directories.unshift(this.getSourcesDirectory());
+                directories.unshift(this.getSourcesDirectory().getLocation());
                 actions = directories.map((directory:string):((next:() => void) => void) => {
                     return (callback:() => void):void => {
                         resolve = path.join(directory, filename + ".less");
@@ -98,7 +98,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     if (errors.length) {
                         callback(null, <IResponse>{
                             source: null,
-                            result: this.createCssErrors(errors),
+                            result: this.getCssErrors().create(errors),
                             deps: [],
                             map: {},
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -117,7 +117,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         callback(null, response);
                     } else if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length !== 0) {
                         directories = this.getIncludeDirectories().slice(0);
-                        directories.unshift(this.getSourcesDirectory());
+                        directories.unshift(this.getSourcesDirectory().getLocation());
                         parallel(response.deps.map((filename:string):((next:() => void) => void) => {
                             return (done:() => void):void => {
                                 var actions:((next:() => void) => void)[] = directories.map((directory:string):((next:() => void) => void) => {
@@ -146,7 +146,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     } else if (errors && errors.length) {
                         callback(null, <IResponse>{
                             source: null,
-                            result: this.createCssErrors(errors),
+                            result: this.getCssErrors().create(errors),
                             deps: [],
                             map: {},
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -165,7 +165,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     } else {
                         callback(null, <IResponse>{
                             source: null,
-                            result: this.createCssErrors(errors),
+                            result: this.getCssErrors().create(errors),
                             deps: [],
                             map: {},
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -194,7 +194,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             ():void => {
                                 callback(null, <IResponse>{
                                     source: null,
-                                    result: this.createCssErrors(temp),
+                                    result: this.getCssErrors().create(temp),
                                     deps: [],
                                     map: {},
                                     date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -207,7 +207,7 @@ class Compiler extends BaseCompiler implements ICompiler {
 
             ():void => {
                 var includeDirectories = this.getIncludeDirectories().slice(0);
-                includeDirectories.unshift(this.getSourcesDirectory());
+                includeDirectories.unshift(this.getSourcesDirectory().getLocation());
                 less.render(content, <less.Options>{
                     paths: this.getIncludeDirectories(),
                     filename: path.join(resolve),
@@ -299,7 +299,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     if (temp.length) {
                                         callback(null, <IResponse>{
                                             source: null,
-                                            result: this.createCssErrors(temp),
+                                            result: this.getCssErrors().create(temp),
                                             deps: [],
                                             map: {},
                                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -312,7 +312,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         } else {
                             callback(null, <IResponse>{
                                 source: null,
-                                result: this.createCssErrors(errors),
+                                result: this.getCssErrors().create(temp),
                                 deps: [],
                                 map: {},
                                 date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -332,7 +332,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             ():void => {
                                 callback(null, <IResponse>{
                                     source: null,
-                                    result: this.createCssErrors(temp),
+                                    result: this.getCssErrors().create(temp),
                                     deps: [],
                                     map: {},
                                     date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)

@@ -7,10 +7,30 @@
 /// <reference path="../../typeOf" />
 /// <reference path="../../../types/log4js/log4js.d.ts" />
 /// <reference path="../../../logger" />
+/// <reference path="../../helpers/WebRootDirectoryHelper.ts" />
+/// <reference path="../../helpers/IWebRootDirectoryHelper.ts" />
+/// <reference path="../../helpers/MemoryLocationHelper.ts" />
+/// <reference path="../../helpers/SourcesDirectoryHelper.ts" />
+/// <reference path="../../helpers/ISourcesDirectoryHelper.ts" />
+/// <reference path="../../helpers/IResourceLocation.ts" />
+/// <reference path="../../helpers/ICssErrorsHelper.ts" />
+/// <reference path="../../helpers/CssErrorsHelper.ts" />
+/// <reference path="../../helpers/ICacheHelper.ts" />
+/// <reference path="../../helpers/CacheHelper.ts" />
 
 import typeOf = require("../../typeOf");
 import deferred = require("../../deferred");
 import WrapperException = require("../../WrapperException");
+import WebRootDirectoryHelper = require("../../helpers/WebRootDirectoryHelper");
+import IWebRootDirectoryHelper = require("../../helpers/IWebRootDirectoryHelper");
+import MemoryLocationHelper = require("../../helpers/MemoryLocationHelper");
+import SourcesDirectoryHelper = require("../../helpers/SourcesDirectoryHelper");
+import ISourcesDirectoryHelper = require("../../helpers/ISourcesDirectoryHelper");
+import IResourceLocation = require("../../helpers/IResourceLocation");
+import CssErrorsHelper = require("../../helpers/CssErrorsHelper");
+import ICssErrorsHelper = require("../../helpers/ICssErrorsHelper");
+import CacheHelper = require("../../helpers/CacheHelper");
+import ICacheHelper = require("../../helpers/ICacheHelper");
 import BaseClient = require("../../client/Client");
 import IOptions = require("./IOptions");
 import Exception = require("../Exception");
@@ -26,133 +46,79 @@ var logger:log4js.Logger = log4js.getLogger("worker");
 
 class Client extends BaseClient implements IClient {
 
-    private _sourcesDirectory: string;
+    private _cache:ICacheHelper = new CacheHelper();
+
+    private _cssErrors:ICssErrorsHelper = new CssErrorsHelper();
+
+    private _memoryLocation:IResourceLocation = new MemoryLocationHelper();
+
+    private _sourcesDirectory:ISourcesDirectoryHelper = new SourcesDirectoryHelper();
+
+    private _webRootDirectory:IWebRootDirectoryHelper = new WebRootDirectoryHelper();
 
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.sourcesDirectory) !== "undefined") {
-            this.setSourcesDirectory(options.sourcesDirectory);
+            this.getSourcesDirectory().setLocation(options.sourcesDirectory);
         }
         if (options && typeOf(options.memoryLocation) !== "undefined") {
-            this.setMemoryLocation(options.memoryLocation);
+            this.getMemoryLocation().setLocation(options.memoryLocation);
         }
         if (options && typeOf(options.useCache) !== "undefined") {
-            this.setUseCache(options.useCache);
+            this.getCache().setUse(options.useCache);
         }
         if (options && typeOf(options.errorBackgroundColor) !== "undefined") {
-            this.setErrorBackgroundColor(options.errorBackgroundColor);
+            this.getCssErrors().setBackgroundColor(options.errorBackgroundColor);
         }
         if (options && typeOf(options.errorTextColor) !== "undefined") {
-            this.setErrorTextColor(options.errorTextColor);
+            this.getCssErrors().setTextColor(options.errorTextColor);
         }
         if (options && typeOf(options.errorBlockPadding) !== "undefined") {
-            this.setErrorBlockPadding(options.errorBlockPadding);
+            this.getCssErrors().setBlockPadding(options.errorBlockPadding);
         }
         if (options && typeOf(options.errorFontSize) !== "undefined") {
-            this.setErrorFontSize(options.errorFontSize);
+            this.getCssErrors().setFontSize(options.errorFontSize);
         }
         if (options && typeOf(options.webRootDirectory) !== "undefined") {
-            this.setWebRootDirectory(options.webRootDirectory);
+            this.getWebRootDirectory().setLocation(options.webRootDirectory);
         }
     }
 
-    protected getDaemon(): string {
+    protected getDaemon():string {
         return null;
     }
 
     protected getRequest():IRequest {
         return <IRequest>{
             filename: null,
-            sourcesDirectory: this.getSourcesDirectory(),
-            errorBackgroundColor: this.getErrorBackgroundColor(),
-            errorTextColor: this.getErrorTextColor(),
-            errorBlockPadding: this.getErrorBlockPadding(),
-            errorFontSize: this.getErrorFontSize(),
-            webRootDirectory: this.getWebRootDirectory(),
-            useCache: this.isUseCache()
+            sourcesDirectory: this.getSourcesDirectory().getLocation(),
+            errorBackgroundColor: this.getCssErrors().getBackgroundColor(),
+            errorTextColor: this.getCssErrors().getTextColor(),
+            errorBlockPadding: this.getCssErrors().getBlockPadding(),
+            errorFontSize: this.getCssErrors().getFontSize(),
+            webRootDirectory: this.getWebRootDirectory().getLocation(),
+            useCache: this.getCache().isUse()
         };
     }
 
-    private _webRootDirectory: string = "";
-
-    protected getWebRootDirectory(): string {
-        return this._webRootDirectory;
+    public getCache():ICacheHelper {
+        return this._cache;
     }
 
-    protected setWebRootDirectory(value: string): void {
-        this._webRootDirectory = value;
+    public getCssErrors():ICssErrorsHelper {
+        return this._cssErrors;
     }
 
-    private _errorBackgroundColor: string = "#ffff00";
-
-    protected getErrorBackgroundColor(): string {
-        return this._errorBackgroundColor;
-    }
-
-    protected setErrorBackgroundColor(value: string): void {
-        this._errorBackgroundColor = value;
-    }
-
-    private _errorTextColor: string = "#000000";
-
-    protected getErrorTextColor(): string {
-        return this._errorTextColor;
-    }
-
-    protected setErrorTextColor(value: string): void {
-        this._errorTextColor = value;
-    }
-
-    private _errorBlockPadding: string = "10px";
-
-    protected getErrorBlockPadding(): string {
-        return this._errorBlockPadding;
-    }
-
-    protected setErrorBlockPadding(value: string): void {
-        this._errorBlockPadding = value;
-    }
-
-    private _errorFontSize: string = "13px";
-
-    protected getErrorFontSize(): string {
-        return this._errorFontSize;
-    }
-
-    protected setErrorFontSize(value: string): void {
-        this._errorFontSize = value;
-    }
-
-    private _useCache: boolean;
-
-    public setUseCache(value: boolean): void {
-        this._useCache = value;
-    }
-
-    public getUseCache(): boolean {
-        return this._useCache;
-    }
-
-    public isUseCache(): boolean {
-        return !!this._useCache;
-    }
-
-    private _memoryLocation: string;
-
-    protected getMemoryLocation(): string {
+    public getMemoryLocation():IResourceLocation {
         return this._memoryLocation;
     }
 
-    protected setMemoryLocation(value: string): void {
-        this._memoryLocation = value;
-    }
-
-    protected setSourcesDirectory(value: string): void {
-        this._sourcesDirectory = value;
-    }
-
-    protected getSourcesDirectory(): string {
+    public getSourcesDirectory():ISourcesDirectoryHelper {
         return this._sourcesDirectory;
+    }
+
+    public getWebRootDirectory():IResourceLocation {
+        return this._webRootDirectory;
     }
 
     public compile(filename:string, callback?:(errors?:Error[], result?:IResponse) => void):void {
@@ -176,13 +142,13 @@ class Client extends BaseClient implements IClient {
         }, "compile", request);
     }
 
-    public connect(callback:(errors?:Error[]) => void): void {
+    public connect(callback:(errors?:Error[]) => void):void {
         deferred([
             (next:() => void):void => {
                 var command:cp.ChildProcess = cp.spawn(process.execPath, [
                         this.getDaemon(),
-                        "--location", this.getLocation(),
-                        "--memory", this.getMemoryLocation()
+                        "--location", this.getMeLocation().getLocation(),
+                        "--memory", this.getMemoryLocation().getLocation()
                     ]),
                     data:Buffer = new Buffer(0),
                     echo:(stream:NodeJS.WritableStream, data:Buffer) => void =
@@ -195,9 +161,9 @@ class Client extends BaseClient implements IClient {
                             string:string,
                             index:number,
                             json:string;
-                        data   = Buffer.concat([data, buffer]);
+                        data = Buffer.concat([data, buffer]);
                         string = buffer.toString("utf8");
-                        index  = string.indexOf("\n");
+                        index = string.indexOf("\n");
                         if (index !== -1) {
                             command.stderr.removeListener("data", handler);
                             command.stdout.removeListener("data", handler);
@@ -209,11 +175,17 @@ class Client extends BaseClient implements IClient {
                             });
                             json = string.slice(0, index + 1);
                             try {
-                                result = JSON.parse(json) || {started: false, errors: [{message: "Unknown error"}]};
+                                result = JSON.parse(json) || {
+                                        started: false,
+                                        errors: [{message: "Unknown error"}]
+                                    };
                             } catch (err) {
                                 logger.warn("Worker send error content", data.toString("utf8"));
                                 process.stderr.write(data);
-                                result = {started: false, errors: [WrapperException.convertToObject(err)]};
+                                result = {
+                                    started: false,
+                                    errors: [WrapperException.convertToObject(err)]
+                                };
                             }
                             data = data.slice((new Buffer(json, "utf8")).length + 1);
                             if (!result.started) {
@@ -240,8 +212,8 @@ class Client extends BaseClient implements IClient {
 
     }
 
-    public disconnect(callback:(errors?:Error[]) => void): void {
-
+    public disconnect(callback:(errors?:Error[]) => void):void {
+        // todo: implement this
     }
 
 
