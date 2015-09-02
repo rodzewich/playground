@@ -42,7 +42,6 @@ import postcss = require("postcss");
 import postcssSafeParser = require("postcss-safe-parser");
 
 // Fallbacks
-import postcssPseudoElements = require("postcss-pseudoelements");
 import cssgrace = require("cssgrace");
 //import postcssWillChange = require("postcss-will-change");
 import postcssVmin = require("postcss-vmin");
@@ -55,6 +54,8 @@ import PostcssColorRgbaHelper = require("../../helpers/PostcssColorRgbaHelper");
 import IPostcssColorRgbaHelper = require("../../helpers/IPostcssColorRgbaHelper");
 import PostcssOpacityHelper = require("../../helpers/PostcssOpacityHelper");
 import IPostcssOpacityHelper = require("../../helpers/IPostcssOpacityHelper");
+import PostcssPseudoElementsHelper = require("../../helpers/PostcssPseudoElementsHelper");
+import IPostcssPseudoElementsHelper = require("../../helpers/IPostcssPseudoElementsHelper");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -82,6 +83,12 @@ class Compiler extends BaseCompiler implements ICompiler {
         return this._postcssOpacity;
     }
 
+    private _postcssPseudoElements: IPostcssPseudoElementsHelper = new PostcssPseudoElementsHelper();
+
+    protected getPostcssPseudoElements(): IPostcssPseudoElementsHelper {
+        return this._postcssPseudoElements;
+    }
+
     private _includeDirectories:string[] = [];
 
     constructor(options:IOptions) {
@@ -97,30 +104,6 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     protected setIncludeDirectories(value:string[]):void {
         this._includeDirectories = value;
-    }
-
-    private _pseudoElementsSelectors:string[] = ["before", "after", "first-letter", "first-line"];
-
-    protected setPseudoElementsSelectors(value:string[]):void {
-        this._pseudoElementsSelectors = value;
-    }
-
-    protected getPseudoElementsSelectors():string[] {
-        return this._pseudoElementsSelectors;
-    }
-
-    private _usePseudoElements:boolean = true;
-
-    protected isUsePseudoElements():boolean {
-        return this.getUsePseudoElements();
-    }
-
-    protected getUsePseudoElements():boolean {
-        return this._usePseudoElements;
-    }
-
-    protected setUsePseudoElements(value:boolean):void {
-        this._usePseudoElements = value;
     }
 
     private _useCssgrace:boolean = true;
@@ -171,10 +154,8 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     protected postcssFallbacks():any[] {
         var fallbacks:any[] = [];
-        if (this.isUsePseudoElements()) {
-            fallbacks.push(postcssPseudoElements({
-                selectors: this.getPseudoElementsSelectors()
-            }));
+        if (this.getPostcssPseudoElements().isUse()) {
+            fallbacks.push(this.getPostcssPseudoElements().getInstance());
         }
         if (this.getPostcssEpub().isUse()) {
             fallbacks.push(this.getPostcssEpub().getInstance());
