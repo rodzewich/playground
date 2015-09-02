@@ -13,6 +13,8 @@
 /// <reference path="../Exception.ts" />
 /// <reference path="../../helpers/PostcssEpubHelper.ts" />
 /// <reference path="../../helpers/IPostcssEpubHelper.ts" />
+/// <reference path="../../helpers/PostcssAutoprefixerHelper.ts" />
+/// <reference path="../../helpers/IPostcssAutoprefixerHelper.ts" />
 
 // todo: уметь использовать globals, functions, imports
 // todo: уметь устанавливать переменные
@@ -34,30 +36,34 @@ import fs = require("fs");
 import BaseException = require("../../Exception");
 import LessException = require("../Exception");
 
-import browserslist = require("browserslist");
-
 import postcss = require("postcss");
 import postcssSafeParser = require("postcss-safe-parser");
 
 // Fallbacks
 import postcssPseudoElements = require("postcss-pseudoelements");
-import postcssEpub = require("postcss-epub");
 import postcssOpacity = require("postcss-opacity");
 import cssgrace = require("cssgrace");
-import autoprefixer = require("autoprefixer-core");
 //import postcssWillChange = require("postcss-will-change");
 import postcssVmin = require("postcss-vmin");
 import postcssColorRgba = require("postcss-color-rgba-fallback");
 
 import PostcssEpubHelper = require("../../helpers/PostcssEpubHelper");
 import IPostcssEpubHelper = require("../../helpers/IPostcssEpubHelper");
+import PostcssAutoprefixerHelper = require("../../helpers/PostcssAutoprefixerHelper");
+import IPostcssAutoprefixerHelper = require("../../helpers/IPostcssAutoprefixerHelper");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
     private _postcssEpub:IPostcssEpubHelper = new PostcssEpubHelper();
 
-    public getPostcssEpub():IPostcssEpubHelper {
+    protected getPostcssEpub():IPostcssEpubHelper {
         return this._postcssEpub;
+    }
+
+    private _postcssAutoprefixer: IPostcssAutoprefixerHelper = new PostcssAutoprefixerHelper();
+
+    protected getPostcssAutoprefixer(): IPostcssAutoprefixerHelper {
+        return this._postcssAutoprefixer;
     }
 
     private _includeDirectories:string[] = [];
@@ -87,58 +93,6 @@ class Compiler extends BaseCompiler implements ICompiler {
         return this._pseudoElementsSelectors;
     }
 
-    private _autoprefixerBrowsers:string[] = browserslist.defaults;
-
-    protected getAutoprefixerBrowsers():string[] {
-        return this._autoprefixerBrowsers;
-    }
-
-    protected setAutoprefixerBrowsers(value:string[]):void {
-        this._autoprefixerBrowsers = value;
-    }
-
-    private _autoprefixerCascade:boolean = true;
-
-    protected isAutoprefixerCascade():boolean {
-        return this.getAutoprefixerCascade();
-    }
-
-    protected getAutoprefixerCascade():boolean {
-        return this._autoprefixerCascade;
-    }
-
-    protected setAutoprefixerCascade(value:boolean):void {
-        this._autoprefixerCascade = value;
-    }
-
-    private _autoprefixerAdd:boolean = true;
-
-    protected isAutoprefixerAdd():boolean {
-        return this.getAutoprefixerAdd();
-    }
-
-    protected getAutoprefixerAdd():boolean {
-        return this._autoprefixerAdd;
-    }
-
-    protected setAutoprefixerAdd(value:boolean):void {
-        this._autoprefixerAdd = value;
-    }
-
-    private _autoprefixerRemove:boolean = true;
-
-    protected isAutoprefixerRemove():boolean {
-        return this.getAutoprefixerRemove();
-    }
-
-    protected getAutoprefixerRemove():boolean {
-        return this._autoprefixerRemove;
-    }
-
-    protected setAutoprefixerRemove(value:boolean):void {
-        this._autoprefixerRemove = value;
-    }
-
     private _usePseudoElements:boolean = true;
 
     protected isUsePseudoElements():boolean {
@@ -151,20 +105,6 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     protected setUsePseudoElements(value:boolean):void {
         this._usePseudoElements = value;
-    }
-
-    private _useAutoprefixer:boolean = true;
-
-    protected isUseAutoprefixer():boolean {
-        return this.getUseAutoprefixer();
-    }
-
-    protected getUseAutoprefixer():boolean {
-        return this._useAutoprefixer;
-    }
-
-    protected setUseAutoprefixer(value:boolean):void {
-        this._useAutoprefixer = value;
     }
 
     private _useCssgrace:boolean = true;
@@ -260,23 +200,14 @@ class Compiler extends BaseCompiler implements ICompiler {
             }));
         }
         if (this.getPostcssEpub().isUse()) {
-            fallbacks.push(postcssEpub({
-                fonts: this.getPostcssEpub().isFonts(),
-                strip: this.getPostcssEpub().isStrip(),
-                strict: this.getPostcssEpub().isStrict()
-            }));
+            fallbacks.push(this.getPostcssEpub().getInstance());
         }
         /*if (this.isUseWillChange()) {
          fallbacks.push(postcssWillChange);
          }*/
 
-        if (this.isUseAutoprefixer()) {
-            fallbacks.push(autoprefixer({
-                browsers: this.getAutoprefixerBrowsers(),
-                cascade: this.isAutoprefixerCascade(),
-                add: this.isAutoprefixerAdd(),
-                remove: this.isAutoprefixerRemove()
-            }));
+        if (this.getPostcssAutoprefixer().isUse()) {
+            fallbacks.push(this.getPostcssAutoprefixer().getInstance());
         }
         if (this.isUseCssgrace()) {
             fallbacks.push(cssgrace);

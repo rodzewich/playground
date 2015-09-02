@@ -1,6 +1,7 @@
 /// <reference path="./IPostcssEpubHelper.ts" />
 
 import IPostcssEpubHelper = require("./IPostcssEpubHelper");
+import postcssEpub = require("postcss-epub");
 
 class PostcssEpubHelper implements IPostcssEpubHelper {
 
@@ -24,40 +25,48 @@ class PostcssEpubHelper implements IPostcssEpubHelper {
         this._use = value;
     }
 
-    protected isFonts():boolean {
+    public isFonts():boolean {
         return this.getFonts();
     }
 
-    protected getFonts():boolean {
+    public getFonts():boolean {
         return this._fonts;
     }
 
-    protected setFonts(value:boolean):void {
+    public setFonts(value:boolean):void {
         this._fonts = value;
     }
 
-    protected isStrip():boolean {
+    public isStrip():boolean {
         return this.getStrip();
     }
 
-    protected getStrip():boolean {
+    public getStrip():boolean {
         return this._strip;
     }
 
-    protected setStrip(value:boolean):void {
+    public setStrip(value:boolean):void {
         this._strip = value;
     }
 
-    protected isStrict():boolean {
+    public isStrict():boolean {
         return this.getStrict();
     }
 
-    protected getStrict():boolean {
+    public getStrict():boolean {
         return this._strict;
     }
 
-    protected setStrict(value:boolean):void {
+    public setStrict(value:boolean):void {
         this._strict = value;
+    }
+
+    public getInstance():any {
+        return postcssEpub({
+            fonts: this.isFonts(),
+            strip: this.isStrip(),
+            strict: this.isStrict()
+        });
     }
 
 }
