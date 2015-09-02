@@ -145,7 +145,7 @@ class Compiler extends BaseCompiler implements ICompiler {
      pixrem generates pixel fallbacks for rem units.
      */
 
-    protected postcssFallbacks():any[] {
+    protected getPostcssFallbacks():any[] {
         var fallbacks:any[] = [];
         if (this.getPostcssPseudoElements().isUsed()) {
             fallbacks.push(this.getPostcssPseudoElements().getInstance());
@@ -175,14 +175,14 @@ class Compiler extends BaseCompiler implements ICompiler {
         return fallbacks;
     }
 
-    protected postcssPlugins():any[] {
+    protected getPostcssPlugins():any[] {
         var plugins:any[] = [];
-        plugins = plugins.concat(this.postcssFallbacks());
+        plugins = plugins.concat(this.getPostcssFallbacks());
         return plugins;
     }
 
     protected postcss(options:{content: string; map: any}, callback:(errors?:Error[], result?:{content: string; map: any}) => void):void {
-        postcss(this.postcssPlugins()).process(options.content, {
+        postcss(this.getPostcssPlugins()).process(options.content, {
             parser: postcssSafeParser,
             map: {
                 inline: false,
