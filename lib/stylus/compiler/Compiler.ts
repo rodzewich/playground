@@ -43,7 +43,6 @@ import postcssSafeParser = require("postcss-safe-parser");
 
 // Fallbacks
 import postcssPseudoElements = require("postcss-pseudoelements");
-import postcssOpacity = require("postcss-opacity");
 import cssgrace = require("cssgrace");
 //import postcssWillChange = require("postcss-will-change");
 import postcssVmin = require("postcss-vmin");
@@ -54,6 +53,8 @@ import PostcssAutoprefixerHelper = require("../../helpers/PostcssAutoprefixerHel
 import IPostcssAutoprefixerHelper = require("../../helpers/IPostcssAutoprefixerHelper");
 import PostcssColorRgbaHelper = require("../../helpers/PostcssColorRgbaHelper");
 import IPostcssColorRgbaHelper = require("../../helpers/IPostcssColorRgbaHelper");
+import PostcssOpacityHelper = require("../../helpers/PostcssOpacityHelper");
+import IPostcssOpacityHelper = require("../../helpers/IPostcssOpacityHelper");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -73,6 +74,12 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     protected getPostcssColorRgba(): IPostcssColorRgbaHelper {
         return this._postcssColorRgba;
+    }
+
+    private _postcssOpacity: IPostcssOpacityHelper = new PostcssOpacityHelper();
+
+    protected getPostcssOpacity(): IPostcssOpacityHelper {
+        return this._postcssOpacity;
     }
 
     private _includeDirectories:string[] = [];
@@ -130,21 +137,6 @@ class Compiler extends BaseCompiler implements ICompiler {
         this._useCssgrace = value;
     }
 
-    private _useOpacity:boolean = true;
-
-    protected isUseOpacity():boolean {
-        return this.getUseOpacity();
-    }
-
-    protected getUseOpacity():boolean {
-        return this._useOpacity;
-    }
-
-    protected setUseOpacity(value:boolean):void {
-        this._useOpacity = value;
-    }
-
-
     /*private _useWillChange: boolean = false;
 
      protected isUseWillChange(): boolean {
@@ -197,8 +189,8 @@ class Compiler extends BaseCompiler implements ICompiler {
         if (this.isUseCssgrace()) {
             fallbacks.push(cssgrace);
         }
-        if (this.isUseOpacity()) {
-            fallbacks.push(postcssOpacity);
+        if (this.getPostcssOpacity().isUse()) {
+            fallbacks.push(this.getPostcssOpacity().getInstance());
         }
         if (this.isUseVmin()) {
             fallbacks.push(postcssVmin);
