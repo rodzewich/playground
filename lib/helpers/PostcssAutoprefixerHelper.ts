@@ -1,12 +1,12 @@
 /// <reference path="./IPostcssAutoprefixerHelper.ts" />
+/// <reference path="./PostcssHelper.ts" />
 
 import IPostcssAutoprefixerHelper = require("./IPostcssAutoprefixerHelper");
+import PostcssHelper = require("./PostcssHelper");
 import postcssAutoprefixer = require("autoprefixer-core");
 import browserslist = require("browserslist");
 
-class PostcssAutoprefixerHelper implements IPostcssAutoprefixerHelper {
-
-    private _use:boolean = true;
+class PostcssAutoprefixerHelper extends PostcssHelper implements IPostcssAutoprefixerHelper {
 
     private _browsers:string[] = browserslist.defaults;
 
@@ -15,18 +15,6 @@ class PostcssAutoprefixerHelper implements IPostcssAutoprefixerHelper {
     private _add:boolean = true;
 
     private _remove:boolean = true;
-
-    public isUse():boolean {
-        return this.getUse();
-    }
-
-    public getUse():boolean {
-        return this._use;
-    }
-
-    public setUse(value:boolean):void {
-        this._use = value;
-    }
 
     public getBrowsers():string[] {
         return this._browsers;

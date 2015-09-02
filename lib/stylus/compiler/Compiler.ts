@@ -15,6 +15,8 @@
 /// <reference path="../../helpers/IPostcssEpubHelper.ts" />
 /// <reference path="../../helpers/PostcssAutoprefixerHelper.ts" />
 /// <reference path="../../helpers/IPostcssAutoprefixerHelper.ts" />
+/// <reference path="../../helpers/PostcssColorRgbaHelper.ts" />
+/// <reference path="../../helpers/IPostcssColorRgbaHelper.ts" />
 
 // todo: уметь использовать globals, functions, imports
 // todo: уметь устанавливать переменные
@@ -45,12 +47,13 @@ import postcssOpacity = require("postcss-opacity");
 import cssgrace = require("cssgrace");
 //import postcssWillChange = require("postcss-will-change");
 import postcssVmin = require("postcss-vmin");
-import postcssColorRgba = require("postcss-color-rgba-fallback");
 
 import PostcssEpubHelper = require("../../helpers/PostcssEpubHelper");
 import IPostcssEpubHelper = require("../../helpers/IPostcssEpubHelper");
 import PostcssAutoprefixerHelper = require("../../helpers/PostcssAutoprefixerHelper");
 import IPostcssAutoprefixerHelper = require("../../helpers/IPostcssAutoprefixerHelper");
+import PostcssColorRgbaHelper = require("../../helpers/PostcssColorRgbaHelper");
+import IPostcssColorRgbaHelper = require("../../helpers/IPostcssColorRgbaHelper");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -64,6 +67,12 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     protected getPostcssAutoprefixer(): IPostcssAutoprefixerHelper {
         return this._postcssAutoprefixer;
+    }
+
+    private _postcssColorRgba: IPostcssColorRgbaHelper = new PostcssColorRgbaHelper();
+
+    protected getPostcssColorRgba(): IPostcssColorRgbaHelper {
+        return this._postcssColorRgba;
     }
 
     private _includeDirectories:string[] = [];
@@ -164,30 +173,6 @@ class Compiler extends BaseCompiler implements ICompiler {
         this._useVmin = value;
     }
 
-    private _useColorRgba:boolean = true;
-
-    protected isUseColorRgba():boolean {
-        return this.getUseColorRgba();
-    }
-
-    protected getUseColorRgba():boolean {
-        return this._useColorRgba;
-    }
-
-    protected setUseColorRgba(value:boolean):void {
-        this._useColorRgba = value;
-    }
-
-    private _colorRgbaProperties:string[] = ["background-color", "background", "color", "border", "border-color", "outline", "outline-color"];
-
-    protected getColorRgbaProperties():string[] {
-        return this._colorRgbaProperties;
-    }
-
-    protected setColorRgbaProperties(value:string[]):void {
-        this._colorRgbaProperties = value;
-    }
-
     /**
      pixrem generates pixel fallbacks for rem units.
      */
@@ -218,10 +203,8 @@ class Compiler extends BaseCompiler implements ICompiler {
         if (this.isUseVmin()) {
             fallbacks.push(postcssVmin);
         }
-        if (this.isUseColorRgba()) {
-            fallbacks.push(postcssColorRgba({
-                properties: this.getColorRgbaProperties()
-            }));
+        if (this.getPostcssColorRgba().isUse()) {
+            fallbacks.push(this.getPostcssColorRgba().getInstance());
         }
         return fallbacks;
     }

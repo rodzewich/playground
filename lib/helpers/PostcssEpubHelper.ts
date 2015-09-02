@@ -1,29 +1,17 @@
 /// <reference path="./IPostcssEpubHelper.ts" />
+/// <reference path="./PostcssHelper.ts" />
 
 import IPostcssEpubHelper = require("./IPostcssEpubHelper");
+import PostcssHelper = require("./PostcssHelper");
 import postcssEpub = require("postcss-epub");
 
-class PostcssEpubHelper implements IPostcssEpubHelper {
-
-    private _use:boolean = false;
+class PostcssEpubHelper extends PostcssHelper implements IPostcssEpubHelper {
 
     private _fonts:boolean = true;
 
     private _strip:boolean = true;
 
     private _strict:boolean = true;
-
-    public isUse():boolean {
-        return this.getUse();
-    }
-
-    public getUse():boolean {
-        return this._use;
-    }
-
-    public setUse(value:boolean):void {
-        this._use = value;
-    }
 
     public isFonts():boolean {
         return this.getFonts();

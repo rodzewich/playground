@@ -1,7 +1,8 @@
-interface IPostcssAutoprefixerHelper {
-    isUse():boolean;
-    getUse():boolean;
-    setUse(value:boolean):void;
+/// <reference path="./IPostcssHelper.ts" />
+
+import IPostcssHelper = require("./IPostcssHelper");
+
+interface IPostcssAutoprefixerHelper extends IPostcssHelper {
     getBrowsers():string[];
     setBrowsers(value:string[]):void;
     isCascade():boolean;
@@ -13,7 +14,6 @@ interface IPostcssAutoprefixerHelper {
     isRemove():boolean;
     getRemove():boolean;
     setRemove(value:boolean):void;
-    getInstance():any;
 }
 
 export = IPostcssAutoprefixerHelper;

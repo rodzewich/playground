@@ -1,7 +1,8 @@
-interface IPostcssEpubHelper {
-    isUse():boolean;
-    getUse():boolean;
-    setUse(value:boolean):void;
+/// <reference path="./IPostcssHelper.ts" />
+
+import IPostcssHelper = require("./IPostcssHelper");
+
+interface IPostcssEpubHelper extends IPostcssHelper {
     isFonts():boolean;
     getFonts():boolean;
     setFonts(value:boolean):void;
@@ -11,7 +12,6 @@ interface IPostcssEpubHelper {
     isStrict():boolean;
     getStrict():boolean;
     setStrict(value:boolean):void;
-    getInstance(): any;
 }
 
 export = IPostcssEpubHelper;
