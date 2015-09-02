@@ -64,21 +64,21 @@ class Compiler extends BaseCompiler implements ICompiler {
         return this._postcssEpub;
     }
 
-    private _postcssAutoprefixer: IPostcssAutoprefixerHelper = new PostcssAutoprefixerHelper();
+    private _postcssAutoprefixer:IPostcssAutoprefixerHelper = new PostcssAutoprefixerHelper();
 
-    protected getPostcssAutoprefixer(): IPostcssAutoprefixerHelper {
+    protected getPostcssAutoprefixer():IPostcssAutoprefixerHelper {
         return this._postcssAutoprefixer;
     }
 
-    private _postcssColorRgba: IPostcssColorRgbaHelper = new PostcssColorRgbaHelper();
+    private _postcssColorRgba:IPostcssColorRgbaHelper = new PostcssColorRgbaHelper();
 
-    protected getPostcssColorRgba(): IPostcssColorRgbaHelper {
+    protected getPostcssColorRgba():IPostcssColorRgbaHelper {
         return this._postcssColorRgba;
     }
 
-    private _postcssOpacity: IPostcssOpacityHelper = new PostcssOpacityHelper();
+    private _postcssOpacity:IPostcssOpacityHelper = new PostcssOpacityHelper();
 
-    protected getPostcssOpacity(): IPostcssOpacityHelper {
+    protected getPostcssOpacity():IPostcssOpacityHelper {
         return this._postcssOpacity;
     }
 
