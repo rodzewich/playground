@@ -1,7 +1,7 @@
 interface ICacheHelper {
-    setUse(value:any):void;
-    getUse():boolean;
-    isUse():boolean;
+    setIsUse(value:any):void;
+    getIsUse():boolean;
+    isUsed():boolean;
 }
 
 export = ICacheHelper;

@@ -36,7 +36,7 @@ class Manager extends BaseManager {
             location: location,
             memoryLocation: this.getMemoryLocation().getLocation(),
             sourcesDirectory: this.getSourcesDirectory().getLocation(),
-            useCache: this.getCache().isUse(),
+            useCache: this.getCache().isUsed(),
             includeDirectories: this.getIncludeDirectories().getDirectories(),
             errorBackgroundColor: this.getCssErrors().getBackgroundColor(),
             errorTextColor: this.getCssErrors().getTextColor(),

@@ -65,7 +65,7 @@ class Client extends BaseClient implements IClient {
             this.getMemoryLocation().setLocation(options.memoryLocation);
         }
         if (options && typeOf(options.useCache) !== "undefined") {
-            this.getCache().setUse(options.useCache);
+            this.getCache().setIsUse(options.useCache);
         }
         if (options && typeOf(options.errorBackgroundColor) !== "undefined") {
             this.getCssErrors().setBackgroundColor(options.errorBackgroundColor);
@@ -97,7 +97,7 @@ class Client extends BaseClient implements IClient {
             errorBlockPadding: this.getCssErrors().getBlockPadding(),
             errorFontSize: this.getCssErrors().getFontSize(),
             webRootDirectory: this.getWebRootDirectory().getLocation(),
-            useCache: this.getCache().isUse()
+            useCache: this.getCache().isUsed()
         };
     }
 

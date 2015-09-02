@@ -60,7 +60,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         deferred([
 
             (next:() => void):void => {
-                if (this.getCache().isUse()) {
+                if (this.getCache().isUsed()) {
                     memory.getItem(filename, (errors?:Error[], response?:IResponse):void => {
                         if (!errors || errors.length) {
                             callback(null, response || null);

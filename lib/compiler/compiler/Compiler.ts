@@ -62,7 +62,7 @@ class Compiler implements ICompiler {
             this.getCssErrors().setFontSize(options.errorFontSize);
         }
         if (options && typeOf(options.useCache) !== "undefined") {
-            this.getCache().setUse(options.useCache);
+            this.getCache().setIsUse(options.useCache);
         }
         if (options && typeOf(options.webRootDirectory) !== "undefined") {
             this.getWebRootDirectory().setLocation(options.webRootDirectory);

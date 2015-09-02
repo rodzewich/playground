@@ -44,7 +44,6 @@ import postcssSafeParser = require("postcss-safe-parser");
 // Fallbacks
 import cssgrace = require("cssgrace");
 //import postcssWillChange = require("postcss-will-change");
-import postcssVmin = require("postcss-vmin");
 
 import PostcssEpubHelper = require("../../helpers/PostcssEpubHelper");
 import IPostcssEpubHelper = require("../../helpers/IPostcssEpubHelper");
@@ -56,6 +55,8 @@ import PostcssOpacityHelper = require("../../helpers/PostcssOpacityHelper");
 import IPostcssOpacityHelper = require("../../helpers/IPostcssOpacityHelper");
 import PostcssPseudoElementsHelper = require("../../helpers/PostcssPseudoElementsHelper");
 import IPostcssPseudoElementsHelper = require("../../helpers/IPostcssPseudoElementsHelper");
+import PostcssVminHelper = require("../../helpers/PostcssVminHelper");
+import IPostcssVminHelper = require("../../helpers/IPostcssVminHelper");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -83,10 +84,16 @@ class Compiler extends BaseCompiler implements ICompiler {
         return this._postcssOpacity;
     }
 
-    private _postcssPseudoElements: IPostcssPseudoElementsHelper = new PostcssPseudoElementsHelper();
+    private _postcssPseudoElements:IPostcssPseudoElementsHelper = new PostcssPseudoElementsHelper();
 
-    protected getPostcssPseudoElements(): IPostcssPseudoElementsHelper {
+    protected getPostcssPseudoElements():IPostcssPseudoElementsHelper {
         return this._postcssPseudoElements;
+    }
+
+    private _postcssVmin:IPostcssVminHelper = new PostcssVminHelper();
+
+    protected getPostcssVmin():IPostcssVminHelper {
+        return this._postcssVmin;
     }
 
     private _includeDirectories:string[] = [];
@@ -108,45 +115,31 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     private _useCssgrace:boolean = true;
 
-    protected isUseCssgrace():boolean {
-        return this.getUseCssgrace();
+    protected isUsedCssgrace():boolean {
+        return this.getIsUseCssgrace();
     }
 
-    protected getUseCssgrace():boolean {
+    protected getIsUseCssgrace():boolean {
         return this._useCssgrace;
     }
 
-    protected setUseCssgrace(value:boolean):void {
+    protected setIsUseCssgrace(value:boolean):void {
         this._useCssgrace = value;
     }
 
     /*private _useWillChange: boolean = false;
 
-     protected isUseWillChange(): boolean {
-     return this.getUseWillChange();
+     protected isUsedWillChange(): boolean {
+     return this.getIsUseWillChange();
      }
 
-     protected getUseWillChange(): boolean {
+     protected getIsUseWillChange(): boolean {
      return this._useWillChange;
      }
 
-     protected setUseWillChange(value: boolean): void {
+     protected setIsUseWillChange(value: boolean): void {
      this._useWillChange = value;
      }*/
-
-    private _useVmin:boolean = true;
-
-    protected isUseVmin():boolean {
-        return this.getUseVmin();
-    }
-
-    protected getUseVmin():boolean {
-        return this._useVmin;
-    }
-
-    protected setUseVmin(value:boolean):void {
-        this._useVmin = value;
-    }
 
     /**
      pixrem generates pixel fallbacks for rem units.
@@ -154,29 +147,29 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     protected postcssFallbacks():any[] {
         var fallbacks:any[] = [];
-        if (this.getPostcssPseudoElements().isUse()) {
+        if (this.getPostcssPseudoElements().isUsed()) {
             fallbacks.push(this.getPostcssPseudoElements().getInstance());
         }
-        if (this.getPostcssEpub().isUse()) {
+        if (this.getPostcssEpub().isUsed()) {
             fallbacks.push(this.getPostcssEpub().getInstance());
         }
-        /*if (this.isUseWillChange()) {
+        /*if (this.isUsedWillChange()) {
          fallbacks.push(postcssWillChange);
          }*/
 
-        if (this.getPostcssAutoprefixer().isUse()) {
+        if (this.getPostcssAutoprefixer().isUsed()) {
             fallbacks.push(this.getPostcssAutoprefixer().getInstance());
         }
-        if (this.isUseCssgrace()) {
+        if (this.isUsedCssgrace()) {
             fallbacks.push(cssgrace);
         }
-        if (this.getPostcssOpacity().isUse()) {
+        if (this.getPostcssOpacity().isUsed()) {
             fallbacks.push(this.getPostcssOpacity().getInstance());
         }
-        if (this.isUseVmin()) {
-            fallbacks.push(postcssVmin);
+        if (this.getPostcssVmin().isUsed()) {
+            fallbacks.push(this.getPostcssVmin().getInstance());
         }
-        if (this.getPostcssColorRgba().isUse()) {
+        if (this.getPostcssColorRgba().isUsed()) {
             fallbacks.push(this.getPostcssColorRgba().getInstance());
         }
         return fallbacks;
@@ -232,7 +225,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         deferred([
 
             (next:() => void):void => {
-                if (this.getCache().isUse()) {
+                if (this.getCache().isUsed()) {
                     memory.getItem(filename, (errors?:Error[], response?:IResponse):void => {
                         if (!errors || errors.length) {
                             postcss(null, response || null);
