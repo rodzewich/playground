@@ -1,21 +1,22 @@
+import isTrue = require("../../isTrue");
 import IPlugin = require("./IPlugin");
 
 abstract class Plugin implements IPlugin {
 
-    private _use:boolean = true;
+    private _used:boolean = true;
 
     private _enabled:boolean = true;
 
     public isUsed():boolean {
-        return this.getIsUse();
+        return this.getIsUsed();
     }
 
-    public getIsUse():boolean {
-        return this._use;
+    public getIsUsed():boolean {
+        return this._used;
     }
 
-    public setIsUse(value:boolean):void {
-        this._use = value;
+    public setIsUsed(value:boolean):void {
+        this._used = isTrue(value);
     }
 
     public isEnabled():boolean {
@@ -27,7 +28,7 @@ abstract class Plugin implements IPlugin {
     }
 
     public setIsEnabled(value:boolean):void {
-        this._enabled = value;
+        this._enabled = isTrue(value);
     }
 
     abstract getInstance():any;
