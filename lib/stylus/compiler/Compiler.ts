@@ -47,8 +47,6 @@ import cssgrace = require("cssgrace");
 
 import PostcssEpubHelper = require("../../helpers/PostcssEpubHelper");
 import IPostcssEpubHelper = require("../../helpers/IPostcssEpubHelper");
-import PostcssAutoprefixerHelper = require("../../helpers/PostcssAutoprefixerHelper");
-import IPostcssAutoprefixerHelper = require("../../helpers/IPostcssAutoprefixerHelper");
 import PostcssColorRgbaHelper = require("../../helpers/PostcssColorRgbaHelper");
 import IPostcssColorRgbaHelper = require("../../helpers/IPostcssColorRgbaHelper");
 import PostcssOpacityHelper = require("../../helpers/PostcssOpacityHelper");
@@ -64,12 +62,6 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     protected getPostcssEpub():IPostcssEpubHelper {
         return this._postcssEpub;
-    }
-
-    private _postcssAutoprefixer:IPostcssAutoprefixerHelper = new PostcssAutoprefixerHelper();
-
-    protected getPostcssAutoprefixer():IPostcssAutoprefixerHelper {
-        return this._postcssAutoprefixer;
     }
 
     private _postcssColorRgba:IPostcssColorRgbaHelper = new PostcssColorRgbaHelper();
