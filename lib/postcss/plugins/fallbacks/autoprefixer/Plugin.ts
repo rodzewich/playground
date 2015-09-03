@@ -1,5 +1,7 @@
+import typeOf = require("../../../../typeOf");
 import PluginBase = require("../Plugin");
 import IPlugin = require("./IPlugin");
+import IOptions = require("./IOptions");
 import postcssAutoprefixer = require("autoprefixer-core");
 import browserslist = require("browserslist");
 
@@ -12,6 +14,22 @@ class Plugin extends PluginBase implements IPlugin {
     private _add:boolean = true;
 
     private _remove:boolean = true;
+
+    constructor(options?: IOptions) {
+        super(options);
+        if (options && typeOf(options.browsers) !== "undefined") {
+            this.setBrowsers(options.browsers);
+        }
+        if (options && typeOf(options.cascade) !== "undefined") {
+            this.setIsCascade(options.cascade);
+        }
+        if (options && typeOf(options.add) !== "undefined") {
+            this.setIsAdd(options.add);
+        }
+        if (options && typeOf(options.remove) !== "undefined") {
+            this.setIsRemove(options.remove);
+        }
+    }
 
     public getBrowsers():string[] {
         return this._browsers;
