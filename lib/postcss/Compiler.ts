@@ -2,11 +2,12 @@ import ICompiler = require("./ICompiler");
 import IResult = require("./IResult");
 import IOptions = require("./IOptions");
 import IPlugin = require("./plugins/IPlugin");
+import Base = require("./Base");
 
-class Compiler implements ICompiler {
+class Compiler extends Base implements ICompiler {
 
     constructor(options?:IOptions) {
-
+        super(options);
     }
 
     protected getPlugins():IPlugin[] {
@@ -16,8 +17,9 @@ class Compiler implements ICompiler {
     }
 
     protected getFallbacks():IPlugin[] {
-        var fallbacks:IPlugin = [];
-        return fallbacks;
+        return <IPlugin[]>[
+            this.getAutoprefixerPlugin()
+        ];
     }
 
     compile(source:string, map?:any, callback?:(errors?:Error[], result?:IResult) => void):void {
