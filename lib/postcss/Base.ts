@@ -1,5 +1,6 @@
 import IOptions = require("./IOptions");
 import typeOf = require("../typeOf");
+import IPlugin = require("./plugins/IPlugin");
 import IPostcssAutoprefixerPlugin = require("./plugins/fallbacks/autoprefixer/IPlugin");
 import PostcssAutoprefixerPlugin = require("./plugins/fallbacks/autoprefixer/Plugin");
 import IPostcssPseudoElementsPlugin = require("./plugins/fallbacks/pseudoElements/IPlugin");
@@ -16,6 +17,8 @@ import IPostcssCssgracePlugin = require("./plugins/fallbacks/cssgrace/IPlugin");
 import PostcssCssgracePlugin = require("./plugins/fallbacks/cssgrace/Plugin");
 import PostcssWillChangePlugin = require("./plugins/fallbacks/willChange/Plugin");
 import IPostcssWillChangePlugin = require("./plugins/fallbacks/willChange/IPlugin");
+import PostcssPixremPlugin = require("./plugins/fallbacks/pixrem/Plugin");
+import IPostcssPixremPlugin = require("./plugins/fallbacks/pixrem/IPlugin");
 
 class Base {
 
@@ -33,17 +36,20 @@ class Base {
 
     private _cssgracePlugin:IPostcssCssgracePlugin = new PostcssCssgracePlugin();
 
-    private _willChange: IPostcssWillChangePlugin = new PostcssWillChangePlugin();
+    private _willChangePlugin:IPostcssWillChangePlugin = new PostcssWillChangePlugin();
+
+    private _pixremPlugin:IPostcssPixremPlugin = new PostcssPixremPlugin();
 
     constructor(options?:IOptions) {
-        var autoprefixerPlugin:IPostcssAutoprefixerPlugin = this.getAutoprefixerPlugin(),
+        var plugins:IPlugin[] = this.getPlugins(),
+            autoprefixerPlugin:IPostcssAutoprefixerPlugin = this.getAutoprefixerPlugin(),
             pseudoElementsPlugin:IPostcssPseudoElementsPlugin = this.getPseudoElementsPlugin(),
             epubPlugin:IPostcssEpubPlugin = this.getEpubPlugin(),
             opacityPlugin:IPostcssOpacityPlugin = this.getOpacityPlugin(),
             vminPlugin:IPostcssVminPlugin = this.getVminPlugin(),
             colorRgbaPlugin:IPostcssVminPlugin = this.getColorRgbaPlugin(),
             cssgracePlugin:IPostcssCssgracePlugin = this.getCssgracePlugin(),
-            willChangePlugin: IPostcssWillChangePlugin = this.getWillchangePlugin();
+            willChangePlugin:IPostcssWillChangePlugin = this.getWillChangePlugin();
         if (options && typeOf(options.postcssPluginAutoprefixerEnabled) !== "undefined") {
             autoprefixerPlugin.setIsEnabled(options.postcssPluginAutoprefixerEnabled);
         }
@@ -118,6 +124,37 @@ class Base {
         if (options && typeOf(options.postcssPluginWillChangeUsed) !== "undefined") {
             willChangePlugin.setIsUsed(options.postcssPluginWillChangeUsed);
         }
+        if (plugins.indexOf(this.getPseudoElementsPlugin()) === -1) {
+            this.getPseudoElementsPlugin().setIsEnabled(false);
+        }
+        if (plugins.indexOf(this.getEpubPlugin()) === -1) {
+            this.getEpubPlugin().setIsEnabled(false);
+        }
+        if (plugins.indexOf(this.getWillChangePlugin()) === -1) {
+            this.getWillChangePlugin().setIsEnabled(false);
+        }
+        if (plugins.indexOf(this.getAutoprefixerPlugin()) === -1) {
+            this.getAutoprefixerPlugin().setIsEnabled(false);
+        }
+        if (plugins.indexOf(this.getCssgracePlugin()) === -1) {
+            this.getCssgracePlugin().setIsEnabled(false);
+        }
+        if (plugins.indexOf(this.getOpacityPlugin()) === -1) {
+            this.getOpacityPlugin().setIsEnabled(false);
+        }
+        if (plugins.indexOf(this.getVminPlugin()) === -1) {
+            this.getVminPlugin().setIsEnabled(false);
+        }
+        if (plugins.indexOf(this.getColorRgbaPlugin()) === -1) {
+            this.getColorRgbaPlugin().setIsEnabled(false);
+        }
+        if (plugins.indexOf(this.getPixremPlugin()) === -1) {
+            this.getPixremPlugin().setIsEnabled(false);
+        }
+    }
+
+    protected getPlugins():IPlugin[] {
+        return <IPlugin[]>[];
     }
 
     protected getAutoprefixerPlugin():IPostcssAutoprefixerPlugin {
@@ -144,12 +181,16 @@ class Base {
         return this._colorRgbaPlugin;
     }
 
-    protected getCssgracePlugin(): IPostcssCssgracePlugin {
+    protected getCssgracePlugin():IPostcssCssgracePlugin {
         return this._cssgracePlugin;
     }
 
-    protected getWillchangePlugin(): IPostcssWillChangePlugin {
-        return this._willChange;
+    protected getWillChangePlugin():IPostcssWillChangePlugin {
+        return this._willChangePlugin;
+    }
+
+    protected getPixremPlugin():IPostcssPixremPlugin {
+        return this._pixremPlugin;
     }
 
     public getOptions():IOptions {
@@ -160,7 +201,8 @@ class Base {
             vminPlugin:IPostcssVminPlugin = this.getVminPlugin(),
             colorRgbaPlugin:IPostcssVminPlugin = this.getColorRgbaPlugin(),
             cssgracePlugin:IPostcssCssgracePlugin = this.getCssgracePlugin(),
-            willChangePlugin: IPostcssWillChangePlugin = this.getWillchangePlugin(),
+            willChangePlugin:IPostcssWillChangePlugin = this.getWillChangePlugin(),
+            pixremPlugin:IPostcssPixremPlugin = this.getPixremPlugin(),
             options:IOptions = {};
         if (autoprefixerPlugin.isEnabled()) {
             options.postcssPluginAutoprefixerEnabled = autoprefixerPlugin.isEnabled();
@@ -202,6 +244,9 @@ class Base {
             options.postcssPluginWillChangeEnabled = willChangePlugin.isEnabled();
             options.postcssPluginWillChangeUsed = willChangePlugin.isUsed();
         }
+        /*if () {
+
+        }*/
         return options;
     }
 }

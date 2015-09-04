@@ -16,12 +16,13 @@ class Compiler extends Base implements ICompiler {
         return <IPlugin[]>[
             this.getPseudoElementsPlugin(),
             this.getEpubPlugin(),
-            this.getWillchangePlugin(),
+            this.getWillChangePlugin(),
             this.getAutoprefixerPlugin(),
             this.getCssgracePlugin(),
             this.getOpacityPlugin(),
             this.getVminPlugin(),
-            this.getColorRgbaPlugin()
+            this.getColorRgbaPlugin(),
+            this.getPixremPlugin()
         ];
     }
 

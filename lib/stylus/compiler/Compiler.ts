@@ -37,6 +37,7 @@ import path = require("path");
 import fs = require("fs");
 import BaseException = require("../../Exception");
 import LessException = require("../Exception");
+import Postcss = require("./Postcss");
 
 import postcss = require("postcss");
 import postcssSafeParser = require("postcss-safe-parser");
@@ -65,16 +66,14 @@ class Compiler extends BaseCompiler implements ICompiler {
      */
 
     protected postcss(options:{content: string; map: any}, callback:(errors?:Error[], result?:{content: string; map: any}) => void):void {
-        postcss(this.getPostcssPlugins()).process(options.content, {
-            parser: postcssSafeParser,
-            map: {
-                inline: false,
-                prev: options.map || false,
-                sourcesContent: false,
-                annotation: false
+        var compiler: any = new Postcss();
+        compiler.compile(options.content, options.map, (error?: Error, result): void => {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log("result", result);
+                callback(null, result);
             }
-        }).then((result:any):void => {
-            callback(null, {content: result.css, map: result.map});
         });
     }
 
