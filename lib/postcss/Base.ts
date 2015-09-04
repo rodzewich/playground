@@ -10,6 +10,8 @@ import IPostcssOpacityPlugin = require("./plugins/fallbacks/opacity/IPlugin");
 import PostcssOpacityPlugin = require("./plugins/fallbacks/opacity/Plugin");
 import IPostcssVminPlugin = require("./plugins/fallbacks/vmin/IPlugin");
 import PostcssVminPlugin = require("./plugins/fallbacks/vmin/Plugin");
+import IPostcssColorRgbaPlugin = require("./plugins/fallbacks/colorRgba/IPlugin");
+import PostcssColorRgbaPlugin = require("./plugins/fallbacks/colorRgba/Plugin");
 
 class Base {
 
@@ -23,12 +25,15 @@ class Base {
 
     private _vminPlugin:IPostcssVminPlugin = new PostcssVminPlugin();
 
+    private _colorRgbaPlugin:IPostcssColorRgbaPlugin = new PostcssColorRgbaPlugin();
+
     constructor(options?:IOptions) {
         var autoprefixerPlugin:IPostcssAutoprefixerPlugin = this.getAutoprefixerPlugin(),
             pseudoElementsPlugin:IPostcssPseudoElementsPlugin = this.getPseudoElementsPlugin(),
             epubPlugin:IPostcssEpubPlugin = this.getEpubPlugin(),
             opacityPlugin:IPostcssOpacityPlugin = this.getOpacityPlugin(),
-            vminPlugin:IPostcssVminPlugin = this.getVminPlugin();
+            vminPlugin:IPostcssVminPlugin = this.getVminPlugin(),
+            colorRgbaPlugin:IPostcssVminPlugin = this.getColorRgbaPlugin();
         if (options && typeOf(options.postcssPluginAutoprefixerEnabled) !== "undefined") {
             autoprefixerPlugin.setIsEnabled(options.postcssPluginAutoprefixerEnabled);
         }
@@ -85,6 +90,12 @@ class Base {
         if (options && typeOf(options.postcssPluginVminUsed) !== "undefined") {
             vminPlugin.setIsUsed(options.postcssPluginVminUsed);
         }
+        if (options && typeOf(options.postcssPluginColorRgbaEnabled) !== "undefined") {
+            colorRgbaPlugin.setIsEnabled(options.postcssPluginColorRgbaEnabled);
+        }
+        if (options && typeOf(options.postcssPluginColorRgbaUsed) !== "undefined") {
+            colorRgbaPlugin.setIsUsed(options.postcssPluginColorRgbaUsed);
+        }
     }
 
     protected getAutoprefixerPlugin():IPostcssAutoprefixerPlugin {
@@ -107,12 +118,17 @@ class Base {
         return this._vminPlugin;
     }
 
+    protected getColorRgbaPlugin():IPostcssColorRgbaPlugin {
+        return this._colorRgbaPlugin;
+    }
+
     public getOptions():IOptions {
         var autoprefixerPlugin:IPostcssAutoprefixerPlugin = this.getAutoprefixerPlugin(),
             pseudoElementsPlugin:IPostcssPseudoElementsPlugin = this.getPseudoElementsPlugin(),
             epubPlugin:IPostcssEpubPlugin = this.getEpubPlugin(),
             opacityPlugin:IPostcssOpacityPlugin = this.getOpacityPlugin(),
             vminPlugin:IPostcssVminPlugin = this.getVminPlugin(),
+            colorRgbaPlugin:IPostcssVminPlugin = this.getColorRgbaPlugin(),
             options:IOptions = {};
         if (autoprefixerPlugin.isEnabled()) {
             options.postcssPluginAutoprefixerEnabled = autoprefixerPlugin.isEnabled();
@@ -141,6 +157,10 @@ class Base {
         if (vminPlugin.isEnabled()) {
             options.postcssPluginVminEnabled = vminPlugin.isEnabled();
             options.postcssPluginVminUsed = vminPlugin.isUsed();
+        }
+        if (colorRgbaPlugin.isEnabled()) {
+            options.postcssPluginColorRgbaEnabled = colorRgbaPlugin.isEnabled();
+            options.postcssPluginColorRgbaUsed = colorRgbaPlugin.isUsed();
         }
         return options;
     }

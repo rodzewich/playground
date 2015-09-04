@@ -17,6 +17,8 @@ interface IOptions {
     postcssPluginOpacityUsed?: boolean;
     postcssPluginVminEnabled?: boolean;
     postcssPluginVminUsed?: boolean;
+    postcssPluginColorRgbaEnabled?: boolean;
+    postcssPluginColorRgbaUsed?: boolean;
 }
 
 export = IOptions;

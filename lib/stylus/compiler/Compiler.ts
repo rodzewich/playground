@@ -45,16 +45,7 @@ import postcssSafeParser = require("postcss-safe-parser");
 import cssgrace = require("cssgrace");
 //import postcssWillChange = require("postcss-will-change");
 
-import PostcssColorRgbaHelper = require("../../helpers/PostcssColorRgbaHelper");
-import IPostcssColorRgbaHelper = require("../../helpers/IPostcssColorRgbaHelper");
-
 class Compiler extends BaseCompiler implements ICompiler {
-
-    private _postcssColorRgba:IPostcssColorRgbaHelper = new PostcssColorRgbaHelper();
-
-    protected getPostcssColorRgba():IPostcssColorRgbaHelper {
-        return this._postcssColorRgba;
-    }
 
     private _includeDirectories:string[] = [];
 

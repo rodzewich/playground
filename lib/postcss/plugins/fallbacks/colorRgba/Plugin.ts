@@ -1,13 +1,19 @@
-/// <reference path="./IPostcssColorRgbaHelper.ts" />
-/// <reference path="./PostcssHelper.ts" />
-
-import IPostcssColorRgbaHelper = require("./IPostcssColorRgbaHelper");
-import PostcssHelper = require("./PostcssHelper");
+import typeOf = require("../../../../typeOf");
+import PluginBase = require("../Plugin");
+import IPlugin = require("./IPlugin");
+import IOptions = require("./IOptions");
 import postcssColorRgba = require("postcss-color-rgba-fallback");
 
-class PostcssColorRgbaHelper extends PostcssHelper implements IPostcssColorRgbaHelper {
+class Plugin extends PluginBase implements IPlugin {
 
     private _properties:string[] = ["background-color", "background", "color", "border", "border-color", "outline", "outline-color"];
+
+    constructor(options?: IOptions) {
+        super(options);
+        if (options && typeOf(options.properties) !== "undefined") {
+            this.setProperties(options.properties);
+        }
+    }
 
     public getProperties():string[] {
         return this._properties;
@@ -25,4 +31,4 @@ class PostcssColorRgbaHelper extends PostcssHelper implements IPostcssColorRgbaH
 
 }
 
-export = PostcssColorRgbaHelper;
+export = Plugin;
