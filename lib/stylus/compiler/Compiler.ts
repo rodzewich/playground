@@ -45,41 +45,15 @@ import postcssSafeParser = require("postcss-safe-parser");
 import cssgrace = require("cssgrace");
 //import postcssWillChange = require("postcss-will-change");
 
-import PostcssEpubHelper = require("../../helpers/PostcssEpubHelper");
-import IPostcssEpubHelper = require("../../helpers/IPostcssEpubHelper");
 import PostcssColorRgbaHelper = require("../../helpers/PostcssColorRgbaHelper");
 import IPostcssColorRgbaHelper = require("../../helpers/IPostcssColorRgbaHelper");
-import PostcssOpacityHelper = require("../../helpers/PostcssOpacityHelper");
-import IPostcssOpacityHelper = require("../../helpers/IPostcssOpacityHelper");
-import PostcssPseudoElementsHelper = require("../../helpers/PostcssPseudoElementsHelper");
-import IPostcssPseudoElementsHelper = require("../../helpers/IPostcssPseudoElementsHelper");
-import PostcssVminHelper = require("../../helpers/PostcssVminHelper");
-import IPostcssVminHelper = require("../../helpers/IPostcssVminHelper");
 
 class Compiler extends BaseCompiler implements ICompiler {
-
-    private _postcssEpub:IPostcssEpubHelper = new PostcssEpubHelper();
-
-    protected getPostcssEpub():IPostcssEpubHelper {
-        return this._postcssEpub;
-    }
 
     private _postcssColorRgba:IPostcssColorRgbaHelper = new PostcssColorRgbaHelper();
 
     protected getPostcssColorRgba():IPostcssColorRgbaHelper {
         return this._postcssColorRgba;
-    }
-
-    private _postcssOpacity:IPostcssOpacityHelper = new PostcssOpacityHelper();
-
-    protected getPostcssOpacity():IPostcssOpacityHelper {
-        return this._postcssOpacity;
-    }
-
-    private _postcssVmin:IPostcssVminHelper = new PostcssVminHelper();
-
-    protected getPostcssVmin():IPostcssVminHelper {
-        return this._postcssVmin;
     }
 
     private _includeDirectories:string[] = [];

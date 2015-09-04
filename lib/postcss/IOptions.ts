@@ -13,6 +13,10 @@ interface IOptions {
     postcssPluginEpubFonts?: boolean;
     postcssPluginEpubStrip?: boolean;
     postcssPluginEpubStrict?: boolean;
+    postcssPluginOpacityEnabled?: boolean;
+    postcssPluginOpacityUsed?: boolean;
+    postcssPluginVminEnabled?: boolean;
+    postcssPluginVminUsed?: boolean;
 }
 
 export = IOptions;

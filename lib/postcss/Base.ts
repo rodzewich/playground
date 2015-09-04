@@ -6,6 +6,10 @@ import IPostcssPseudoElementsPlugin = require("./plugins/fallbacks/pseudoElement
 import PostcssPseudoElementsPlugin = require("./plugins/fallbacks/pseudoElements/Plugin");
 import IPostcssEpubPlugin = require("./plugins/fallbacks/epub/IPlugin");
 import PostcssEpubPlugin = require("./plugins/fallbacks/epub/Plugin");
+import IPostcssOpacityPlugin = require("./plugins/fallbacks/opacity/IPlugin");
+import PostcssOpacityPlugin = require("./plugins/fallbacks/opacity/Plugin");
+import IPostcssVminPlugin = require("./plugins/fallbacks/vmin/IPlugin");
+import PostcssVminPlugin = require("./plugins/fallbacks/vmin/Plugin");
 
 class Base {
 
@@ -15,22 +19,16 @@ class Base {
 
     private _epubElementPlugin:IPostcssEpubPlugin = new PostcssEpubPlugin();
 
-    protected getAutoprefixerPlugin():IPostcssAutoprefixerPlugin {
-        return this._autoprefixerPlugin;
-    }
+    private _opacityPlugin:IPostcssOpacityPlugin = new PostcssOpacityPlugin();
 
-    protected getPseudoElementsPlugin():IPostcssPseudoElementsPlugin {
-        return this._pseudoElementsPlugin;
-    }
-
-    protected getEpubPlugin():IPostcssEpubPlugin {
-        return this._epubElementPlugin;
-    }
+    private _vminPlugin:IPostcssVminPlugin = new PostcssVminPlugin();
 
     constructor(options?:IOptions) {
         var autoprefixerPlugin:IPostcssAutoprefixerPlugin = this.getAutoprefixerPlugin(),
             pseudoElementsPlugin:IPostcssPseudoElementsPlugin = this.getPseudoElementsPlugin(),
-            epubPlugin:IPostcssEpubPlugin = this.getEpubPlugin();
+            epubPlugin:IPostcssEpubPlugin = this.getEpubPlugin(),
+            opacityPlugin:IPostcssOpacityPlugin = this.getOpacityPlugin(),
+            vminPlugin:IPostcssVminPlugin = this.getVminPlugin();
         if (options && typeOf(options.postcssPluginAutoprefixerEnabled) !== "undefined") {
             autoprefixerPlugin.setIsEnabled(options.postcssPluginAutoprefixerEnabled);
         }
@@ -75,12 +73,46 @@ class Base {
         if (options && typeOf(options.postcssPluginEpubStrict) !== "undefined") {
             epubPlugin.setIsStrict(options.postcssPluginEpubStrict);
         }
+        if (options && typeOf(options.postcssPluginOpacityEnabled) !== "undefined") {
+            opacityPlugin.setIsEnabled(options.postcssPluginOpacityEnabled);
+        }
+        if (options && typeOf(options.postcssPluginOpacityUsed) !== "undefined") {
+            opacityPlugin.setIsUsed(options.postcssPluginOpacityUsed);
+        }
+        if (options && typeOf(options.postcssPluginVminEnabled) !== "undefined") {
+            vminPlugin.setIsEnabled(options.postcssPluginVminEnabled);
+        }
+        if (options && typeOf(options.postcssPluginVminUsed) !== "undefined") {
+            vminPlugin.setIsUsed(options.postcssPluginVminUsed);
+        }
+    }
+
+    protected getAutoprefixerPlugin():IPostcssAutoprefixerPlugin {
+        return this._autoprefixerPlugin;
+    }
+
+    protected getPseudoElementsPlugin():IPostcssPseudoElementsPlugin {
+        return this._pseudoElementsPlugin;
+    }
+
+    protected getEpubPlugin():IPostcssEpubPlugin {
+        return this._epubElementPlugin;
+    }
+
+    protected getOpacityPlugin():IPostcssOpacityPlugin {
+        return this._opacityPlugin;
+    }
+
+    protected getVminPlugin():IPostcssVminPlugin {
+        return this._vminPlugin;
     }
 
     public getOptions():IOptions {
         var autoprefixerPlugin:IPostcssAutoprefixerPlugin = this.getAutoprefixerPlugin(),
             pseudoElementsPlugin:IPostcssPseudoElementsPlugin = this.getPseudoElementsPlugin(),
             epubPlugin:IPostcssEpubPlugin = this.getEpubPlugin(),
+            opacityPlugin:IPostcssOpacityPlugin = this.getOpacityPlugin(),
+            vminPlugin:IPostcssVminPlugin = this.getVminPlugin(),
             options:IOptions = {};
         if (autoprefixerPlugin.isEnabled()) {
             options.postcssPluginAutoprefixerEnabled = autoprefixerPlugin.isEnabled();
@@ -101,6 +133,14 @@ class Base {
             options.postcssPluginEpubFonts = epubPlugin.isFonts();
             options.postcssPluginEpubStrip = epubPlugin.isStrip();
             options.postcssPluginEpubStrict = epubPlugin.isStrict();
+        }
+        if (opacityPlugin.isEnabled()) {
+            options.postcssPluginOpacityEnabled = opacityPlugin.isEnabled();
+            options.postcssPluginOpacityUsed = opacityPlugin.isUsed();
+        }
+        if (vminPlugin.isEnabled()) {
+            options.postcssPluginVminEnabled = vminPlugin.isEnabled();
+            options.postcssPluginVminUsed = vminPlugin.isUsed();
         }
         return options;
     }
