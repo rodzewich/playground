@@ -15,7 +15,8 @@ class Compiler extends Base implements ICompiler {
     protected getPlugins():IPlugin[] {
         return <IPlugin[]>[
             this.getAutoprefixerPlugin(),
-            this.getPseudoElementsPlugin()
+            this.getPseudoElementsPlugin(),
+            this.getEpubPlugin()
         ];
     }
 

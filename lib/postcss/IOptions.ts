@@ -8,6 +8,11 @@ interface IOptions {
     postcssPluginPseudoElementsEnabled?: boolean;
     postcssPluginPseudoElementsUsed?: boolean;
     postcssPluginPseudoElementsSelectors?: string[];
+    postcssPluginEpubEnabled?: boolean;
+    postcssPluginEpubUsed?: boolean;
+    postcssPluginEpubFonts?: boolean;
+    postcssPluginEpubStrip?: boolean;
+    postcssPluginEpubStrict?: boolean;
 }
 
 export = IOptions;
