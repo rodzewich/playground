@@ -37,7 +37,7 @@ class Compiler extends Base implements ICompiler {
             map: prev
         }).then((result:any):void => {
             callback(null, <IResult>{source: result.css, map: result.map});
-        }).catch((error?:Error): void => {
+        }).catch((error?:Error):void => {
             callback(error, null);
         });
     }
