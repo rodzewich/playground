@@ -14,28 +14,31 @@ class Compiler extends Base implements ICompiler {
 
     protected getPlugins():IPlugin[] {
         return <IPlugin[]>[
-            this.getAutoprefixerPlugin()
+            this.getAutoprefixerPlugin(),
+            this.getPseudoElementsPlugin()
         ];
     }
 
-    compile(source:string, map?:any, callback?:(errors?:Error[], result?:IResult) => void):void {
-        var plugins: any[] = this.getPlugins().map((plugin: IPlugin): void => {
-            return plugin.getInstance();
-        });
-        postcss(this.getPlugins().map((plugin:IPlugin):void => {
-            return plugin.getInstance();
-        })).process(source, {
-            parser: postcssSafeParser,
-            map: {
+    public compile(source:string, map?:any, callback?:(error?:Error, result?:IResult) => void):void {
+        var plugins:any[] = this.getPlugins().map((plugin:IPlugin):void => {
+                return plugin.getInstance();
+            }),
+            prev:any = null;
+        if (map) {
+            prev = {
                 inline: false,
-                prev: options.map || false,
+                prev: map,
                 sourcesContent: false,
                 annotation: false
-            }
+            };
+        }
+        postcss(plugins).process(source, {
+            parser: postcssSafeParser,
+            map: prev
         }).then((result:any):void => {
-            callback(null, {content: result.css, map: result.map});
+            callback(null, <IResult>{source: result.css, map: result.map});
         }).catch((error?:Error): void => {
-
+            callback(error, null);
         });
     }
 }

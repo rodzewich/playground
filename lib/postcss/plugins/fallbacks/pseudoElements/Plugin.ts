@@ -1,13 +1,19 @@
-/// <reference path="./IPostcssPseudoElementsHelper.ts" />
-/// <reference path="./PostcssHelper.ts" />
-
-import PostcssHelper = require("./PostcssHelper");
-import IPostcssPseudoElementsHelper = require("./IPostcssPseudoElementsHelper");
+import typeOf = require("../../../../typeOf");
+import PluginBase = require("../Plugin");
+import IPlugin = require("./IPlugin");
+import IOptions = require("./IOptions");
 import postcssPseudoElements = require("postcss-pseudoelements");
 
-class PostcssPseudoElementsHelper extends PostcssHelper implements IPostcssPseudoElementsHelper {
+class Plugin extends PluginBase implements IPlugin {
 
     private _selectors:string[] = ["before", "after", "first-letter", "first-line"];
+
+    constructor(options?:IOptions) {
+        super(options);
+        if (options && typeOf(options.selectors) !== "undefined") {
+            this.setSelectors(options.selectors);
+        }
+    }
 
     public getSelectors():string[] {
         return this._selectors;
@@ -25,4 +31,4 @@ class PostcssPseudoElementsHelper extends PostcssHelper implements IPostcssPseud
 
 }
 
-export = PostcssPseudoElementsHelper;
+export = Plugin;

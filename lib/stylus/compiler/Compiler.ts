@@ -76,12 +76,6 @@ class Compiler extends BaseCompiler implements ICompiler {
         return this._postcssOpacity;
     }
 
-    private _postcssPseudoElements:IPostcssPseudoElementsHelper = new PostcssPseudoElementsHelper();
-
-    protected getPostcssPseudoElements():IPostcssPseudoElementsHelper {
-        return this._postcssPseudoElements;
-    }
-
     private _postcssVmin:IPostcssVminHelper = new PostcssVminHelper();
 
     protected getPostcssVmin():IPostcssVminHelper {
