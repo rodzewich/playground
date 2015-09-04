@@ -41,10 +41,6 @@ import LessException = require("../Exception");
 import postcss = require("postcss");
 import postcssSafeParser = require("postcss-safe-parser");
 
-// Fallbacks
-import cssgrace = require("cssgrace");
-//import postcssWillChange = require("postcss-will-change");
-
 class Compiler extends BaseCompiler implements ICompiler {
 
     private _includeDirectories:string[] = [];
@@ -64,73 +60,9 @@ class Compiler extends BaseCompiler implements ICompiler {
         this._includeDirectories = value;
     }
 
-    private _useCssgrace:boolean = true;
-
-    protected isUsedCssgrace():boolean {
-        return this.getIsUseCssgrace();
-    }
-
-    protected getIsUseCssgrace():boolean {
-        return this._useCssgrace;
-    }
-
-    protected setIsUseCssgrace(value:boolean):void {
-        this._useCssgrace = value;
-    }
-
-    /*private _useWillChange: boolean = false;
-
-     protected isUsedWillChange(): boolean {
-     return this.getIsUseWillChange();
-     }
-
-     protected getIsUseWillChange(): boolean {
-     return this._useWillChange;
-     }
-
-     protected setIsUseWillChange(value: boolean): void {
-     this._useWillChange = value;
-     }*/
-
     /**
      pixrem generates pixel fallbacks for rem units.
      */
-
-    protected getPostcssFallbacks():any[] {
-        var fallbacks:any[] = [];
-        if (this.getPostcssPseudoElements().isUsed()) {
-            fallbacks.push(this.getPostcssPseudoElements().getInstance());
-        }
-        if (this.getPostcssEpub().isUsed()) {
-            fallbacks.push(this.getPostcssEpub().getInstance());
-        }
-        /*if (this.isUsedWillChange()) {
-         fallbacks.push(postcssWillChange);
-         }*/
-
-        if (this.getPostcssAutoprefixer().isUsed()) {
-            fallbacks.push(this.getPostcssAutoprefixer().getInstance());
-        }
-        if (this.isUsedCssgrace()) {
-            fallbacks.push(cssgrace);
-        }
-        if (this.getPostcssOpacity().isUsed()) {
-            fallbacks.push(this.getPostcssOpacity().getInstance());
-        }
-        if (this.getPostcssVmin().isUsed()) {
-            fallbacks.push(this.getPostcssVmin().getInstance());
-        }
-        if (this.getPostcssColorRgba().isUsed()) {
-            fallbacks.push(this.getPostcssColorRgba().getInstance());
-        }
-        return fallbacks;
-    }
-
-    protected getPostcssPlugins():any[] {
-        var plugins:any[] = [];
-        plugins = plugins.concat(this.getPostcssFallbacks());
-        return plugins;
-    }
 
     protected postcss(options:{content: string; map: any}, callback:(errors?:Error[], result?:{content: string; map: any}) => void):void {
         postcss(this.getPostcssPlugins()).process(options.content, {

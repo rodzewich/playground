@@ -2,12 +2,18 @@ import typeOf = require("../../../../typeOf");
 import PluginBase = require("../Plugin");
 import IPlugin = require("./IPlugin");
 import IOptions = require("./IOptions");
-import postcssOpacity = require("postcss-opacity");
+import pixrem = require("pixrem");
 
+// @see https://github.com/robwierzbowski/node-pixrem
 class Plugin extends PluginBase implements IPlugin {
 
     public getInstance():any {
-        return postcssOpacity;
+        return pixrem({
+            replace: false,
+            atrules: false,
+            html: true,
+            browsers: 'ie <= 8'
+        });
     }
 
 }

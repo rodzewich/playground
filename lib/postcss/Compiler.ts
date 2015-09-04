@@ -14,10 +14,14 @@ class Compiler extends Base implements ICompiler {
 
     protected getPlugins():IPlugin[] {
         return <IPlugin[]>[
-            this.getAutoprefixerPlugin(),
             this.getPseudoElementsPlugin(),
             this.getEpubPlugin(),
-            this.getOpacityPlugin()
+            this.getWillchangePlugin(),
+            this.getAutoprefixerPlugin(),
+            this.getCssgracePlugin(),
+            this.getOpacityPlugin(),
+            this.getVminPlugin(),
+            this.getColorRgbaPlugin()
         ];
     }
 
