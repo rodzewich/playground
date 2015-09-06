@@ -8,16 +8,16 @@ class CacheHelper implements ICacheHelper {
 
     private _use:boolean = false;
 
-    public setIsUse(value:any):void {
+    public setIsUsed(value:any):void {
         this._use = isTrue(value);
     }
 
-    public getIsUse():boolean {
+    public getIsUsed():boolean {
         return !!this._use;
     }
 
     public isUsed():boolean {
-        return this.getIsUse();
+        return this.getIsUsed();
     }
 
 }

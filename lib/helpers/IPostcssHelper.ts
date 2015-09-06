@@ -1,7 +1,7 @@
 interface IPostcssHelper {
     isUsed():boolean;
-    getIsUse():boolean;
-    setIsUse(value:boolean):void;
+    getIsUsed():boolean;
+    setIsUsed(value:boolean):void;
     getInstance(): any;
 }
 

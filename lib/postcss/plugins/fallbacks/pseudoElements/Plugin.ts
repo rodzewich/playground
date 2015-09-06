@@ -1,12 +1,19 @@
+/// <reference path="./plugin.d.ts" />
+
 import typeOf = require("../../../../typeOf");
 import PluginBase = require("../Plugin");
 import IPlugin = require("./IPlugin");
 import IOptions = require("./IOptions");
-import postcssPseudoElements = require("postcss-pseudoelements");
+//import postcssPseudoElements = require("postcss-pseudoelements"); todo: fix this
 
 class Plugin extends PluginBase implements IPlugin {
 
     private _selectors:string[] = ["before", "after", "first-letter", "first-line"];
+
+    public isUsed(): boolean {
+        // todo fix this
+        return false;
+    }
 
     constructor(options?:IOptions) {
         super(options);

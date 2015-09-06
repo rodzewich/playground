@@ -9,6 +9,7 @@ export interface Memory {
 export interface RouterOptions {
     request: http.ServerRequest;
     response: http.ServerResponse;
+    accessLog?: boolean;
 }
 
 export interface InitOptions {

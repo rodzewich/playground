@@ -1,5 +1,5 @@
 interface IResult {
-    source: string;
+    result: string;
     map: any;
 }
 

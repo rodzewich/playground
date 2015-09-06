@@ -103,10 +103,6 @@ var temporaryDirectory = "/home/rodzewich/Projects/playground/temp";
 var memorySocketAddress = path.join(temporaryDirectory, "memory.sock");
 
 
-
-
-
-
 function initTypescript(callback) {
     if (processingTypescript) {
         routers.typescript.init({
@@ -291,6 +287,7 @@ deferred([
                 function (next) {
                     if (processingLess) {
                         less.route({
+                            accessLog   : true,
                             request          : request,
                             response         : response,
                             webRootDirectory : "/",
@@ -305,6 +302,7 @@ deferred([
                 function (next) {
                     if (processingStylus) {
                         stylus.route({
+                            accessLog   : true,
                             request          : request,
                             response         : response,
                             webRootDirectory : "/",

@@ -1,14 +1,15 @@
 import Compiler = require("../../postcss/Compiler");
 import IOptions = require("../../postcss/IOptions");
 import IPlugin = require("../../postcss/plugins/IPlugin");
+import IPostcss = require("./IPostcss");
 
-class Postcss extends Compiler {
+class Postcss extends Compiler implements IPostcss {
 
-    constructor(options?: IOptions) {
+    constructor(options?:IOptions) {
         super(options);
     }
 
-    public getPlugins(): IPlugin[] {
+    public getPlugins():IPlugin[] {
         return <IPlugin[]>[
             this.getPseudoElementsPlugin(),
             this.getEpubPlugin(),

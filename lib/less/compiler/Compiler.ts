@@ -270,7 +270,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                         errors.push(new Error("bla bla bla"));
                                         return null;
                                     }
-                                    return path.join("/", this.getWebRootDirectory(), relative);
+                                    return path.join("/", this.getWebRootDirectory().getLocation(), relative);
                                 });
                                 return map;
                             })(JSON.parse(String(result.map || "{}")))),

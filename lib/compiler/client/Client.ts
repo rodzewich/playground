@@ -24,6 +24,7 @@ import WrapperException = require("../../WrapperException");
 import WebRootDirectoryHelper = require("../../helpers/WebRootDirectoryHelper");
 import IWebRootDirectoryHelper = require("../../helpers/IWebRootDirectoryHelper");
 import MemoryLocationHelper = require("../../helpers/MemoryLocationHelper");
+import IMemoryLocationHelper = require("../../helpers/IMemoryLocationHelper");
 import SourcesDirectoryHelper = require("../../helpers/SourcesDirectoryHelper");
 import ISourcesDirectoryHelper = require("../../helpers/ISourcesDirectoryHelper");
 import IResourceLocation = require("../../helpers/IResourceLocation");
@@ -50,7 +51,7 @@ class Client extends BaseClient implements IClient {
 
     private _cssErrors:ICssErrorsHelper = new CssErrorsHelper();
 
-    private _memoryLocation:IResourceLocation = new MemoryLocationHelper();
+    private _memoryLocation:IMemoryLocationHelper = new MemoryLocationHelper();
 
     private _sourcesDirectory:ISourcesDirectoryHelper = new SourcesDirectoryHelper();
 
@@ -65,7 +66,7 @@ class Client extends BaseClient implements IClient {
             this.getMemoryLocation().setLocation(options.memoryLocation);
         }
         if (options && typeOf(options.useCache) !== "undefined") {
-            this.getCache().setIsUse(options.useCache);
+            this.getCache().setIsUsed(options.useCache);
         }
         if (options && typeOf(options.errorBackgroundColor) !== "undefined") {
             this.getCssErrors().setBackgroundColor(options.errorBackgroundColor);
@@ -101,11 +102,11 @@ class Client extends BaseClient implements IClient {
         };
     }
 
-    public getCache():ICacheHelper {
+    protected getCache():ICacheHelper {
         return this._cache;
     }
 
-    public getCssErrors():ICssErrorsHelper {
+    protected getCssErrors():ICssErrorsHelper {
         return this._cssErrors;
     }
 
@@ -113,11 +114,11 @@ class Client extends BaseClient implements IClient {
         return this._memoryLocation;
     }
 
-    public getSourcesDirectory():ISourcesDirectoryHelper {
+    protected getSourcesDirectory():ISourcesDirectoryHelper {
         return this._sourcesDirectory;
     }
 
-    public getWebRootDirectory():IResourceLocation {
+    protected getWebRootDirectory():IResourceLocation {
         return this._webRootDirectory;
     }
 

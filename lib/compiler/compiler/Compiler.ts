@@ -25,7 +25,7 @@ import ICacheHelper = require("../../helpers/ICacheHelper");
 import SourcesDirectoryHelper = require("../../helpers/SourcesDirectoryHelper");
 import ISourcesDirectoryHelper = require("../../helpers/ISourcesDirectoryHelper");
 
-class Compiler implements ICompiler {
+abstract class Compiler implements ICompiler {
 
     private _memory:IMemory;
 
@@ -62,26 +62,26 @@ class Compiler implements ICompiler {
             this.getCssErrors().setFontSize(options.errorFontSize);
         }
         if (options && typeOf(options.useCache) !== "undefined") {
-            this.getCache().setIsUse(options.useCache);
+            this.getCache().setIsUsed(options.useCache);
         }
         if (options && typeOf(options.webRootDirectory) !== "undefined") {
             this.getWebRootDirectory().setLocation(options.webRootDirectory);
         }
     }
 
-    public getCache():ICacheHelper {
+    protected getCache():ICacheHelper {
         return this._cache;
     }
 
-    public getSourcesDirectory():ISourcesDirectoryHelper {
+    protected getSourcesDirectory():ISourcesDirectoryHelper {
         return this._sourcesDirectory;
     }
 
-    public getWebRootDirectory(): IWebRootDirectoryHelper {
+    protected getWebRootDirectory():IWebRootDirectoryHelper {
         return this._webRootDirectory;
     }
 
-    public getCssErrors():ICssErrorsHelper {
+    protected getCssErrors():ICssErrorsHelper {
         return this._cssErrors;
     }
 
@@ -93,21 +93,15 @@ class Compiler implements ICompiler {
         return this._memory;
     }
 
-    public getFilename():string {
+    protected getFilename():string {
         return this._filename;
     }
 
-    public setFilename(value:string):void {
+    protected setFilename(value:string):void {
         this._filename = value;
     }
 
-    public compile(callback:(errors?:Error[], result?:any) => void):void {
-        setTimeout(():void => {
-            if (typeOf(callback) === "function") {
-                callback(null, null);
-            }
-        }, 0).ref();
-    }
+    abstract compile(callback:(errors?:Error[], result?:any) => void):void;
 
 }
 

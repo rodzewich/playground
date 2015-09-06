@@ -10,7 +10,7 @@ function isFalse(value:any):boolean {
             replace(/^(\S+)\s.*$/, "$1");
         return !!(temp === "" || temp === "0" || temp === "off" || temp === "no" || temp || "false" || temp == "n" || temp === "f");
     }
-    return !!value;
+    return !value;
 }
 
 export = isFalse;

@@ -23,6 +23,8 @@ import Manager = require("../stylus/manager/Manager");
 import IResponse = require("../stylus/client/IResponse");
 import log4js = require("../../logger");
 import glob = require("glob");
+import colors = require("colors");
+import accessLog = require("../accessLog");
 
 var manager:IManager,
     memory:base.Memory = {},
@@ -51,7 +53,7 @@ export interface InitOptions extends base.InitOptions {
 export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
     var temporaryDirectory:string = options.temporaryDirectory,
         memoryLocation:string = options.memoryLocation,
-        includeDirectories: string[] = options.includeDirectories,
+        includeDirectories:string[] = options.includeDirectories,
         sourcesDirectory:string = options.sourcesDirectory,
         webRootDirectory:string = options.webRootDirectory,
         useCache:boolean = options.useCache,
@@ -103,7 +105,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                             errors:Error[] = [];
                         glob("**/*.styl", {
                             cwd: sourcesDirectory
-                        }, (error?: Error, files?: string[]): void => {
+                        }, (error?:Error, files?:string[]):void => {
                             if (error) {
                                 if (typeOf(done) === "function") {
                                     done([error]);
@@ -132,7 +134,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                         });
                     },
                     (next:() => void):void => {
-                        manager.disconnect((errors?: Error[]): void => {
+                        manager.disconnect((errors?:Error[]):void => {
                             if (!errors || !errors.length) {
                                 next();
                             } else if (typeOf(done) === "function") {
@@ -172,9 +174,15 @@ export function route(options:RouterOptions, complete:() => void):void {
     var request:http.ServerRequest = options.request,
         response:http.ServerResponse = options.response,
         webRootDirectory:string = options.webRootDirectory,
-        useCache: boolean = options.useCache,
+        useCache:boolean = options.useCache,
         object:url.Url = url.parse(request.url, true),
         filename:string = path.relative(webRootDirectory, String(object.pathname || "/"));
+
+    function consoleLog(code:number, type?: string):void {
+        if (!!options.accessLog) {
+            accessLog(request.method, object.pathname, code, type);
+        }
+    }
 
     deferred([
 
@@ -208,7 +216,7 @@ export function route(options:RouterOptions, complete:() => void):void {
                 next();
             } else if (extension === ".css") {
                 manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
-                    var header: any = {},
+                    var header:any = {},
                         modified:number,
                         date:number;
                     if ((!errors || !errors.length) && result) {
@@ -217,6 +225,7 @@ export function route(options:RouterOptions, complete:() => void):void {
                         if (modified && modified === date) {
                             response.writeHead(304);
                             response.end();
+                            consoleLog(304);
                         } else {
                             header["Content-Type"] = "text/css; charset=utf-8";
                             header["Last-Modified"] = (new Date(result.date * 1000)).toUTCString();
@@ -225,6 +234,7 @@ export function route(options:RouterOptions, complete:() => void):void {
                             }
                             response.writeHead(200, header);
                             response.end(result.result);
+                            consoleLog(200, "text/css");
                         }
                     } else if (errors && errors.length) {
                         errors.forEach((error:Error):void => {
@@ -242,23 +252,25 @@ export function route(options:RouterOptions, complete:() => void):void {
 
         (next:() => void):void => {
             var extension = filename.substr(-5).toLowerCase(),
-                pathname  = filename.substr(0, filename.length - 5);
+                pathname = filename.substr(0, filename.length - 5);
             if (useCache) {
                 next();
             } else if (extension === ".styl") {
                 manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
                     if ((!errors || !errors.length) && result) {
-                        var header: any = {},
+                        var header:any = {},
                             modified = Date.parse(request.headers["if-modified-since"]),
-                            date     = 1000 * result.date;
+                            date = 1000 * result.date;
                         if (modified && modified === date) {
                             response.writeHead(304);
                             response.end();
+                            consoleLog(304);
                         } else {
                             header["Content-Type"] = "text/plain; charset=utf-8";
                             header["Last-Modified"] = (new Date(result.date * 1000)).toUTCString();
                             response.writeHead(200, header);
                             response.end(result.source);
+                            consoleLog(200, "text/plain");
                         }
                     } else if (errors && errors.length) {
                         errors.forEach((error:Error):void => {
@@ -276,23 +288,25 @@ export function route(options:RouterOptions, complete:() => void):void {
 
         (next:() => void):void => {
             var extension = filename.substr(-8).toLowerCase(),
-                pathname  = filename.substr(0, filename.length - 8);
+                pathname = filename.substr(0, filename.length - 8);
             if (useCache) {
                 next();
             } else if (extension === ".css.map") {
                 manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
                     if ((!errors || !errors.length) && result) {
-                        var header: any = {},
+                        var header:any = {},
                             modified = Date.parse(request.headers["if-modified-since"]),
-                            date     = 1000 * result.date;
+                            date = 1000 * result.date;
                         if (modified && modified === date) {
                             response.writeHead(304);
                             response.end();
+                            consoleLog(304);
                         } else {
                             header["Content-Type"] = "application/json; charset=utf-8";
                             header["Last-Modified"] = (new Date(result.date * 1000)).toUTCString();
                             response.writeHead(200, header);
                             response.end(JSON.stringify(result.map));
+                            consoleLog(200, "application/json");
                         }
                     } else if (errors && errors.length) {
                         errors.forEach((error:Error):void => {

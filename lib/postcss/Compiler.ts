@@ -1,3 +1,6 @@
+/// <reference path="./postcss.d.ts" />
+/// <reference path="./safe-parser.d.ts" />
+
 import ICompiler = require("./ICompiler");
 import IResult = require("./IResult");
 import IOptions = require("./IOptions");
@@ -27,7 +30,9 @@ class Compiler extends Base implements ICompiler {
     }
 
     public compile(source:string, map?:any, callback?:(error?:Error, result?:IResult) => void):void {
-        var plugins:any[] = this.getPlugins().map((plugin:IPlugin):void => {
+        var plugins:any[] = this.getPlugins().filter((plugin:IPlugin):boolean => {
+                return plugin.isEnabled() && plugin.isUsed();
+            }).map((plugin:IPlugin):any => {
                 return plugin.getInstance();
             }),
             prev:any = null;
@@ -43,9 +48,11 @@ class Compiler extends Base implements ICompiler {
             parser: postcssSafeParser,
             map: prev
         }).then((result:any):void => {
-            callback(null, <IResult>{source: result.css, map: result.map});
+            callback(null, <IResult>{result: result.css, map: result.map});
         }).catch((error?:Error):void => {
             callback(error, null);
         });
     }
 }
+
+export = Compiler;

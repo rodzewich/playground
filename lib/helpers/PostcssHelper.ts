@@ -7,14 +7,14 @@ abstract class PostcssHelper implements IPostcssHelper {
     private _use:boolean = true;
 
     public isUsed():boolean {
-        return this.getIsUse();
+        return this.getIsUsed();
     }
 
-    public getIsUse():boolean {
+    public getIsUsed():boolean {
         return this._use;
     }
 
-    public setIsUse(value:boolean):void {
+    public setIsUsed(value:boolean):void {
         this._use = value;
     }
 

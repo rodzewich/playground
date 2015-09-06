@@ -1,8 +1,11 @@
+/// <reference path="./plugin.d.ts" />
+/// <reference path="../../../browserslist.d.ts" />
+
 import typeOf = require("../../../../typeOf");
 import PluginBase = require("../Plugin");
 import IPlugin = require("./IPlugin");
 import IOptions = require("./IOptions");
-import postcssAutoprefixer = require("autoprefixer-core");
+import postcssAutoprefixer = require("autoprefixer");
 import browserslist = require("browserslist");
 
 class Plugin extends PluginBase implements IPlugin {

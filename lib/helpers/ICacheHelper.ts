@@ -1,6 +1,6 @@
 interface ICacheHelper {
-    setIsUse(value:any):void;
-    getIsUse():boolean;
+    setIsUsed(value:any):void;
+    getIsUsed():boolean;
     isUsed():boolean;
 }
 
