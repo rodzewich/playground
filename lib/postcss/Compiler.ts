@@ -9,7 +9,7 @@ import Base = require("./Base");
 import postcss = require("postcss");
 import postcssSafeParser = require("postcss-safe-parser");
 
-class Compiler extends Base implements ICompiler {
+abstract class Compiler extends Base implements ICompiler {
 
     constructor(options?:IOptions) {
         super(options);
@@ -17,15 +17,6 @@ class Compiler extends Base implements ICompiler {
 
     protected getPlugins():IPlugin[] {
         return <IPlugin[]>[
-            this.getPseudoElementsPlugin(),
-            this.getEpubPlugin(),
-            this.getWillChangePlugin(),
-            this.getAutoprefixerPlugin(),
-            this.getCssgracePlugin(),
-            this.getOpacityPlugin(),
-            this.getVminPlugin(),
-            this.getColorRgbaPlugin(),
-            this.getPixremPlugin()
         ];
     }
 

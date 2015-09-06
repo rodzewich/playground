@@ -1,4 +1,4 @@
-import IPostcssBase = require("../../postcss/ICompiler");
+import IPostcssBase = require("../../helpers/IPostcssCompilerForPreProcessor");
 
 interface IPostcss extends IPostcssBase {
 }
