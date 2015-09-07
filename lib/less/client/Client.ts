@@ -18,6 +18,12 @@ import path = require("path");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
 
+// todo использовать http://lesscss.org/usage/#plugins-list-of-less-plugins
+// todo использовать https://github.com/less/less-plugin-clean-css
+// todo использовать https://github.com/less/less-plugin-inline-urls
+// todo использовать https://github.com/less/less-plugin-npm-import
+// todo использовать https://www.npmjs.com/browse/keyword/less%20plugins
+
 class Client extends BaseClient {
 
     private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
