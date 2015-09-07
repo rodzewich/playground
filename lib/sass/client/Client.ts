@@ -21,6 +21,9 @@ import ISassLocationHelper = require("../../helpers/ISassLocationHelper");
 import SassLocationHelper = require("../../helpers/SassLocationHelper");
 import ICompassLocationHelper = require("../../helpers/ICompassLocationHelper");
 import CompassLocationHelper = require("../../helpers/CompassLocationHelper");
+import ISassCompilerTypeHelper = require("../../helpers/ISassCompilerTypeHelper");
+import SassCompilerTypeHelper = require("../../helpers/SassCompilerTypeHelper");
+import Type = require("../compiler/Type");
 
 class Client extends BaseClient {
 
@@ -30,6 +33,8 @@ class Client extends BaseClient {
 
     private _compassLocation:ICompassLocationHelper = new CompassLocationHelper();
 
+    private _compilerType:ISassCompilerTypeHelper<Type> = new SassCompilerTypeHelper<Type>();
+
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
@@ -37,9 +42,25 @@ class Client extends BaseClient {
         }
         if (options && typeOf(options.sassLocation) !== "undefined") {
             this.getSassLocation().setLocation(options.sassLocation);
+        } else {
+            this.getSassLocation().setLocation("/usr/local/bin/sass");
         }
         if (options && typeOf(options.compassLocation) !== "undefined") {
             this.getCompassLocation().setLocation(options.compassLocation);
+        } else {
+            this.getCompassLocation().setLocation("/usr/local/bin/compass");
+        }
+        if (options && typeOf(options.compilerType) !== "undefined" &&
+            Type.equal(Type.NATIVE_SASS, options.compilerType)) {
+            this.getCompilerType().setType(Type.NATIVE_SASS);
+        } else if (options && typeOf(options.compilerType) !== "undefined" &&
+            Type.equal(Type.NODE_SASS, options.compilerType)) {
+            this.getCompilerType().setType(Type.NODE_SASS);
+        } else if (options && typeOf(options.compilerType) !== "undefined" &&
+            Type.equal(Type.COMPASS, options.compilerType)) {
+            this.getCompilerType().setType(Type.COMPASS);
+        } else {
+            this.getCompilerType().setType(Type.NATIVE_SASS);
         }
     }
 
@@ -53,6 +74,10 @@ class Client extends BaseClient {
 
     protected getCompassLocation():ICompassLocationHelper {
         return this._compassLocation;
+    }
+
+    protected getCompilerType():ISassCompilerTypeHelper<Type> {
+        return this._compilerType;
     }
 
     protected getDaemon():string {

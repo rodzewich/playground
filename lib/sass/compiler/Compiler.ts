@@ -54,9 +54,13 @@ class Compiler extends BaseCompiler implements ICompiler {
         }
         if (options && typeOf(options.sassLocation) !== "undefined") {
             this.getSassLocation().setLocation(options.sassLocation);
+        } else {
+            this.getSassLocation().setLocation("/usr/local/bin/sass");
         }
         if (options && typeOf(options.compassLocation) !== "undefined") {
             this.getCompassLocation().setLocation(options.compassLocation);
+        } else {
+            this.getCompassLocation().setLocation("/usr/local/bin/compass");
         }
     }
 
@@ -70,14 +74,6 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     protected getCompassLocation():ICompassLocationHelper {
         return this._compassLocation;
-    }
-
-    private dependencies(filename:string, callback?:(errors?:Error[], result?:string[]) => void):void {
-        var dependencies:(filename:string, callback?:(errors?:Error[], result?:string[]) => void) => void =
-            (filename:string, callback?:(errors?:Error[], result?:string[]) => void):void => {
-
-            };
-        dependencies(filename, callback);
     }
 
     public compile(callback:(errors?:Error[], result?:IResponse) => void):void {
