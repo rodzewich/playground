@@ -4,12 +4,13 @@
 import colors = require("colors");
 import http = require("http");
 
-function accessLog(method:string, filename:string, code:number, type?:string):void {
+function accessLog(method:string, filename:string, code:number, time?:number, type?:string):void {
     var pathname:string,
-        time:Date = new Date(),
-        hours:string = ("00" + String(time.getHours())).slice(-2),
-        minutes:string = ("00" + String(time.getMinutes())).slice(-2),
-        seconds:string = [("00" + String(time.getSeconds())).slice(-2), String(Number(time)).slice(-3)].join(".");
+        date:Date = new Date(),
+        hours:string = ("00" + String(date.getHours())).slice(-2),
+        minutes:string = ("00" + String(date.getMinutes())).slice(-2),
+        seconds:string = [("00" + String(date.getSeconds())).slice(-2), String(Number(date)).slice(-3)].join("."),
+        message:string[] = [];
     if (code >= 300 && code < 400) {
         pathname = colors.gray(filename);
     } else if (code >= 400 && code < 600) {
@@ -17,13 +18,20 @@ function accessLog(method:string, filename:string, code:number, type?:string):vo
     } else {
         pathname = colors.green(filename);
     }
-    console.log([
-        colors.gray("[" + [hours, minutes, seconds].join(":") + "]"),
-        colors.magenta(method), pathname,
-        colors.cyan([String(code), http.STATUS_CODES[code]].join(" ")),
-        type ? colors.gray("(" + type + ")") : ""
-    ].join(" "));
-
+    message.push(colors.gray("[" + [hours, minutes, seconds].join(":") + "]"));
+    message.push(colors.magenta(method));
+    message.push(pathname);
+    if (time) {
+        message.push(colors.gray("(" + String(time) + "ms)"));
+    }
+    message.push(colors.cyan(String(code)));
+    if (http.STATUS_CODES[code]) {
+        message.push(colors.cyan(http.STATUS_CODES[code]));
+    }
+    if (type) {
+        message.push(colors.gray("(" + type + ")"));
+    }
+    console.log(message.join(" "));
 }
 
 export = accessLog;
