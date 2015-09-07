@@ -17,20 +17,42 @@ import IRequest = require("./IRequest");
 import path = require("path");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
+import ISassLocationHelper = require("../../helpers/ISassLocationHelper");
+import SassLocationHelper = require("../../helpers/SassLocationHelper");
+import ICompassLocationHelper = require("../../helpers/ICompassLocationHelper");
+import CompassLocationHelper = require("../../helpers/CompassLocationHelper");
 
 class Client extends BaseClient {
 
     private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
+
+    private _sassLocation:ISassLocationHelper = new SassLocationHelper();
+
+    private _compassLocation:ICompassLocationHelper = new CompassLocationHelper();
 
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
             this.getIncludeDirectories().setDirectories(options.includeDirectories);
         }
+        if (options && typeOf(options.sassLocation) !== "undefined") {
+            this.getSassLocation().setLocation(options.sassLocation);
+        }
+        if (options && typeOf(options.compassLocation) !== "undefined") {
+            this.getCompassLocation().setLocation(options.compassLocation);
+        }
     }
 
     protected getIncludeDirectories():IIncludeDirectoriesHelper {
         return this._includeDirectories;
+    }
+
+    protected getSassLocation():ISassLocationHelper {
+        return this._sassLocation;
+    }
+
+    protected getCompassLocation():ICompassLocationHelper {
+        return this._compassLocation;
     }
 
     protected getDaemon():string {
