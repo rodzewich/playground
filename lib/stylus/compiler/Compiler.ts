@@ -17,6 +17,8 @@
 // todo: уметь устанавливать дефолтные импорты
 // todo: уметь устанавливать плагины
 // todo: подружить с Autoprefixer
+// todo использовать https://github.com/rossPatton/stylint
+// todo использовать http://nibstyl.us/#installation
 
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
