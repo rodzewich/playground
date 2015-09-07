@@ -176,11 +176,13 @@ export function route(options:RouterOptions, complete:() => void):void {
         webRootDirectory:string = options.webRootDirectory,
         useCache:boolean = options.useCache,
         object:url.Url = url.parse(request.url, true),
-        filename:string = path.relative(webRootDirectory, String(object.pathname || "/"));
+        filename:string = path.relative(webRootDirectory, String(object.pathname || "/")),
+        start:number = Number(new Date());
 
-    function consoleLog(code:number, type?: string):void {
+    function consoleLog(code:number, type?:string):void {
+        var time:number = Number(new Date()) - start;
         if (!!options.accessLog) {
-            accessLog(request.method, object.pathname, code, type);
+            accessLog(request.method, object.pathname, code, time, type);
         }
     }
 

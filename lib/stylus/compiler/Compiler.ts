@@ -36,27 +36,22 @@ import LessException = require("../Exception");
 import Postcss = require("../postcss/Postcss");
 import IPostcss = require("../postcss/IPostcss");
 import IResult = require("../postcss/IResult");
-
-import postcss = require("postcss");
-import postcssSafeParser = require("postcss-safe-parser");
+import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
+import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
-    private _includeDirectories:string[] = [];
+    private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
 
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
-            this.setIncludeDirectories(options.includeDirectories);
+            this.getIncludeDirectories().setDirectories(options.includeDirectories);
         }
     }
 
-    protected getIncludeDirectories():string[] {
+    protected getIncludeDirectories():IIncludeDirectoriesHelper {
         return this._includeDirectories;
-    }
-
-    protected setIncludeDirectories(value:string[]):void {
-        this._includeDirectories = value;
     }
 
     public compile(callback:(errors?:Error[], result?:IResponse) => void):void {
@@ -99,7 +94,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
-                var directories:string[] = this.getIncludeDirectories().slice(0),
+                var directories:string[] = this.getIncludeDirectories().getDirectories().slice(0),
                     errors:Error[] = [],
                     actions:((next:() => void) => void)[];
                 directories.unshift(this.getSourcesDirectory().getLocation());
@@ -141,7 +136,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length === 0) {
                         completion(null, response);
                     } else if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length !== 0) {
-                        directories = this.getIncludeDirectories().slice(0);
+                        directories = this.getIncludeDirectories().getDirectories().slice(0);
                         directories.unshift(this.getSourcesDirectory().getLocation());
                         parallel(response.deps.map((filename:string):((next:() => void) => void) => {
                             return (done:() => void):void => {
@@ -233,7 +228,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             ():void => {
                 var compiler:any,
                     postError:string = "",
-                    includeDirectories = this.getIncludeDirectories().slice(0);
+                    includeDirectories = this.getIncludeDirectories().getDirectories().slice(0);
                 includeDirectories.unshift(this.getSourcesDirectory().getLocation());
                 compiler = stylus(content).
                     set("filename", resolve).
@@ -244,7 +239,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         sourceRoot: null,
                         basePath: "/"
                     }).
-                    set("paths", this.getIncludeDirectories());
+                    set("paths", this.getIncludeDirectories().getDirectories());
                 compiler.render((error?:Error, result?:string):void => {
                     var temp:Error[] = [],
                         value:IResponse,

@@ -32,24 +32,44 @@ import fs = require("fs");
 import BaseException = require("../../Exception");
 import LessException = require("../Exception");
 import autoprefixer = require('autoprefixer-stylus');
+import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
+import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
+import ISassLocationHelper = require("../../helpers/ISassLocationHelper");
+import SassLocationHelper = require("../../helpers/SassLocationHelper");
+import ICompassLocationHelper = require("../../helpers/ICompassLocationHelper");
+import CompassLocationHelper = require("../../helpers/CompassLocationHelper");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
-    private _includeDirectories:string[] = [];
+    private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
+
+    private _sassLocation:ISassLocationHelper = new SassLocationHelper();
+
+    private _compassLocation:ICompassLocationHelper = new CompassLocationHelper();
 
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
-            this.setIncludeDirectories(options.includeDirectories);
+            this.getIncludeDirectories().setDirectories(options.includeDirectories);
+        }
+        if (options && typeOf(options.sassLocation) !== "undefined") {
+            this.getSassLocation().setLocation(options.sassLocation);
+        }
+        if (options && typeOf(options.compassLocation) !== "undefined") {
+            this.getCompassLocation().setLocation(options.compassLocation);
         }
     }
 
-    protected getIncludeDirectories():string[] {
+    protected getIncludeDirectories():IIncludeDirectoriesHelper {
         return this._includeDirectories;
     }
 
-    protected setIncludeDirectories(value:string[]):void {
-        this._includeDirectories = value;
+    protected getSassLocation():ISassLocationHelper {
+        return this._sassLocation;
+    }
+
+    protected getCompassLocation():ICompassLocationHelper {
+        return this._compassLocation;
     }
 
     private dependencies(filename:string, callback?:(errors?:Error[], result?:string[]) => void):void {
@@ -108,7 +128,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
-                var directories:string[] = this.getIncludeDirectories().slice(0),
+                var directories:string[] = this.getIncludeDirectories().getDirectories().slice(0),
                     errors:Error[] = [],
                     actions:((next:() => void) => void)[];
                 directories.unshift(this.getSourcesDirectory().getLocation());
@@ -164,7 +184,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length === 0) {
                         callback(null, response);
                     } else if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length !== 0) {
-                        directories = this.getIncludeDirectories().slice(0);
+                        directories = this.getIncludeDirectories().getDirectories().slice(0);
                         directories.unshift(this.getSourcesDirectory().getLocation());
                         parallel(response.deps.map((filename:string):((next:() => void) => void) => {
                             return (done:() => void):void => {
@@ -255,7 +275,7 @@ class Compiler extends BaseCompiler implements ICompiler {
 
             ():void => {
                 var compiler:any,
-                    includeDirectories = this.getIncludeDirectories().slice(0);
+                    includeDirectories = this.getIncludeDirectories().getDirectories().slice(0);
                 includeDirectories.unshift(this.getSourcesDirectory().getLocation());
                 compiler = stylus(content).
                     set("filename", path.join(this.getSourcesDirectory().getLocation(), filename + ".styl")).
@@ -267,8 +287,8 @@ class Compiler extends BaseCompiler implements ICompiler {
                         sourceRoot: null,
                         basePath: "/"
                     }).
-                    set("paths", this.getIncludeDirectories());
-                compiler.render((error?: Error, result?: string): void => {
+                    set("paths", this.getIncludeDirectories().getDirectories());
+                compiler.render((error?:Error, result?:string):void => {
                     var temp:Error[] = [],
                         value:IResponse,
                         deps:string[],
