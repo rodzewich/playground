@@ -182,7 +182,7 @@ export function route(options:RouterOptions, complete:() => void):void {
     function consoleLog(code:number, type?:string):void {
         var time:number = Number(new Date()) - start;
         if (!!options.accessLog) {
-            accessLog(request.method, object.pathname, code, time, type);
+            accessLog(request.method, object.pathname, code, time, type, request.headers);
         }
     }
 

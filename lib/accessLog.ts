@@ -4,7 +4,7 @@
 import colors = require("colors");
 import http = require("http");
 
-function accessLog(method:string, filename:string, code:number, time?:number, type?:string):void {
+function accessLog(method:string, filename:string, code:number, time?:number, type?:string, clientHeaders?: any, serverHeaders?: any):void {
     var pathname:string,
         date:Date = new Date(),
         hours:string = ("00" + String(date.getHours())).slice(-2),
@@ -32,6 +32,20 @@ function accessLog(method:string, filename:string, code:number, time?:number, ty
         message.push(colors.gray("(" + type + ")"));
     }
     console.log(message.join(" "));
+    /*if (clientHeaders) {
+        console.log(colors.bold("CLIENT HEADERS:"));
+        var property: string;
+        for (property in clientHeaders) {
+            console.log(property, ":", clientHeaders[property]);
+        }
+    }
+    if (serverHeaders) {
+        console.log(colors.bold("SERVER HEADERS:"));
+        var property: string;
+        for (property in serverHeaders) {
+            console.log(property, ":", serverHeaders[property]);
+        }
+    }*/
 }
 
 export = accessLog;

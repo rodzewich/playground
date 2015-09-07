@@ -38,6 +38,9 @@ import ISassLocationHelper = require("../../helpers/ISassLocationHelper");
 import SassLocationHelper = require("../../helpers/SassLocationHelper");
 import ICompassLocationHelper = require("../../helpers/ICompassLocationHelper");
 import CompassLocationHelper = require("../../helpers/CompassLocationHelper");
+import ISassCompilerTypeHelper = require("../../helpers/ISassCompilerTypeHelper");
+import SassCompilerTypeHelper = require("../../helpers/SassCompilerTypeHelper");
+import Type = require("../compiler/Type");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -46,6 +49,8 @@ class Compiler extends BaseCompiler implements ICompiler {
     private _sassLocation:ISassLocationHelper = new SassLocationHelper();
 
     private _compassLocation:ICompassLocationHelper = new CompassLocationHelper();
+
+    private _compilerType:ISassCompilerTypeHelper<Type> = new SassCompilerTypeHelper<Type>();
 
     constructor(options:IOptions) {
         super(options);
@@ -62,6 +67,18 @@ class Compiler extends BaseCompiler implements ICompiler {
         } else {
             this.getCompassLocation().setLocation("/usr/local/bin/compass");
         }
+        if (options && typeOf(options.compilerType) !== "undefined" &&
+            Type.equal(Type.NATIVE_SASS, options.compilerType)) {
+            this.getCompilerType().setType(Type.NATIVE_SASS);
+        } else if (options && typeOf(options.compilerType) !== "undefined" &&
+            Type.equal(Type.NODE_SASS, options.compilerType)) {
+            this.getCompilerType().setType(Type.NODE_SASS);
+        } else if (options && typeOf(options.compilerType) !== "undefined" &&
+            Type.equal(Type.COMPASS, options.compilerType)) {
+            this.getCompilerType().setType(Type.COMPASS);
+        } else {
+            this.getCompilerType().setType(Type.NATIVE_SASS);
+        }
     }
 
     protected getIncludeDirectories():IIncludeDirectoriesHelper {
@@ -74,6 +91,10 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     protected getCompassLocation():ICompassLocationHelper {
         return this._compassLocation;
+    }
+
+    protected getCompilerType():ISassCompilerTypeHelper<Type> {
+        return this._compilerType;
     }
 
     public compile(callback:(errors?:Error[], result?:IResponse) => void):void {

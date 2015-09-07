@@ -94,7 +94,8 @@ class Client extends BaseClient {
             errorBlockPadding: this.getCssErrors().getBlockPadding(),
             errorFontSize: this.getCssErrors().getFontSize(),
             webRootDirectory: this.getWebRootDirectory().getLocation(),
-            useCache: this.getCache().isUsed()
+            useCache: this.getCache().isUsed(),
+            compilerType: this.getCompilerType().getType().toString()
         };
     }
 
