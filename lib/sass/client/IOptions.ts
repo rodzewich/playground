@@ -7,6 +7,7 @@ interface IOptions extends IBaseOptions {
     sassLocation?: string;
     compassLocation?: string;
     compilerType?: string;
+    temporaryDirectory?: string;
 }
 
 export = IOptions;

@@ -25,7 +25,7 @@ import ISassCompilerTypeHelper = require("../../helpers/ISassCompilerTypeHelper"
 import SassCompilerTypeHelper = require("../../helpers/SassCompilerTypeHelper");
 import ITemporaryDirectoryLocationHelper = require("../../helpers/ITemporaryDirectoryLocationHelper");
 import TemporaryDirectoryLocationHelper = require("../../helpers/TemporaryDirectoryLocationHelper");
-import Type = require("../compiler/Type");
+import CompilerType = require("../compiler/Type");
 
 class Client extends BaseClient {
 
@@ -37,7 +37,7 @@ class Client extends BaseClient {
 
     private _temporaryDirectoryLocation:ITemporaryDirectoryLocationHelper = new TemporaryDirectoryLocationHelper();
 
-    private _compilerType:ISassCompilerTypeHelper<Type> = new SassCompilerTypeHelper<Type>();
+    private _compilerType:ISassCompilerTypeHelper<CompilerType> = new SassCompilerTypeHelper<CompilerType>();
 
     constructor(options:IOptions) {
         super(options);
@@ -54,17 +54,22 @@ class Client extends BaseClient {
         } else {
             this.getCompassLocation().setLocation("/usr/local/bin/compass");
         }
-        if (options && typeOf(options.compilerType) !== "undefined" &&
-            Type.equal(Type.NATIVE_SASS, options.compilerType)) {
-            this.getCompilerType().setType(Type.NATIVE_SASS);
-        } else if (options && typeOf(options.compilerType) !== "undefined" &&
-            Type.equal(Type.NODE_SASS, options.compilerType)) {
-            this.getCompilerType().setType(Type.NODE_SASS);
-        } else if (options && typeOf(options.compilerType) !== "undefined" &&
-            Type.equal(Type.COMPASS, options.compilerType)) {
-            this.getCompilerType().setType(Type.COMPASS);
+        if (options && typeOf(options.temporaryDirectory) !== "undefined") {
+            this.getTemporaryDirectoryLocation().setLocation(options.temporaryDirectory);
         } else {
-            this.getCompilerType().setType(Type.NATIVE_SASS);
+            this.getTemporaryDirectoryLocation().setLocation("/var/tmp");
+        }
+        if (options && typeOf(options.compilerType) !== "undefined" &&
+            CompilerType.equal(CompilerType.NATIVE_SASS, options.compilerType)) {
+            this.getCompilerType().setType(CompilerType.NATIVE_SASS);
+        } else if (options && typeOf(options.compilerType) !== "undefined" &&
+            CompilerType.equal(CompilerType.NODE_SASS, options.compilerType)) {
+            this.getCompilerType().setType(CompilerType.NODE_SASS);
+        } else if (options && typeOf(options.compilerType) !== "undefined" &&
+            CompilerType.equal(CompilerType.COMPASS, options.compilerType)) {
+            this.getCompilerType().setType(CompilerType.COMPASS);
+        } else {
+            this.getCompilerType().setType(CompilerType.NODE_SASS);
         }
     }
 
@@ -84,7 +89,7 @@ class Client extends BaseClient {
         return this._temporaryDirectoryLocation;
     }
 
-    protected getCompilerType():ISassCompilerTypeHelper<Type> {
+    protected getCompilerType():ISassCompilerTypeHelper<CompilerType> {
         return this._compilerType;
     }
 
@@ -103,7 +108,10 @@ class Client extends BaseClient {
             errorFontSize: this.getCssErrors().getFontSize(),
             webRootDirectory: this.getWebRootDirectory().getLocation(),
             useCache: this.getCache().isUsed(),
-            compilerType: this.getCompilerType().getType().toString()
+            compilerType: this.getCompilerType().getType().toString(),
+            sassLocation: this.getSassLocation().getLocation(),
+            compassLocation: this.getCompassLocation().getLocation(),
+            temporaryDirectory: this.getTemporaryDirectoryLocation().getLocation()
         };
     }
 

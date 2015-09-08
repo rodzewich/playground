@@ -40,7 +40,9 @@ import ICompassLocationHelper = require("../../helpers/ICompassLocationHelper");
 import CompassLocationHelper = require("../../helpers/CompassLocationHelper");
 import ISassCompilerTypeHelper = require("../../helpers/ISassCompilerTypeHelper");
 import SassCompilerTypeHelper = require("../../helpers/SassCompilerTypeHelper");
-import Type = require("../compiler/Type");
+import ITemporaryDirectoryLocationHelper = require("../../helpers/ITemporaryDirectoryLocationHelper");
+import TemporaryDirectoryLocationHelper = require("../../helpers/TemporaryDirectoryLocationHelper");
+import CompilerType = require("../compiler/Type");
 import cp = require("child_process");
 
 class Compiler extends BaseCompiler implements ICompiler {
@@ -51,7 +53,9 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     private _compassLocation:ICompassLocationHelper = new CompassLocationHelper();
 
-    private _compilerType:ISassCompilerTypeHelper<Type> = new SassCompilerTypeHelper<Type>();
+    private _temporaryDirectoryLocation:ITemporaryDirectoryLocationHelper = new TemporaryDirectoryLocationHelper();
+
+    private _compilerType:ISassCompilerTypeHelper<CompilerType> = new SassCompilerTypeHelper<CompilerType>();
 
     constructor(options:IOptions) {
         super(options);
@@ -68,17 +72,22 @@ class Compiler extends BaseCompiler implements ICompiler {
         } else {
             this.getCompassLocation().setLocation("/usr/local/bin/compass");
         }
-        if (options && typeOf(options.compilerType) !== "undefined" &&
-            Type.equal(Type.NATIVE_SASS, options.compilerType)) {
-            this.getCompilerType().setType(Type.NATIVE_SASS);
-        } else if (options && typeOf(options.compilerType) !== "undefined" &&
-            Type.equal(Type.NODE_SASS, options.compilerType)) {
-            this.getCompilerType().setType(Type.NODE_SASS);
-        } else if (options && typeOf(options.compilerType) !== "undefined" &&
-            Type.equal(Type.COMPASS, options.compilerType)) {
-            this.getCompilerType().setType(Type.COMPASS);
+        if (options && typeOf(options.temporaryDirectory) !== "undefined") {
+            this.getTemporaryDirectoryLocation().setLocation(options.temporaryDirectory);
         } else {
-            this.getCompilerType().setType(Type.NATIVE_SASS);
+            this.getTemporaryDirectoryLocation().setLocation("/var/tmp");
+        }
+        if (options && typeOf(options.compilerType) !== "undefined" &&
+            CompilerType.equal(CompilerType.NATIVE_SASS, options.compilerType)) {
+            this.getCompilerType().setType(CompilerType.NATIVE_SASS);
+        } else if (options && typeOf(options.compilerType) !== "undefined" &&
+            CompilerType.equal(CompilerType.NODE_SASS, options.compilerType)) {
+            this.getCompilerType().setType(CompilerType.NODE_SASS);
+        } else if (options && typeOf(options.compilerType) !== "undefined" &&
+            CompilerType.equal(CompilerType.COMPASS, options.compilerType)) {
+            this.getCompilerType().setType(CompilerType.COMPASS);
+        } else {
+            this.getCompilerType().setType(CompilerType.NODE_SASS);
         }
     }
 
@@ -94,7 +103,11 @@ class Compiler extends BaseCompiler implements ICompiler {
         return this._compassLocation;
     }
 
-    protected getCompilerType():ISassCompilerTypeHelper<Type> {
+    protected getTemporaryDirectoryLocation():ITemporaryDirectoryLocationHelper {
+        return this._temporaryDirectoryLocation;
+    }
+
+    protected getCompilerType():ISassCompilerTypeHelper<CompilerType> {
         return this._compilerType;
     }
 
@@ -130,10 +143,11 @@ class Compiler extends BaseCompiler implements ICompiler {
                 };
 
 
-        var compile: () => void = (): void => {
-            var sassLocation: string = this.getSassLocation().getLocation();
-            var sassArguments: string[] = [];
-            var output: string = process.pid.toString("32") + "_" + Number(new Date()).toString(32) + ".css";
+        var compile:() => void = ():void => {
+            var sassLocation:string = this.getSassLocation().getLocation();
+            var sassArguments:string[] = [];
+            var outputFileLocation:string = path.join(this.getTemporaryDirectoryLocation().getLocation(), "sass-" + process.pid.toString(32) + "-" + Number(new Date()).toString(32) + ".css");
+            var sourceMapFileLocation:string = outputFileLocation + ".map";
 
             sassArguments.push("/absolute/path/input.sass");
             //sassArguments.push("--scss");
@@ -143,15 +157,15 @@ class Compiler extends BaseCompiler implements ICompiler {
             sassArguments.push("--style=compressed"); // todo: управлять этим (compact, compressed, expanded)
             sassArguments.push("--sourcemap=file");
             sassArguments.push("--default-encoding=utf-8"); // todo: управлять этим
-            this.getIncludeDirectories().getDirectories().forEach((directory): void => {
+            this.getIncludeDirectories().getDirectories().forEach((directory):void => {
                 sassArguments.push("--load-path=" + directory);
             });
-            this.getRequires().getLibraries().forEach((library): void => {
-                sassArguments.push("--require=" + library);
-            });
+            /*this.getRequires().getLibraries().forEach((library): void => {
+             sassArguments.push("--require=" + library);
+             });*/
             sassArguments.push("/absolute/path/output.css");
             var command:cp.ChildProcess = cp.spawn(sassLocation, sassArguments, {});
-            command.on("error", (error: Error): void => {
+            command.on("error", (error:Error):void => {
 
             });
         };

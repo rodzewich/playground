@@ -7,6 +7,7 @@ interface IRequest extends IBaseRequest {
     sassLocation: string;
     compassLocation: string;
     compilerType: string;
+    temporaryDirectory: string;
 }
 
 export = IRequest;
