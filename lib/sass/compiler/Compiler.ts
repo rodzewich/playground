@@ -133,6 +133,8 @@ class Compiler extends BaseCompiler implements ICompiler {
         var compile: () => void = (): void => {
             var sassLocation: string = this.getSassLocation().getLocation();
             var sassArguments: string[] = [];
+            var output: string = process.pid.toString("32") + "_" + Number(new Date()).toString(32) + ".css";
+
             sassArguments.push("/absolute/path/input.sass");
             //sassArguments.push("--scss");
             sassArguments.push("--unix-newlines"); // todo: управлять этим
@@ -142,11 +144,16 @@ class Compiler extends BaseCompiler implements ICompiler {
             sassArguments.push("--sourcemap=file");
             sassArguments.push("--default-encoding=utf-8"); // todo: управлять этим
             this.getIncludeDirectories().getDirectories().forEach((directory): void => {
-                sassArguments.push();
+                sassArguments.push("--load-path=" + directory);
             });
-            this.getRequires().getValues().forEach();
+            this.getRequires().getLibraries().forEach((library): void => {
+                sassArguments.push("--require=" + library);
+            });
             sassArguments.push("/absolute/path/output.css");
-            cp.spawn(sassLocation, sassArguments);
+            var command:cp.ChildProcess = cp.spawn(sassLocation, sassArguments, {});
+            command.on("error", (error: Error): void => {
+
+            });
         };
 
 

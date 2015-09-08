@@ -23,6 +23,8 @@ import ICompassLocationHelper = require("../../helpers/ICompassLocationHelper");
 import CompassLocationHelper = require("../../helpers/CompassLocationHelper");
 import ISassCompilerTypeHelper = require("../../helpers/ISassCompilerTypeHelper");
 import SassCompilerTypeHelper = require("../../helpers/SassCompilerTypeHelper");
+import ITemporaryDirectoryLocationHelper = require("../../helpers/ITemporaryDirectoryLocationHelper");
+import TemporaryDirectoryLocationHelper = require("../../helpers/TemporaryDirectoryLocationHelper");
 import Type = require("../compiler/Type");
 
 class Client extends BaseClient {
@@ -32,6 +34,8 @@ class Client extends BaseClient {
     private _sassLocation:ISassLocationHelper = new SassLocationHelper();
 
     private _compassLocation:ICompassLocationHelper = new CompassLocationHelper();
+
+    private _temporaryDirectoryLocation:ITemporaryDirectoryLocationHelper = new TemporaryDirectoryLocationHelper();
 
     private _compilerType:ISassCompilerTypeHelper<Type> = new SassCompilerTypeHelper<Type>();
 
@@ -74,6 +78,10 @@ class Client extends BaseClient {
 
     protected getCompassLocation():ICompassLocationHelper {
         return this._compassLocation;
+    }
+
+    protected getTemporaryDirectoryLocation():ITemporaryDirectoryLocationHelper {
+        return this._temporaryDirectoryLocation;
     }
 
     protected getCompilerType():ISassCompilerTypeHelper<Type> {
