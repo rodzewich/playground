@@ -41,6 +41,7 @@ import CompassLocationHelper = require("../../helpers/CompassLocationHelper");
 import ISassCompilerTypeHelper = require("../../helpers/ISassCompilerTypeHelper");
 import SassCompilerTypeHelper = require("../../helpers/SassCompilerTypeHelper");
 import Type = require("../compiler/Type");
+import cp = require("child_process");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -127,6 +128,27 @@ class Compiler extends BaseCompiler implements ICompiler {
                             };
                     dependencies(filename, callback);
                 };
+
+
+        var compile: () => void = (): void => {
+            var sassLocation: string = this.getSassLocation().getLocation();
+            var sassArguments: string[] = [];
+            sassArguments.push("/absolute/path/input.sass");
+            //sassArguments.push("--scss");
+            sassArguments.push("--unix-newlines"); // todo: управлять этим
+            sassArguments.push("--line-numbers"); // todo: управлять этим
+            sassArguments.push("--line-comments"); // todo: управлять этим
+            sassArguments.push("--style=compressed"); // todo: управлять этим (compact, compressed, expanded)
+            sassArguments.push("--sourcemap=file");
+            sassArguments.push("--default-encoding=utf-8"); // todo: управлять этим
+            this.getIncludeDirectories().getDirectories().forEach((directory): void => {
+                sassArguments.push();
+            });
+            this.getRequires().getValues().forEach();
+            sassArguments.push("/absolute/path/output.css");
+            cp.spawn(sassLocation, sassArguments);
+        };
+
 
         deferred([
 
