@@ -255,6 +255,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             compileNodeSass:(callback:(errors:Error[], result:{result: string, map: any}) => void) => void = (callback:(errors:Error[], result:{result: string, map: any}) => void):void => {
             },
             compileCompass:(callback:(errors:Error[], result:{result: string, map: any}) => void) => void = (callback:(errors:Error[], result:{result: string, map: any}) => void):void => {
+
             },
             compile:(callback:(errors:Error[], result:{result: string, map: any}) => void) => void = (callback:(errors:Error[], result:{result: string, map: any}) => void):void => {
                 if (CompilerType.equal(CompilerType.NATIVE_SASS, this.getCompilerType().getType())) {
