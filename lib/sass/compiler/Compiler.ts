@@ -43,7 +43,7 @@ import SassCompilerTypeHelper = require("../../helpers/SassCompilerTypeHelper");
 import ITemporaryDirectoryLocationHelper = require("../../helpers/ITemporaryDirectoryLocationHelper");
 import TemporaryDirectoryLocationHelper = require("../../helpers/TemporaryDirectoryLocationHelper");
 import CompilerType = require("../compiler/Type");
-import cp = require("child_process");
+import sass = require("node-sass");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -117,157 +117,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             mtime:number,
             memory:IMemory = this.getMemory(),
             unlock:(callback?:(errors?:Error[]) => void) => void,
-            content:string,
-            dependencies:(filename:string, callback?:(errors?:Error[], result?:string[]) => void) => void = (filename:string, callback?:(errors?:Error[], result?:string[]) => void):void => {
-                    var directory:string = path.dirname(filename),
-                        dependencies:(filename:string, callback?:(errors?:Error[], result?:string[]) => void) => void =
-                            (filename:string, callback?:(errors?:Error[], result?:string[]) => void):void => {
-                                var imports:() => string[] = ():string[] => {
-                                    var singleComments:RegExp = /\/\/(.*)$/gm,
-                                        multiLineComments:RegExp = /(\/\*([\s\S]*?)\*\/)|(\/\/(.*)$)/gm,
-                                        sassImports:RegExp = /(?:@import)(?:\s+)(?:(["'])([^"')]+)\1|([^\'\"\s)]+))/ig,
-                                        temp:string = String(content).
-                                            replace(singleComments, "").
-                                            replace(multiLineComments, ""),
-                                        result:string[] = [],
-                                        element:any;
-                                    while (element = sassImports.exec(temp)) {
-                                        result.push(path.join(directory, <string>element[2] || <string>element[3]));
-                                    }
-                                    return result;
-                                };
-
-                            };
-                    dependencies(filename, callback);
-                },
-            compileNativeSass:(callback:(errors:Error[], result:{result: string, map: any}) => void) => void = (callback:(errors:Error[], result:{result: string, map: any}) => void):void => {
-                var result:string = null,
-                    sourceMap:any = null,
-                    errors:Error[] = <Error[]>[],
-                    outputFileLocation:string = path.join(this.getTemporaryDirectoryLocation().getLocation(), "sass-" + process.pid.toString(32) + "-" + Number(new Date()).toString(32) + ".css"),
-                    sourceMapFileLocation:string = outputFileLocation + ".map";
-                deferred([
-                    (next:() => void):void => {
-                        var command:cp.ChildProcess,
-                            location:string = this.getSassLocation().getLocation(),
-                            args:string[] = [];
-                        args.push(resolve);
-                        if (resolve.slice(-5).toLowerCase() === ".scss") {
-                            args.push("--scss");
-                        }
-                        args.push("--unix-newlines"); // todo: управлять этим
-                        args.push("--line-numbers"); // todo: управлять этим
-                        args.push("--line-comments"); // todo: управлять этим
-                        args.push("--style=compressed"); // todo: управлять этим (compact, compressed, expanded)
-                        args.push("--sourcemap=file");
-                        args.push("--default-encoding=utf-8");
-                        this.getIncludeDirectories().getDirectories().forEach((directory):void => {
-                            args.push("--load-path=" + directory);
-                        });
-                        //args.push("--compass");
-                        /*this.getRequires().getLibraries().forEach((library): void => {
-                         args.push("--require=" + library); // todo: управлять этим
-                         });*/
-                        args.push(outputFileLocation);
-                        command = cp.spawn(location, args, {
-                            cwd: this.getTemporaryDirectoryLocation().getLocation()
-                        });
-                        command.on("error", (error:Error):void => {
-                            callback([error], null);
-                        });
-                        command.stderr.addListener("data", (data:Buffer):void => {
-                            // todo: обрабатывать ошибки
-                        });
-                        command.on("close", (code:number):void => {
-                            if (code !== 0 && errors.length !== 0) {
-                                callback(errors, null);
-                            } else if (code !== 0) {
-                                callback([new Error("bla bla bla")], null);
-                            } else {
-                                next();
-                            }
-                        });
-                    },
-                    (next:() => void):void => {
-                        parallel([
-                            (callback:() => void):void => {
-                                fs.readFile(outputFileLocation, (error:Error, buffer:Buffer):void => {
-                                    if (!error) {
-                                        // todo: remove source map comment
-                                        result = buffer.toString("utf8");
-                                    } else {
-                                        errors.push(error);
-                                    }
-                                    callback();
-                                });
-                            },
-                            (callback:() => void):void => {
-                                fs.readFile(sourceMapFileLocation, (error:Error, buffer:Buffer):void => {
-                                    if (!error) {
-                                        // todo: convert to object
-                                        sourceMap = buffer.toString("utf8");
-                                    } else {
-                                        errors.push(error);
-                                    }
-                                    callback();
-                                });
-                            }
-                        ], ():void => {
-                            next();
-                        });
-
-                    },
-                    (next:() => void):void => {
-                        parallel([
-                            (callback:() => void):void => {
-                                fs.unlink(outputFileLocation, (error:Error):void => {
-                                    if (error) {
-                                        errors.push(error);
-                                    }
-                                    callback();
-                                });
-                            },
-                            (callback:() => void):void => {
-                                fs.unlink(sourceMapFileLocation, (error:Error):void => {
-                                    if (error) {
-                                        errors.push(error);
-                                    }
-                                    callback();
-                                });
-                            }
-                        ], ():void => {
-                            next();
-                        });
-                    },
-                    ():void => {
-                        if (errors.length) {
-                            callback(errors, null);
-                        } else {
-                            callback(null, {
-                                result: result,
-                                map: sourceMap
-                            });
-                        }
-                    }
-                ]);
-
-            },
-            compileNodeSass:(callback:(errors:Error[], result:{result: string, map: any}) => void) => void = (callback:(errors:Error[], result:{result: string, map: any}) => void):void => {
-            },
-            compileCompass:(callback:(errors:Error[], result:{result: string, map: any}) => void) => void = (callback:(errors:Error[], result:{result: string, map: any}) => void):void => {
-
-            },
-            compile:(callback:(errors:Error[], result:{result: string, map: any}) => void) => void = (callback:(errors:Error[], result:{result: string, map: any}) => void):void => {
-                if (CompilerType.equal(CompilerType.NATIVE_SASS, this.getCompilerType().getType())) {
-                    compileNativeSass(callback);
-                } else if (CompilerType.equal(CompilerType.NODE_SASS, this.getCompilerType().getType())) {
-                    compileNodeSass(callback);
-                } else if (CompilerType.equal(CompilerType.COMPASS, this.getCompilerType().getType())) {
-                    compileCompass(callback);
-                } else {
-                    compileNodeSass(callback);
-                }
-            };
+            content:string;
 
         deferred([
 
@@ -425,7 +275,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     map: {},
                                     date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                                 });
-                            },
+                            }
                         ]);
                     }
                 });

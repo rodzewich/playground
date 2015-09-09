@@ -17,6 +17,7 @@
     "grunt-tsc": "^1.0.12",
     "less": "^2.5.1",
     "log4js": "^0.6.26",
+    "node-sass": "^3.3.2",
     "optimist": "^0.6.1",
     "pixrem": "^2.0.0",
     "postcss": "^5.0.4",
