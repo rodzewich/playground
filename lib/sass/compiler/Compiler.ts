@@ -285,6 +285,32 @@ class Compiler extends BaseCompiler implements ICompiler {
                 var compiler:any,
                     includeDirectories = this.getIncludeDirectories().getDirectories().slice(0);
                 includeDirectories.unshift(this.getSourcesDirectory().getLocation());
+
+                sass.render({
+                    file: path.join(this.getSourcesDirectory().getLocation(), filename + ".styl"),
+                    data: content,
+                    includePaths: this.getIncludeDirectories().getDirectories(),
+                    indentedSyntax: true,
+                    // Used to determine whether to use space or tab character for indentation.
+                    indentType: "space", // todo: space or tab
+                    // Used to determine the number of spaces or tabs to be used for indentation.
+                    indentWidth: 2,
+                    // Used to determine whether to use cr, crlf, lf or lfcr sequence for line break.
+                    linefeed: "lf",
+                    // Determines the output format of the final CSS style.
+                    // Values: nested, expanded, compact, compressed
+                    outputStyle: "nested",
+                    // Used to determine how many digits after the decimal will be allowed. For instance, if you had a decimal number of 1.23456789 and a precision of 5, the result will be 1.23457 in the final CSS
+                    precision: 5,
+                    // true enables additional debugging information in the output file as CSS comments
+                    sourceComments: false,
+                    sourceMap: true
+                    /*[, options..]*/
+                }, (error:Error, result):void => {
+
+                });
+
+
                 compiler = stylus(content).
                     set("filename", path.join(this.getSourcesDirectory().getLocation(), filename + ".styl")).
                     set("compress", true).
