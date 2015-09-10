@@ -138,7 +138,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             (next:() => void):void => {
                 var directories:string[] = this.getIncludeDirectories().getDirectories().slice(0),
                     errors:Error[] = [],
-                    actions:((next:() => void) => void)[];
+                    actions:((next:() => void) => void)[] = [];
                 directories.unshift(this.getSourcesDirectory().getLocation());
                 directories.forEach((directory:string):void => {
                     actions.push((callback:() => void):void => {
@@ -283,14 +283,16 @@ class Compiler extends BaseCompiler implements ICompiler {
 
             ():void => {
                 var compiler:any,
+                    extension: string = path.extname(resolve),
                     includeDirectories = this.getIncludeDirectories().getDirectories().slice(0);
                 includeDirectories.unshift(this.getSourcesDirectory().getLocation());
 
                 sass.render({
-                    file: path.join(this.getSourcesDirectory().getLocation(), filename + ".styl"),
+                    file: path.join(this.getSourcesDirectory().getLocation(), filename + extension),
                     data: content,
                     includePaths: this.getIncludeDirectories().getDirectories(),
                     indentedSyntax: true,
+                    omitSourceMapUrl: false,
                     // Used to determine whether to use space or tab character for indentation.
                     indentType: "space", // todo: space or tab
                     // Used to determine the number of spaces or tabs to be used for indentation.
@@ -304,31 +306,21 @@ class Compiler extends BaseCompiler implements ICompiler {
                     precision: 5,
                     // true enables additional debugging information in the output file as CSS comments
                     sourceComments: false,
-                    sourceMap: true
-                    /*[, options..]*/
+                    sourceMap: true,
+                    sourceMapContents: true
                 }, (error:Error, result):void => {
-
-                });
-
-
-                compiler = stylus(content).
-                    set("filename", path.join(this.getSourcesDirectory().getLocation(), filename + ".styl")).
-                    set("compress", true).
-                    use(autoprefixer()).
-                    set("sourcemap", {
-                        comment: false,
-                        inline: false,
-                        sourceRoot: null,
-                        basePath: "/"
-                    }).
-                    set("paths", this.getIncludeDirectories().getDirectories());
-                compiler.render((error?:Error, result?:string):void => {
                     var temp:Error[] = [],
                         value:IResponse,
                         deps:string[],
                         errors:Error[] = [];
+
+                    console.log("result", result);
+                    if (error) {
+                        console.log(error);
+                    }
+
                     if (!error) {
-                        deps = compiler.deps().map((item:string):string => {
+                        deps = result.stats.includedFiles.map((item:string):string => {
                             var index:number,
                                 length:number = includeDirectories.length,
                                 directory:string = path.dirname(filename),
@@ -352,7 +344,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         });
 
                         value = <IResponse>{
-                            result: result,
+                            result: result.css.toString("utf8"),
                             source: content,
                             deps: deps,
                             map: (((map:any):any => {
@@ -428,6 +420,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                             });
                         }
+
                     } else {
                         temp.push(new LessException(error));
                         deferred([
@@ -450,7 +443,9 @@ class Compiler extends BaseCompiler implements ICompiler {
                             },
                         ]);
                     }
+
                 });
+
             }
 
         ]);

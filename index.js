@@ -17,6 +17,7 @@ var fs                   = require("fs"),
     processingTypescript = false,
     processingLess       = true,
     processingStylus     = true,
+    processingSass       = true,
     processingSoy        = false,
     spawn                = require("child_process").spawn,
     charset;
@@ -52,7 +53,8 @@ postcss([]).process("a{color:red;border-radius;display:flex}", {
 return;*/
 
 var less = require("./lib/routers/less"),
-    stylus = require("./lib/routers/stylus");
+    stylus = require("./lib/routers/stylus"),
+    sass = require("./lib/routers/sass");
 
 
 /*var routers = {
@@ -197,6 +199,21 @@ deferred([
                         numberOfProcesses    : 5
                     }, done);
                 },
+                function (done) {
+                    sass.init({
+                        temporaryDirectory   : temporaryDirectory,
+                        memoryLocation       : memorySocketAddress,
+                        sourcesDirectory     : path.join(__dirname, "styles"),
+                        includeDirectories   : [path.join(__dirname, "less_include_dir")],
+                        webRootDirectory     : "/",
+                        useCache             : false,
+                        errorBackgroundColor : "#ffff00",
+                        errorTextColor       : "#000000",
+                        errorBlockPadding    : "10px",
+                        errorFontSize        : "13px",
+                        numberOfProcesses    : 5
+                    }, done);
+                },
                 /*initSoy*/
             ],
             function () {
@@ -302,6 +319,21 @@ deferred([
                 function (next) {
                     if (processingStylus) {
                         stylus.route({
+                            accessLog   : true,
+                            request          : request,
+                            response         : response,
+                            webRootDirectory : "/",
+                            useCache         : false
+                        }, next);
+                    } else {
+                        next();
+                    }
+                },
+
+                // processing *.sass files
+                function (next) {
+                    if (processingSass) {
+                        sass.route({
                             accessLog   : true,
                             request          : request,
                             response         : response,
