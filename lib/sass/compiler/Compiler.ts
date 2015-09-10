@@ -306,18 +306,16 @@ class Compiler extends BaseCompiler implements ICompiler {
                     precision: 5,
                     // true enables additional debugging information in the output file as CSS comments
                     sourceComments: false,
-                    sourceMap: true,
-                    sourceMapContents: true
+                    sourceMap: "remove",
+                    sourceMapContents: true,
+                    sourceMapRoot: ""
                 }, (error:Error, result):void => {
                     var temp:Error[] = [],
                         value:IResponse,
                         deps:string[],
                         errors:Error[] = [];
 
-                    console.log("result", result);
-                    if (error) {
-                        console.log(error);
-                    }
+                    // todo: удалить из контента ссылку на map
 
                     if (!error) {
                         deps = result.stats.includedFiles.map((item:string):string => {
@@ -352,6 +350,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     return {};
                                 }
                                 map.sources = map.sources.map((item:string):string => {
+                                    console.log("item", item);
                                     var index:number,
                                         length:number = includeDirectories.length,
                                         directory:string = path.dirname(filename),
@@ -375,7 +374,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     return path.join("/", this.getWebRootDirectory().getLocation(), relative);
                                 });
                                 return map;
-                            })(compiler.sourcemap || {})),
+                            })(JSON.parse(result.map.toString("utf8")) || {})),
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                         };
 
