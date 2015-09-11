@@ -4,7 +4,6 @@ import IBaseOptions = require("../../compiler/client/IOptions");
 
 interface IOptions extends IBaseOptions {
     includeDirectories?: string[];
-    temporaryDirectory?: string;
 }
 
 export = IOptions;

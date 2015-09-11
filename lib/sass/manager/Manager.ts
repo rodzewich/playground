@@ -15,33 +15,20 @@ import Client = require("../client/Client");
 import typeOf = require("../../typeOf");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
-import ITemporaryDirectoryLocationHelper = require("../../helpers/ITemporaryDirectoryLocationHelper");
-import TemporaryDirectoryLocationHelper = require("../../helpers/TemporaryDirectoryLocationHelper");
 
 class Manager extends BaseManager {
 
     private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
-
-    private _temporaryDirectoryLocation:ITemporaryDirectoryLocationHelper = new TemporaryDirectoryLocationHelper();
 
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
             this.getIncludeDirectories().setDirectories(options.includeDirectories);
         }
-        if (options && typeOf(options.temporaryDirectory) !== "undefined") {
-            this.getTemporaryDirectoryLocation().setLocation(options.temporaryDirectory);
-        } else {
-            this.getTemporaryDirectoryLocation().setLocation("/var/tmp");
-        }
     }
 
     protected getIncludeDirectories():IIncludeDirectoriesHelper {
         return this._includeDirectories;
-    }
-
-    protected getTemporaryDirectoryLocation():ITemporaryDirectoryLocationHelper {
-        return this._temporaryDirectoryLocation;
     }
 
     protected createClient(location:string):IClient {
@@ -55,8 +42,7 @@ class Manager extends BaseManager {
             errorTextColor: this.getCssErrors().getTextColor(),
             errorBlockPadding: this.getCssErrors().getBlockPadding(),
             errorFontSize: this.getCssErrors().getFontSize(),
-            webRootDirectory: this.getWebRootDirectory().getLocation(),
-            temporaryDirectory: this.getTemporaryDirectoryLocation().getLocation()
+            webRootDirectory: this.getWebRootDirectory().getLocation()
         });
     }
 

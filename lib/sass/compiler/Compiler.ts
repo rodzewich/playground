@@ -34,34 +34,21 @@ import LessException = require("../Exception");
 import autoprefixer = require('autoprefixer-stylus');
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
-import ITemporaryDirectoryLocationHelper = require("../../helpers/ITemporaryDirectoryLocationHelper");
-import TemporaryDirectoryLocationHelper = require("../../helpers/TemporaryDirectoryLocationHelper");
 import sass = require("node-sass");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
     private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
 
-    private _temporaryDirectoryLocation:ITemporaryDirectoryLocationHelper = new TemporaryDirectoryLocationHelper();
-
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
             this.getIncludeDirectories().setDirectories(options.includeDirectories);
         }
-        if (options && typeOf(options.temporaryDirectory) !== "undefined") {
-            this.getTemporaryDirectoryLocation().setLocation(options.temporaryDirectory);
-        } else {
-            this.getTemporaryDirectoryLocation().setLocation("/var/tmp");
-        }
     }
 
     protected getIncludeDirectories():IIncludeDirectoriesHelper {
         return this._includeDirectories;
-    }
-
-    protected getTemporaryDirectoryLocation():ITemporaryDirectoryLocationHelper {
-        return this._temporaryDirectoryLocation;
     }
 
     public compile(callback:(errors?:Error[], result?:IResponse) => void):void {
