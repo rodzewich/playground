@@ -222,8 +222,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             ():void => {
-                var compiler:any,
-                    extension: string = path.extname(resolve),
+                var extension: string = path.extname(resolve),
                     includeDirectories = this.getIncludeDirectories().getDirectories().slice(0);
                 includeDirectories.unshift(this.getSourcesDirectory().getLocation());
 
