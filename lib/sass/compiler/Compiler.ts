@@ -240,7 +240,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     linefeed: "lf",
                     // Determines the output format of the final CSS style.
                     // Values: nested, expanded, compact, compressed
-                    outputStyle: "nested",
+                    outputStyle: "compressed",
                     // Used to determine how many digits after the decimal will be allowed. For instance, if you had a decimal number of 1.23456789 and a precision of 5, the result will be 1.23457 in the final CSS
                     precision: 5,
                     // true enables additional debugging information in the output file as CSS comments
