@@ -34,8 +34,6 @@ import LessException = require("../Exception");
 import autoprefixer = require('autoprefixer-stylus');
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
-import ISassLocationHelper = require("../../helpers/ISassLocationHelper");
-import SassLocationHelper = require("../../helpers/SassLocationHelper");
 import ISassCompilerTypeHelper = require("../../helpers/ISassCompilerTypeHelper");
 import SassCompilerTypeHelper = require("../../helpers/SassCompilerTypeHelper");
 import ITemporaryDirectoryLocationHelper = require("../../helpers/ITemporaryDirectoryLocationHelper");
@@ -47,8 +45,6 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
 
-    private _sassLocation:ISassLocationHelper = new SassLocationHelper();
-
     private _temporaryDirectoryLocation:ITemporaryDirectoryLocationHelper = new TemporaryDirectoryLocationHelper();
 
     private _compilerType:ISassCompilerTypeHelper<CompilerType> = new SassCompilerTypeHelper<CompilerType>();
@@ -57,11 +53,6 @@ class Compiler extends BaseCompiler implements ICompiler {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
             this.getIncludeDirectories().setDirectories(options.includeDirectories);
-        }
-        if (options && typeOf(options.sassLocation) !== "undefined") {
-            this.getSassLocation().setLocation(options.sassLocation);
-        } else {
-            this.getSassLocation().setLocation("/usr/local/bin/sass");
         }
         if (options && typeOf(options.temporaryDirectory) !== "undefined") {
             this.getTemporaryDirectoryLocation().setLocation(options.temporaryDirectory);
@@ -84,10 +75,6 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     protected getIncludeDirectories():IIncludeDirectoriesHelper {
         return this._includeDirectories;
-    }
-
-    protected getSassLocation():ISassLocationHelper {
-        return this._sassLocation;
     }
 
     protected getTemporaryDirectoryLocation():ITemporaryDirectoryLocationHelper {

@@ -15,8 +15,6 @@ import Client = require("../client/Client");
 import typeOf = require("../../typeOf");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
-import ISassLocationHelper = require("../../helpers/ISassLocationHelper");
-import SassLocationHelper = require("../../helpers/SassLocationHelper");
 import ISassCompilerTypeHelper = require("../../helpers/ISassCompilerTypeHelper");
 import SassCompilerTypeHelper = require("../../helpers/SassCompilerTypeHelper");
 import ITemporaryDirectoryLocationHelper = require("../../helpers/ITemporaryDirectoryLocationHelper");
@@ -27,8 +25,6 @@ class Manager extends BaseManager {
 
     private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
 
-    private _sassLocation:ISassLocationHelper = new SassLocationHelper();
-
     private _temporaryDirectoryLocation:ITemporaryDirectoryLocationHelper = new TemporaryDirectoryLocationHelper();
 
     private _compilerType:ISassCompilerTypeHelper<CompilerType> = new SassCompilerTypeHelper<CompilerType>();
@@ -37,11 +33,6 @@ class Manager extends BaseManager {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
             this.getIncludeDirectories().setDirectories(options.includeDirectories);
-        }
-        if (options && typeOf(options.sassLocation) !== "undefined") {
-            this.getSassLocation().setLocation(options.sassLocation);
-        } else {
-            this.getSassLocation().setLocation("/usr/local/bin/sass");
         }
         if (options && typeOf(options.temporaryDirectory) !== "undefined") {
             this.getTemporaryDirectoryLocation().setLocation(options.temporaryDirectory);
@@ -66,10 +57,6 @@ class Manager extends BaseManager {
         return this._includeDirectories;
     }
 
-    protected getSassLocation():ISassLocationHelper {
-        return this._sassLocation;
-    }
-
     protected getTemporaryDirectoryLocation():ITemporaryDirectoryLocationHelper {
         return this._temporaryDirectoryLocation;
     }
@@ -91,7 +78,6 @@ class Manager extends BaseManager {
             errorFontSize: this.getCssErrors().getFontSize(),
             webRootDirectory: this.getWebRootDirectory().getLocation(),
             compilerType: this.getCompilerType().getType().toString(),
-            sassLocation: this.getSassLocation().getLocation(),
             temporaryDirectory: this.getTemporaryDirectoryLocation().getLocation()
         });
     }
