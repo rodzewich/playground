@@ -307,8 +307,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     // true enables additional debugging information in the output file as CSS comments
                     sourceComments: false,
                     sourceMap: "remove",
-                    sourceMapContents: true,
-                    sourceMapRoot: ""
+                    sourceMapContents: true
                 }, (error:Error, result):void => {
                     var temp:Error[] = [],
                         value:IResponse,
@@ -342,7 +341,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         });
 
                         value = <IResponse>{
-                            result: result.css.toString("utf8"),
+                            result: result.css.toString("utf8").replace(/\/\*# sourceMappingURL=[^\r\n]+ \*\/\s*$/g, ""),
                             source: content,
                             deps: deps,
                             map: (((map:any):any => {
@@ -356,7 +355,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                         directory:string = path.dirname(filename),
                                         importDirectory:string,
                                         relative:string;
-                                    item = path.join("/", item);
+                                    item = path.join(process.cwd(), item);
                                     for (index = 0; index < length; index++) {
                                         importDirectory = includeDirectories[index];
                                         relative = path.relative(importDirectory, item);
