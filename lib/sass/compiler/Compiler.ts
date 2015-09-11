@@ -34,11 +34,8 @@ import LessException = require("../Exception");
 import autoprefixer = require('autoprefixer-stylus');
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
-import ISassCompilerTypeHelper = require("../../helpers/ISassCompilerTypeHelper");
-import SassCompilerTypeHelper = require("../../helpers/SassCompilerTypeHelper");
 import ITemporaryDirectoryLocationHelper = require("../../helpers/ITemporaryDirectoryLocationHelper");
 import TemporaryDirectoryLocationHelper = require("../../helpers/TemporaryDirectoryLocationHelper");
-import CompilerType = require("../compiler/Type");
 import sass = require("node-sass");
 
 class Compiler extends BaseCompiler implements ICompiler {
@@ -46,8 +43,6 @@ class Compiler extends BaseCompiler implements ICompiler {
     private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
 
     private _temporaryDirectoryLocation:ITemporaryDirectoryLocationHelper = new TemporaryDirectoryLocationHelper();
-
-    private _compilerType:ISassCompilerTypeHelper<CompilerType> = new SassCompilerTypeHelper<CompilerType>();
 
     constructor(options:IOptions) {
         super(options);
@@ -59,18 +54,6 @@ class Compiler extends BaseCompiler implements ICompiler {
         } else {
             this.getTemporaryDirectoryLocation().setLocation("/var/tmp");
         }
-        if (options && typeOf(options.compilerType) !== "undefined" &&
-            CompilerType.equal(CompilerType.NATIVE_SASS, options.compilerType)) {
-            this.getCompilerType().setType(CompilerType.NATIVE_SASS);
-        } else if (options && typeOf(options.compilerType) !== "undefined" &&
-            CompilerType.equal(CompilerType.NODE_SASS, options.compilerType)) {
-            this.getCompilerType().setType(CompilerType.NODE_SASS);
-        } else if (options && typeOf(options.compilerType) !== "undefined" &&
-            CompilerType.equal(CompilerType.COMPASS, options.compilerType)) {
-            this.getCompilerType().setType(CompilerType.COMPASS);
-        } else {
-            this.getCompilerType().setType(CompilerType.NODE_SASS);
-        }
     }
 
     protected getIncludeDirectories():IIncludeDirectoriesHelper {
@@ -79,10 +62,6 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     protected getTemporaryDirectoryLocation():ITemporaryDirectoryLocationHelper {
         return this._temporaryDirectoryLocation;
-    }
-
-    protected getCompilerType():ISassCompilerTypeHelper<CompilerType> {
-        return this._compilerType;
     }
 
     public compile(callback:(errors?:Error[], result?:IResponse) => void):void {
