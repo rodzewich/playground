@@ -17,8 +17,6 @@ import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHel
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
 import ISassLocationHelper = require("../../helpers/ISassLocationHelper");
 import SassLocationHelper = require("../../helpers/SassLocationHelper");
-import ICompassLocationHelper = require("../../helpers/ICompassLocationHelper");
-import CompassLocationHelper = require("../../helpers/CompassLocationHelper");
 import ISassCompilerTypeHelper = require("../../helpers/ISassCompilerTypeHelper");
 import SassCompilerTypeHelper = require("../../helpers/SassCompilerTypeHelper");
 import ITemporaryDirectoryLocationHelper = require("../../helpers/ITemporaryDirectoryLocationHelper");
@@ -30,8 +28,6 @@ class Manager extends BaseManager {
     private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
 
     private _sassLocation:ISassLocationHelper = new SassLocationHelper();
-
-    private _compassLocation:ICompassLocationHelper = new CompassLocationHelper();
 
     private _temporaryDirectoryLocation:ITemporaryDirectoryLocationHelper = new TemporaryDirectoryLocationHelper();
 
@@ -46,11 +42,6 @@ class Manager extends BaseManager {
             this.getSassLocation().setLocation(options.sassLocation);
         } else {
             this.getSassLocation().setLocation("/usr/local/bin/sass");
-        }
-        if (options && typeOf(options.compassLocation) !== "undefined") {
-            this.getCompassLocation().setLocation(options.compassLocation);
-        } else {
-            this.getCompassLocation().setLocation("/usr/local/bin/compass");
         }
         if (options && typeOf(options.temporaryDirectory) !== "undefined") {
             this.getTemporaryDirectoryLocation().setLocation(options.temporaryDirectory);
@@ -79,10 +70,6 @@ class Manager extends BaseManager {
         return this._sassLocation;
     }
 
-    protected getCompassLocation():ICompassLocationHelper {
-        return this._compassLocation;
-    }
-
     protected getTemporaryDirectoryLocation():ITemporaryDirectoryLocationHelper {
         return this._temporaryDirectoryLocation;
     }
@@ -105,7 +92,6 @@ class Manager extends BaseManager {
             webRootDirectory: this.getWebRootDirectory().getLocation(),
             compilerType: this.getCompilerType().getType().toString(),
             sassLocation: this.getSassLocation().getLocation(),
-            compassLocation: this.getCompassLocation().getLocation(),
             temporaryDirectory: this.getTemporaryDirectoryLocation().getLocation()
         });
     }

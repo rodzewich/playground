@@ -5,7 +5,6 @@ import IBaseOptions = require("../../compiler/client/IOptions");
 interface IOptions extends IBaseOptions {
     includeDirectories?: string[];
     sassLocation?: string;
-    compassLocation?: string;
     compilerType?: string;
     temporaryDirectory?: string;
 }

@@ -36,8 +36,6 @@ import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHel
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
 import ISassLocationHelper = require("../../helpers/ISassLocationHelper");
 import SassLocationHelper = require("../../helpers/SassLocationHelper");
-import ICompassLocationHelper = require("../../helpers/ICompassLocationHelper");
-import CompassLocationHelper = require("../../helpers/CompassLocationHelper");
 import ISassCompilerTypeHelper = require("../../helpers/ISassCompilerTypeHelper");
 import SassCompilerTypeHelper = require("../../helpers/SassCompilerTypeHelper");
 import ITemporaryDirectoryLocationHelper = require("../../helpers/ITemporaryDirectoryLocationHelper");
@@ -50,8 +48,6 @@ class Compiler extends BaseCompiler implements ICompiler {
     private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
 
     private _sassLocation:ISassLocationHelper = new SassLocationHelper();
-
-    private _compassLocation:ICompassLocationHelper = new CompassLocationHelper();
 
     private _temporaryDirectoryLocation:ITemporaryDirectoryLocationHelper = new TemporaryDirectoryLocationHelper();
 
@@ -66,11 +62,6 @@ class Compiler extends BaseCompiler implements ICompiler {
             this.getSassLocation().setLocation(options.sassLocation);
         } else {
             this.getSassLocation().setLocation("/usr/local/bin/sass");
-        }
-        if (options && typeOf(options.compassLocation) !== "undefined") {
-            this.getCompassLocation().setLocation(options.compassLocation);
-        } else {
-            this.getCompassLocation().setLocation("/usr/local/bin/compass");
         }
         if (options && typeOf(options.temporaryDirectory) !== "undefined") {
             this.getTemporaryDirectoryLocation().setLocation(options.temporaryDirectory);
@@ -97,10 +88,6 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     protected getSassLocation():ISassLocationHelper {
         return this._sassLocation;
-    }
-
-    protected getCompassLocation():ICompassLocationHelper {
-        return this._compassLocation;
     }
 
     protected getTemporaryDirectoryLocation():ITemporaryDirectoryLocationHelper {
