@@ -31,12 +31,16 @@ class Client extends BaseClient {
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
-            this.getIncludeDirectories().setDirectories(options.includeDirectories);
+            this.setIncludeDirectories(options.includeDirectories);
         }
     }
 
-    protected getIncludeDirectories():IIncludeDirectoriesHelper {
-        return this._includeDirectories;
+    protected getIncludeDirectories():string[] {
+        return this._includeDirectories.getDirectories();
+    }
+
+    protected setIncludeDirectories(value:string[]):void {
+        this._includeDirectories.setDirectories(value)
     }
 
     protected getDaemon():string {
@@ -46,8 +50,8 @@ class Client extends BaseClient {
     protected getRequest():IRequest {
         return <IRequest>{
             filename: null,
-            sourcesDirectory: this.getSourcesDirectory().getLocation(),
-            includeDirectories: this.getIncludeDirectories().getDirectories(),
+            sourcesDirectory: this.getSourcesDirectory(),
+            includeDirectories: this.getIncludeDirectories(),
             errorBackgroundColor: this.getCssErrors().getBackgroundColor(),
             errorTextColor: this.getCssErrors().getTextColor(),
             errorBlockPadding: this.getCssErrors().getBlockPadding(),

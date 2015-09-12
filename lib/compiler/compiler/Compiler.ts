@@ -25,7 +25,8 @@ import ICacheHelper = require("../../helpers/ICacheHelper");
 import SourcesDirectoryHelper = require("../../helpers/SourcesDirectoryHelper");
 import ISourcesDirectoryHelper = require("../../helpers/ISourcesDirectoryHelper");
 
-abstract class Compiler implements ICompiler {
+abstract
+class Compiler implements ICompiler {
 
     private _memory:IMemory;
 
@@ -44,7 +45,7 @@ abstract class Compiler implements ICompiler {
             this.setFilename(options.filename);
         }
         if (options && typeOf(options.sourcesDirectory) !== "undefined") {
-            this.getSourcesDirectory().setLocation(options.sourcesDirectory);
+            this.setSourcesDirectory(options.sourcesDirectory);
         }
         if (options && typeOf(options.memory) !== "undefined") {
             this.setMemory(options.memory);
@@ -73,8 +74,12 @@ abstract class Compiler implements ICompiler {
         return this._cache;
     }
 
-    protected getSourcesDirectory():ISourcesDirectoryHelper {
-        return this._sourcesDirectory;
+    protected getSourcesDirectory():string {
+        return this._sourcesDirectory.getLocation();
+    }
+
+    protected setSourcesDirectory(value:string):void {
+        this._sourcesDirectory.setLocation(value);
     }
 
     protected getWebRootDirectory():IWebRootDirectoryHelper {
@@ -101,7 +106,9 @@ abstract class Compiler implements ICompiler {
         this._filename = value;
     }
 
-    abstract compile(callback:(errors?:Error[], result?:any) => void):void;
+    abstract
+
+    compile(callback:(errors?:Error[], result?:any) => void):void;
 
 }
 

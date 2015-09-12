@@ -39,12 +39,16 @@ class Compiler extends BaseCompiler implements ICompiler {
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
-            this.getIncludeDirectories().setDirectories(options.includeDirectories);
+            this.setIncludeDirectories(options.includeDirectories);
         }
     }
 
-    protected getIncludeDirectories():IIncludeDirectoriesHelper {
-        return this._includeDirectories;
+    protected getIncludeDirectories():string[] {
+        return this._includeDirectories.getDirectories();
+    }
+
+    protected setIncludeDirectories(value:string[]):void {
+        this._includeDirectories.setDirectories(value);
     }
 
     public compile(callback:(errors?:Error[], result?:IResponse) => void):void {
@@ -72,10 +76,10 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
-                var directories:string[] = this.getIncludeDirectories().getDirectories().slice(0),
+                var directories:string[] = this.getIncludeDirectories().slice(0),
                     errors:Error[] = [],
                     actions:((next:() => void) => void)[];
-                directories.unshift(this.getSourcesDirectory().getLocation());
+                directories.unshift(this.getSourcesDirectory());
                 actions = directories.map((directory:string):((next:() => void) => void) => {
                     return (callback:() => void):void => {
                         resolve = path.join(directory, filename + ".less");
@@ -114,8 +118,8 @@ class Compiler extends BaseCompiler implements ICompiler {
                     if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length === 0) {
                         callback(null, response);
                     } else if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length !== 0) {
-                        directories = this.getIncludeDirectories().getDirectories().slice(0);
-                        directories.unshift(this.getSourcesDirectory().getLocation());
+                        directories = this.getIncludeDirectories().slice(0);
+                        directories.unshift(this.getSourcesDirectory());
                         parallel(response.deps.map((filename:string):((next:() => void) => void) => {
                             return (done:() => void):void => {
                                 var actions:((next:() => void) => void)[] = directories.map((directory:string):((next:() => void) => void) => {
@@ -204,10 +208,10 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             ():void => {
-                var includeDirectories = this.getIncludeDirectories().getDirectories().slice(0);
-                includeDirectories.unshift(this.getSourcesDirectory().getLocation());
+                var includeDirectories = this.getIncludeDirectories().slice(0);
+                includeDirectories.unshift(this.getSourcesDirectory());
                 less.render(content, <less.Options>{
-                    paths: this.getIncludeDirectories().getDirectories(),
+                    paths: this.getIncludeDirectories(),
                     filename: path.join(resolve),
                     compress: true,
                     sourceMap: true,

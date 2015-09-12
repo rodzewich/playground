@@ -25,23 +25,27 @@ class Client extends BaseClient {
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
-            this.getIncludeDirectories().setDirectories(options.includeDirectories);
+            this.setIncludeDirectories(options.includeDirectories);
         }
     }
 
-    protected getIncludeDirectories():IIncludeDirectoriesHelper {
-        return this._includeDirectories;
+    protected getIncludeDirectories():string[] {
+        return this._includeDirectories.getDirectories();
     }
 
-    protected getDaemon(): string {
+    protected setIncludeDirectories(value:string[]):void {
+        this._includeDirectories.setDirectories(value);
+    }
+
+    protected getDaemon():string {
         return path.join(__dirname, "../daemon.js");
     }
 
     protected getRequest():IRequest {
         return <IRequest>{
             filename: null,
-            sourcesDirectory: this.getSourcesDirectory().getLocation(),
-            includeDirectories: this.getIncludeDirectories().getDirectories(),
+            sourcesDirectory: this.getSourcesDirectory(),
+            includeDirectories: this.getIncludeDirectories(),
             errorBackgroundColor: this.getCssErrors().getBackgroundColor(),
             errorTextColor: this.getCssErrors().getTextColor(),
             errorBlockPadding: this.getCssErrors().getBlockPadding(),

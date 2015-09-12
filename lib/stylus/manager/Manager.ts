@@ -20,24 +20,28 @@ class Manager extends BaseManager {
 
     private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
 
-    constructor(options: IOptions) {
+    constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
-            this.getIncludeDirectories().setDirectories(options.includeDirectories);
+            this.setIncludeDirectories(options.includeDirectories);
         }
     }
 
-    protected getIncludeDirectories():IIncludeDirectoriesHelper {
-        return this._includeDirectories;
+    protected getIncludeDirectories():string[] {
+        return this._includeDirectories.getDirectories();
+    }
+
+    protected setIncludeDirectories(value:string[]):void {
+        this._includeDirectories.setDirectories(value);
     }
 
     protected createClient(location:string):IClient {
         return new Client({
             location: location,
-            memoryLocation: this.getMemoryLocation().getLocation(),
-            sourcesDirectory: this.getSourcesDirectory().getLocation(),
+            memoryLocation: this.getMemoryLocation(),
+            sourcesDirectory: this.getSourcesDirectory(),
             useCache: this.getCache().isUsed(),
-            includeDirectories: this.getIncludeDirectories().getDirectories(),
+            includeDirectories: this.getIncludeDirectories(),
             errorBackgroundColor: this.getCssErrors().getBackgroundColor(),
             errorTextColor: this.getCssErrors().getTextColor(),
             errorBlockPadding: this.getCssErrors().getBlockPadding(),

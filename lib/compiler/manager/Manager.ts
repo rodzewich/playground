@@ -49,8 +49,8 @@ class Manager extends Client implements IManager {
     protected createClient(location:string):IClient {
         return new Client({
             location: location,
-            memoryLocation: this.getMemoryLocation().getLocation(),
-            sourcesDirectory: this.getSourcesDirectory().getLocation(),
+            memoryLocation: this.getMemoryLocation(),
+            sourcesDirectory: this.getSourcesDirectory(),
             errorBackgroundColor: this.getCssErrors().getBackgroundColor(),
             errorTextColor: this.getCssErrors().getTextColor(),
             errorBlockPadding: this.getCssErrors().getBlockPadding(),

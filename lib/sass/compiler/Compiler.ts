@@ -43,12 +43,16 @@ class Compiler extends BaseCompiler implements ICompiler {
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.includeDirectories) !== "undefined") {
-            this.getIncludeDirectories().setDirectories(options.includeDirectories);
+            this.setIncludeDirectories(options.includeDirectories);
         }
     }
 
-    protected getIncludeDirectories():IIncludeDirectoriesHelper {
-        return this._includeDirectories;
+    protected getIncludeDirectories():string[] {
+        return this._includeDirectories.getDirectories();
+    }
+
+    protected setIncludeDirectories(value:string[]):void {
+        this._includeDirectories.setDirectories(value);
     }
 
     public compile(callback:(errors?:Error[], result?:IResponse) => void):void {
@@ -76,10 +80,10 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
-                var directories:string[] = this.getIncludeDirectories().getDirectories().slice(0),
+                var directories:string[] = this.getIncludeDirectories().slice(0),
                     errors:Error[] = [],
                     actions:((next:() => void) => void)[] = [];
-                directories.unshift(this.getSourcesDirectory().getLocation());
+                directories.unshift(this.getSourcesDirectory());
                 directories.forEach((directory:string):void => {
                     actions.push((callback:() => void):void => {
                         resolve = path.join(directory, filename + ".sass");
@@ -132,8 +136,8 @@ class Compiler extends BaseCompiler implements ICompiler {
                     if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length === 0) {
                         callback(null, response);
                     } else if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length !== 0) {
-                        directories = this.getIncludeDirectories().getDirectories().slice(0);
-                        directories.unshift(this.getSourcesDirectory().getLocation());
+                        directories = this.getIncludeDirectories().slice(0);
+                        directories.unshift(this.getSourcesDirectory());
                         parallel(response.deps.map((filename:string):((next:() => void) => void) => {
                             return (done:() => void):void => {
                                 var actions:((next:() => void) => void)[] = directories.map((directory:string):((next:() => void) => void) => {
@@ -222,21 +226,21 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             ():void => {
-                var extension: string = path.extname(resolve),
-                    includeDirectories = this.getIncludeDirectories().getDirectories().slice(0);
-                includeDirectories.unshift(this.getSourcesDirectory().getLocation());
+                var extension:string = path.extname(resolve),
+                    includeDirectories = this.getIncludeDirectories().slice(0);
+                includeDirectories.unshift(this.getSourcesDirectory());
 
                 sass.render({
-                    file: path.join(this.getSourcesDirectory().getLocation(), filename + extension),
+                    file: path.join(this.getSourcesDirectory(), filename + extension),
                     data: content,
-                    includePaths: this.getIncludeDirectories().getDirectories(),
+                    includePaths: this.getIncludeDirectories(),
                     indentedSyntax: true,
                     omitSourceMapUrl: false,
                     // Used to determine whether to use space or tab character for indentation.
                     indentType: "space", // todo: space or tab
                     // Used to determine the number of spaces or tabs to be used for indentation.
                     indentWidth: 2,
-                    // Used to determine whether to use cr, crlf, lf or lfcr sequence for line break.
+                    // Used to determine whether to use cr, crlf, lf or lfcr sequence for line break. UNIX=LF, MACOS=LF, OLD_MACOS=CR, WINDOWS=RCLF
                     linefeed: "lf",
                     // Determines the output format of the final CSS style.
                     // Values: nested, expanded, compact, compressed

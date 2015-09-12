@@ -60,10 +60,10 @@ class Client extends BaseClient implements IClient {
     constructor(options:IOptions) {
         super(options);
         if (options && typeOf(options.sourcesDirectory) !== "undefined") {
-            this.getSourcesDirectory().setLocation(options.sourcesDirectory);
+            this.setSourcesDirectory(options.sourcesDirectory);
         }
         if (options && typeOf(options.memoryLocation) !== "undefined") {
-            this.getMemoryLocation().setLocation(options.memoryLocation);
+            this.setMemoryLocation(options.memoryLocation);
         }
         if (options && typeOf(options.useCache) !== "undefined") {
             this.getCache().setIsUsed(options.useCache);
@@ -92,7 +92,7 @@ class Client extends BaseClient implements IClient {
     protected getRequest():IRequest {
         return <IRequest>{
             filename: null,
-            sourcesDirectory: this.getSourcesDirectory().getLocation(),
+            sourcesDirectory: this.getSourcesDirectory(),
             errorBackgroundColor: this.getCssErrors().getBackgroundColor(),
             errorTextColor: this.getCssErrors().getTextColor(),
             errorBlockPadding: this.getCssErrors().getBlockPadding(),
@@ -110,12 +110,20 @@ class Client extends BaseClient implements IClient {
         return this._cssErrors;
     }
 
-    public getMemoryLocation():IResourceLocation {
-        return this._memoryLocation;
+    public getMemoryLocation():string {
+        return this._memoryLocation.getLocation();
     }
 
-    protected getSourcesDirectory():ISourcesDirectoryHelper {
-        return this._sourcesDirectory;
+    public setMemoryLocation(value:string):void {
+        this._memoryLocation.setLocation(value);
+    }
+
+    protected getSourcesDirectory():string {
+        return this._sourcesDirectory.getLocation();
+    }
+
+    protected setSourcesDirectory(value:string):void {
+        this._sourcesDirectory.setLocation(value);
     }
 
     protected getWebRootDirectory():IResourceLocation {
@@ -149,7 +157,7 @@ class Client extends BaseClient implements IClient {
                 var command:cp.ChildProcess = cp.spawn(process.execPath, [
                         this.getDaemon(),
                         "--location", this.getMeLocation().getLocation(),
-                        "--memory", this.getMemoryLocation().getLocation()
+                        "--memory", this.getMemoryLocation()
                     ]),
                     data:Buffer = new Buffer(0),
                     echo:(stream:NodeJS.WritableStream, data:Buffer) => void =
@@ -177,9 +185,9 @@ class Client extends BaseClient implements IClient {
                             json = string.slice(0, index + 1);
                             try {
                                 result = JSON.parse(json) || {
-                                        started: false,
-                                        errors: [{message: "Unknown error"}]
-                                    };
+                                    started: false,
+                                    errors: [{message: "Unknown error"}]
+                                };
                             } catch (err) {
                                 logger.warn("Worker send error content", data.toString("utf8"));
                                 process.stderr.write(data);
