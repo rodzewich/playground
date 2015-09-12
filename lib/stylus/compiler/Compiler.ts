@@ -83,7 +83,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         } else if (errors) {
                             completion(null, {
                                 source: null,
-                                result: this.getCssErrors().create(errors),
+                                result: this.createCssErrors(errors),
                                 deps: [],
                                 map: {},
                                 date: resultTime
@@ -122,7 +122,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     if (errors.length) {
                         completion(null, <IResponse>{
                             source: null,
-                            result: this.getCssErrors().create(errors),
+                            result: this.createCssErrors(errors),
                             deps: [],
                             map: {},
                             date: resultTime
@@ -170,7 +170,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     } else if (errors && errors.length) {
                         completion(null, <IResponse>{
                             source: null,
-                            result: this.getCssErrors().create(errors),
+                            result: this.createCssErrors(errors),
                             deps: [],
                             map: {},
                             date: resultTime
@@ -189,7 +189,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     } else {
                         completion(null, <IResponse>{
                             source: null,
-                            result: this.getCssErrors().create(errors),
+                            result: this.createCssErrors(errors),
                             deps: [],
                             map: {},
                             date: resultTime
@@ -218,7 +218,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             ():void => {
                                 completion(null, <IResponse>{
                                     source: null,
-                                    result: this.getCssErrors().create(temp),
+                                    result: this.createCssErrors(temp),
                                     deps: [],
                                     map: {},
                                     date: resultTime
@@ -347,7 +347,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     if (temp.length) {
                                         completion(null, <IResponse>{
                                             source: null,
-                                            result: this.getCssErrors().create(temp),
+                                            result: this.createCssErrors(temp),
                                             deps: [],
                                             map: {},
                                             date: resultTime
@@ -360,7 +360,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         } else {
                             completion(null, <IResponse>{
                                 source: null,
-                                result: this.getCssErrors().create(errors),
+                                result: this.createCssErrors(errors),
                                 deps: [],
                                 map: {},
                                 date: resultTime
@@ -380,7 +380,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             ():void => {
                                 completion(null, <IResponse>{
                                     source: null,
-                                    result: this.getCssErrors().create(temp),
+                                    result: this.createCssErrors(temp),
                                     deps: [],
                                     map: {},
                                     date: resultTime

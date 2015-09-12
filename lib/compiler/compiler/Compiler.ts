@@ -51,16 +51,16 @@ class Compiler implements ICompiler {
             this.setMemory(options.memory);
         }
         if (options && typeOf(options.errorBackgroundColor) !== "undefined") {
-            this.getCssErrors().setBackgroundColor(options.errorBackgroundColor);
+            this.setCssErrorsBackgroundColor(options.errorBackgroundColor);
         }
         if (options && typeOf(options.errorTextColor) !== "undefined") {
-            this.getCssErrors().setTextColor(options.errorTextColor);
+            this.setCssErrorsTextColor(options.errorTextColor);
         }
         if (options && typeOf(options.errorBlockPadding) !== "undefined") {
-            this.getCssErrors().setBlockPadding(options.errorBlockPadding);
+            this.setCssErrorsBlockPadding(options.errorBlockPadding);
         }
         if (options && typeOf(options.errorFontSize) !== "undefined") {
-            this.getCssErrors().setFontSize(options.errorFontSize);
+            this.setCssErrorsFontSize(options.errorFontSize);
         }
         if (options && typeOf(options.useCache) !== "undefined") {
             this.setIsCacheUsed(options.useCache);
@@ -98,8 +98,40 @@ class Compiler implements ICompiler {
         this._webRootDirectory.setLocation(value);
     }
 
-    protected getCssErrors():ICssErrorsHelper {
-        return this._cssErrors;
+    protected getCssErrorsBackgroundColor():string {
+        return this._cssErrors.getBackgroundColor();
+    }
+
+    protected setCssErrorsBackgroundColor(value:string):void {
+        this._cssErrors.setBackgroundColor(value);
+    }
+
+    protected getCssErrorsTextColor():string {
+        return this._cssErrors.getTextColor();
+    }
+
+    protected setCssErrorsTextColor(value:string):void {
+        this._cssErrors.setTextColor(value);
+    }
+
+    protected getCssErrorsBlockPadding():string {
+        return this._cssErrors.getBlockPadding();
+    }
+
+    protected setCssErrorsBlockPadding(value:string):void {
+        this._cssErrors.setBlockPadding(value);
+    }
+
+    protected getCssErrorsFontSize():string {
+        return this._cssErrors.getFontSize();
+    }
+
+    protected setCssErrorsFontSize(value:string):void {
+        return this._cssErrors.setFontSize(value);
+    }
+
+    protected createCssErrors(errors?:Error[]):string {
+        return this._cssErrors.create(errors)
     }
 
     public setMemory(value:IMemory):void {

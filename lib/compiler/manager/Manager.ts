@@ -51,10 +51,10 @@ class Manager extends Client implements IManager {
             location: location,
             memoryLocation: this.getMemoryLocation(),
             sourcesDirectory: this.getSourcesDirectory(),
-            errorBackgroundColor: this.getCssErrors().getBackgroundColor(),
-            errorTextColor: this.getCssErrors().getTextColor(),
-            errorBlockPadding: this.getCssErrors().getBlockPadding(),
-            errorFontSize: this.getCssErrors().getFontSize(),
+            errorBackgroundColor: this.getCssErrorsBackgroundColor(),
+            errorTextColor: this.getCssErrorsTextColor(),
+            errorBlockPadding: this.getCssErrorsBlockPadding(),
+            errorFontSize: this.getCssErrorsFontSize(),
             webRootDirectory: this.getWebRootDirectory(),
             useCache: this.isCacheUsed()
         });

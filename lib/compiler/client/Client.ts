@@ -69,16 +69,16 @@ class Client extends BaseClient implements IClient {
             this.setIsCacheUsed(options.useCache);
         }
         if (options && typeOf(options.errorBackgroundColor) !== "undefined") {
-            this.getCssErrors().setBackgroundColor(options.errorBackgroundColor);
+            this.setCssErrorsBackgroundColor(options.errorBackgroundColor);
         }
         if (options && typeOf(options.errorTextColor) !== "undefined") {
-            this.getCssErrors().setTextColor(options.errorTextColor);
+            this.setCssErrorsTextColor(options.errorTextColor);
         }
         if (options && typeOf(options.errorBlockPadding) !== "undefined") {
-            this.getCssErrors().setBlockPadding(options.errorBlockPadding);
+            this.setCssErrorsBlockPadding(options.errorBlockPadding);
         }
         if (options && typeOf(options.errorFontSize) !== "undefined") {
-            this.getCssErrors().setFontSize(options.errorFontSize);
+            this.setCssErrorsFontSize(options.errorFontSize);
         }
         if (options && typeOf(options.webRootDirectory) !== "undefined") {
             this.setWebRootDirectory(options.webRootDirectory);
@@ -93,29 +93,61 @@ class Client extends BaseClient implements IClient {
         return <IRequest>{
             filename: null,
             sourcesDirectory: this.getSourcesDirectory(),
-            errorBackgroundColor: this.getCssErrors().getBackgroundColor(),
-            errorTextColor: this.getCssErrors().getTextColor(),
-            errorBlockPadding: this.getCssErrors().getBlockPadding(),
-            errorFontSize: this.getCssErrors().getFontSize(),
+            errorBackgroundColor: this.getCssErrorsBackgroundColor(),
+            errorTextColor: this.getCssErrorsTextColor(),
+            errorBlockPadding: this.getCssErrorsBlockPadding(),
+            errorFontSize: this.getCssErrorsFontSize(),
             webRootDirectory: this.getWebRootDirectory(),
             useCache: this.isCacheUsed()
         };
     }
 
-    protected isCacheUsed(): boolean {
+    protected isCacheUsed():boolean {
         return this._cache.isUsed();
     }
 
-    protected getIsCacheUsed(): boolean {
+    protected getIsCacheUsed():boolean {
         return this._cache.getIsUsed();
     }
 
-    protected setIsCacheUsed(value: boolean): void {
+    protected setIsCacheUsed(value:boolean):void {
         return this._cache.setIsUsed(value);
     }
 
-    protected getCssErrors():ICssErrorsHelper {
-        return this._cssErrors;
+    protected getCssErrorsBackgroundColor():string {
+        return this._cssErrors.getBackgroundColor();
+    }
+
+    protected setCssErrorsBackgroundColor(value:string):void {
+        this._cssErrors.setBackgroundColor(value);
+    }
+
+    protected getCssErrorsTextColor():string {
+        return this._cssErrors.getTextColor();
+    }
+
+    protected setCssErrorsTextColor(value:string):void {
+        this._cssErrors.setTextColor(value);
+    }
+
+    protected getCssErrorsBlockPadding():string {
+        return this._cssErrors.getBlockPadding();
+    }
+
+    protected setCssErrorsBlockPadding(value:string):void {
+        this._cssErrors.setBlockPadding(value);
+    }
+
+    protected getCssErrorsFontSize():string {
+        return this._cssErrors.getFontSize();
+    }
+
+    protected setCssErrorsFontSize(value:string):void {
+        return this._cssErrors.setFontSize(value);
+    }
+
+    protected createCssErrors(errors?:Error[]):string {
+        return this._cssErrors.create(errors)
     }
 
     public getMemoryLocation():string {
@@ -138,7 +170,7 @@ class Client extends BaseClient implements IClient {
         return this._webRootDirectory.getLocation();
     }
 
-    protected setWebRootDirectory(value: string): void {
+    protected setWebRootDirectory(value:string):void {
         this._webRootDirectory.setLocation(value)
     }
 

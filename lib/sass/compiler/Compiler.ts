@@ -118,7 +118,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     if (errors.length) {
                         callback(null, <IResponse>{
                             source: null,
-                            result: this.getCssErrors().create(errors),
+                            result: this.createCssErrors(errors),
                             deps: [],
                             map: {},
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -166,7 +166,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     } else if (errors && errors.length) {
                         callback(null, <IResponse>{
                             source: null,
-                            result: this.getCssErrors().create(errors),
+                            result: this.createCssErrors(errors),
                             deps: [],
                             map: {},
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -185,7 +185,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     } else {
                         callback(null, <IResponse>{
                             source: null,
-                            result: this.getCssErrors().create(errors),
+                            result: this.createCssErrors(errors),
                             deps: [],
                             map: {},
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -214,7 +214,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             ():void => {
                                 callback(null, <IResponse>{
                                     source: null,
-                                    result: this.getCssErrors().create(temp),
+                                    result: this.createCssErrors(temp),
                                     deps: [],
                                     map: {},
                                     date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -342,7 +342,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     if (temp.length) {
                                         callback(null, <IResponse>{
                                             source: null,
-                                            result: this.getCssErrors().create(temp),
+                                            result: this.createCssErrors(temp),
                                             deps: [],
                                             map: {},
                                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -355,7 +355,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         } else {
                             callback(null, <IResponse>{
                                 source: null,
-                                result: this.getCssErrors().create(errors),
+                                result: this.createCssErrors(errors),
                                 deps: [],
                                 map: {},
                                 date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
@@ -376,7 +376,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             ():void => {
                                 callback(null, <IResponse>{
                                     source: null,
-                                    result: this.getCssErrors().create(temp),
+                                    result: this.createCssErrors(temp),
                                     deps: [],
                                     map: {},
                                     date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
