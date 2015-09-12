@@ -95,7 +95,7 @@ class Manager extends Client implements IManager {
         }
     }
 
-    public compile(filename:string, callback?:(errors?:Error[], result?:any) => void):void {
+    public compile(filename:string, callback?:(errors:Error[], result:any) => void):void {
         deferred([
             (next:() => void):void => {
                 this.connect((errors?:Error[]):void => {
@@ -110,7 +110,7 @@ class Manager extends Client implements IManager {
             },
             ():void => {
                 this.pull((client:IClient):void => {
-                    client.compile(filename, (errors?:Error[], result?:any):void => {
+                    client.compile(filename, (errors:Error[], result:any):void => {
                         this.push(client);
                         if (typeof callback === "function") {
                             callback(errors && errors.length ? errors : null, result || null);

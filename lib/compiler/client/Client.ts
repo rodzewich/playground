@@ -157,7 +157,7 @@ class Client extends BaseClient implements IClient {
         this._webRootDirectory.setLocation(value)
     }
 
-    public compile(filename:string, callback?:(errors?:Error[], result?:IResponse) => void):void {
+    public compile(filename:string, callback?:(errors:Error[], result:IResponse) => void):void {
         var request:IRequest;
         if (typeOf(filename) !== "string") {
             throw new Exception("bla bla bla");

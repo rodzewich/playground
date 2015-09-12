@@ -41,7 +41,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         this._includeDirectories.setDirectories(value);
     }
 
-    public compile(callback:(errors?:Error[], result?:IResponse) => void):void {
+    public compile(callback:(errors:Error[], result:IResponse) => void):void {
         var filename:string = this.getFilename(),
             resolve:string,
             mtime:number,

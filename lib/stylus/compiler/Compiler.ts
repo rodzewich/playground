@@ -40,6 +40,10 @@ class Compiler extends BaseCompiler implements ICompiler {
         }
     }
 
+    protected isThrowErrors(): boolean {
+        return false;
+    }
+
     protected getIncludeDirectories():string[] {
         return this._includeDirectories.getDirectories();
     }
@@ -48,7 +52,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         this._includeDirectories.setDirectories(value);
     }
 
-    public compile(callback:(errors?:Error[], result?:IResponse) => void):void {
+    public compile(callback:(errors:Error[], result:IResponse) => void):void {
         var filename:string = this.getFilename(),
             resolve:string,
             mtime:number,
@@ -57,7 +61,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             resultTime:number = parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
             content:string;
 
-        function completion(errors?:Error[], result?:IResponse):void {
+        function completion(errors:Error[], result:IResponse):void {
             if (typeOf(callback) === "function") {
                 callback(errors, result);
             }
@@ -68,19 +72,23 @@ class Compiler extends BaseCompiler implements ICompiler {
             (next:() => void):void => {
                 if (this.isCacheUsed()) {
                     memory.getItem(filename, (errors?:Error[], response?:IResponse):void => {
-                        if (!errors || errors.length) {
-                            completion(null, response || null);
-                        } else if (errors) {
-                            completion(null, {
+                        var errorsArg:Error[] = null,
+                            resultArg:IResponse = null;
+                        if (!errors || !errors.length) {
+                            resultArg = response;
+                        } else if (errors && errors.length &&
+                            this.isThrowErrors()) {
+                            errorsArg = errors;
+                        } else if (errors && errors.length) {
+                            resultArg = {
                                 source: null,
                                 result: this.createCssErrors(errors),
                                 deps: [],
                                 map: {},
                                 date: resultTime
-                            });
-                        } else {
-                            completion(null, null);
+                            };
                         }
+                        completion(errorsArg, resultArg);
                     });
                 } else {
                     next();
@@ -88,7 +96,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
-                var directories:string[] = this.getIncludeDirectories().slice(0),
+                var directories:string[] = this.getIncludeDirectories(),
                     errors:Error[] = [],
                     actions:((next:() => void) => void)[];
                 directories.unshift(this.getSourcesDirectory());
@@ -109,17 +117,20 @@ class Compiler extends BaseCompiler implements ICompiler {
                     };
                 });
                 actions.push(():void => {
-                    if (errors.length) {
-                        completion(null, <IResponse>{
+                    var errorsArg:Error[] = null,
+                        resultArg:IResponse = null;
+                    if (errors.length && this.isThrowErrors()) {
+                        errorsArg = errors;
+                    } else if (errors.length) {
+                        resultArg = {
                             source: null,
                             result: this.createCssErrors(errors),
                             deps: [],
                             map: {},
                             date: resultTime
-                        });
-                    } else {
-                        completion(null, null);
+                        };
                     }
+                    completion(errorsArg, resultArg);
                 });
                 deferred(actions);
             },
@@ -130,7 +141,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length === 0) {
                         completion(null, response);
                     } else if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length !== 0) {
-                        directories = this.getIncludeDirectories().slice(0);
+                        directories = this.getIncludeDirectories();
                         directories.unshift(this.getSourcesDirectory());
                         parallel(response.deps.map((filename:string):((next:() => void) => void) => {
                             return (done:() => void):void => {
@@ -157,6 +168,8 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 next();
                             }
                         });
+                    } else if (errors && errors.length && this.isThrowErrors()) {
+                        completion(errors, null);
                     } else if (errors && errors.length) {
                         completion(null, <IResponse>{
                             source: null,
@@ -176,6 +189,8 @@ class Compiler extends BaseCompiler implements ICompiler {
                     if (!errors || !errors.length) {
                         unlock = result;
                         next();
+                    } else if (this.isThrowErrors()) {
+                        completion(errors, null);
                     } else {
                         completion(null, <IResponse>{
                             source: null,
@@ -206,14 +221,21 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 });
                             },
                             ():void => {
-                                completion(null, <IResponse>{
-                                    source: null,
-                                    result: this.createCssErrors(temp),
-                                    deps: [],
-                                    map: {},
-                                    date: resultTime
-                                });
-                            },
+                                var errorsArg:Error[] = null,
+                                    resultArg:IResponse = null;
+                                if (this.isThrowErrors()) {
+                                    errorsArg = temp;
+                                } else {
+                                    resultArg = {
+                                        source: null,
+                                        result: this.createCssErrors(temp),
+                                        deps: [],
+                                        map: {},
+                                        date: resultTime
+                                    };
+                                }
+                                completion(errorsArg, resultArg);
+                            }
                         ]);
                     }
                 });
@@ -222,7 +244,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             ():void => {
                 var compiler:any,
                     postError:string = "",
-                    includeDirectories = this.getIncludeDirectories().slice(0);
+                    includeDirectories = this.getIncludeDirectories();
                 includeDirectories.unshift(this.getSourcesDirectory());
                 compiler = stylus(content).
                     set("filename", resolve).
@@ -234,7 +256,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         basePath: "/"
                     }).
                     set("paths", this.getIncludeDirectories());
-                compiler.render((error?:Error, result?:string):void => {
+                compiler.render((error:Error, result:string):void => {
                     var temp:Error[] = [],
                         value:IResponse,
                         deps:string[],
@@ -304,7 +326,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     deferred([
                                         (callback:() => void):void => {
                                             var postcss:IPostcss = new Postcss();
-                                            postcss.compile(value.result, value.map, (error?:Error, res?:IResult):void => {
+                                            postcss.compile(value.result, value.map, (error:Error, res:IResult):void => {
                                                 if (error) {
                                                     temp.push(error);
                                                     next();

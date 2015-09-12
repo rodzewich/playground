@@ -138,7 +138,7 @@ abstract class Compiler implements ICompiler {
         this._filename = value;
     }
 
-    abstract compile(callback:(errors?:Error[], result?:any) => void):void;
+    abstract compile(callback:(errors:Error[], result:any) => void):void;
 
 }
 

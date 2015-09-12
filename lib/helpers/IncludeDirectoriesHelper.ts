@@ -5,11 +5,11 @@ class IncludeDirectoriesHelper implements IIncludeDirectoriesHelper {
     private _directories:string[] = [];
 
     public getDirectories():string[] {
-        return this._directories;
+        return this._directories.slice(0);
     }
 
     public setDirectories(value:string[]):void {
-        this._directories = value;
+        this._directories = value.slice(0);
     }
 
 }

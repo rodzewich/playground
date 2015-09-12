@@ -47,8 +47,8 @@ class Client extends BaseClient {
         };
     }
 
-    public compile(filename:string, callback?:(errors?:Error[], result?:IResponse) => void):void {
-        super.compile(filename, (errors?:Error[], result?:any):void => {
+    public compile(filename:string, callback?:(errors:Error[], result:IResponse) => void):void {
+        super.compile(filename, (errors:Error[], result:any):void => {
             if (typeOf(callback) === "function") {
                 callback(errors, <IResponse>result);
             }

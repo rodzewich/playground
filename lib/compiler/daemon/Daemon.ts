@@ -27,7 +27,7 @@ abstract class Daemon extends BaseDaemon implements IDaemon {
         return this._memory;
     }
 
-    abstract compile(options:IRequest, callback:(errors?:Error[], result?:IResponse) => void):void;
+    abstract compile(options:IRequest, callback:(errors:Error[], result:IResponse) => void):void;
 
     protected handler(request:any, callback:(response:any) => void):void {
         super.handler(request, (response:any) => {
@@ -36,7 +36,7 @@ abstract class Daemon extends BaseDaemon implements IDaemon {
             switch (command) {
                 case "compile":
                     response.result = null;
-                    this.compile(<IRequest>args[0], (errors?:Error[], result?:IResponse):void => {
+                    this.compile(<IRequest>args[0], (errors:Error[], result:IResponse):void => {
                         if (errors && errors.length) {
                             response.errors = errors.map((error:Error):any => {
                                 return WrapperException.convertToObject(error);

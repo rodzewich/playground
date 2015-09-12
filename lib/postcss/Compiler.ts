@@ -19,7 +19,7 @@ abstract class Compiler extends Base implements ICompiler {
         return <IPlugin[]>[];
     }
 
-    public compile(source:string, map?:any, callback?:(error?:Error, result?:IResult) => void):void {
+    public compile(source:string, map?:any, callback?:(error:Error, result:IResult) => void):void {
         var plugins:any[] = this.getPlugins().filter((plugin:IPlugin):boolean => {
                 return plugin.isEnabled() && plugin.isUsed();
             }).map((plugin:IPlugin):any => {

@@ -105,7 +105,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                             } else {
                                 files.forEach((filename:string):void => {
                                     actions.push((done:() => void):void => {
-                                        manager.compile(filename, (errs?:Error[]):void => {
+                                        manager.compile(filename, (errs:Error[]):void => {
                                             if (errs && errs.length) {
                                                 errors.concat(errs);
                                             }
@@ -209,7 +209,7 @@ export function route(options:RouterOptions, complete:() => void):void {
             if (useCache) {
                 next();
             } else if (extension === ".css") {
-                manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
+                manager.compile(pathname, (errors:Error[], result:IResponse):void => {
                     var header:any = {},
                         modified:number,
                         date:number;
@@ -250,7 +250,7 @@ export function route(options:RouterOptions, complete:() => void):void {
             if (useCache) {
                 next();
             } else if (extension === ".styl") {
-                manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
+                manager.compile(pathname, (errors:Error[], result:IResponse):void => {
                     if ((!errors || !errors.length) && result) {
                         var header:any = {},
                             modified = Date.parse(request.headers["if-modified-since"]),
@@ -286,7 +286,7 @@ export function route(options:RouterOptions, complete:() => void):void {
             if (useCache) {
                 next();
             } else if (extension === ".css.map") {
-                manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
+                manager.compile(pathname, (errors:Error[], result:IResponse):void => {
                     if ((!errors || !errors.length) && result) {
                         var header:any = {},
                             modified = Date.parse(request.headers["if-modified-since"]),

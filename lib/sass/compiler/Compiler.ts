@@ -1,12 +1,12 @@
 /// <reference path="../../../types/node/node.d.ts" />
-/// <reference path="./autoprefixer.d.ts" />
-/// <reference path="./stylus.d.ts" />
+/// <reference path="./sass.d.ts" />
 
 // todo: уметь использовать globals, functions, imports
 // todo: уметь устанавливать переменные
 // todo: уметь устанавливать дефолтные импорты
 // todo: уметь устанавливать плагины
 // todo: уметь управлять браузерами Autoprefixer'а
+// todo: подключить плагины https://www.npmjs.com/search?q=node-sass
 
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
@@ -21,7 +21,6 @@ import path = require("path");
 import fs = require("fs");
 import BaseException = require("../../Exception");
 import LessException = require("../Exception");
-import autoprefixer = require('autoprefixer-stylus');
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
 import sass = require("node-sass");
@@ -37,6 +36,41 @@ class Compiler extends BaseCompiler implements ICompiler {
         }
     }
 
+    protected isThrowErrors(): boolean {
+        return false;
+    }
+
+    protected getIndentType(): string {
+        // todo: space or tab
+        return "space";
+    }
+
+    protected getIndentWidth(): number {
+        return 2;
+    }
+
+    protected getLineFeed(): string {
+        // todo
+        // Used to determine whether to use cr, crlf, lf or lfcr sequence for line break. UNIX=LF, MACOS=LF, OLD_MACOS=CR, WINDOWS=RCLF
+        return "lf";
+    }
+
+    protected getOutputStyle(): string {
+        // Determines the output format of the final CSS style.
+        // Values: nested, expanded, compact, compressed
+        return "compressed";
+    }
+
+    protected getPrecision(): number {
+        // Used to determine how many digits after the decimal will be allowed. For instance, if you had a decimal number of 1.23456789 and a precision of 5, the result will be 1.23457 in the final CSS
+        return 5;
+    }
+
+    protected isSourceComments(): boolean {
+        // true enables additional debugging information in the output file as CSS comments
+        return false;
+    }
+
     protected getIncludeDirectories():string[] {
         return this._includeDirectories.getDirectories();
     }
@@ -45,24 +79,43 @@ class Compiler extends BaseCompiler implements ICompiler {
         this._includeDirectories.setDirectories(value);
     }
 
-    public compile(callback:(errors?:Error[], result?:IResponse) => void):void {
+    public compile(callback:(errors:Error[], result:IResponse) => void):void {
         var filename:string = this.getFilename(),
             resolve:string,
             mtime:number,
             memory:IMemory = this.getMemory(),
             unlock:(callback?:(errors?:Error[]) => void) => void,
+            resultTime:number = parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
             content:string;
+
+        function completion(errors:Error[], result:IResponse):void {
+            if (typeOf(callback) === "function") {
+                callback(errors, result);
+            }
+        }
 
         deferred([
 
             (next:() => void):void => {
                 if (this.isCacheUsed()) {
                     memory.getItem(filename, (errors?:Error[], response?:IResponse):void => {
-                        if (!errors || errors.length) {
-                            callback(null, response || null);
-                        } else {
-                            callback(errors, null);
+                        var errorsArg:Error[] = null,
+                            resultArg:IResponse = null;
+                        if (!errors || !errors.length) {
+                            resultArg = response;
+                        } else if (errors && errors.length &&
+                            this.isThrowErrors()) {
+                            errorsArg = errors;
+                        } else if (errors && errors.length) {
+                            resultArg = {
+                                source: null,
+                                result: this.createCssErrors(errors),
+                                deps: [],
+                                map: {},
+                                date: resultTime
+                            };
                         }
+                        completion(errorsArg, resultArg);
                     });
                 } else {
                     next();
@@ -70,7 +123,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
-                var directories:string[] = this.getIncludeDirectories().slice(0),
+                var directories:string[] = this.getIncludeDirectories(),
                     errors:Error[] = [],
                     actions:((next:() => void) => void)[] = [];
                 directories.unshift(this.getSourcesDirectory());
@@ -105,17 +158,20 @@ class Compiler extends BaseCompiler implements ICompiler {
                     });
                 });
                 actions.push(():void => {
-                    if (errors.length) {
-                        callback(null, <IResponse>{
+                    var errorsArg:Error[] = null,
+                        resultArg:IResponse = null;
+                    if (errors.length && this.isThrowErrors()) {
+                        errorsArg = errors;
+                    } else if (errors.length) {
+                        resultArg = {
                             source: null,
                             result: this.createCssErrors(errors),
                             deps: [],
                             map: {},
-                            date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
-                        });
-                    } else {
-                        callback(null, null);
+                            date: resultTime
+                        };
                     }
+                    completion(errorsArg, resultArg);
                 });
                 deferred(actions);
             },
@@ -124,9 +180,9 @@ class Compiler extends BaseCompiler implements ICompiler {
                 var directories:string[];
                 memory.getItem(filename, (errors:Error[], response:IResponse):void => {
                     if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length === 0) {
-                        callback(null, response);
+                        completion(null, response);
                     } else if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length !== 0) {
-                        directories = this.getIncludeDirectories().slice(0);
+                        directories = this.getIncludeDirectories();
                         directories.unshift(this.getSourcesDirectory());
                         parallel(response.deps.map((filename:string):((next:() => void) => void) => {
                             return (done:() => void):void => {
@@ -148,18 +204,20 @@ class Compiler extends BaseCompiler implements ICompiler {
                             };
                         }), ():void => {
                             if (response.date >= mtime) {
-                                callback(null, response);
+                                completion(null, response);
                             } else {
                                 next();
                             }
                         });
+                    } else if (errors && errors.length && this.isThrowErrors()) {
+                        completion(errors, null);
                     } else if (errors && errors.length) {
-                        callback(null, <IResponse>{
+                        completion(null, <IResponse>{
                             source: null,
                             result: this.createCssErrors(errors),
                             deps: [],
                             map: {},
-                            date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
+                            date: resultTime
                         });
                     } else {
                         next();
@@ -172,13 +230,15 @@ class Compiler extends BaseCompiler implements ICompiler {
                     if (!errors || !errors.length) {
                         unlock = result;
                         next();
+                    } else if (this.isThrowErrors()) {
+                        completion(errors, null);
                     } else {
-                        callback(null, <IResponse>{
+                        completion(null, <IResponse>{
                             source: null,
                             result: this.createCssErrors(errors),
                             deps: [],
                             map: {},
-                            date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
+                            date: resultTime
                         });
                     }
                 });
@@ -202,13 +262,20 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 });
                             },
                             ():void => {
-                                callback(null, <IResponse>{
-                                    source: null,
-                                    result: this.createCssErrors(temp),
-                                    deps: [],
-                                    map: {},
-                                    date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
-                                });
+                                var errorsArg:Error[] = null,
+                                    resultArg:IResponse = null;
+                                if (this.isThrowErrors()) {
+                                    errorsArg = temp;
+                                } else {
+                                    resultArg = {
+                                        source: null,
+                                        result: this.createCssErrors(temp),
+                                        deps: [],
+                                        map: {},
+                                        date: resultTime
+                                    };
+                                }
+                                completion(errorsArg, resultArg);
                             }
                         ]);
                     }
@@ -217,39 +284,35 @@ class Compiler extends BaseCompiler implements ICompiler {
 
             ():void => {
                 var extension:string = path.extname(resolve),
-                    includeDirectories = this.getIncludeDirectories().slice(0);
+                    includeDirectories = this.getIncludeDirectories();
                 includeDirectories.unshift(this.getSourcesDirectory());
 
-                sass.render({
+                sass.render(<sass.Options>{
                     file: path.join(this.getSourcesDirectory(), filename + extension),
                     data: content,
                     includePaths: this.getIncludeDirectories(),
                     indentedSyntax: true,
                     omitSourceMapUrl: false,
-                    // Used to determine whether to use space or tab character for indentation.
-                    indentType: "space", // todo: space or tab
-                    // Used to determine the number of spaces or tabs to be used for indentation.
-                    indentWidth: 2,
-                    // Used to determine whether to use cr, crlf, lf or lfcr sequence for line break. UNIX=LF, MACOS=LF, OLD_MACOS=CR, WINDOWS=RCLF
-                    linefeed: "lf",
-                    // Determines the output format of the final CSS style.
-                    // Values: nested, expanded, compact, compressed
-                    outputStyle: "compressed",
-                    // Used to determine how many digits after the decimal will be allowed. For instance, if you had a decimal number of 1.23456789 and a precision of 5, the result will be 1.23457 in the final CSS
-                    precision: 5,
-                    // true enables additional debugging information in the output file as CSS comments
-                    sourceComments: false,
+                    indentType: this.getIndentType().toString(),
+                    indentWidth: this.getIndentWidth(),
+                    linefeed: this.getLineFeed().toString(),
+                    outputStyle: this.getOutputStyle().toString(),
+                    precision: this.getPrecision(),
+                    sourceComments: this.isSourceComments(),
                     sourceMap: "remove",
                     sourceMapContents: true
-                }, (error:Error, result):void => {
+                }, (error:sass.SassError, result:sass.Result):void => {
                     var temp:Error[] = [],
                         value:IResponse,
                         deps:string[],
-                        errors:Error[] = [];
-
-                    // todo: удалить из контента ссылку на map
+                        errors:Error[] = [],
+                        css: string;
 
                     if (!error) {
+
+                        css = result.css.toString("utf8").
+                            replace(/\/\*# sourceMappingURL=[^\r\n]+ \*\/\s*$/g, "");
+
                         deps = result.stats.includedFiles.map((item:string):string => {
                             var index:number,
                                 length:number = includeDirectories.length,
@@ -274,7 +337,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         });
 
                         value = <IResponse>{
-                            result: result.css.toString("utf8").replace(/\/\*# sourceMappingURL=[^\r\n]+ \*\/\s*$/g, ""),
+                            result: css,
                             source: content,
                             deps: deps,
                             map: (((map:any):any => {
@@ -282,7 +345,6 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     return {};
                                 }
                                 map.sources = map.sources.map((item:string):string => {
-                                    console.log("item", item);
                                     var index:number,
                                         length:number = includeDirectories.length,
                                         directory:string = path.dirname(filename),
@@ -305,7 +367,12 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     }
                                     return path.join("/", this.getWebRootDirectory(), relative);
                                 });
-                                return map;
+                                return {
+                                    version: map.version,
+                                    sources: map.sources,
+                                    mappings: map.mappings,
+                                    names: map.names
+                                };
                             })(JSON.parse(result.map.toString("utf8")) || {})),
                             date: parseInt(Number(new Date()).toString(10).slice(0, -3), 10)
                         };
