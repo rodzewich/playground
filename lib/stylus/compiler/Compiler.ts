@@ -76,7 +76,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         deferred([
 
             (next:() => void):void => {
-                if (this.getCache().isUsed()) {
+                if (this.isCacheUsed()) {
                     memory.getItem(filename, (errors?:Error[], response?:IResponse):void => {
                         if (!errors || errors.length) {
                             completion(null, response || null);
@@ -301,7 +301,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                         errors.push(new Error("bla bla bla"));
                                         return null;
                                     }
-                                    return path.join("/", this.getWebRootDirectory().getLocation(), relative);
+                                    return path.join("/", this.getWebRootDirectory(), relative);
                                 });
                                 return map;
                             })(compiler.sourcemap || {})),

@@ -40,13 +40,13 @@ class Manager extends BaseManager {
             location: location,
             memoryLocation: this.getMemoryLocation(),
             sourcesDirectory: this.getSourcesDirectory(),
-            useCache: this.getCache().isUsed(),
+            useCache: this.isCacheUsed(),
             includeDirectories: this.getIncludeDirectories(),
             errorBackgroundColor: this.getCssErrors().getBackgroundColor(),
             errorTextColor: this.getCssErrors().getTextColor(),
             errorBlockPadding: this.getCssErrors().getBlockPadding(),
             errorFontSize: this.getCssErrors().getFontSize(),
-            webRootDirectory: this.getWebRootDirectory().getLocation()
+            webRootDirectory: this.getWebRootDirectory()
         });
     }
 

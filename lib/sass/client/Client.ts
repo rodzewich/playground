@@ -50,8 +50,8 @@ class Client extends BaseClient {
             errorTextColor: this.getCssErrors().getTextColor(),
             errorBlockPadding: this.getCssErrors().getBlockPadding(),
             errorFontSize: this.getCssErrors().getFontSize(),
-            webRootDirectory: this.getWebRootDirectory().getLocation(),
-            useCache: this.getCache().isUsed()
+            webRootDirectory: this.getWebRootDirectory(),
+            useCache: this.isCacheUsed()
         };
     }
 

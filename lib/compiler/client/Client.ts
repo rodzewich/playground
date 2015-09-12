@@ -66,7 +66,7 @@ class Client extends BaseClient implements IClient {
             this.setMemoryLocation(options.memoryLocation);
         }
         if (options && typeOf(options.useCache) !== "undefined") {
-            this.getCache().setIsUsed(options.useCache);
+            this.setIsCacheUsed(options.useCache);
         }
         if (options && typeOf(options.errorBackgroundColor) !== "undefined") {
             this.getCssErrors().setBackgroundColor(options.errorBackgroundColor);
@@ -81,7 +81,7 @@ class Client extends BaseClient implements IClient {
             this.getCssErrors().setFontSize(options.errorFontSize);
         }
         if (options && typeOf(options.webRootDirectory) !== "undefined") {
-            this.getWebRootDirectory().setLocation(options.webRootDirectory);
+            this.setWebRootDirectory(options.webRootDirectory);
         }
     }
 
@@ -97,13 +97,21 @@ class Client extends BaseClient implements IClient {
             errorTextColor: this.getCssErrors().getTextColor(),
             errorBlockPadding: this.getCssErrors().getBlockPadding(),
             errorFontSize: this.getCssErrors().getFontSize(),
-            webRootDirectory: this.getWebRootDirectory().getLocation(),
-            useCache: this.getCache().isUsed()
+            webRootDirectory: this.getWebRootDirectory(),
+            useCache: this.isCacheUsed()
         };
     }
 
-    protected getCache():ICacheHelper {
-        return this._cache;
+    protected isCacheUsed(): boolean {
+        return this._cache.isUsed();
+    }
+
+    protected getIsCacheUsed(): boolean {
+        return this._cache.getIsUsed();
+    }
+
+    protected setIsCacheUsed(value: boolean): void {
+        return this._cache.setIsUsed(value);
     }
 
     protected getCssErrors():ICssErrorsHelper {
@@ -126,8 +134,12 @@ class Client extends BaseClient implements IClient {
         this._sourcesDirectory.setLocation(value);
     }
 
-    protected getWebRootDirectory():IResourceLocation {
-        return this._webRootDirectory;
+    protected getWebRootDirectory():string {
+        return this._webRootDirectory.getLocation();
+    }
+
+    protected setWebRootDirectory(value: string): void {
+        this._webRootDirectory.setLocation(value)
     }
 
     public compile(filename:string, callback?:(errors?:Error[], result?:IResponse) => void):void {

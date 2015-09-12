@@ -63,15 +63,23 @@ class Compiler implements ICompiler {
             this.getCssErrors().setFontSize(options.errorFontSize);
         }
         if (options && typeOf(options.useCache) !== "undefined") {
-            this.getCache().setIsUsed(options.useCache);
+            this.setIsCacheUsed(options.useCache);
         }
         if (options && typeOf(options.webRootDirectory) !== "undefined") {
-            this.getWebRootDirectory().setLocation(options.webRootDirectory);
+            this.setWebRootDirectory(options.webRootDirectory);
         }
     }
 
-    protected getCache():ICacheHelper {
-        return this._cache;
+    protected isCacheUsed(): boolean {
+        return this._cache.isUsed();
+    }
+
+    protected getIsCacheUsed(): boolean {
+        return this._cache.getIsUsed();
+    }
+
+    protected setIsCacheUsed(value: boolean): void {
+        return this._cache.setIsUsed(value);
     }
 
     protected getSourcesDirectory():string {
@@ -82,8 +90,12 @@ class Compiler implements ICompiler {
         this._sourcesDirectory.setLocation(value);
     }
 
-    protected getWebRootDirectory():IWebRootDirectoryHelper {
-        return this._webRootDirectory;
+    protected getWebRootDirectory():string {
+        return this._webRootDirectory.getLocation();
+    }
+
+    protected setWebRootDirectory(value: string): void {
+        this._webRootDirectory.setLocation(value);
     }
 
     protected getCssErrors():ICssErrorsHelper {
