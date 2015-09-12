@@ -1,6 +1,3 @@
-/// <reference path="./ICssErrorsHelper.ts" />
-/// <reference path="../Exception.ts" />
-
 import ICssErrorsHelper = require("./ICssErrorsHelper");
 import Exception = require("../Exception");
 
@@ -46,7 +43,7 @@ class CssErrorsHelper implements ICssErrorsHelper {
         this._fontSize = value;
     }
 
-    public create(errors:Error[]): string {
+    public create(errors:Error[]):string {
         var property:string,
             content:string[] = [],
             bodyBefore:any = {

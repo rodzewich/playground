@@ -1,5 +1,3 @@
-/// <reference path="../../client/IClient.ts" />
-
 import IBaseClient = require("../../client/IClient");
 
 interface IClient extends IBaseClient {

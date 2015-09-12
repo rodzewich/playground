@@ -1,12 +1,4 @@
-/// <reference path="./IOptions.ts" />
-/// <reference path="./IClient.ts" />
-/// <reference path="../../compiler/client/Client.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
-/// <reference path="./IResponse.ts" />
-/// <reference path="./IRequest.ts" />
-/// <reference path="../../typeOf.ts" />
-/// <reference path="../../helpers/IIncludeDirectoriesHelper.ts" />
-/// <reference path="../../helpers/IncludeDirectoriesHelper.ts" />
 
 import typeOf = require("../../typeOf");
 import IOptions = require("./IOptions");

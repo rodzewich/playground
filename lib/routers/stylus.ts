@@ -1,14 +1,6 @@
-/// <reference path="./base.ts" />
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../../types/glob/glob.d.ts" />
-/// <reference path="../deferred.ts" />
-/// <reference path="../deferred.ts" />
-/// <reference path="../typeOf.ts" />
-/// <reference path="../stylus/manager/IManager.ts" />
-/// <reference path="../stylus/client/IResponse.ts" />
 /// <reference path="../../types/log4js/log4js.d.ts" />
-/// <reference path="../stylus/manager/Manager.ts" />
-/// <reference path="../mkdir.ts" />
 
 import url = require("url");
 import http = require("http");

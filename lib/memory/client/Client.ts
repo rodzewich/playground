@@ -1,11 +1,3 @@
-/// <reference path="./IClient.ts" />
-/// <reference path="./IOptions.ts" />
-/// <reference path="../../client/Client.ts" />
-/// <reference path="../../typeOf.ts" />
-/// <reference path="../Exception.ts" />
-/// <reference path="../../helpers/INamespaceHelper.ts" />
-/// <reference path="../../helpers/NamespaceHelper.ts" />
-
 import IClient        = require("./IClient");
 import IOptions       = require("./IOptions");
 import BaseClient     = require("../../client/Client");

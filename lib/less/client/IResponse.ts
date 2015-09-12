@@ -1,5 +1,3 @@
-/// <reference path="../../compiler/client/IResponse.ts" />
-
 import IBaseResponse = require("../../compiler/client/IResponse");
 
 interface IResponse extends IBaseResponse {

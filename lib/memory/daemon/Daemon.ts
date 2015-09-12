@@ -1,7 +1,3 @@
-/// <reference path="../../daemon/Daemon.ts" />
-/// <reference path="./IDaemon.ts" />
-/// <reference path="./IOptions.ts" />
-
 import BaseDaemon = require("../../daemon/Daemon");
 import IDaemon = require("./IDaemon");
 import IOptions = require("./IOptions");

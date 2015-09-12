@@ -1,9 +1,3 @@
-/// <reference path="./IManager.ts" />
-/// <reference path="./IOptions.ts" />
-/// <reference path="../../client/IClient.ts" />
-/// <reference path="../client/Client.ts" />
-/// <reference path="../../parallel.ts" />
-/// <reference path="../../deferred.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
 
 import IManager = require("./IManager");

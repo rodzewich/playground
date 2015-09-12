@@ -18,7 +18,7 @@ class Plugin extends PluginBase implements IPlugin {
 
     private _remove:boolean = true;
 
-    constructor(options?: IOptions) {
+    constructor(options?:IOptions) {
         super(options);
         if (options && typeOf(options.browsers) !== "undefined") {
             this.setBrowsers(options.browsers);

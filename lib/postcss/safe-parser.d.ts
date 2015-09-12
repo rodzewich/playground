@@ -1,6 +1,6 @@
 declare module "postcss-safe-parser" {
 
-    var parser: any;
+    var parser:any;
 
     export = parser;
 }

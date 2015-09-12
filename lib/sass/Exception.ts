@@ -1,5 +1,3 @@
-/// <reference path="../compiler/Exception.ts" />
-
 import BaseException = require("../compiler/Exception");
 
 class Exception extends BaseException {
@@ -26,9 +24,9 @@ class Exception extends BaseException {
         }
         if (error && error.message) {
             this.message = String(<string>error.message) +
-                " in " + String(this.getFilename()) +
-                " on line " + String(this.getLine()) +
-                ", column " + String(this.getColumn()) + ".";
+            " in " + String(this.getFilename()) +
+            " on line " + String(this.getLine()) +
+            ", column " + String(this.getColumn()) + ".";
         } else {
             this.message = "";
         }

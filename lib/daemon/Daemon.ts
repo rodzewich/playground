@@ -1,31 +1,31 @@
-/// <reference path="./IDaemon.ts" />
 /// <reference path="../../types/node/node.d.ts" />
-/// <reference path="../Exception.ts" />
 
 import IDaemon = require("./IDaemon");
 import IOptions = require("./IOptions");
 import path = require("path");
 import net = require("net");
 import Exception = require("../Exception");
+import IMeLocationHelper = require("../helpers/IMeLocationHelper");
+import MeLocationHelper = require("../helpers/MeLocationHelper");
 
 class Daemon implements IDaemon {
 
-    protected _location:string;
+    protected _location:IMeLocationHelper = new MeLocationHelper();
 
     protected _server:net.Server;
 
-    protected _started: boolean = false;
+    protected _started:boolean = false;
 
     constructor(options:IOptions) {
         this.setLocation(options.location);
     }
 
-    protected setLocation(value: string): void {
-        this._location = value;
+    protected setLocation(value:string):void {
+        this._location.setLocation(value);
     }
 
-    protected getLocation(): string {
-        return this._location;
+    protected getLocation():string {
+        return this._location.getLocation();
     }
 
     protected handler(request:any, callback:(response:any) => void):void {
@@ -62,7 +62,7 @@ class Daemon implements IDaemon {
             },
             server:net.Server = net.createServer((socket:net.Socket):void => {
                 var data = new Buffer(0);
-                socket.addListener("error", (error: Error):void => {
+                socket.addListener("error", (error:Error):void => {
                     console.log("error", error);
                 });
                 socket.addListener("data", (buffer:Buffer):void => {
@@ -96,7 +96,7 @@ class Daemon implements IDaemon {
         if (!this._started) {
             throw new Exception("bla bla bla");
         }
-        this._server.close((): void => {
+        this._server.close(():void => {
             this._server = undefined;
             this._started = false;
         });

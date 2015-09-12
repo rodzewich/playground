@@ -1,11 +1,4 @@
-/// <reference path="./IClient.ts" />
-/// <reference path="./IOptions.ts" />
 /// <reference path="../../types/node/node.d.ts" />
-/// <reference path="../WrapperException.ts" />
-/// <reference path="../Exception.ts" />
-/// <reference path="../typeOf.ts" />
-/// <reference path="../helpers/MeLocationHelper.ts" />
-/// <reference path="../helpers/IMeLocationHelper.ts" />
 
 import IClient = require("./IClient");
 import IOptions = require("./IOptions");
@@ -29,7 +22,7 @@ class Client implements IClient {
     private _callbacks:any = {};
 
     constructor(options:IOptions) {
-        if (options&& typeOf(options.location) !== "undefined") {
+        if (options && typeOf(options.location) !== "undefined") {
             this.getMeLocation().setLocation(options.location);
         }
     }
@@ -66,9 +59,9 @@ class Client implements IClient {
             throw new Exception("bla bla bla");
         }
         this._socket.write(JSON.stringify({
-                id: this.registerHandler(callback),
-                args: args
-            }) + "\n");
+            id: this.registerHandler(callback),
+            args: args
+        }) + "\n");
     }
 
     public connect(callback:(errors?:Error[]) => void):void {

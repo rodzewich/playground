@@ -16,8 +16,7 @@ abstract class Compiler extends Base implements ICompiler {
     }
 
     protected getPlugins():IPlugin[] {
-        return <IPlugin[]>[
-        ];
+        return <IPlugin[]>[];
     }
 
     public compile(source:string, map?:any, callback?:(error?:Error, result?:IResult) => void):void {

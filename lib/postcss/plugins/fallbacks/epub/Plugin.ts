@@ -14,7 +14,7 @@ class Plugin extends PluginBase implements IPlugin {
 
     private _strict:boolean = true;
 
-    constructor(options?: IOptions) {
+    constructor(options?:IOptions) {
         super(options);
         if (options && typeOf(options.fonts) !== "undefined") {
             this.setIsFonts(options.fonts);

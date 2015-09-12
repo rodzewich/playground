@@ -10,16 +10,16 @@ var logger:log4js.Logger = log4js.getLogger("client");
 function init(location:string, callback:(error?:Error) => void):void {
     var daemon:string = path.join(__dirname, "daemon.js"),
         command:cp.ChildProcess = cp.spawn(process.execPath, [daemon, "--location", location]),
-        response: Buffer = new Buffer(0),
+        response:Buffer = new Buffer(0),
         echo:(stream:NodeJS.WritableStream, data:Buffer) => void = (stream:NodeJS.WritableStream, data:Buffer):void => {
             stream.write(data);
         },
         handler:(data:Buffer) => void = (data:Buffer):void => {
             var result:any,
                 error:Error,
-                string: string,
-                index: number,
-                json: string;
+                string:string,
+                index:number,
+                json:string;
             response = Buffer.concat([response, data]);
             string = data.toString("utf8");
             index = string.indexOf("\n");

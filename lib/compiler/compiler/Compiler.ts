@@ -1,15 +1,4 @@
-/// <reference path="./IOptions.ts" />
-/// <reference path="./ICompiler.ts" />
-/// <reference path="../../typeOf.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
-/// <reference path="../../memory/client/IClient.ts" />
-/// <reference path="../../Exception.ts" />
-/// <reference path="../../helpers/CssErrorsHelper.ts" />
-/// <reference path="../../helpers/ICssErrorsHelper.ts" />
-/// <reference path="../../helpers/SourcesDirectoryHelper.ts" />
-/// <reference path="../../helpers/ISourcesDirectoryHelper.ts" />
-/// <reference path="../../helpers/ICacheHelper.ts" />
-/// <reference path="../../helpers/CacheHelper.ts" />
 
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
@@ -25,8 +14,7 @@ import ICacheHelper = require("../../helpers/ICacheHelper");
 import SourcesDirectoryHelper = require("../../helpers/SourcesDirectoryHelper");
 import ISourcesDirectoryHelper = require("../../helpers/ISourcesDirectoryHelper");
 
-abstract
-class Compiler implements ICompiler {
+abstract class Compiler implements ICompiler {
 
     private _memory:IMemory;
 
@@ -70,15 +58,15 @@ class Compiler implements ICompiler {
         }
     }
 
-    protected isCacheUsed(): boolean {
+    protected isCacheUsed():boolean {
         return this._cache.isUsed();
     }
 
-    protected getIsCacheUsed(): boolean {
+    protected getIsCacheUsed():boolean {
         return this._cache.getIsUsed();
     }
 
-    protected setIsCacheUsed(value: boolean): void {
+    protected setIsCacheUsed(value:boolean):void {
         return this._cache.setIsUsed(value);
     }
 
@@ -94,7 +82,7 @@ class Compiler implements ICompiler {
         return this._webRootDirectory.getLocation();
     }
 
-    protected setWebRootDirectory(value: string): void {
+    protected setWebRootDirectory(value:string):void {
         this._webRootDirectory.setLocation(value);
     }
 
@@ -150,9 +138,7 @@ class Compiler implements ICompiler {
         this._filename = value;
     }
 
-    abstract
-
-    compile(callback:(errors?:Error[], result?:any) => void):void;
+    abstract compile(callback:(errors?:Error[], result?:any) => void):void;
 
 }
 

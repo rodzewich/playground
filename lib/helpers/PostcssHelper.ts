@@ -1,5 +1,3 @@
-/// <reference path="./IPostcssHelper.ts" />
-
 import IPostcssHelper = require("./IPostcssHelper");
 
 abstract class PostcssHelper implements IPostcssHelper {
@@ -18,7 +16,9 @@ abstract class PostcssHelper implements IPostcssHelper {
         this._use = value;
     }
 
-    abstract getInstance(): any;
+    abstract
+
+    getInstance():any;
 
 }
 

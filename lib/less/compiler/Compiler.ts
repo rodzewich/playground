@@ -1,15 +1,5 @@
-/// <reference path="../../compiler/compiler/Compiler.ts" />
-/// <reference path="./IOptions.ts" />
-/// <reference path="./ICompiler.ts" />
-/// <reference path="../../typeOf.ts" />
-/// <reference path="../../Exception.ts" />
-/// <reference path="../../deferred.ts" />
-/// <reference path="../../parallel.ts" />
-/// <reference path="../../memory/client/IClient.ts" />
-/// <reference path="../client/IResponse" />
 /// <reference path="../../../types/node/node.d.ts" />
 /// <reference path="./less.d.ts" />
-/// <reference path="../LessException.ts" />
 
 // todo: уметь устанавливать переменные
 // todo: уметь устанавливать дефолтные импорты

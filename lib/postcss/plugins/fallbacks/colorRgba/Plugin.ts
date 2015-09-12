@@ -10,7 +10,7 @@ class Plugin extends PluginBase implements IPlugin {
 
     private _properties:string[] = ["background-color", "background", "color", "border", "border-color", "outline", "outline-color"];
 
-    constructor(options?: IOptions) {
+    constructor(options?:IOptions) {
         super(options);
         if (options && typeOf(options.properties) !== "undefined") {
             this.setProperties(options.properties);
@@ -25,7 +25,7 @@ class Plugin extends PluginBase implements IPlugin {
         this._properties = value;
     }
 
-    public getInstance(): any {
+    public getInstance():any {
         return postcssColorRgba({
             properties: this.getProperties()
         });

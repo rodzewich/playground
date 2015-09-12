@@ -8,7 +8,7 @@ import IOptions = require("./IOptions");
 
 class Plugin extends PluginBase implements IPlugin {
 
-    public isUsed(): boolean {
+    public isUsed():boolean {
         // todo: fix this
         return false;
     }

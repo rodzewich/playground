@@ -1,16 +1,6 @@
-/// <reference path="../../compiler/compiler/Compiler.ts" />
-/// <reference path="./IOptions.ts" />
-/// <reference path="./ICompiler.ts" />
-/// <reference path="../../typeOf.ts" />
-/// <reference path="../../Exception.ts" />
-/// <reference path="../../deferred.ts" />
-/// <reference path="../../parallel.ts" />
-/// <reference path="../../memory/client/IClient.ts" />
-/// <reference path="../client/IResponse" />
 /// <reference path="../../../types/node/node.d.ts" />
 /// <reference path="./autoprefixer.d.ts" />
 /// <reference path="./stylus.d.ts" />
-/// <reference path="../Exception.ts" />
 
 // todo: уметь использовать globals, functions, imports
 // todo: уметь устанавливать переменные

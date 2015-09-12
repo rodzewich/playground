@@ -1,10 +1,6 @@
-/// <reference path="./daemon/IDaemon.ts" />
-/// <reference path="./daemon/Daemon.ts" />
-/// <reference path="../WrapperException.ts" />
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../../types/optimist/optimist.d.ts" />
 /// <reference path="../../types/log4js/log4js.d.ts" />
-/// <reference path="../../logger" />
 
 import optimist    = require("optimist");
 import IDaemon     = require("./daemon/IDaemon");

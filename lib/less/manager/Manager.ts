@@ -1,12 +1,3 @@
-/// <reference path="./IManager.ts" />
-/// <reference path="./IOptions.ts" />
-/// <reference path="../client/IClient.ts" />
-/// <reference path="../client/Client.ts" />
-/// <reference path="../../compiler/manager/Manager.ts" />
-/// <reference path="../../typeOf.ts" />
-/// <reference path="../../helpers/IIncludeDirectoriesHelper.ts" />
-/// <reference path="../../helpers/IncludeDirectoriesHelper.ts" />
-
 import IManager = require("./IManager");
 import IOptions = require("./IOptions");
 import BaseManager = require("../../compiler/manager/Manager");

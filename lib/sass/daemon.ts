@@ -1,12 +1,6 @@
-/// <reference path="./daemon/IDaemon.ts" />
-/// <reference path="./daemon/Daemon.ts" />
-/// <reference path="../WrapperException.ts" />
-/// <reference path="../memory/client/IClient" />
-/// <reference path="../memory/client/Client" />
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../../types/optimist/optimist.d.ts" />
 /// <reference path="../../types/log4js/log4js.d.ts" />
-/// <reference path="../../logger" />
 
 import optimist    = require("optimist");
 import IDaemon     = require("./daemon/IDaemon");
@@ -26,7 +20,7 @@ var logger:log4js.Logger = log4js.getLogger("worker"),
         demand("l").alias("l", "location").describe("l", "Less worker unix socket path").
         demand("m").alias("m", "memory").describe("m", "Memory worker unix socket path").
         argv,
-    handler: (errors: Error[]) => void = (errors: Error[]): void => {
+    handler:(errors:Error[]) => void = (errors:Error[]):void => {
         if (errors && errors.length) {
             process.stderr.write(JSON.stringify({
                 started: false,

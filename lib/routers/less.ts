@@ -1,14 +1,6 @@
-/// <reference path="./base.ts" />
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../../types/glob/glob.d.ts" />
-/// <reference path="../deferred.ts" />
-/// <reference path="../deferred.ts" />
-/// <reference path="../typeOf.ts" />
-/// <reference path="../less/manager/IManager.ts" />
-/// <reference path="../less/client/IResponse.ts" />
 /// <reference path="../../types/log4js/log4js.d.ts" />
-/// <reference path="../less/manager/Manager.ts" />
-/// <reference path="../mkdir.ts" />
 
 import url = require("url");
 import http = require("http");
@@ -49,7 +41,7 @@ export interface InitOptions extends base.InitOptions {
 export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
     var temporaryDirectory:string = options.temporaryDirectory,
         memoryLocation:string = options.memoryLocation,
-        includeDirectories: string[] = options.includeDirectories,
+        includeDirectories:string[] = options.includeDirectories,
         sourcesDirectory:string = options.sourcesDirectory,
         webRootDirectory:string = options.webRootDirectory,
         useCache:boolean = options.useCache,
@@ -101,7 +93,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                             errors:Error[] = [];
                         glob("**/*.less", {
                             cwd: sourcesDirectory
-                        }, (error?: Error, files?: string[]): void => {
+                        }, (error?:Error, files?:string[]):void => {
                             if (error) {
                                 if (typeOf(done) === "function") {
                                     done([error]);
@@ -130,7 +122,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                         });
                     },
                     (next:() => void):void => {
-                        manager.disconnect((errors?: Error[]): void => {
+                        manager.disconnect((errors?:Error[]):void => {
                             if (!errors || !errors.length) {
                                 next();
                             } else if (typeOf(done) === "function") {
@@ -170,7 +162,7 @@ export function route(options:RouterOptions, next:() => void):void {
     var request:http.ServerRequest = options.request,
         response:http.ServerResponse = options.response,
         webRootDirectory:string = options.webRootDirectory,
-        useCache: boolean = options.useCache,
+        useCache:boolean = options.useCache,
         object:url.Url = url.parse(request.url, true),
         filename:string = path.relative(webRootDirectory, String(object.pathname || "/"));
 
@@ -181,7 +173,7 @@ export function route(options:RouterOptions, next:() => void):void {
                 pathname:string = filename.substr(0, filename.length - 4);
             if (extension === ".css") {
                 manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
-                    var header: any = {},
+                    var header:any = {},
                         modified:number,
                         date:number;
                     if ((!errors || !errors.length) && result) {
@@ -215,15 +207,15 @@ export function route(options:RouterOptions, next:() => void):void {
 
         (next:() => void):void => {
             var extension = filename.substr(-5).toLowerCase(),
-                pathname  = filename.substr(0, filename.length - 5);
+                pathname = filename.substr(0, filename.length - 5);
             if (useCache) {
                 next();
             } else if (extension === ".less") {
                 manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
                     if ((!errors || !errors.length) && result) {
-                        var header: any = {},
+                        var header:any = {},
                             modified = Date.parse(request.headers["if-modified-since"]),
-                            date     = 1000 * result.date;
+                            date = 1000 * result.date;
                         if (modified && modified === date) {
                             response.writeHead(304);
                             response.end();
@@ -249,15 +241,15 @@ export function route(options:RouterOptions, next:() => void):void {
 
         (next:() => void):void => {
             var extension = filename.substr(-8).toLowerCase(),
-                pathname  = filename.substr(0, filename.length - 8);
+                pathname = filename.substr(0, filename.length - 8);
             if (useCache) {
                 next();
             } else if (extension === ".css.map") {
                 manager.compile(pathname, (errors?:Error[], result?:IResponse):void => {
                     if ((!errors || !errors.length) && result) {
-                        var header: any = {},
+                        var header:any = {},
                             modified = Date.parse(request.headers["if-modified-since"]),
-                            date     = 1000 * result.date;
+                            date = 1000 * result.date;
                         if (modified && modified === date) {
                             response.writeHead(304);
                             response.end();

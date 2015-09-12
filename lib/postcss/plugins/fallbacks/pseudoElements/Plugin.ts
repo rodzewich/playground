@@ -10,7 +10,7 @@ class Plugin extends PluginBase implements IPlugin {
 
     private _selectors:string[] = ["before", "after", "first-letter", "first-line"];
 
-    public isUsed(): boolean {
+    public isUsed():boolean {
         // todo fix this
         return false;
     }

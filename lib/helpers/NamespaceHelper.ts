@@ -1,7 +1,3 @@
-/// <reference path="./INamespaceHelper.ts" />
-/// <reference path="../typeOf.ts" />
-/// <reference path="../Exception.ts" />
-
 import INamespaceHelper = require("./INamespaceHelper");
 import typeOf = require("../typeOf");
 import Exception = require("../Exception");
