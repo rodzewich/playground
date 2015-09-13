@@ -19,6 +19,8 @@ import PostcssWillChangePlugin = require("./plugins/fallbacks/willChange/Plugin"
 import IPostcssWillChangePlugin = require("./plugins/fallbacks/willChange/IPlugin");
 import PostcssPixremPlugin = require("./plugins/fallbacks/pixrem/Plugin");
 import IPostcssPixremPlugin = require("./plugins/fallbacks/pixrem/IPlugin");
+import PostcssBemLinterPlugin = require("./plugins/analysis/bemLinter/Plugin");
+import IPostcssBemLinterPlugin = require("./plugins/analysis/bemLinter/IPlugin");
 
 class Base {
 
@@ -39,6 +41,8 @@ class Base {
     private _willChangePlugin:IPostcssWillChangePlugin = new PostcssWillChangePlugin();
 
     private _pixremPlugin:IPostcssPixremPlugin = new PostcssPixremPlugin();
+
+    private _bemLinterPlugin:IPostcssBemLinterPlugin = new PostcssBemLinterPlugin();
 
     constructor(options?:IOptions) {
         var plugins:IPlugin[] = this.getPlugins(),
@@ -191,6 +195,10 @@ class Base {
 
     protected getPixremPlugin():IPostcssPixremPlugin {
         return this._pixremPlugin;
+    }
+
+    protected getBemLinterPlugin(): IPostcssBemLinterPlugin {
+        return this._bemLinterPlugin;
     }
 
     public getOptions():IOptions {

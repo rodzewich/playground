@@ -6,8 +6,11 @@ import IResult = require("./IResult");
 import IOptions = require("./IOptions");
 import IPlugin = require("./plugins/IPlugin");
 import Base = require("./Base");
+import IWarning = require("./IWarning");
+import Warning = require("./Warning");
 import postcss = require("postcss");
 import postcssSafeParser = require("postcss-safe-parser");
+import sourceMap = require('source-map');
 
 abstract class Compiler extends Base implements ICompiler {
 
@@ -38,7 +41,22 @@ abstract class Compiler extends Base implements ICompiler {
             parser: postcssSafeParser,
             map: prev
         }).then((result:any):void => {
-            callback(null, <IResult>{result: result.css, map: result.map});
+            var sm = new sourceMap.SourceMapConsumer(map);
+            result.warnings().map((item: any):IWarning => {
+                var line: number;
+                var column: number;
+                var filename: string;
+                sm.eachMapping((map): void => {
+                    if (item.line >= map.generatedLine && item.column >= map.generatedColumn) {
+                        line = map.originalLine;
+                        column = map.originalColumn + 1;
+                        filename = map.source;
+                    }
+                });
+                console.log("filename: ", filename, ["(", line, ":", column , ")"].join(""));
+                return null;
+            });
+            callback(null, <IResult>{result: result.css, map: result.map, messages: null});
         }).catch((error?:Error):void => {
             callback(error, null);
         });

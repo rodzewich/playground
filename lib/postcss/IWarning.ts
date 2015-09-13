@@ -1,0 +1,4 @@
+interface IWarning {
+}
+
+export = IWarning;

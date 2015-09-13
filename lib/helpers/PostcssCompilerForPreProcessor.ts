@@ -11,6 +11,7 @@ class PostcssCompilerForPreProcessor extends Compiler implements IPostcssCompile
 
     public getPlugins():IPlugin[] {
         return <IPlugin[]>[
+            //this.getBemLinterPlugin(),
             this.getPseudoElementsPlugin(),
             this.getEpubPlugin(),
             this.getWillChangePlugin(),

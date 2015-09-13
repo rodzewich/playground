@@ -44,6 +44,10 @@ class Compiler extends BaseCompiler implements ICompiler {
         return false;
     }
 
+    protected isShowWarnings(): boolean {
+        return true;
+    }
+
     protected getIncludeDirectories():string[] {
         return this._includeDirectories.getDirectories();
     }
@@ -261,7 +265,9 @@ class Compiler extends BaseCompiler implements ICompiler {
                         value:IResponse,
                         deps:string[],
                         errors:Error[] = [];
+
                     if (!error) {
+
                         deps = compiler.deps().map((item:string):string => {
                             var index:number,
                                 length:number = includeDirectories.length,
@@ -284,8 +290,9 @@ class Compiler extends BaseCompiler implements ICompiler {
                             }
                             return relative;
                         });
+
                         value = <IResponse>{
-                            result: result + String(postError || ""),
+                            result: result,
                             source: content,
                             deps: deps,
                             map: (((map:any):any => {
@@ -332,6 +339,9 @@ class Compiler extends BaseCompiler implements ICompiler {
                                                     next();
                                                 } else {
                                                     value.result = res.result;
+                                                    if (this.isShowWarnings()) {
+                                                        //value.result +=
+                                                    }
                                                     value.map = res.map;
                                                     callback();
                                                 }
