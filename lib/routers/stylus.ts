@@ -15,7 +15,6 @@ import Manager = require("../stylus/manager/Manager");
 import IResponse = require("../stylus/client/IResponse");
 import log4js = require("../../logger");
 import glob = require("glob");
-import colors = require("colors");
 import accessLog = require("../accessLog");
 
 var manager:IManager,

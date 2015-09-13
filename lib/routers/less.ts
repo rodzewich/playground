@@ -15,8 +15,11 @@ import Manager = require("../less/manager/Manager");
 import IResponse = require("../less/client/IResponse");
 import log4js = require("../../logger");
 import glob = require("glob");
+import accessLog = require("../accessLog");
 
 var manager:IManager,
+    memory:base.Memory = {},
+    startDate:string = (new Date()).toUTCString(),
     logger:log4js.Logger = log4js.getLogger("router");
 
 export interface RouterOptions extends base.RouterOptions {
@@ -158,20 +161,53 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
     ]);
 }
 
-export function route(options:RouterOptions, next:() => void):void {
+export function route(options:RouterOptions, complete:() => void):void {
     var request:http.ServerRequest = options.request,
         response:http.ServerResponse = options.response,
         webRootDirectory:string = options.webRootDirectory,
         useCache:boolean = options.useCache,
         object:url.Url = url.parse(request.url, true),
-        filename:string = path.relative(webRootDirectory, String(object.pathname || "/"));
+        filename:string = path.relative(webRootDirectory, String(object.pathname || "/")),
+        start:number = Number(new Date());
+
+    function consoleLog(code:number, type?:string):void {
+        var time:number = Number(new Date()) - start;
+        if (!!options.accessLog) {
+            accessLog(request.method, object.pathname, code, time, type, request.headers);
+        }
+    }
 
     deferred([
 
         (next:() => void):void => {
             var extension:string = filename.substr(-4).toLowerCase(),
+                pathname:string = filename.substr(0, filename.length - 4),
+                modified:string = request.headers["if-modified-since"],
+                header:any = {};
+            if (useCache && extension === ".css" &&
+                typeOf(memory[pathname]) !== "undefined" &&
+                modified && modified === startDate) {
+                response.writeHead(304);
+                response.end();
+            } else if (useCache && extension === ".css" &&
+                typeOf(memory[pathname]) !== "undefined") {
+                header["Content-Type"] = "text/css; charset=utf-8";
+                header["Last-Modified"] = startDate;
+                response.writeHead(200, header);
+                response.end(memory[pathname]);
+            } else if (useCache) {
+                complete();
+            } else {
+                next()
+            }
+        },
+
+        (next:() => void):void => {
+            var extension:string = filename.substr(-4).toLowerCase(),
                 pathname:string = filename.substr(0, filename.length - 4);
-            if (extension === ".css") {
+            if (useCache) {
+                next();
+            } else if (extension === ".css") {
                 manager.compile(pathname, (errors:Error[], result:IResponse):void => {
                     var header:any = {},
                         modified:number,
@@ -182,6 +218,7 @@ export function route(options:RouterOptions, next:() => void):void {
                         if (modified && modified === date) {
                             response.writeHead(304);
                             response.end();
+                            consoleLog(304);
                         } else {
                             header["Content-Type"] = "text/css; charset=utf-8";
                             header["Last-Modified"] = (new Date(result.date * 1000)).toUTCString();
@@ -190,6 +227,7 @@ export function route(options:RouterOptions, next:() => void):void {
                             }
                             response.writeHead(200, header);
                             response.end(result.result);
+                            consoleLog(200, "text/css");
                         }
                     } else if (errors && errors.length) {
                         errors.forEach((error:Error):void => {
@@ -219,11 +257,13 @@ export function route(options:RouterOptions, next:() => void):void {
                         if (modified && modified === date) {
                             response.writeHead(304);
                             response.end();
+                            consoleLog(304);
                         } else {
                             header["Content-Type"] = "text/plain; charset=utf-8";
                             header["Last-Modified"] = (new Date(result.date * 1000)).toUTCString();
                             response.writeHead(200, header);
                             response.end(result.source);
+                            consoleLog(200, "text/plain");
                         }
                     } else if (errors && errors.length) {
                         errors.forEach((error:Error):void => {
@@ -253,11 +293,13 @@ export function route(options:RouterOptions, next:() => void):void {
                         if (modified && modified === date) {
                             response.writeHead(304);
                             response.end();
+                            consoleLog(304);
                         } else {
                             header["Content-Type"] = "application/json; charset=utf-8";
                             header["Last-Modified"] = (new Date(result.date * 1000)).toUTCString();
                             response.writeHead(200, header);
                             response.end(JSON.stringify(result.map));
+                            consoleLog(200, "application/json");
                         }
                     } else if (errors && errors.length) {
                         errors.forEach((error:Error):void => {
@@ -274,7 +316,7 @@ export function route(options:RouterOptions, next:() => void):void {
         },
 
         ():void => {
-            next();
+            complete();
         }
 
     ]);
