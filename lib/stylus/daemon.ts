@@ -47,7 +47,7 @@ deferred([
             location: argv.memory,
             namespace: "less"
         });
-        memory.connect((errors?:Error[]):void => {
+        memory.connect((errors:Error[]):void => {
             if (!errors || !errors.length) {
                 next();
             } else {

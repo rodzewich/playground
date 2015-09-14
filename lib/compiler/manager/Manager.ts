@@ -23,7 +23,7 @@ class Manager extends Client implements IManager {
 
     private _connected:boolean = false;
 
-    private _connectionQueue:((errors?:Error[]) => void)[] = [];
+    private _connectionQueue:((errors:Error[]) => void)[] = [];
 
     constructor(options:IOptions) {
         super(options);
@@ -98,7 +98,7 @@ class Manager extends Client implements IManager {
     public compile(filename:string, callback?:(errors:Error[], result:any) => void):void {
         deferred([
             (next:() => void):void => {
-                this.connect((errors?:Error[]):void => {
+                this.connect((errors:Error[]):void => {
                     if (errors && errors.length) {
                         if (typeof callback === "function") {
                             callback(errors, null);
@@ -121,7 +121,7 @@ class Manager extends Client implements IManager {
         ]);
     }
 
-    public connect(callback:(errors?:Error[]) => void):void {
+    public connect(callback:(errors:Error[]) => void):void {
         var errors:Error[] = [],
             actions:((done:() => void) => void)[] = [],
             numberOfProcesses:number = this.getNumberOfProcesses(),
@@ -129,7 +129,7 @@ class Manager extends Client implements IManager {
             createAction:(processNumber:number) => ((done:() => void) => void) = (processNumber:number):((done:() => void) => void) => {
                 return (done:() => void):void => {
                     var client:IClient = this.createClient(this.formatLocationById(processNumber));
-                    client.connect((errs?:Error[]):void => {
+                    client.connect((errs:Error[]):void => {
                         if (!errors || !errors.length) {
                             this._pool.push(client);
                             this._clients.push(client);

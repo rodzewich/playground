@@ -24,36 +24,36 @@ import IPostcssBemLinterPlugin = require("./plugins/analysis/bemLinter/IPlugin")
 
 class Base {
 
-    private _autoprefixerPlugin:IPostcssAutoprefixerPlugin = new PostcssAutoprefixerPlugin();
+    private _autoprefixerPlugin: IPostcssAutoprefixerPlugin = new PostcssAutoprefixerPlugin();
 
-    private _pseudoElementsPlugin:IPostcssPseudoElementsPlugin = new PostcssPseudoElementsPlugin();
+    private _pseudoElementsPlugin: IPostcssPseudoElementsPlugin = new PostcssPseudoElementsPlugin();
 
-    private _epubElementPlugin:IPostcssEpubPlugin = new PostcssEpubPlugin();
+    private _epubElementPlugin: IPostcssEpubPlugin = new PostcssEpubPlugin();
 
-    private _opacityPlugin:IPostcssOpacityPlugin = new PostcssOpacityPlugin();
+    private _opacityPlugin: IPostcssOpacityPlugin = new PostcssOpacityPlugin();
 
-    private _vminPlugin:IPostcssVminPlugin = new PostcssVminPlugin();
+    private _vminPlugin: IPostcssVminPlugin = new PostcssVminPlugin();
 
-    private _colorRgbaPlugin:IPostcssColorRgbaPlugin = new PostcssColorRgbaPlugin();
+    private _colorRgbaPlugin: IPostcssColorRgbaPlugin = new PostcssColorRgbaPlugin();
 
-    private _cssgracePlugin:IPostcssCssgracePlugin = new PostcssCssgracePlugin();
+    private _cssgracePlugin: IPostcssCssgracePlugin = new PostcssCssgracePlugin();
 
-    private _willChangePlugin:IPostcssWillChangePlugin = new PostcssWillChangePlugin();
+    private _willChangePlugin: IPostcssWillChangePlugin = new PostcssWillChangePlugin();
 
-    private _pixremPlugin:IPostcssPixremPlugin = new PostcssPixremPlugin();
+    private _pixremPlugin: IPostcssPixremPlugin = new PostcssPixremPlugin();
 
-    private _bemLinterPlugin:IPostcssBemLinterPlugin = new PostcssBemLinterPlugin();
+    private _bemLinterPlugin: IPostcssBemLinterPlugin = new PostcssBemLinterPlugin();
 
-    constructor(options?:IOptions) {
-        var plugins:IPlugin[] = this.getPlugins(),
-            autoprefixerPlugin:IPostcssAutoprefixerPlugin = this.getAutoprefixerPlugin(),
-            pseudoElementsPlugin:IPostcssPseudoElementsPlugin = this.getPseudoElementsPlugin(),
-            epubPlugin:IPostcssEpubPlugin = this.getEpubPlugin(),
-            opacityPlugin:IPostcssOpacityPlugin = this.getOpacityPlugin(),
-            vminPlugin:IPostcssVminPlugin = this.getVminPlugin(),
-            colorRgbaPlugin:IPostcssVminPlugin = this.getColorRgbaPlugin(),
-            cssgracePlugin:IPostcssCssgracePlugin = this.getCssgracePlugin(),
-            willChangePlugin:IPostcssWillChangePlugin = this.getWillChangePlugin();
+    constructor(options?: IOptions) {
+        var plugins: IPlugin[]                                 = this.getPlugins(),
+            autoprefixerPlugin: IPostcssAutoprefixerPlugin     = this.getAutoprefixerPlugin(),
+            pseudoElementsPlugin: IPostcssPseudoElementsPlugin = this.getPseudoElementsPlugin(),
+            epubPlugin: IPostcssEpubPlugin                     = this.getEpubPlugin(),
+            opacityPlugin: IPostcssOpacityPlugin               = this.getOpacityPlugin(),
+            vminPlugin: IPostcssVminPlugin                     = this.getVminPlugin(),
+            colorRgbaPlugin: IPostcssVminPlugin                = this.getColorRgbaPlugin(),
+            cssgracePlugin: IPostcssCssgracePlugin             = this.getCssgracePlugin(),
+            willChangePlugin: IPostcssWillChangePlugin         = this.getWillChangePlugin();
         if (options && typeOf(options.postcssPluginAutoprefixerEnabled) !== "undefined") {
             autoprefixerPlugin.setIsEnabled(options.postcssPluginAutoprefixerEnabled);
         }
@@ -157,43 +157,43 @@ class Base {
         }
     }
 
-    protected getPlugins():IPlugin[] {
+    protected getPlugins(): IPlugin[] {
         return <IPlugin[]>[];
     }
 
-    protected getAutoprefixerPlugin():IPostcssAutoprefixerPlugin {
+    protected getAutoprefixerPlugin(): IPostcssAutoprefixerPlugin {
         return this._autoprefixerPlugin;
     }
 
-    protected getPseudoElementsPlugin():IPostcssPseudoElementsPlugin {
+    protected getPseudoElementsPlugin(): IPostcssPseudoElementsPlugin {
         return this._pseudoElementsPlugin;
     }
 
-    protected getEpubPlugin():IPostcssEpubPlugin {
+    protected getEpubPlugin(): IPostcssEpubPlugin {
         return this._epubElementPlugin;
     }
 
-    protected getOpacityPlugin():IPostcssOpacityPlugin {
+    protected getOpacityPlugin(): IPostcssOpacityPlugin {
         return this._opacityPlugin;
     }
 
-    protected getVminPlugin():IPostcssVminPlugin {
+    protected getVminPlugin(): IPostcssVminPlugin {
         return this._vminPlugin;
     }
 
-    protected getColorRgbaPlugin():IPostcssColorRgbaPlugin {
+    protected getColorRgbaPlugin(): IPostcssColorRgbaPlugin {
         return this._colorRgbaPlugin;
     }
 
-    protected getCssgracePlugin():IPostcssCssgracePlugin {
+    protected getCssgracePlugin(): IPostcssCssgracePlugin {
         return this._cssgracePlugin;
     }
 
-    protected getWillChangePlugin():IPostcssWillChangePlugin {
+    protected getWillChangePlugin(): IPostcssWillChangePlugin {
         return this._willChangePlugin;
     }
 
-    protected getPixremPlugin():IPostcssPixremPlugin {
+    protected getPixremPlugin(): IPostcssPixremPlugin {
         return this._pixremPlugin;
     }
 
@@ -201,56 +201,56 @@ class Base {
         return this._bemLinterPlugin;
     }
 
-    public getOptions():IOptions {
-        var autoprefixerPlugin:IPostcssAutoprefixerPlugin = this.getAutoprefixerPlugin(),
-            pseudoElementsPlugin:IPostcssPseudoElementsPlugin = this.getPseudoElementsPlugin(),
-            epubPlugin:IPostcssEpubPlugin = this.getEpubPlugin(),
-            opacityPlugin:IPostcssOpacityPlugin = this.getOpacityPlugin(),
-            vminPlugin:IPostcssVminPlugin = this.getVminPlugin(),
-            colorRgbaPlugin:IPostcssVminPlugin = this.getColorRgbaPlugin(),
-            cssgracePlugin:IPostcssCssgracePlugin = this.getCssgracePlugin(),
-            willChangePlugin:IPostcssWillChangePlugin = this.getWillChangePlugin(),
-            pixremPlugin:IPostcssPixremPlugin = this.getPixremPlugin(),
-            options:IOptions = {};
+    public getOptions(): IOptions {
+        var autoprefixerPlugin: IPostcssAutoprefixerPlugin     = this.getAutoprefixerPlugin(),
+            pseudoElementsPlugin: IPostcssPseudoElementsPlugin = this.getPseudoElementsPlugin(),
+            epubPlugin: IPostcssEpubPlugin                     = this.getEpubPlugin(),
+            opacityPlugin: IPostcssOpacityPlugin               = this.getOpacityPlugin(),
+            vminPlugin: IPostcssVminPlugin                     = this.getVminPlugin(),
+            colorRgbaPlugin: IPostcssVminPlugin                = this.getColorRgbaPlugin(),
+            cssgracePlugin: IPostcssCssgracePlugin             = this.getCssgracePlugin(),
+            willChangePlugin: IPostcssWillChangePlugin         = this.getWillChangePlugin(),
+            pixremPlugin: IPostcssPixremPlugin                 = this.getPixremPlugin(),
+            options: IOptions                                  = {};
         if (autoprefixerPlugin.isEnabled()) {
-            options.postcssPluginAutoprefixerEnabled = autoprefixerPlugin.isEnabled();
-            options.postcssPluginAutoprefixerUsed = autoprefixerPlugin.isUsed();
+            options.postcssPluginAutoprefixerEnabled  = autoprefixerPlugin.isEnabled();
+            options.postcssPluginAutoprefixerUsed     = autoprefixerPlugin.isUsed();
             options.postcssPluginAutoprefixerBrowsers = autoprefixerPlugin.getBrowsers();
-            options.postcssPluginAutoprefixerCascade = autoprefixerPlugin.isCascade();
-            options.postcssPluginAutoprefixerRemove = autoprefixerPlugin.isRemove();
-            options.postcssPluginAutoprefixerAdd = autoprefixerPlugin.isAdd();
+            options.postcssPluginAutoprefixerCascade  = autoprefixerPlugin.isCascade();
+            options.postcssPluginAutoprefixerRemove   = autoprefixerPlugin.isRemove();
+            options.postcssPluginAutoprefixerAdd      = autoprefixerPlugin.isAdd();
         }
         if (pseudoElementsPlugin.isEnabled()) {
-            options.postcssPluginPseudoElementsEnabled = pseudoElementsPlugin.isEnabled();
-            options.postcssPluginPseudoElementsUsed = pseudoElementsPlugin.isUsed();
+            options.postcssPluginPseudoElementsEnabled   = pseudoElementsPlugin.isEnabled();
+            options.postcssPluginPseudoElementsUsed      = pseudoElementsPlugin.isUsed();
             options.postcssPluginPseudoElementsSelectors = pseudoElementsPlugin.getSelectors();
         }
         if (epubPlugin.isEnabled()) {
             options.postcssPluginEpubEnabled = epubPlugin.isEnabled();
-            options.postcssPluginEpubUsed = epubPlugin.isUsed();
-            options.postcssPluginEpubFonts = epubPlugin.isFonts();
-            options.postcssPluginEpubStrip = epubPlugin.isStrip();
-            options.postcssPluginEpubStrict = epubPlugin.isStrict();
+            options.postcssPluginEpubUsed    = epubPlugin.isUsed();
+            options.postcssPluginEpubFonts   = epubPlugin.isFonts();
+            options.postcssPluginEpubStrip   = epubPlugin.isStrip();
+            options.postcssPluginEpubStrict  = epubPlugin.isStrict();
         }
         if (opacityPlugin.isEnabled()) {
             options.postcssPluginOpacityEnabled = opacityPlugin.isEnabled();
-            options.postcssPluginOpacityUsed = opacityPlugin.isUsed();
+            options.postcssPluginOpacityUsed    = opacityPlugin.isUsed();
         }
         if (vminPlugin.isEnabled()) {
             options.postcssPluginVminEnabled = vminPlugin.isEnabled();
-            options.postcssPluginVminUsed = vminPlugin.isUsed();
+            options.postcssPluginVminUsed    = vminPlugin.isUsed();
         }
         if (colorRgbaPlugin.isEnabled()) {
             options.postcssPluginColorRgbaEnabled = colorRgbaPlugin.isEnabled();
-            options.postcssPluginColorRgbaUsed = colorRgbaPlugin.isUsed();
+            options.postcssPluginColorRgbaUsed    = colorRgbaPlugin.isUsed();
         }
         if (cssgracePlugin.isEnabled()) {
             options.postcssPluginCssgraceEnabled = cssgracePlugin.isEnabled();
-            options.postcssPluginCssgraceUsed = cssgracePlugin.isUsed();
+            options.postcssPluginCssgraceUsed    = cssgracePlugin.isUsed();
         }
         if (willChangePlugin.isEnabled()) {
             options.postcssPluginWillChangeEnabled = willChangePlugin.isEnabled();
-            options.postcssPluginWillChangeUsed = willChangePlugin.isUsed();
+            options.postcssPluginWillChangeUsed    = willChangePlugin.isUsed();
         }
         /*if () {
 

@@ -59,12 +59,12 @@ class Client implements IClient {
             throw new Exception("bla bla bla");
         }
         this._socket.write(JSON.stringify({
-            id: this.registerHandler(callback),
-            args: args
-        }) + "\n");
+                id   : this.registerHandler(callback),
+                args : args
+            }) + "\n");
     }
 
-    public connect(callback:(errors?:Error[]) => void):void {
+    public connect(callback:(errors:Error[]) => void):void {
         var data:Buffer = new Buffer(0),
             handler:(error?:Error) => void = (error?:Error):void => {
                 socket.removeListener("error", handler);
@@ -97,7 +97,7 @@ class Client implements IClient {
                     var index:number,
                         length:number,
                         result:Error[] = [],
-                        options:any = getOptions(),
+                        options:any  = getOptions(),
                         errors:any[] = <any[]>options.errors;
                     if (errors && errors.length) {
                         length = errors.length;
@@ -113,14 +113,14 @@ class Client implements IClient {
                 },
                 getCallback:() => ((errors?:Error[], response?:any) => void) = ():((errors?:Error[], response?:any) => void) => {
                     var options:any = getOptions(),
-                        id:number = <number>options.id;
+                        id:number   = <number>options.id;
                     return this.findHandlerById(id) || null;
                 };
 
             data = Buffer.concat([data, buffer]);
             do {
                 string = data.toString("utf8");
-                index = string.indexOf("\n");
+                index  = string.indexOf("\n");
                 if (index !== -1) {
                     response = string.slice(0, index + 1);
                     callback = getCallback();
@@ -135,9 +135,9 @@ class Client implements IClient {
         this._socket = socket;
     }
 
-    public disconnect(callback:(errors?:Error[]) => void):void {
+    public disconnect(callback:(errors:Error[]) => void):void {
         // todo: реализовать потом
-        setTimeout(():void => {
+        setTimeout((): void => {
             callback(null);
         }, 0);
     }

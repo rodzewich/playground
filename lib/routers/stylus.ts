@@ -125,7 +125,7 @@ export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
                         });
                     },
                     (next:() => void):void => {
-                        manager.disconnect((errors?:Error[]):void => {
+                        manager.disconnect((errors:Error[]):void => {
                             if (!errors || !errors.length) {
                                 next();
                             } else if (typeOf(done) === "function") {

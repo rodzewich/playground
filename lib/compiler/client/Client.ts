@@ -178,7 +178,7 @@ class Client extends BaseClient implements IClient {
         }, "compile", request);
     }
 
-    public connect(callback:(errors?:Error[]) => void):void {
+    public connect(callback:(errors:Error[]) => void):void {
         deferred([
             (next:() => void):void => {
                 var command:cp.ChildProcess = cp.spawn(process.execPath, [
@@ -248,7 +248,7 @@ class Client extends BaseClient implements IClient {
 
     }
 
-    public disconnect(callback:(errors?:Error[]) => void):void {
+    public disconnect(callback:(errors:Error[]) => void):void {
         // todo: implement this
     }
 
