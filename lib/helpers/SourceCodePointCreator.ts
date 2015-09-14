@@ -33,13 +33,16 @@ class SourceCodePointCreator implements ISourceCodePointCreator {
     }
 
     public create(content:string, line:number, column:number):string {
-        var maxChars:number = String(line + this.getNumberOfLinesAfter()).length,
-            contentAsArray:string[] = content.split(/\n/).map((line:string):string => {
+        var contentAsArray:string[] = content.split(/\n/).map((line:string):string => {
                 return line.replace(/\r/g, "");
-            });
-        var needDotes: boolean = false;
-        var result: string[] = [];
-        var index:number;
+            }),
+            maxChars:number   = String(line + this.getNumberOfLinesAfter()).length,
+            needDotes:boolean = false,
+            result:string[]   = [],
+            index:number;
+        for (index = line - this.getNumberOfLinesBefore() + 1; index <= line + this.getNumberOfLinesAfter(); index++) {
+            // todo: implement it
+        }
         for (index = line - this.getNumberOfLinesBefore() + 1; index <= line; index++) {
             if (typeOf(contentAsArray[index - 1]) !== "undefined") {
                 result.push(Array(maxChars - String(index).length + 2).join(" ") + String(index) + " | " + contentAsArray[index - 1]);
