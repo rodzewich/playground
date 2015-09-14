@@ -42,7 +42,7 @@ class Daemon implements IDaemon {
         }
     }
 
-    public start(callback?:(errors?:Error[]) => void):void {
+    public start(callback?:(errors:Error[]) => void):void {
         var handler:(error?:Error) => void = (error?:Error):void => {
                 server.removeListener("error", handler);
                 if (error) {

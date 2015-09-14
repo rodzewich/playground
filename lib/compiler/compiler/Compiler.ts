@@ -118,7 +118,7 @@ abstract class Compiler implements ICompiler {
         return this._cssErrors.setFontSize(value);
     }
 
-    protected createCssErrors(errors?:Error[]):string {
+    protected createCssErrors(errors:Error[]):string {
         return this._cssErrors.create(errors)
     }
 

@@ -41,7 +41,7 @@ export interface InitOptions extends base.InitOptions {
     numberOfProcesses: number;
 }
 
-export function init(options:InitOptions, done:(errors?:Error[]) => void):void {
+export function init(options:InitOptions, done:(errors:Error[]) => void):void {
     var temporaryDirectory:string = options.temporaryDirectory,
         memoryLocation:string = options.memoryLocation,
         includeDirectories:string[] = options.includeDirectories,

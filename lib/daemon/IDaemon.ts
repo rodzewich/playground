@@ -1,5 +1,5 @@
 interface IDaemon {
-    start(callback?:(errors?:Error[]) => void): void;
+    start(callback?:(errors:Error[]) => void): void;
     stop(callback?:() => void): void;
 }
 

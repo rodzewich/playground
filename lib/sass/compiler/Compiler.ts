@@ -84,7 +84,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             resolve: string,
             mtime: number,
             memory: IMemory    = this.getMemory(),
-            unlock: (callback?: (errors?: Error[]) => void) => void,
+            unlock: (callback?: (errors: Error[]) => void) => void,
             resultTime: number = parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
             content: string;
 
@@ -98,7 +98,7 @@ class Compiler extends BaseCompiler implements ICompiler {
 
             (next: () => void): void => {
                 if (this.isCacheUsed()) {
-                    memory.getItem(filename, (errors?: Error[], response?: IResponse): void => {
+                    memory.getItem(filename, (errors: Error[], response: IResponse): void => {
                         var errorsArg: Error[]   = null,
                             resultArg: IResponse = null;
                         if (!errors || !errors.length) {
@@ -226,7 +226,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next: () => void): void => {
-                memory.lock(filename, (errors?: Error[], result?: (callback?: (errors?: Error[]) => void) => void): void => {
+                memory.lock(filename, (errors: Error[], result: (callback?: (errors: Error[]) => void) => void): void => {
                     if (!errors || !errors.length) {
                         unlock = result;
                         next();
@@ -380,7 +380,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         if (!errors || !errors.length) {
                             deferred([
                                 (next: () => void): void => {
-                                    memory.setItem(filename, value, (errors?: Error[]): void => {
+                                    memory.setItem(filename, value, (errors: Error[]): void => {
                                         if (errors && errors.length) {
                                             temp.concat(errors);
                                         }

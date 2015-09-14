@@ -158,8 +158,8 @@ class Manager extends Client implements IManager {
             parallel(actions, ():void => {
                 var index:number,
                     length:number = this._connectionQueue.length,
-                    element:(errors?:Error[]) => void,
-                    handler:(element:(errors?:Error[]) => void) => void = (element:(errors?:Error[]) => void):void => {
+                    element:(errors:Error[]) => void,
+                    handler:(element:(errors:Error[]) => void) => void = (element:(errors:Error[]) => void):void => {
                         setTimeout(():void => {
                             if (!errors.length) {
                                 element(null);
@@ -187,9 +187,9 @@ class Manager extends Client implements IManager {
 
     private _disconnecting:boolean = false;
 
-    private _disconnectionQueue:((errors?:Error[]) => void)[] = [];
+    private _disconnectionQueue:((errors:Error[]) => void)[] = [];
 
-    public disconnect(callback:(errors?:Error[]) => void):void {
+    public disconnect(callback:(errors:Error[]) => void):void {
         if (this._connected) {
 
         } else if (this._connecting) {

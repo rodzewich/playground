@@ -35,7 +35,7 @@ class Client implements IClient {
         return this._increment++;
     }
 
-    private registerHandler(callback:(errors?:Error[], response?:any) => void):number {
+    private registerHandler(callback:(errors:Error[], response:any) => void):number {
         var id:number = null;
         if (typeof callback === "function") {
             id = this.generateIdentifier();
@@ -44,14 +44,14 @@ class Client implements IClient {
         return id;
     }
 
-    private findHandlerById(id:number):(errors?:Error[], response?:any) => void {
+    private findHandlerById(id:number):(errors:Error[], response:any) => void {
         if (this._callbacks[id]) {
-            return <(errors?:Error[], response?:any) => void>this._callbacks[id];
+            return <(errors:Error[], response:any) => void>this._callbacks[id];
         }
         return null;
     }
 
-    protected call(callback:(errors?:Error[], response?:any) => void, ...args:any[]):void {
+    protected call(callback:(errors:Error[], response:any) => void, ...args:any[]):void {
         if (!this._socket) {
             throw new Exception("bla bla bla");
         }
@@ -84,7 +84,7 @@ class Client implements IClient {
                 index:number,
                 response:string,
                 options:any,
-                callback:(errors?:Error[], response?:any) => void,
+                callback:(errors:Error[], response?:any) => void,
                 string:string,
                 getOptions:() => any = ():any => {
                     try {
@@ -111,7 +111,7 @@ class Client implements IClient {
                     var options:any = getOptions();
                     return options.result || null;
                 },
-                getCallback:() => ((errors?:Error[], response?:any) => void) = ():((errors?:Error[], response?:any) => void) => {
+                getCallback:() => ((errors:Error[], response:any) => void) = ():((errors:Error[], response:any) => void) => {
                     var options:any = getOptions(),
                         id:number   = <number>options.id;
                     return this.findHandlerById(id) || null;

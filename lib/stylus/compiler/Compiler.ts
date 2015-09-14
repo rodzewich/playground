@@ -57,13 +57,14 @@ class Compiler extends BaseCompiler implements ICompiler {
     }
 
     public compile(callback:(errors:Error[], result:IResponse) => void):void {
-        var filename:string = this.getFilename(),
-            resolve:string,
+
+        var resolve:string,
             mtime:number,
-            memory:IMemory = this.getMemory(),
-            unlock:(callback?:(errors?:Error[]) => void) => void,
+            content:string,
+            memory:IMemory    = this.getMemory(),
+            filename:string   = this.getFilename(),
             resultTime:number = parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
-            content:string;
+            unlock:(callback?:(errors:Error[]) => void) => void;
 
         function completion(errors:Error[], result:IResponse):void {
             if (typeOf(callback) === "function") {
@@ -75,7 +76,7 @@ class Compiler extends BaseCompiler implements ICompiler {
 
             (next:() => void):void => {
                 if (this.isCacheUsed()) {
-                    memory.getItem(filename, (errors?:Error[], response?:IResponse):void => {
+                    memory.getItem(filename, (errors:Error[], response:IResponse):void => {
                         var errorsArg:Error[] = null,
                             resultArg:IResponse = null;
                         if (!errors || !errors.length) {
@@ -189,7 +190,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             (next:() => void):void => {
-                memory.lock(filename, (errors?:Error[], result?:(callback?:(errors?:Error[]) => void) => void):void => {
+                memory.lock(filename, (errors:Error[], result:(callback?:(errors:Error[]) => void) => void):void => {
                     if (!errors || !errors.length) {
                         unlock = result;
                         next();
@@ -348,7 +349,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                             });
                                         },
                                         ():void => {
-                                            memory.setItem(filename, value, (errors?:Error[]):void => {
+                                            memory.setItem(filename, value, (errors:Error[]):void => {
                                                 if (errors && errors.length) {
                                                     temp.concat(errors);
                                                 }

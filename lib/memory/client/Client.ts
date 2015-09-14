@@ -28,9 +28,9 @@ class Client extends BaseClient implements IClient {
         return this._namespace;
     }
 
-    public getItem(key:string, callback:(errors?:Error[], response?:any) => void):void {
+    public getItem(key:string, callback:(errors:Error[], response:any) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response:any):void => {
             var temp:Error[] = null,
                 result:any = null;
             if (errors && errors.length) {
@@ -42,9 +42,9 @@ class Client extends BaseClient implements IClient {
         }, this.getNamespace().getValue(), "getItem", key);
     }
 
-    public getItems(keys:string[], callback:(errors?:Error[], response?:any) => void):void {
+    public getItems(keys:string[], callback:(errors:Error[], response:any) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response:any):void => {
             var temp:Error[] = null,
                 result:any = null;
             if (errors && errors.length) {
@@ -56,9 +56,9 @@ class Client extends BaseClient implements IClient {
         }, this.getNamespace().getValue(), "getItems", keys);
     }
 
-    public setItem(key:string, value:any, callback:(errors?:Error[]) => void):void {
+    public setItem(key:string, value:any, callback:(errors:Error[]) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response:any):void => {
             var temp:Error[] = null;
             if (errors && errors.length) {
                 temp = errors;
@@ -67,9 +67,9 @@ class Client extends BaseClient implements IClient {
         }, this.getNamespace().getValue(), "setItem", key, value);
     }
 
-    public setItems(data:any, callback:(errors?:Error[]) => void):void {
+    public setItems(data:any, callback:(errors:Error[]) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response:any):void => {
             var temp:Error[] = null;
             if (errors && errors.length) {
                 temp = errors;
@@ -78,9 +78,9 @@ class Client extends BaseClient implements IClient {
         }, this.getNamespace().getValue(), "setItems", data);
     }
 
-    public removeItem(key:string, callback:(errors?:Error[]) => void):void {
+    public removeItem(key:string, callback:(errors:Error[]) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response:any):void => {
             var temp:Error[] = null;
             if (errors && errors.length) {
                 temp = errors;
@@ -89,9 +89,9 @@ class Client extends BaseClient implements IClient {
         }, this.getNamespace().getValue(), "removeItem", key);
     }
 
-    public removeItems(keys:string[], callback:(errors?:Error[]) => void) {
+    public removeItems(keys:string[], callback:(errors:Error[]) => void) {
         // todo: проверять входящие параметры
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response:any):void => {
             var temp:Error[] = null;
             if (errors && errors.length) {
                 temp = errors;
@@ -100,9 +100,9 @@ class Client extends BaseClient implements IClient {
         }, this.getNamespace().getValue(), "removeItems", keys);
     }
 
-    public hasItem(key:string, callback:(errors?:Error[], response?:boolean) => void):void {
+    public hasItem(key:string, callback:(errors:Error[], response:boolean) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response:any):void => {
             var temp:Error[] = null,
                 result:boolean = null;
             if (errors && errors.length) {
@@ -114,9 +114,9 @@ class Client extends BaseClient implements IClient {
         }, this.getNamespace().getValue(), "hasItem", key);
     }
 
-    public hasItems(keys:string[], callback:(errors?:Error[], response?:any) => void):void {
+    public hasItems(keys:string[], callback:(errors:Error[], response:any) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response:any):void => {
             var temp:Error[] = null,
                 result:any = null;
             if (errors && errors.length) {
@@ -128,9 +128,9 @@ class Client extends BaseClient implements IClient {
         }, this.getNamespace().getValue(), "hasItems", keys);
     }
 
-    public getKey(index:number, callback:(errors?:Error[], response?:string) => void):void {
+    public getKey(index:number, callback:(errors:Error[], response:string) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response:any):void => {
             var temp:Error[] = null,
                 result:string = null;
             if (errors && errors.length) {
@@ -142,9 +142,9 @@ class Client extends BaseClient implements IClient {
         }, this.getNamespace().getValue(), "getKey", index);
     }
 
-    public getKeys(indexes:number[], callback:(errors?:Error[], response?:string[]) => void):void {
+    public getKeys(indexes:number[], callback:(errors:Error[], response:string[]) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response:any):void => {
             var temp:Error[] = null,
                 result:string[] = null;
             if (errors && errors.length) {
@@ -163,9 +163,9 @@ class Client extends BaseClient implements IClient {
         }, this.getNamespace().getValue(), "getKeys", indexes);
     }
 
-    public getLength(callback:(errors?:Error[], response?:number) => void):void {
+    public getLength(callback:(errors:Error[], response:number) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response:any):void => {
             var temp:Error[] = null,
                 result:number = null;
             if (errors && errors.length) {
@@ -177,10 +177,10 @@ class Client extends BaseClient implements IClient {
         }, this.getNamespace().getValue(), "getLength");
     }
 
-    public lock(key:string, callback:(errors?:Error[], unlock?:(callback:(errors?:Error[]) => void) => void) => void):void {
+    public lock(key:string, callback:(errors:Error[], unlock:(callback:(errors:Error[]) => void) => void) => void):void {
         // todo: проверять входящие параметры
-        var unlock:(callback:(errors?:Error[]) => void) => void = (callback:(errors?:Error[]) => void):void => {
-            this.call((errors?:Error[], response?:any):void => {
+        var unlock:(callback:(errors:Error[]) => void) => void = (callback:(errors:Error[]) => void):void => {
+            this.call((errors:Error[], response:any):void => {
                 var temp:Error[] = null;
                 if (errors && errors.length) {
                     temp = errors;
@@ -191,7 +191,7 @@ class Client extends BaseClient implements IClient {
         if (typeOf(key) !== "string") {
             throw new Exception("bla bla bla");
         }
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response:any):void => {
             var temp:Error[] = null;
             if (errors && errors.length) {
                 temp = errors;

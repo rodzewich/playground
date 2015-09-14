@@ -129,7 +129,7 @@ class Client extends BaseClient implements IClient {
         return this._cssErrors.setFontSize(value);
     }
 
-    protected createCssErrors(errors?:Error[]):string {
+    protected createCssErrors(errors:Error[]):string {
         return this._cssErrors.create(errors)
     }
 
@@ -164,7 +164,7 @@ class Client extends BaseClient implements IClient {
         }
         request = this.getRequest();
         request.filename = filename;
-        this.call((errors?:Error[], response?:any):void => {
+        this.call((errors:Error[], response?:any):void => {
             var temp:Error[] = null,
                 result:any = null;
             if (errors && errors.length) {
