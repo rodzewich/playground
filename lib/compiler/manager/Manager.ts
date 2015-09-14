@@ -6,6 +6,7 @@ import IClient = require("../client/IClient");
 import Client = require("../client/Client");
 import path = require("path");
 import typeOf = require("../../typeOf");
+import isDefined = require("../../isDefined");
 import parallel = require("../../parallel");
 import deferred = require("../../deferred");
 
@@ -27,7 +28,7 @@ class Manager extends Client implements IManager {
 
     constructor(options:IOptions) {
         super(options);
-        if (options && typeOf(options.numberOfProcesses) !== "undefined") {
+        if (options && isDefined(options.numberOfProcesses)) {
             this.setNumberOfProcesses(options.numberOfProcesses);
         }
     }

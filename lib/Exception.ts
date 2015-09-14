@@ -1,6 +1,4 @@
-/// <reference path="./typeOf.ts" />
-
-import typeOf = require("./typeOf");
+import isDefined = require("./isDefined");
 
 declare class Error {
 
@@ -26,7 +24,7 @@ class Exception extends Error {
 
     constructor(message?:string) {
         super();
-        if (typeOf(message) !== "undefined") {
+        if (isDefined(message)) {
             this.message = message;
         }
         Exception.captureStackTrace(this, Exception);

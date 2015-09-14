@@ -9,7 +9,7 @@
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
-import typeOf = require("../../typeOf");
+import isDefined = require("../../isDefined");
 import deferred = require("../../deferred");
 import parallel = require("../../parallel");
 import IMemory = require("../../memory/client/IClient");
@@ -28,7 +28,7 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     constructor(options:IOptions) {
         super(options);
-        if (options && typeOf(options.includeDirectories) !== "undefined") {
+        if (options && isDefined(options.includeDirectories)) {
             this.setIncludeDirectories(options.includeDirectories);
         }
     }

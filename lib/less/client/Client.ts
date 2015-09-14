@@ -1,6 +1,7 @@
 /// <reference path="../../../types/node/node.d.ts" />
 
 import typeOf = require("../../typeOf");
+import isDefined = require("../../isDefined");
 import IOptions = require("./IOptions");
 import IClient = require("./IClient");
 import BaseClient = require("../../compiler/client/Client");
@@ -22,7 +23,7 @@ class Client extends BaseClient {
 
     constructor(options:IOptions) {
         super(options);
-        if (options && typeOf(options.includeDirectories) !== "undefined") {
+        if (options && isDefined(options.includeDirectories)) {
             this.setIncludeDirectories(options.includeDirectories);
         }
     }

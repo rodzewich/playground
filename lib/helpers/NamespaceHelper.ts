@@ -1,5 +1,5 @@
 import INamespaceHelper = require("./INamespaceHelper");
-import typeOf = require("../typeOf");
+import isDefined = require("../isDefined");
 import Exception = require("../Exception");
 
 class NamespaceHelper implements INamespaceHelper {
@@ -7,7 +7,7 @@ class NamespaceHelper implements INamespaceHelper {
     private _value:string = "default";
 
     constructor(value?:string) {
-        if (typeOf(value) !== "undefined") {
+        if (isDefined(value)) {
             this.setValue(value);
         }
     }

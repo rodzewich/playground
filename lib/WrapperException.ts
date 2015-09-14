@@ -1,6 +1,5 @@
-/// <reference path="./Exception.ts" />
-
 import BaseException = require("./Exception");
+import isDefined = require("./isDefined");
 import typeOf = require("./typeOf");
 
 declare class Error {
@@ -30,16 +29,16 @@ class Exception extends BaseException {
     constructor(options:any) {
         super();
         var error: Error;
-        if (options && typeOf(options.name) !== "undefined") {
+        if (options && isDefined(options.name)) {
             this.name = options.name;
         }
-        if (options && typeOf(options.message) !== "undefined") {
+        if (options && isDefined(options.message)) {
             this.message = options.message;
         }
-        if (options && typeOf(options.asString) !== "undefined") {
+        if (options && isDefined(options.asString)) {
             this._toString = options.asString;
         }
-        if (options && typeOf(options.stack) !== "undefined") {
+        if (options && isDefined(options.stack)) {
             this._stack = options.stack;
         } else {
             error = new Error();

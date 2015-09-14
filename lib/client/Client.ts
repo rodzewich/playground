@@ -5,7 +5,7 @@ import IOptions = require("./IOptions");
 import net = require("net");
 import WrapperException = require("../WrapperException");
 import Exception = require("../Exception");
-import typeOf = require("../typeOf");
+import isDefined = require("../isDefined");
 import MeLocationHelper = require("../helpers/MeLocationHelper");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
 
@@ -22,7 +22,7 @@ class Client implements IClient {
     private _callbacks:any = {};
 
     constructor(options:IOptions) {
-        if (options && typeOf(options.location) !== "undefined") {
+        if (options && isDefined(options.location)) {
             this.getMeLocation().setLocation(options.location);
         }
     }

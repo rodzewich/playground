@@ -1,4 +1,4 @@
-import typeOf = require("../typeOf");
+import isDefined = require("../isDefined");
 import ISourceCodePointCreator = require("./ISourceCodePointCreator");
 
 class SourceCodePointCreator implements ISourceCodePointCreator {
@@ -8,10 +8,10 @@ class SourceCodePointCreator implements ISourceCodePointCreator {
     private _numberOfLinesAfter:number = 3;
 
     constructor(options?:{numberOfLinesBefore: number; numberOfLinesAfter: number}) {
-        if (options && typeOf(options.numberOfLinesBefore) !== "undefined") {
+        if (options && isDefined(options.numberOfLinesBefore)) {
             this.setNumberOfLinesBefore(options.numberOfLinesBefore);
         }
-        if (options && typeOf(options.numberOfLinesAfter) !== "undefined") {
+        if (options && isDefined(options.numberOfLinesAfter)) {
             this.setNumberOfLinesAfter(options.numberOfLinesAfter);
         }
     }
@@ -44,13 +44,13 @@ class SourceCodePointCreator implements ISourceCodePointCreator {
             // todo: implement it
         }
         for (index = line - this.getNumberOfLinesBefore() + 1; index <= line; index++) {
-            if (typeOf(contentAsArray[index - 1]) !== "undefined") {
+            if (isDefined(contentAsArray[index - 1])) {
                 result.push(Array(maxChars - String(index).length + 2).join(" ") + String(index) + " | " + contentAsArray[index - 1]);
             }
         }
         result.push(" " + Array(maxChars + column + 3).join("-") + "^");
         for (index = line + 1; index <= line + this.getNumberOfLinesAfter(); index++) {
-            if (typeOf(contentAsArray[index - 1]) !== "undefined") {
+            if (isDefined(contentAsArray[index - 1])) {
                 result.push(Array(maxChars - String(index).length + 2).join(" ") + String(index) + " | " + contentAsArray[index - 1]);
             }
         }

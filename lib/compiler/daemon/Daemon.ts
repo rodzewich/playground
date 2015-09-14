@@ -4,7 +4,7 @@ import IDaemon = require("./IDaemon");
 import IResponse = require("../client/IResponse");
 import IRequest = require("../client/IRequest");
 import Compiler = require("../compiler/Compiler");
-import typeOf = require("../../typeOf");
+import isDefined = require("../../isDefined");
 import WrapperException = require("../../WrapperException");
 import IMemory = require("../../memory/client/IClient");
 
@@ -14,7 +14,7 @@ abstract class Daemon extends BaseDaemon implements IDaemon {
 
     constructor(options:IOptions) {
         super(options);
-        if (options && typeOf(options.memory) !== "undefined") {
+        if (options && isDefined(options.memory)) {
             this.setMemory(options.memory);
         }
     }

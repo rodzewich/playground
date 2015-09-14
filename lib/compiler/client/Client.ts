@@ -2,6 +2,7 @@
 /// <reference path="../../../types/log4js/log4js.d.ts" />
 
 import typeOf = require("../../typeOf");
+import isDefined = require("../../isDefined");
 import deferred = require("../../deferred");
 import WrapperException = require("../../WrapperException");
 import WebRootDirectoryHelper = require("../../helpers/WebRootDirectoryHelper");
@@ -42,28 +43,28 @@ class Client extends BaseClient implements IClient {
 
     constructor(options:IOptions) {
         super(options);
-        if (options && typeOf(options.sourcesDirectory) !== "undefined") {
+        if (options && isDefined(options.sourcesDirectory)) {
             this.setSourcesDirectory(options.sourcesDirectory);
         }
-        if (options && typeOf(options.memoryLocation) !== "undefined") {
+        if (options && isDefined(options.memoryLocation)) {
             this.setMemoryLocation(options.memoryLocation);
         }
-        if (options && typeOf(options.useCache) !== "undefined") {
+        if (options && isDefined(options.useCache)) {
             this.setIsCacheUsed(options.useCache);
         }
-        if (options && typeOf(options.errorBackgroundColor) !== "undefined") {
+        if (options && isDefined(options.errorBackgroundColor)) {
             this.setCssErrorsBackgroundColor(options.errorBackgroundColor);
         }
-        if (options && typeOf(options.errorTextColor) !== "undefined") {
+        if (options && isDefined(options.errorTextColor)) {
             this.setCssErrorsTextColor(options.errorTextColor);
         }
-        if (options && typeOf(options.errorBlockPadding) !== "undefined") {
+        if (options && isDefined(options.errorBlockPadding)) {
             this.setCssErrorsBlockPadding(options.errorBlockPadding);
         }
-        if (options && typeOf(options.errorFontSize) !== "undefined") {
+        if (options && isDefined(options.errorFontSize)) {
             this.setCssErrorsFontSize(options.errorFontSize);
         }
-        if (options && typeOf(options.webRootDirectory) !== "undefined") {
+        if (options && isDefined(options.webRootDirectory)) {
             this.setWebRootDirectory(options.webRootDirectory);
         }
     }
@@ -74,14 +75,14 @@ class Client extends BaseClient implements IClient {
 
     protected getRequest():IRequest {
         return <IRequest>{
-            filename: null,
-            sourcesDirectory: this.getSourcesDirectory(),
-            errorBackgroundColor: this.getCssErrorsBackgroundColor(),
-            errorTextColor: this.getCssErrorsTextColor(),
-            errorBlockPadding: this.getCssErrorsBlockPadding(),
-            errorFontSize: this.getCssErrorsFontSize(),
-            webRootDirectory: this.getWebRootDirectory(),
-            useCache: this.isCacheUsed()
+            filename             : null,
+            sourcesDirectory     : this.getSourcesDirectory(),
+            errorBackgroundColor : this.getCssErrorsBackgroundColor(),
+            errorTextColor       : this.getCssErrorsTextColor(),
+            errorBlockPadding    : this.getCssErrorsBlockPadding(),
+            errorFontSize        : this.getCssErrorsFontSize(),
+            webRootDirectory     : this.getWebRootDirectory(),
+            useCache             : this.isCacheUsed()
         };
     }
 

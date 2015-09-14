@@ -2,7 +2,7 @@
 
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
-import typeOf = require("../../typeOf");
+import isDefined = require("../../isDefined");
 import IMemory = require("../../memory/client/IClient");
 import Exception = require("../../Exception");
 import CssErrorsHelper = require("../../helpers/CssErrorsHelper");
@@ -29,31 +29,31 @@ abstract class Compiler implements ICompiler {
     private _sourcesDirectory:ISourcesDirectoryHelper = new SourcesDirectoryHelper();
 
     constructor(options?:IOptions) {
-        if (options && typeOf(options.filename) !== "undefined") {
+        if (options && isDefined(options.filename)) {
             this.setFilename(options.filename);
         }
-        if (options && typeOf(options.sourcesDirectory) !== "undefined") {
+        if (options && isDefined(options.sourcesDirectory)) {
             this.setSourcesDirectory(options.sourcesDirectory);
         }
-        if (options && typeOf(options.memory) !== "undefined") {
+        if (options && isDefined(options.memory)) {
             this.setMemory(options.memory);
         }
-        if (options && typeOf(options.errorBackgroundColor) !== "undefined") {
+        if (options && isDefined(options.errorBackgroundColor)) {
             this.setCssErrorsBackgroundColor(options.errorBackgroundColor);
         }
-        if (options && typeOf(options.errorTextColor) !== "undefined") {
+        if (options && isDefined(options.errorTextColor)) {
             this.setCssErrorsTextColor(options.errorTextColor);
         }
-        if (options && typeOf(options.errorBlockPadding) !== "undefined") {
+        if (options && isDefined(options.errorBlockPadding)) {
             this.setCssErrorsBlockPadding(options.errorBlockPadding);
         }
-        if (options && typeOf(options.errorFontSize) !== "undefined") {
+        if (options && isDefined(options.errorFontSize)) {
             this.setCssErrorsFontSize(options.errorFontSize);
         }
-        if (options && typeOf(options.useCache) !== "undefined") {
+        if (options && isDefined(options.useCache)) {
             this.setIsCacheUsed(options.useCache);
         }
-        if (options && typeOf(options.webRootDirectory) !== "undefined") {
+        if (options && isDefined(options.webRootDirectory)) {
             this.setWebRootDirectory(options.webRootDirectory);
         }
     }
