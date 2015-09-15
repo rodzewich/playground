@@ -331,13 +331,13 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             // постпроцессинг
-            (next:() => void):void => {
+            /*(next:() => void):void => {
                 var postcss:IPostcss = new Postcss();
                 postcss.compile(result, sourceMap, contents, (error:Error, res:IResult):void => {
                     if (!error) {
                         result = res.result;
                         if (this.isShowWarnings()) {
-                            // todo: show show warnings
+                            // todo: show warnings
                             res.messages.map();
                         }
                         sourceMap = res.map;
@@ -365,7 +365,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         ]);
                     }
                 });
-            },
+            },*/
 
             // обрезание зависимостей
             (next:() => void):void => {
@@ -475,188 +475,48 @@ class Compiler extends BaseCompiler implements ICompiler {
 
             // результат
             (next:() => void):void => {
-
-            },
-
-            (next:() => void):void => {
-                console.log("dependencies", dependencies);
-                console.log("sourceMap", sourceMap);
-                console.log("result", result);
-                console.log("contents", contents);
-            },
-
-            // процессинг
-            ():void => {
-                var compiler:any,
-                    postError:string = "",
-                    includeDirectories = this.getIncludeDirectories();
-                includeDirectories.unshift(this.getSourcesDirectory());
-                compiler = stylus(content).
-                    set("filename", resolve).
-                    set("compress", true).
-                    set("sourcemap", {
-                        comment: false,
-                        inline: false,
-                        sourceRoot: null,
-                        basePath: "/"
-                    }).
-                    set("paths", this.getIncludeDirectories());
-                compiler.render((error:Error, result:string):void => {
-                    var temp:Error[] = [],
-                        value:IResponse,
-                        deps:string[],
-                        errors:Error[] = [];
-
-                    if (!error) {
-
-                        deps = compiler.deps().map((item:string):string => {
-                            var index:number,
-                                length:number = includeDirectories.length,
-                                directory:string = path.dirname(filename),
-                                importDirectory:string,
-                                relative:string;
-                            for (index = 0; index < length; index++) {
-                                importDirectory = includeDirectories[index];
-                                relative = path.relative(importDirectory, item);
-                                if (index === 0) {
-                                    relative = path.join(directory, relative);
-                                }
-                                if (relative.slice(0, 2) !== "..") {
-                                    break;
-                                }
+                var errors:Error[]  = [],
+                    value:IResponse = {
+                        source : content,
+                        result : result,
+                        deps   : dependencies,
+                        map    : sourceMap,
+                        date   : resultTime
+                    };
+                deferred([
+                    // сохранение результа
+                    (next:() => void):void => {
+                        memory.setItem(filename, value, (errs:Error[]):void => {
+                            if (errs && errs.length) {
+                                errors.concat(errs);
                             }
-                            if (relative.slice(0, 2) === "..") {
-                                errors.push(new Error("bla bla bla"));
-                                return null;
-                            }
-                            return relative;
+                            next();
                         });
-
-                        value = <IResponse>{
-                            result: result,
-                            source: content,
-                            deps: deps,
-                            map: (((map:any):any => {
-                                if (!map.sources) {
-                                    return {};
-                                }
-                                map.sources = map.sources.map((item:string):string => {
-                                    var index:number,
-                                        length:number = includeDirectories.length,
-                                        directory:string = path.dirname(filename),
-                                        importDirectory:string,
-                                        relative:string;
-                                    item = path.join("/", item);
-                                    for (index = 0; index < length; index++) {
-                                        importDirectory = includeDirectories[index];
-                                        relative = path.relative(importDirectory, item);
-                                        if (index === 0) {
-                                            relative = path.join(directory, relative);
-                                        }
-                                        if (relative.slice(0, 2) !== "..") {
-                                            break;
-                                        }
-                                    }
-                                    if (relative.slice(0, 2) === "..") {
-                                        errors.push(new Error("bla bla bla"));
-                                        return null;
-                                    }
-                                    return path.join("/", this.getWebRootDirectory(), relative);
-                                });
-                                return map;
-                            })(compiler.sourcemap || {})),
-                            date: resultTime
-                        };
-
+                    },
+                    // снятие блокировки
+                    (next:() => void):void => {
+                        unlock((errs:Error[]):void => {
+                            if (errs && errs.length) {
+                                errors.concat(errs);
+                            }
+                            next();
+                        });
+                    },
+                    // результат
+                    (next:() => void):void => {
                         if (!errors || !errors.length) {
-                            deferred([
-                                (next:() => void):void => {
-                                    deferred([
-                                        // postcss processing
-                                        (callback:() => void):void => {
-                                            var postcss:IPostcss = new Postcss();
-                                            postcss.compile(value.result, value.map, (error:Error, res:IResult):void => {
-                                                if (error) {
-                                                    temp.push(error);
-                                                    next();
-                                                } else {
-                                                    value.result = res.result;
-                                                    if (this.isShowWarnings()) {
-                                                        //value.result +=
-                                                    }
-                                                    value.map = res.map;
-                                                    callback();
-                                                }
-                                            });
-                                        },
-                                        ():void => {
-                                            memory.setItem(filename, value, (errors:Error[]):void => {
-                                                if (errors && errors.length) {
-                                                    temp.concat(errors);
-                                                }
-                                                next();
-                                            });
-                                        }
-                                    ]);
-                                },
-                                (next:() => void):void => {
-                                    unlock((errors:Error[]):void => {
-                                        if (errors && errors.length) {
-                                            temp.concat(errors);
-                                        }
-                                        next();
-                                    });
-                                },
-                                ():void => {
-                                    if (temp.length) {
-                                        completion(null, <IResponse>{
-                                            source: null,
-                                            result: this.createCssErrors(temp),
-                                            deps: [],
-                                            map: {},
-                                            date: resultTime
-                                        });
-                                    } else {
-                                        completion(null, value);
-                                    }
-                                },
-                            ]);
+                            completion(null, value);
                         } else {
-                            completion(null, <IResponse>{
-                                source: null,
-                                result: this.createCssErrors(errors),
-                                deps: [],
-                                map: {},
-                                date: resultTime
+                            completion(errors, <IResponse>{
+                                source : content,
+                                result : result,
+                                deps   : [],
+                                map    : {},
+                                date   : resultTime
                             });
                         }
-                    } else {
-                        temp.push(new LessException(error));
-                        deferred([
-                            (next:() => void):void => {
-                                unlock((errors:Error[]):void => {
-                                    if (errors && errors.length) {
-                                        temp.concat(errors);
-                                    }
-                                    next();
-                                });
-                            },
-                            ():void => {
-                                if (this.isThrowErrors()) {
-                                    completion(temp, null);
-                                } else {
-                                    completion(null, <IResponse>{
-                                        source: null,
-                                        result: this.createCssErrors(temp),
-                                        deps: [],
-                                        map: {},
-                                        date: resultTime
-                                    });
-                                }
-                            },
-                        ]);
                     }
-                });
+                ]);
             }
 
         ]);
