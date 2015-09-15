@@ -319,7 +319,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             ():void => {
                                 completion(errors, <IResponse>{
                                     source : content,
-                                    result : null,
+                                    result : result,
                                     deps   : [],
                                     map    : {},
                                     date   : resultTime
@@ -331,6 +331,149 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             // постпроцессинг
+            (next:() => void):void => {
+                var postcss:IPostcss = new Postcss();
+                postcss.compile(result, sourceMap, contents, (error:Error, res:IResult):void => {
+                    if (!error) {
+                        result = res.result;
+                        if (this.isShowWarnings()) {
+                            // todo: show show warnings
+                            res.messages.map();
+                        }
+                        sourceMap = res.map;
+                        next();
+                    } else {
+                        deferred([
+                            // снятие блокировки
+                            (next:() => void):void => {
+                                unlock((errs:Error[]):void => {
+                                    if (errs && errs.length) {
+                                        errors.concat(errs);
+                                    }
+                                    next();
+                                });
+                            },
+                            ():void => {
+                                completion([error], <IResponse>{
+                                    source : content,
+                                    result : result,
+                                    deps   : [],
+                                    map    : {},
+                                    date   : resultTime
+                                });
+                            }
+                        ]);
+                    }
+                });
+            },
+
+            // обрезание зависимостей
+            (next:() => void):void => {
+                var errors: Error[] = [],
+                    includeDirectories = this.getIncludeDirectories();
+                includeDirectories.unshift(this.getSourcesDirectory());
+                dependencies = dependencies.map((item:string):string => {
+                    var index:number,
+                        length:number    = includeDirectories.length,
+                        directory:string = path.dirname(filename),
+                        importDirectory:string,
+                        relative:string;
+                    for (index = 0; index < length; index++) {
+                        importDirectory = includeDirectories[index];
+                        relative = path.relative(importDirectory, item);
+                        if (index === 0) {
+                            relative = path.join(directory, relative);
+                        }
+                        if (relative.slice(0, 2) !== "..") {
+                            break;
+                        }
+                    }
+                    if (relative.slice(0, 2) === "..") {
+                        errors.push(new Error("bla bla bla"));
+                        return null;
+                    }
+                    return relative;
+                });
+                if (!errors.length) {
+                    next();
+                } else {
+                    deferred([
+                        // снятие блокировки
+                        (next:() => void):void => {
+                            unlock((errs:Error[]):void => {
+                                if (errs && errs.length) {
+                                    errors.concat(errs);
+                                }
+                                next();
+                            });
+                        },
+                        ():void => {
+                            completion(errors, <IResponse>{
+                                source : content,
+                                result : result,
+                                deps   : [],
+                                map    : {},
+                                date   : resultTime
+                            });
+                        }
+                    ]);
+                }
+            },
+
+            // обрезание мапов
+            (next:() => void):void => {
+                var errors: Error[] = [],
+                    includeDirectories = this.getIncludeDirectories();
+                includeDirectories.unshift(this.getSourcesDirectory());
+                sourceMap.sources = sourceMap.sources.map((item:string):string => {
+                    var index:number,
+                        length:number    = includeDirectories.length,
+                        directory:string = path.dirname(filename),
+                        importDirectory:string,
+                        relative:string;
+                    for (index = 0; index < length; index++) {
+                        importDirectory = includeDirectories[index];
+                        relative = path.relative(importDirectory, item);
+                        if (index === 0) {
+                            relative = path.join(directory, relative);
+                        }
+                        if (relative.slice(0, 2) !== "..") {
+                            break;
+                        }
+                    }
+                    if (relative.slice(0, 2) === "..") {
+                        errors.push(new Error("bla bla bla"));
+                        return null;
+                    }
+                    return path.join("/", this.getWebRootDirectory(), relative);
+                });
+                if (!errors.length) {
+                    next();
+                } else {
+                    deferred([
+                        // снятие блокировки
+                        (next:() => void):void => {
+                            unlock((errs:Error[]):void => {
+                                if (errs && errs.length) {
+                                    errors.concat(errs);
+                                }
+                                next();
+                            });
+                        },
+                        ():void => {
+                            completion(errors, <IResponse>{
+                                source : content,
+                                result : result,
+                                deps   : [],
+                                map    : {},
+                                date   : resultTime
+                            });
+                        }
+                    ]);
+                }
+            },
+
+            // результат
             (next:() => void):void => {
 
             },
