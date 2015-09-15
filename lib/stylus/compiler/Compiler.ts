@@ -26,6 +26,7 @@ import LessException = require("../Exception");
 import Postcss = require("../postcss/Postcss");
 import IPostcss = require("../postcss/IPostcss");
 import IResult = require("../postcss/IResult");
+import ISourceMap = require("../../helpers/ISourceMap");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
 
@@ -79,7 +80,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 date : result.date
                             });
                         } else if (errors && errors.length) {
-                            callback(null, {
+                            callback(null, <IResponse>{
                                 source : null,
                                 result : this.createCssErrors(errors),
                                 deps : [],
@@ -91,6 +92,11 @@ class Compiler extends BaseCompiler implements ICompiler {
                         }
                     }
                 };
+
+        var contents: ({[key: string]: Buffer}) = {};
+        var dependencies:string[] = [],
+            sourceMap:ISourceMap  = null,
+            result:string         = null;
 
         deferred([
 
@@ -219,7 +225,124 @@ class Compiler extends BaseCompiler implements ICompiler {
                 });
             },
 
-             // процессинг
+            // препроцессинг
+            (next:() => void):void => {
+                var compiler:any,
+                    includeDirectories = this.getIncludeDirectories();
+                includeDirectories.unshift(this.getSourcesDirectory());
+                compiler = stylus(content).
+                    set("filename", resolve).
+                    set("compress", true).
+                    set("sourcemap", {
+                        inline     : false,
+                        comment    : false,
+                        basePath   : "/",
+                        sourceRoot : null
+                    }).
+                    set("paths", this.getIncludeDirectories());
+                compiler.render((error:Error, css:string):void => {
+                    var deps:string[],
+                        errors:Error[] = [];
+                    if (!error) {
+                        deps = compiler.deps();
+                        if (typeOf(deps) === "array") {
+                            dependencies = deps;
+                        }
+                        if (compiler.sourcemap) {
+                            sourceMap = <ISourceMap>{
+                                version  : compiler.sourcemap.version,
+                                sources  : compiler.sourcemap.sources.map((filename: string): string => {
+                                    return path.join("/", filename);
+                                }),
+                                mappings : compiler.sourcemap.mappings,
+                                names    : compiler.sourcemap.names
+                            };
+                        }
+                        if (typeOf(css) === "string") {
+                            result = css;
+                        }
+                        next();
+                    } else {
+                        errors.push(error);
+                        deferred([
+                            // снятие блокировки
+                            (next:() => void):void => {
+                                unlock((errs:Error[]):void => {
+                                    if (errs && errs.length) {
+                                        errors.concat(errs);
+                                    }
+                                    next();
+                                });
+                            },
+                            ():void => {
+                                completion(errors, <IResponse>{
+                                    source : content,
+                                    result : null,
+                                    deps   : [],
+                                    map    : {},
+                                    date   : resultTime
+                                });
+                            }
+                        ]);
+                    }
+                });
+            },
+
+            // загрузка исходников
+            (next:() => void):void => {
+                var errors:Error[] = [];
+                parallel(sourceMap.sources.map((filename:string):((done:() => void) => void) => {
+                    return (done:() => void):void => {
+                        fs.readFile(filename, (error:Error, content:Buffer):void => {
+                            if (!error) {
+                                contents[filename] = content.toString("utf8");
+                            } else {
+                                errors.push(error);
+                            }
+                            done();
+                        });
+                    };
+                }), ():void => {
+                    if (!errors.length) {
+                        next();
+                    } else {
+                        deferred([
+                            // снятие блокировки
+                            (next:() => void):void => {
+                                unlock((errs:Error[]):void => {
+                                    if (errs && errs.length) {
+                                        errors.concat(errs);
+                                    }
+                                    next();
+                                });
+                            },
+                            ():void => {
+                                completion(errors, <IResponse>{
+                                    source : content,
+                                    result : null,
+                                    deps   : [],
+                                    map    : {},
+                                    date   : resultTime
+                                });
+                            }
+                        ]);
+                    }
+                });
+            },
+
+            // постпроцессинг
+            (next:() => void):void => {
+
+            },
+
+            (next:() => void):void => {
+                console.log("dependencies", dependencies);
+                console.log("sourceMap", sourceMap);
+                console.log("result", result);
+                console.log("contents", contents);
+            },
+
+            // процессинг
             ():void => {
                 var compiler:any,
                     postError:string = "",

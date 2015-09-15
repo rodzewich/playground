@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-tsc --newLine LF --sourceMap --noImplicitAny --removeComments --preserveConstEnums --target es5 --module commonjs ./lib/helpers/SourceCodePointCreator.ts;
-
-#for item in $(find ./lib -type f | grep "\.ts$" | sort); do
-#    tsc --newLine LF --sourceMap --noImplicitAny --removeComments --preserveConstEnums --target es5 --module commonjs ${item};
-#done
-
+for item in $(find ./lib -type f | grep "\.ts$" | sort); do
+    tsc --newLine LF --sourceMap --noImplicitAny --removeComments --preserveConstEnums --target es5 --module commonjs ${item};
+done
