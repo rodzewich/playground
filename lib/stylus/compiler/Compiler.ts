@@ -62,9 +62,13 @@ class Compiler extends BaseCompiler implements ICompiler {
         var resolve:string,
             mtime:number,
             content:string,
-            memory:IMemory    = this.getMemory(),
-            filename:string   = this.getFilename(),
-            resultTime:number = parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
+            contents: ({[key: string]: Buffer}) = {},
+            dependencies:string[] = [],
+            sourceMap:ISourceMap  = null,
+            result:string         = null,
+            memory:IMemory        = this.getMemory(),
+            filename:string       = this.getFilename(),
+            resultTime:number     = parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
             unlock:(callback?:(errors:Error[]) => void) => void,
             completion:((errors:Error[], result:IResponse) => void) =
                 (errors:Error[], result:IResponse):void => {
@@ -92,11 +96,6 @@ class Compiler extends BaseCompiler implements ICompiler {
                         }
                     }
                 };
-
-        var contents: ({[key: string]: Buffer}) = {};
-        var dependencies:string[] = [],
-            sourceMap:ISourceMap  = null,
-            result:string         = null;
 
         deferred([
 
