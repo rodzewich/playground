@@ -62,7 +62,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         var resolve:string,
             mtime:number,
             content:string,
-            contents: ({[key: string]: Buffer}) = {},
+            contents:({[key: string]: string}) = {},
             dependencies:string[] = [],
             sourceMap:ISourceMap  = null,
             result:string         = null,
