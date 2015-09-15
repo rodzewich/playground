@@ -64,42 +64,48 @@ class Compiler extends BaseCompiler implements ICompiler {
             memory:IMemory    = this.getMemory(),
             filename:string   = this.getFilename(),
             resultTime:number = parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
-            unlock:(callback?:(errors:Error[]) => void) => void;
-
-        function completion(errors:Error[], result:IResponse):void {
-            if (typeOf(callback) === "function") {
-                callback(errors, result);
-            }
-        }
+            unlock:(callback?:(errors:Error[]) => void) => void,
+            completion:((errors:Error[], result:IResponse) => void) =
+                (errors:Error[], result:IResponse):void => {
+                    if (typeOf(callback) === "function") {
+                        if (errors && errors.length && this.isThrowErrors()) {
+                            callback(errors, null);
+                        } else if (errors && errors.length && result) {
+                            callback(null, <IResponse>{
+                                source : result.source,
+                                result : this.createCssErrors(errors),
+                                deps : result.deps,
+                                map : result.map,
+                                date : result.date
+                            });
+                        } else if (errors && errors.length) {
+                            callback(null, {
+                                source : null,
+                                result : this.createCssErrors(errors),
+                                deps : [],
+                                map : {},
+                                date : resultTime
+                            });
+                        } else {
+                            callback(null, result);
+                        }
+                    }
+                };
 
         deferred([
 
+            // использование кеша
             (next:() => void):void => {
                 if (this.isCacheUsed()) {
                     memory.getItem(filename, (errors:Error[], response:IResponse):void => {
-                        var errorsArg:Error[] = null,
-                            resultArg:IResponse = null;
-                        if (!errors || !errors.length) {
-                            resultArg = response;
-                        } else if (errors && errors.length &&
-                            this.isThrowErrors()) {
-                            errorsArg = errors;
-                        } else if (errors && errors.length) {
-                            resultArg = {
-                                source: null,
-                                result: this.createCssErrors(errors),
-                                deps: [],
-                                map: {},
-                                date: resultTime
-                            };
-                        }
-                        completion(errorsArg, resultArg);
+                        completion(errors, response);
                     });
                 } else {
                     next();
                 }
             },
 
+            // поиск исходника
             (next:() => void):void => {
                 var directories:string[] = this.getIncludeDirectories(),
                     errors:Error[] = [],
@@ -122,45 +128,38 @@ class Compiler extends BaseCompiler implements ICompiler {
                     };
                 });
                 actions.push(():void => {
-                    var errorsArg:Error[] = null,
-                        resultArg:IResponse = null;
-                    if (errors.length && this.isThrowErrors()) {
-                        errorsArg = errors;
-                    } else if (errors.length) {
-                        resultArg = {
-                            source: null,
-                            result: this.createCssErrors(errors),
-                            deps: [],
-                            map: {},
-                            date: resultTime
-                        };
-                    }
-                    completion(errorsArg, resultArg);
+                    completion(errors, null);
                 });
                 deferred(actions);
             },
 
+            // проверка всех зависимостей
             (next:() => void):void => {
                 var directories:string[];
                 memory.getItem(filename, (errors:Error[], response:IResponse):void => {
-                    if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length === 0) {
+                    if ((!errors || !errors.length) &&
+                        response && response.date >= mtime &&
+                        response.deps.length === 0) {
                         completion(null, response);
-                    } else if ((!errors || !errors.length) && response && response.date >= mtime && response.deps.length !== 0) {
+                    } else if ((!errors || !errors.length) &&
+                        response && response.date >= mtime &&
+                        response.deps.length !== 0) {
                         directories = this.getIncludeDirectories();
                         directories.unshift(this.getSourcesDirectory());
                         parallel(response.deps.map((filename:string):((next:() => void) => void) => {
                             return (done:() => void):void => {
-                                var actions:((next:() => void) => void)[] = directories.map((directory:string):((next:() => void) => void) => {
-                                    var temp:string = path.join(directory, filename);
-                                    return (next:() => void):void => {
-                                        fs.stat(temp, function (error:Error, stats:fs.Stats) {
-                                            if (!error && stats.isFile()) {
-                                                mtime = Math.max(mtime, parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10));
-                                            }
-                                            next();
-                                        });
-                                    };
-                                });
+                                var actions:((next:() => void) => void)[] =
+                                    directories.map((directory:string):((next:() => void) => void) => {
+                                        var temp:string = path.join(directory, filename);
+                                        return (next:() => void):void => {
+                                            fs.stat(temp, function (error:Error, stats:fs.Stats) {
+                                                if (!error && stats.isFile()) {
+                                                    mtime = Math.max(mtime, parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10));
+                                                }
+                                                next();
+                                            });
+                                        };
+                                    });
                                 actions.push(():void => {
                                     done();
                                 });
@@ -173,41 +172,27 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 next();
                             }
                         });
-                    } else if (errors && errors.length && this.isThrowErrors()) {
-                        completion(errors, null);
                     } else if (errors && errors.length) {
-                        completion(null, <IResponse>{
-                            source: null,
-                            result: this.createCssErrors(errors),
-                            deps: [],
-                            map: {},
-                            date: resultTime
-                        });
+                        completion(errors, null);
                     } else {
                         next();
                     }
                 });
             },
 
+            // установка блокировки
             (next:() => void):void => {
                 memory.lock(filename, (errors:Error[], result:(callback?:(errors:Error[]) => void) => void):void => {
                     if (!errors || !errors.length) {
                         unlock = result;
                         next();
-                    } else if (this.isThrowErrors()) {
-                        completion(errors, null);
                     } else {
-                        completion(null, <IResponse>{
-                            source: null,
-                            result: this.createCssErrors(errors),
-                            deps: [],
-                            map: {},
-                            date: resultTime
-                        });
+                        completion(errors, null);
                     }
                 });
             },
 
+            // контент файла
             (next:() => void):void => {
                 var temp:Error[] = [];
                 fs.readFile(resolve, (error:Error, buffer:Buffer):void => {
@@ -217,6 +202,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     } else {
                         temp.push(error);
                         deferred([
+                            // снятие блокировки
                             (next:() => void):void => {
                                 unlock((errors:Error[]):void => {
                                     if (errors && errors.length) {
@@ -226,26 +212,14 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 });
                             },
                             ():void => {
-                                var errorsArg:Error[] = null,
-                                    resultArg:IResponse = null;
-                                if (this.isThrowErrors()) {
-                                    errorsArg = temp;
-                                } else {
-                                    resultArg = {
-                                        source: null,
-                                        result: this.createCssErrors(temp),
-                                        deps: [],
-                                        map: {},
-                                        date: resultTime
-                                    };
-                                }
-                                completion(errorsArg, resultArg);
+                                completion(temp, null);
                             }
                         ]);
                     }
                 });
             },
 
+             // процессинг
             ():void => {
                 var compiler:any,
                     postError:string = "",
@@ -332,6 +306,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             deferred([
                                 (next:() => void):void => {
                                     deferred([
+                                        // postcss processing
                                         (callback:() => void):void => {
                                             var postcss:IPostcss = new Postcss();
                                             postcss.compile(value.result, value.map, (error:Error, res:IResult):void => {
@@ -401,13 +376,17 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 });
                             },
                             ():void => {
-                                completion(null, <IResponse>{
-                                    source: null,
-                                    result: this.createCssErrors(temp),
-                                    deps: [],
-                                    map: {},
-                                    date: resultTime
-                                });
+                                if (this.isThrowErrors()) {
+                                    completion(temp, null);
+                                } else {
+                                    completion(null, <IResponse>{
+                                        source: null,
+                                        result: this.createCssErrors(temp),
+                                        deps: [],
+                                        map: {},
+                                        date: resultTime
+                                    });
+                                }
                             },
                         ]);
                     }

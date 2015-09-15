@@ -43,9 +43,9 @@ abstract class Compiler extends Base implements ICompiler {
         }).then((result: any): void => {
             var sm = new sourceMap.SourceMapConsumer(map);
             result.warnings().map((item: any): IWarning => {
-                var line: number;
-                var column: number;
-                var filename: string;
+                var line:number,
+                    column:number,
+                    filename:string;
                 sm.eachMapping((map): void => {
                     if (item.line >= map.generatedLine && item.column >= map.generatedColumn) {
                         line     = map.originalLine;
@@ -53,8 +53,14 @@ abstract class Compiler extends Base implements ICompiler {
                         filename = map.source;
                     }
                 });
-                console.log("filename: ", filename, ["(", line, ":", column, ")"].join(""));
-                return null;
+                return new Warning({
+                    text: string,
+                    plugin: string,
+                    filename: string,
+                    content: string,
+                    line: number,
+                    column: number
+                });
             });
             callback(null, <IResult>{
                 result   : result.css,

@@ -302,11 +302,11 @@ class Compiler extends BaseCompiler implements ICompiler {
                     omitSourceMapUrl  : false,
                     sourceMapContents : true
                 }, (error: sass.SassError, result: sass.Result): void => {
-                    var temp: Error[]   = [],
-                        value: IResponse,
-                        deps: string[],
-                        errors: Error[] = [],
-                        css: string;
+                    var temp:Error[] = [],
+                        value:IResponse,
+                        deps:string[],
+                        errors:Error[] = [],
+                        css:string;
 
                     if (!error) {
 
