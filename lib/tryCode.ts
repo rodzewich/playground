@@ -4,7 +4,9 @@ class TryCode {
 
     private _error:Error = null;
 
-    private _catched:boolean = false;
+    private _catch:boolean = false;
+
+    private _finaly:boolean = false;
 
     constructor(callback:() => void) {
         try {
@@ -17,15 +19,16 @@ class TryCode {
     }
 
     public catch(type:any, callback:(error:Error) => void):TryCode {
-        if (!this._catched && this._error instanceof type) {
-            this._catched = true;
+        if (!this._catch && this._error instanceof type) {
+            this._catch = true;
             callback(this._error);
         }
         return this;
     }
 
-    public finaly(callback:() => void): void {
-        if (typeOf(callback) === "function") {
+    public finaly(callback:() => void):void {
+        if (!this._finaly && typeOf(callback) === "function") {
+            this._finaly = true;
             callback();
         }
     }
