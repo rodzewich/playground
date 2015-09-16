@@ -16,12 +16,18 @@ class TryCode {
         }
     }
 
-    public catchException(type:any, callback:(error:Error) => void):TryCode {
+    public catch(type:any, callback:(error:Error) => void):TryCode {
         if (!this._catched && this._error instanceof type) {
             this._catched = true;
             callback(this._error);
         }
         return this;
+    }
+
+    public finaly(callback:() => void): void {
+        if (typeOf(callback) === "function") {
+            callback();
+        }
     }
 
 }
