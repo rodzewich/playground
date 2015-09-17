@@ -1,4 +1,4 @@
-import BaseDaemon = require("../../compiler/daemon/Daemon");
+import BaseDaemon = require("../../cssPreProcessorAbstract/daemon/Daemon");
 import IOptions = require("./IOptions");
 import IDaemon = require("./IDaemon");
 import IRequest = require("../client/IRequest");

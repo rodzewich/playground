@@ -10,9 +10,9 @@ import deferred = require("../deferred");
 import parallel = require("../parallel");
 import mkdir = require("../mkdir");
 import typeOf = require("../typeOf");
-import IManager = require("../less/manager/IManager");
-import Manager = require("../less/manager/Manager");
-import IResponse = require("../less/client/IResponse");
+import IManager = require("../cssPreProcessorForLess/manager/IManager");
+import Manager = require("../cssPreProcessorForLess/manager/Manager");
+import IResponse = require("../cssPreProcessorForLess/client/IResponse");
 import log4js = require("../../logger");
 import glob = require("glob");
 import accessLog = require("../accessLog");
@@ -140,17 +140,17 @@ export function init(options:InitOptions, done:(errors:Error[]) => void):void {
         },
         ():void => {
             manager = new Manager({
-                location: path.join(temporaryDirectory, "less.sock"),
-                memoryLocation: memoryLocation,
-                sourcesDirectory: sourcesDirectory,
-                includeDirectories: includeDirectories,
-                webRootDirectory: webRootDirectory,
-                errorBackgroundColor: errorBackgroundColor,
-                errorTextColor: errorTextColor,
-                errorBlockPadding: errorBlockPadding,
-                errorFontSize: errorFontSize,
-                numberOfProcesses: numberOfProcesses,
-                useCache: useCache
+                location             : path.join(temporaryDirectory, "less.sock"),
+                memoryLocation       : memoryLocation,
+                sourcesDirectory     : sourcesDirectory,
+                includeDirectories   : includeDirectories,
+                webRootDirectory     : webRootDirectory,
+                errorBackgroundColor : errorBackgroundColor,
+                errorTextColor       : errorTextColor,
+                errorBlockPadding    : errorBlockPadding,
+                errorFontSize        : errorFontSize,
+                numberOfProcesses    : numberOfProcesses,
+                useCache             : useCache
             });
             manager.connect((errors:Error[]):void => {
                 if (typeOf(done) === "function") {

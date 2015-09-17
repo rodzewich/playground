@@ -4,12 +4,10 @@ import typeOf = require("../../typeOf");
 import isDefined = require("../../isDefined");
 import IOptions = require("./IOptions");
 import IClient = require("./IClient");
-import BaseClient = require("../../compiler/client/Client");
+import BaseClient = require("../../cssPreProcessorAbstract/client/Client");
 import IResponse = require("./IResponse");
 import IRequest = require("./IRequest");
 import path = require("path");
-import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
-import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
 
 // todo использовать http://lesscss.org/usage/#plugins-list-of-less-plugins
 // todo использовать https://github.com/less/less-plugin-clean-css
@@ -19,8 +17,6 @@ import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelpe
 
 class Client extends BaseClient {
 
-    private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
-
     constructor(options:IOptions) {
         super(options);
         if (options && isDefined(options.includeDirectories)) {
@@ -28,30 +24,8 @@ class Client extends BaseClient {
         }
     }
 
-    protected getIncludeDirectories():string[] {
-        return this._includeDirectories.getDirectories();
-    }
-
-    protected setIncludeDirectories(value:string[]):void {
-        this._includeDirectories.setDirectories(value)
-    }
-
     protected getDaemon():string {
         return path.join(__dirname, "../daemon.js");
-    }
-
-    protected getRequest():IRequest {
-        return <IRequest>{
-            filename: null,
-            sourcesDirectory: this.getSourcesDirectory(),
-            includeDirectories: this.getIncludeDirectories(),
-            errorBackgroundColor: this.getCssErrorsBackgroundColor(),
-            errorTextColor: this.getCssErrorsTextColor(),
-            errorBlockPadding: this.getCssErrorsBlockPadding(),
-            errorFontSize: this.getCssErrorsFontSize(),
-            webRootDirectory: this.getWebRootDirectory(),
-            useCache: this.isCacheUsed()
-        };
     }
 
     public compile(filename:string, callback?:(errors:Error[], result:IResponse) => void):void {

@@ -44,35 +44,12 @@ class Compiler extends BaseCompiler implements ICompiler {
         return false;
     }
 
-    protected getIndentType(): string {
-        // todo: space or tab
-        return "space";
+    protected isUsedPostProcessing() {
+        return true;
     }
 
-    protected getIndentWidth(): number {
-        return 2;
-    }
-
-    protected getLineFeed(): string {
-        // todo
-        // Used to determine whether to use cr, crlf, lf or lfcr sequence for line break. UNIX=LF, MACOS=LF, OLD_MACOS=CR, WINDOWS=RCLF
-        return "lf";
-    }
-
-    protected getOutputStyle(): string {
-        // Determines the output format of the final CSS style.
-        // Values: nested, expanded, compact, compressed
-        return "compressed";
-    }
-
-    protected getPrecision(): number {
-        // Used to determine how many digits after the decimal will be allowed. For instance, if you had a decimal number of 1.23456789 and a precision of 5, the result will be 1.23457 in the final CSS
-        return 5;
-    }
-
-    protected isSourceComments(): boolean {
-        // true enables additional debugging information in the output file as CSS comments
-        return false;
+    protected getExtensions():string [] {
+        return [];
     }
 
     protected getIncludeDirectories(): string[] {
@@ -148,25 +125,28 @@ class Compiler extends BaseCompiler implements ICompiler {
             (next:() => void):void => {
                 var directories:string[] = this.getIncludeDirectories(),
                     errors:Error[] = [],
-                    actions:((next:() => void) => void)[];
+                    actions:((next:() => void) => void)[] = [];
                 directories.unshift(this.getSourcesDirectory());
-                actions = directories.map((directory:string):((next:() => void) => void) => {
-                    return (callback:() => void):void => {
-                        resolve = path.join(directory, filename + ".styl");
-                        fs.stat(resolve, (error:Error, stats:fs.Stats):void => {
-                            if (!error && stats.isFile()) {
-                                mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
-                                next();
-                            } else {
-                                if (error && BaseException.getCode(error) !== "ENOENT") {
-                                    errors.push(error);
+                directories.forEach((directory:string):void => {
+                    this.getExtensions().forEach((extension:string):void => {
+                        actions.push((callback:() => void):void => {
+                            resolve = path.join(directory, filename + extension);
+                            fs.stat(resolve, (error:Error, stats:fs.Stats):void => {
+                                if (!error && stats.isFile()) {
+                                    mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
+                                    callback();
+                                } else {
+                                    if (error && BaseException.getCode(error) !== "ENOENT") {
+                                        errors.push(error);
+                                    }
+                                    next();
                                 }
-                                callback();
-                            }
+                            });
                         });
-                    };
+                    });
                 });
                 actions.push(():void => {
+                    console.log();
                     completion(errors, null);
                 });
                 deferred(actions);
@@ -264,7 +244,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                 this.preProcessing({
                     filename : resolve,
                     content  : content
-                }, (errs:Error[], res:{css: string; maps: string; deps: string[];}):void => {
+                }, (errs:Error[], res:{css: string; maps: any; deps: string[];}):void => {
                     if (!errs || !errs.length) {
                         sourceMap    = res.maps;
                         dependencies = res.deps;
@@ -338,41 +318,46 @@ class Compiler extends BaseCompiler implements ICompiler {
             },
 
             // постпроцессинг
-            /*(next:() => void):void => {
-             var postcss:IPostcss = new Postcss();
-             postcss.compile(result, sourceMap, contents, (error:Error, res:IResult):void => {
-             if (!error) {
-             result = res.result;
-             if (this.isShowWarnings()) {
-             // todo: show warnings
-             res.messages.map();
-             }
-             sourceMap = res.map;
-             next();
-             } else {
-             deferred([
-             // снятие блокировки
-             (next:() => void):void => {
-             unlock((errs:Error[]):void => {
-             if (errs && errs.length) {
-             errors = errors.concat(errs);
-             }
-             next();
-             });
-             },
-             ():void => {
-             completion([error], <IResponse>{
-             source : content,
-             result : result,
-             deps   : [],
-             map    : {},
-             date   : resultTime
-             });
-             }
-             ]);
-             }
-             });
-             },*/
+            (next:() => void):void => {
+                var errors: Error[] = [];
+                if (this.isUsedPostProcessing()) {
+                    this.postProcessing({
+                        maps     : sourceMap,
+                        content  : content,
+                        contents : contents
+                    }, (errs:Error[], res:{css: string; maps: string;}):void => {
+                        if (!errs || !errs.length) {
+                            result    = res.css;
+                            sourceMap = res.maps;
+                            next();
+                        } else {
+                            errors = errors.concat(errs);
+                            deferred([
+                                // снятие блокировки
+                                (next:() => void):void => {
+                                    unlock((errs:Error[]):void => {
+                                        if (errs && errs.length) {
+                                            errors = errors.concat(errs);
+                                        }
+                                        next();
+                                    });
+                                },
+                                ():void => {
+                                    completion(errors, <IResponse>{
+                                        source : content,
+                                        result : null,
+                                        deps   : [],
+                                        map    : {},
+                                        date   : resultTime
+                                    });
+                                }
+                            ]);
+                        }
+                    });
+                } else {
+                    next();
+                }
+            },
 
             // обрезание зависимостей
             (next:() => void):void => {
@@ -530,12 +515,46 @@ class Compiler extends BaseCompiler implements ICompiler {
 
     }
 
-    protected preProcessing(options?:{filename: string; content: string;}, callback:(error:Error, result:{css: string; maps: string; deps: string[];}) => void):void {
+    protected preProcessing(options:{filename: string; content: string;}, callback:(errors:Error[], result:{css: string; maps: any; deps: string[];}) => void):void {
         callback(null, null);
     }
 
-    protected postProcessing(): void {
-
+    protected postProcessing(options:{content: string; maps: ISourceMap; contents: ({[key: string]: string})}, callback:(errors:Error[], result:{css: string; maps: ISourceMap;}) => void):void {
+        // todo: заглушка
+        callback(null, {css: options.content, maps: options.maps});
+        /*var postcss:IPostcss = new Postcss();
+        postcss.compile(result, sourceMap, contents, (error:Error, res:IResult):void => {
+            if (!error) {
+                result = res.result;
+                if (this.isShowWarnings()) {
+                    // todo: show warnings
+                    res.messages.map();
+                }
+                sourceMap = res.map;
+                next();
+            } else {
+                deferred([
+                    // снятие блокировки
+                    (next:() => void):void => {
+                        unlock((errs:Error[]):void => {
+                            if (errs && errs.length) {
+                                errors = errors.concat(errs);
+                            }
+                            next();
+                        });
+                    },
+                    ():void => {
+                        completion([error], <IResponse>{
+                            source : content,
+                            result : result,
+                            deps   : [],
+                            map    : {},
+                            date   : resultTime
+                        });
+                    }
+                ]);
+            }
+        });*/
     }
 
 }

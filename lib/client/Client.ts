@@ -15,7 +15,7 @@ class Client implements IClient {
 
     private _socket:net.Socket;
 
-    private _started:boolean;
+    private _started:boolean = false;
 
     private _increment:number = 0;
 
@@ -53,7 +53,7 @@ class Client implements IClient {
 
     protected call(callback:(errors:Error[], response:any) => void, ...args:any[]):void {
         if (!this._socket) {
-            throw new Exception("bla bla bla");
+            throw new Exception("Client wasn't connect");
         }
         if (typeof callback !== "function") {
             throw new Exception("bla bla bla");

@@ -43,24 +43,24 @@ class Manager extends Client implements IManager {
 
     protected createClient(location:string):IClient {
         return new Client({
-            location: location,
-            memoryLocation: this.getMemoryLocation(),
-            sourcesDirectory: this.getSourcesDirectory(),
-            errorBackgroundColor: this.getCssErrorsBackgroundColor(),
-            errorTextColor: this.getCssErrorsTextColor(),
-            errorBlockPadding: this.getCssErrorsBlockPadding(),
-            errorFontSize: this.getCssErrorsFontSize(),
-            webRootDirectory: this.getWebRootDirectory(),
-            useCache: this.isCacheUsed()
+            location             : location,
+            memoryLocation       : this.getMemoryLocation(),
+            sourcesDirectory     : this.getSourcesDirectory(),
+            errorBackgroundColor : this.getCssErrorsBackgroundColor(),
+            errorTextColor       : this.getCssErrorsTextColor(),
+            errorBlockPadding    : this.getCssErrorsBlockPadding(),
+            errorFontSize        : this.getCssErrorsFontSize(),
+            webRootDirectory     : this.getWebRootDirectory(),
+            useCache             : this.isCacheUsed()
         });
     }
 
     protected formatLocationById(id:any):string {
-        var location:string = this.getMeLocation().getLocation(),
+        var location:string   = this.getMeLocation().getLocation(),
             identifier:string = String(id),
-            extension:string = path.extname(location),
-            directory:string = path.dirname(location),
-            filename:string = path.basename(location, extension);
+            extension:string  = path.extname(location),
+            directory:string  = path.dirname(location),
+            filename:string   = path.basename(location, extension);
         return path.join(directory, [filename, "-", identifier, extension].join(""));
     }
 
@@ -127,20 +127,21 @@ class Manager extends Client implements IManager {
             actions:((done:() => void) => void)[] = [],
             numberOfProcesses:number = this.getNumberOfProcesses(),
             processNumber:number,
-            createAction:(processNumber:number) => ((done:() => void) => void) = (processNumber:number):((done:() => void) => void) => {
-                return (done:() => void):void => {
-                    var client:IClient = this.createClient(this.formatLocationById(processNumber));
-                    client.connect((errs:Error[]):void => {
-                        if (!errors || !errors.length) {
-                            this._pool.push(client);
-                            this._clients.push(client);
-                        } else {
-                            errors.concat(errs);
-                        }
-                        done();
-                    })
+            createAction:(processNumber:number) => ((done:() => void) => void) =
+                (processNumber:number):((done:() => void) => void) => {
+                    return (done:() => void):void => {
+                        var client:IClient = this.createClient(this.formatLocationById(processNumber));
+                        client.connect((errs:Error[]):void => {
+                            if (!errors || !errors.length) {
+                                this._pool.push(client);
+                                this._clients.push(client);
+                            } else {
+                                errors.concat(errs);
+                            }
+                            done();
+                        })
+                    };
                 };
-            };
         if (this._connected) {
             setTimeout(():void => {
                 if (typeof callback === "function") {
@@ -169,7 +170,6 @@ class Manager extends Client implements IManager {
                             }
                         }, 0);
                     };
-
                 this._connecting = false;
                 if (!errors.length) {
                     this._connected = true;

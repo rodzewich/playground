@@ -16,8 +16,8 @@ var fs                   = require("fs"),
     configure            = require("./lib/configure"),
     processingTypescript = false,
     processingLess       = true,
-    processingStylus     = true,
-    processingSass       = true,
+    processingStylus     = false,
+    processingSass       = false,
     processingSoy        = false,
     spawn                = require("child_process").spawn,
     charset;
@@ -159,49 +159,61 @@ deferred([
                 },
                 /*initTypescript,*/
                 function (done) {
-                    less.init({
-                        temporaryDirectory   : temporaryDirectory,
-                        memoryLocation       : memorySocketAddress,
-                        sourcesDirectory     : path.join(__dirname, "styles"),
-                        includeDirectories   : [path.join(__dirname, "less_include_dir")],
-                        webRootDirectory     : "/",
-                        useCache             : false,
-                        errorBackgroundColor : "#ffff00",
-                        errorTextColor       : "#000000",
-                        errorBlockPadding    : "10px",
-                        errorFontSize        : "13px",
-                        numberOfProcesses    : 5
-                    }, done);
+                    if (processingLess) {
+                        less.init({
+                            temporaryDirectory   : temporaryDirectory,
+                            memoryLocation       : memorySocketAddress,
+                            sourcesDirectory     : path.join(__dirname, "styles"),
+                            includeDirectories   : [path.join(__dirname, "less_include_dir")],
+                            webRootDirectory     : "/",
+                            useCache             : false,
+                            errorBackgroundColor : "#ffff00",
+                            errorTextColor       : "#000000",
+                            errorBlockPadding    : "10px",
+                            errorFontSize        : "13px",
+                            numberOfProcesses    : 5
+                        }, done);
+                    } else {
+                        done();
+                    }
                 },
                 function (done) {
-                    stylus.init({
-                        temporaryDirectory   : temporaryDirectory,
-                        memoryLocation       : memorySocketAddress,
-                        sourcesDirectory     : path.join(__dirname, "styles"),
-                        includeDirectories   : [path.join(__dirname, "less_include_dir")],
-                        webRootDirectory     : "/",
-                        useCache             : false,
-                        errorBackgroundColor : "#ffff00",
-                        errorTextColor       : "#000000",
-                        errorBlockPadding    : "10px",
-                        errorFontSize        : "13px",
-                        numberOfProcesses    : 5
-                    }, done);
+                    if (processingStylus) {
+                        stylus.init({
+                            temporaryDirectory   : temporaryDirectory,
+                            memoryLocation       : memorySocketAddress,
+                            sourcesDirectory     : path.join(__dirname, "styles"),
+                            includeDirectories   : [path.join(__dirname, "less_include_dir")],
+                            webRootDirectory     : "/",
+                            useCache             : false,
+                            errorBackgroundColor : "#ffff00",
+                            errorTextColor       : "#000000",
+                            errorBlockPadding    : "10px",
+                            errorFontSize        : "13px",
+                            numberOfProcesses    : 5
+                        }, done);
+                    } else {
+                        done();
+                    }
                 },
                 function (done) {
-                    sass.init({
-                        temporaryDirectory   : temporaryDirectory,
-                        memoryLocation       : memorySocketAddress,
-                        sourcesDirectory     : path.join(__dirname, "styles"),
-                        includeDirectories   : [path.join(__dirname, "less_include_dir")],
-                        webRootDirectory     : "/",
-                        useCache             : false,
-                        errorBackgroundColor : "#ffff00",
-                        errorTextColor       : "#000000",
-                        errorBlockPadding    : "10px",
-                        errorFontSize        : "13px",
-                        numberOfProcesses    : 5
-                    }, done);
+                    if (processingSass) {
+                        sass.init({
+                            temporaryDirectory   : temporaryDirectory,
+                            memoryLocation       : memorySocketAddress,
+                            sourcesDirectory     : path.join(__dirname, "styles"),
+                            includeDirectories   : [path.join(__dirname, "less_include_dir")],
+                            webRootDirectory     : "/",
+                            useCache             : false,
+                            errorBackgroundColor : "#ffff00",
+                            errorTextColor       : "#000000",
+                            errorBlockPadding    : "10px",
+                            errorFontSize        : "13px",
+                            numberOfProcesses    : 5
+                        }, done);
+                    } else {
+                        done();
+                    }
                 },
                 /*initSoy*/
             ],
