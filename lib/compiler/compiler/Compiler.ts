@@ -3,8 +3,6 @@
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
 import isDefined = require("../../isDefined");
-import IMemory = require("../../memory/client/IClient");
-import Exception = require("../../Exception");
 import CssErrorsHelper = require("../../helpers/CssErrorsHelper");
 import ICssErrorsHelper = require("../../helpers/ICssErrorsHelper");
 import WebRootDirectoryHelper = require("../../helpers/WebRootDirectoryHelper");
@@ -15,8 +13,6 @@ import SourcesDirectoryHelper = require("../../helpers/SourcesDirectoryHelper");
 import ISourcesDirectoryHelper = require("../../helpers/ISourcesDirectoryHelper");
 
 abstract class Compiler implements ICompiler {
-
-    private _memory:IMemory;
 
     private _filename:string;
 
@@ -120,14 +116,6 @@ abstract class Compiler implements ICompiler {
 
     protected createCssErrors(errors:Error[]):string {
         return this._cssErrors.create(errors)
-    }
-
-    public setMemory(value:IMemory):void {
-        this._memory = value;
-    }
-
-    public getMemory():IMemory {
-        return this._memory;
     }
 
     protected getFilename():string {

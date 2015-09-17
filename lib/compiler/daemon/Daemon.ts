@@ -10,21 +10,11 @@ import IMemory = require("../../memory/client/IClient");
 
 abstract class Daemon extends BaseDaemon implements IDaemon {
 
-    private _memory:IMemory;
-
     constructor(options:IOptions) {
         super(options);
         if (options && isDefined(options.memory)) {
             this.setMemory(options.memory);
         }
-    }
-
-    protected setMemory(value:IMemory):void {
-        this._memory = value;
-    }
-
-    protected getMemory():IMemory {
-        return this._memory;
     }
 
     abstract compile(options:IRequest, callback:(errors:Error[], result:IResponse) => void):void;

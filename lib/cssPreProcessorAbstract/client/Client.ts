@@ -2,11 +2,9 @@
 
 import typeOf = require("../../typeOf");
 import IOptions = require("./IOptions");
-import IClient = require("./IClient");
 import BaseClient = require("../../compiler/client/Client");
 import IResponse = require("./IResponse");
 import IRequest = require("./IRequest");
-import path = require("path");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
 
@@ -29,21 +27,17 @@ class Client extends BaseClient {
         this._includeDirectories.setDirectories(value);
     }
 
-    protected getDaemon():string {
-        return path.join(__dirname, "../daemon.js");
-    }
-
     protected getRequest():IRequest {
         return <IRequest>{
-            filename: null,
-            sourcesDirectory: this.getSourcesDirectory(),
-            includeDirectories: this.getIncludeDirectories(),
-            errorBackgroundColor: this.getCssErrorsBackgroundColor(),
-            errorTextColor: this.getCssErrorsTextColor(),
-            errorBlockPadding: this.getCssErrorsBlockPadding(),
-            errorFontSize: this.getCssErrorsFontSize(),
-            webRootDirectory: this.getWebRootDirectory(),
-            useCache: this.isCacheUsed()
+            filename             : null,
+            sourcesDirectory     : this.getSourcesDirectory(),
+            includeDirectories   : this.getIncludeDirectories(),
+            errorBackgroundColor : this.getCssErrorsBackgroundColor(),
+            errorTextColor       : this.getCssErrorsTextColor(),
+            errorBlockPadding    : this.getCssErrorsBlockPadding(),
+            errorFontSize        : this.getCssErrorsFontSize(),
+            webRootDirectory     : this.getWebRootDirectory(),
+            useCache             : this.isCacheUsed()
         };
     }
 
