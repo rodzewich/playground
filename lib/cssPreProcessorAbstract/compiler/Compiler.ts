@@ -146,7 +146,6 @@ class Compiler extends BaseCompiler implements ICompiler {
                     });
                 });
                 actions.push(():void => {
-                    console.log();
                     completion(errors, null);
                 });
                 deferred(actions);
