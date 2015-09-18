@@ -9,16 +9,8 @@
 import BaseCompiler = require("../../cssPreProcessorAbstract/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
-import isDefined = require("../../isDefined");
-import deferred = require("../../deferred");
-import parallel = require("../../parallel");
-import IMemory = require("../../memory/client/IClient");
-import IResponse = require("../client/IResponse");
 import less = require("less");
 import path = require("path");
-import fs = require("fs");
-import BaseException = require("../../Exception");
-import LessException = require("../LessException");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -47,6 +39,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                     deps : result.imports || []
                 });
             } else {
+                // todo: use LessException
                 callback([error], null);
             }
         });

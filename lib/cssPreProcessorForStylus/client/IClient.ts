@@ -1,4 +1,4 @@
-import IBaseClient = require("../../compiler/client/IClient");
+import IBaseClient = require("../../cssPreProcessorAbstract/client/IClient");
 import IResponse = require("./IResponse");
 
 interface IClient extends IBaseClient {

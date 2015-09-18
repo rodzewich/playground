@@ -3,6 +3,7 @@ import IOptions = require("./IOptions");
 import BaseManager = require("../../compiler/manager/Manager");
 import IClient = require("../client/IClient");
 import Client = require("../client/Client");
+import IClientOptions = require("../client/IOptions");
 import typeOf = require("../../typeOf");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
@@ -27,7 +28,11 @@ class Manager extends BaseManager {
     }
 
     protected createClient(location:string):IClient {
-        return new Client({
+        return new Client(this.createOptions(location));
+    }
+
+    protected createOptions(location:string): IClientOptions {
+        return {
             location             : location,
             memoryLocation       : this.getMemoryLocation(),
             sourcesDirectory     : this.getSourcesDirectory(),
@@ -38,7 +43,7 @@ class Manager extends BaseManager {
             errorBlockPadding    : this.getCssErrorsBlockPadding(),
             errorFontSize        : this.getCssErrorsFontSize(),
             webRootDirectory     : this.getWebRootDirectory()
-        });
+        };
     }
 
 }
