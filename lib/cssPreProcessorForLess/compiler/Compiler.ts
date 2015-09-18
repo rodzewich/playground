@@ -42,9 +42,9 @@ class Compiler extends BaseCompiler implements ICompiler {
         }, (error:Error, result:less.Result):void => {
             if (!error) {
                 callback(null, {
-                    css: "",
-                    maps: JSON.parse(String(result.map || "{}")), // todo: error place
-                    deps: result.imports || []
+                    css  : result.css,
+                    maps : JSON.parse(String(result.map || "{}")), // todo: error place
+                    deps : result.imports || []
                 });
             } else {
                 callback([error], null);

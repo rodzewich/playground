@@ -90,17 +90,17 @@ class Compiler extends BaseCompiler implements ICompiler {
                             callback(null, <IResponse>{
                                 source : result.source,
                                 result : this.createCssErrors(errors),
-                                deps : result.deps,
-                                map : result.map,
-                                date : result.date
+                                deps   : result.deps,
+                                map    : result.map,
+                                date   : result.date
                             });
                         } else if (errors && errors.length) {
                             callback(null, <IResponse>{
                                 source : null,
                                 result : this.createCssErrors(errors),
-                                deps : [],
-                                map : {},
-                                date : resultTime
+                                deps   : [],
+                                map    : {},
+                                date   : resultTime
                             });
                         } else {
                             callback(null, result);
@@ -134,12 +134,12 @@ class Compiler extends BaseCompiler implements ICompiler {
                             fs.stat(resolve, (error:Error, stats:fs.Stats):void => {
                                 if (!error && stats.isFile()) {
                                     mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
-                                    callback();
+                                    next();
                                 } else {
                                     if (error && BaseException.getCode(error) !== "ENOENT") {
                                         errors.push(error);
                                     }
-                                    next();
+                                    callback();
                                 }
                             });
                         });
@@ -248,6 +248,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         sourceMap    = res.maps;
                         dependencies = res.deps;
                         result       = res.css;
+                        next();
                     } else {
                         errors = errors.concat(errs);
                         deferred([
@@ -277,7 +278,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             // загрузка исходников
             (next:() => void):void => {
                 var errors:Error[] = [];
-                parallel(sourceMap.sources.map((filename:string):((done:() => void) => void) => {
+                parallel((sourceMap.sources || []).map((filename:string):((done:() => void) => void) => {
                     return (done:() => void):void => {
                         fs.readFile(filename, (error:Error, content:Buffer):void => {
                             if (!error) {
@@ -322,7 +323,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                 if (this.isUsedPostProcessing()) {
                     this.postProcessing({
                         maps     : sourceMap,
-                        content  : content,
+                        content  : result,
                         contents : contents
                     }, (errs:Error[], res:{css: string; maps: string;}):void => {
                         if (!errs || !errs.length) {
@@ -416,7 +417,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                 var errors: Error[] = [],
                     includeDirectories = this.getIncludeDirectories();
                 includeDirectories.unshift(this.getSourcesDirectory());
-                sourceMap.sources = sourceMap.sources.map((item:string):string => {
+                sourceMap.sources = (sourceMap.sources || []).map((item:string):string => {
                     var index:number,
                         length:number    = includeDirectories.length,
                         directory:string = path.dirname(filename),
