@@ -40,11 +40,11 @@ class Compiler extends BaseCompiler implements ICompiler {
         }
     }
 
-    protected isThrowErrors(): boolean {
+    protected isThrowErrors():boolean {
         return false;
     }
 
-    protected isUsedPostProcessing() {
+    protected isUsedPostProcessing():boolean {
         return true;
     }
 
