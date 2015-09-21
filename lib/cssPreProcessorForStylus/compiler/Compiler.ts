@@ -13,30 +13,12 @@
 import BaseCompiler = require("../../cssPreProcessorAbstract/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
-import typeOf = require("../../typeOf");
-import deferred = require("../../deferred");
-import parallel = require("../../parallel");
-import IMemory = require("../../memory/client/IClient");
-import IResponse = require("../client/IResponse");
 import stylus = require("stylus");
-import path = require("path");
-import fs = require("fs");
-import BaseException = require("../../Exception");
-import LessException = require("../Exception");
-import Postcss = require("../postcss/Postcss");
-import IPostcss = require("../postcss/IPostcss");
-import IResult = require("../postcss/IResult");
-import ISourceMap = require("../../helpers/ISourceMap");
-import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
-import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
     constructor(options:IOptions) {
         super(options);
-        if (options && typeOf(options.includeDirectories) !== "undefined") {
-            this.setIncludeDirectories(options.includeDirectories);
-        }
     }
 
     protected getExtensions():string [] {
