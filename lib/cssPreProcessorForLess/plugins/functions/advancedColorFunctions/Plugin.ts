@@ -1,7 +1,7 @@
 import PluginBase = require("../Plugin");
 import IPlugin = require("../IPlugin");
-import LessPlugin = require("less-plugin-advanced-color-functions");
 import Name = require("../../Name");
+import LessPlugin = require("less-plugin-advanced-color-functions");
 
 class Plugin extends PluginBase implements IPlugin {
 
