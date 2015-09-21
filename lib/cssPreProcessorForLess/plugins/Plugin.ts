@@ -4,19 +4,23 @@ abstract class Plugin implements IPlugin {
 
     private _used:boolean = true;
 
-    public isUsed(): boolean {
+    public isUsed():boolean {
         return this.getIsUsed();
     }
 
-    public getIsUsed(): boolean {
+    public getIsUsed():boolean {
         return this._used;
     }
 
-    public setIsUsed(value: boolean): void {
+    public setIsUsed(value:boolean):void {
         this._used = value;
     }
 
-    abstract getInstance(): any;
+    abstract getInstance():any;
+
+    abstract getType():string;
+
+    abstract getName():string;
 
 }
 

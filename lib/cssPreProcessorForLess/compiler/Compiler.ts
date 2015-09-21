@@ -24,7 +24,7 @@ import LessPluginFlexboxgrid = require('less-plugin-flexboxgrid');
 import LessPluginIonic = require('less-plugin-ionic');
 import LessPluginLessHat = require('less-plugin-lesshat');
 import LessPluginSkeleton = require('less-plugin-skeleton');
-import LessPluginAdvancedColorFunctions = require("less-plugin-advanced-color-functions");
+//import LessPluginAdvancedColorFunctions = require("less-plugin-advanced-color-functions");
 import LessPluginCubehelix = require("less-plugin-cubehelix");
 
 class Compiler extends BaseCompiler implements ICompiler {
@@ -122,9 +122,9 @@ class Compiler extends BaseCompiler implements ICompiler {
         if (this.isUsedSkeleton()) {
             plugins.push(new LessPluginSkeleton());
         }
-        if (this.isUsedAdvancedColorFunctions()) {
+        /*if (this.isUsedAdvancedColorFunctions()) {
             plugins.push(new LessPluginAdvancedColorFunctions());
-        }
+        }*/
         if (this.isUsedCubehelix()) {
             plugins.push(new LessPluginCubehelix());
         }
