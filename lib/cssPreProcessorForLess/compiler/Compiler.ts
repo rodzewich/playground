@@ -128,6 +128,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         if (this.isUsedCubehelix()) {
             plugins.push(new LessCubehelix());
         }
+        // todo: sort by priorities
         return plugins;
     }
 
