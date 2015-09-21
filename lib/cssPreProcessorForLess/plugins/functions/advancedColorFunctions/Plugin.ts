@@ -5,8 +5,8 @@ import LessPlugin = require("less-plugin-advanced-color-functions");
 
 class Plugin extends PluginBase implements IPlugin {
 
-    public getName():string {
-        return Name.ADVANCED_COLOR_FUNCTIONS.getName();
+    public getName():Name {
+        return Name.ADVANCED_COLOR_FUNCTIONS;
     }
 
     public getInstance():any {

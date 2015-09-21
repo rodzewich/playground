@@ -1,25 +1,29 @@
-import Type = require("Type");
+import Category = require("Category");
 
 class Name {
 
     private _name:string;
 
-    private _type:Type;
+    private _category:Category;
 
-    constructor(name:string, type:Type) {
+    constructor(name:string, category:Category) {
         this._name = name;
-        this._type = type;
+        this._category = category;
     }
 
     public getName():string {
         return this._name;
     }
 
-    public getType():Type {
-        return this._type;
+    public getCategory():Category {
+        return this._category;
     }
 
-    public static ADVANCED_COLOR_FUNCTIONS:Name = new Name("advanced-color-functions", Type.FUNCTIONS);
+    public toString():string {
+        return this.getName();
+    }
+
+    public static ADVANCED_COLOR_FUNCTIONS:Name = new Name("advanced-color-functions", Category.FUNCTIONS);
 
 }
 

@@ -1,4 +1,6 @@
 import IPlugin = require("./IPlugin");
+import Category = require("./Category");
+import Name = require("./Name");
 
 abstract class Plugin implements IPlugin {
 
@@ -16,11 +18,13 @@ abstract class Plugin implements IPlugin {
         this._used = value;
     }
 
+    public getCategory():Category {
+        return this.getName().getCategory();
+    }
+
     abstract getInstance():any;
 
-    abstract getType():string;
-
-    abstract getName():string;
+    abstract getName():Name;
 
 }
 
