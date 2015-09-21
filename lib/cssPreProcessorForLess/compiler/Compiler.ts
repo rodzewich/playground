@@ -15,17 +15,17 @@ import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
 import less = require("less");
 import path = require("path");
-import lessInlineUrls = require("less-plugin-inline-urls");
-import LessCleanCss = require('less-plugin-clean-css');
-import LessNpmImport = require("less-plugin-npm-import");
-import LessBootstrap = require('less-plugin-bootstrap');
-import LessCardinal = require("less-plugin-cardinal");
-import LessFlexboxgrid = require('less-plugin-flexboxgrid');
-import LessIonic = require('less-plugin-ionic');
-import LessHat = require('less-plugin-lesshat');
-import LessSkeleton = require('less-plugin-skeleton');
-import LessAdvancedColorFunctions = require("less-plugin-advanced-color-functions");
-import LessCubehelix = require("less-plugin-cubehelix");
+import lessPluginInlineUrls = require("less-plugin-inline-urls");
+import LessPluginCleanCss = require('less-plugin-clean-css');
+import LessPluginNpmImport = require("less-plugin-npm-import");
+import LessPluginBootstrap = require('less-plugin-bootstrap');
+import LessPluginCardinal = require("less-plugin-cardinal");
+import LessPluginFlexboxgrid = require('less-plugin-flexboxgrid');
+import LessPluginIonic = require('less-plugin-ionic');
+import LessPluginLessHat = require('less-plugin-lesshat');
+import LessPluginSkeleton = require('less-plugin-skeleton');
+import LessPluginAdvancedColorFunctions = require("less-plugin-advanced-color-functions");
+import LessPluginCubehelix = require("less-plugin-cubehelix");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -96,37 +96,37 @@ class Compiler extends BaseCompiler implements ICompiler {
     protected getPlugins(): any[] { // todo: chenge type
         var plugins: any[] = [];
         if (this.isUsedInlineUrls()) {
-            plugins.push(lessInlineUrls);
+            plugins.push(lessPluginInlineUrls);
         }
         if (this.isUsedCleanCss()) {
-            plugins.push(new LessCleanCss({advanced: this.isUsedCleanCssAdvanced()}));
+            plugins.push(new LessPluginCleanCss({advanced: this.isUsedCleanCssAdvanced()}));
         }
         if (this.isUsedNpmImport()) {
-            plugins.push(new LessNpmImport({prefix: this.getNpmImportPrefix()}));
+            plugins.push(new LessPluginNpmImport({prefix: this.getNpmImportPrefix()}));
         }
         if (this.isUsedBootstrap()) {
-            plugins.push(new LessBootstrap());
+            plugins.push(new LessPluginBootstrap());
         }
         if (this.isUsedCardinal()) {
-            plugins.push(new LessCardinal());
+            plugins.push(new LessPluginCardinal());
         }
         if (this.isUsedFlexboxgrid()) {
-            plugins.push(new LessFlexboxgrid());
+            plugins.push(new LessPluginFlexboxgrid());
         }
         if (this.isUsedIonic()) {
-            plugins.push(new LessIonic());
+            plugins.push(new LessPluginIonic());
         }
         if (this.isUsedLessHat()) {
-            plugins.push(new LessHat());
+            plugins.push(new LessPluginLessHat());
         }
         if (this.isUsedSkeleton()) {
-            plugins.push(new LessSkeleton());
+            plugins.push(new LessPluginSkeleton());
         }
         if (this.isUsedAdvancedColorFunctions()) {
-            plugins.push(new LessAdvancedColorFunctions());
+            plugins.push(new LessPluginAdvancedColorFunctions());
         }
         if (this.isUsedCubehelix()) {
-            plugins.push(new LessCubehelix());
+            plugins.push(new LessPluginCubehelix());
         }
         // todo: sort by priorities
         return plugins;
