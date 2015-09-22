@@ -7,9 +7,8 @@
 // todo: уметь использовать Autoprefixer
 // todo использовать http://lesscss.org/usage/#plugins-list-of-less-plugins
 // todo использовать https://www.npmjs.com/browse/keyword/less%20plugins
-// todo: less-plugin-bower-resolve
-// todo: less-plugin-lists
 
+import isDefined = require("../../isDefined");
 import BaseCompiler = require("../../cssPreProcessorAbstract/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
@@ -31,6 +30,14 @@ import INpmImportPlugin = require("../plugins/importers/npmImport/IPlugin");
 import NpmImportPlugin = require("../plugins/importers/npmImport/Plugin");
 import ISkeletonPlugin = require("../plugins/importers/skeleton/IPlugin");
 import SkeletonPlugin = require("../plugins/importers/skeleton/Plugin");
+import IBowerResolvePlugin = require("../plugins/importers/bowerResolve/IPlugin");
+import BowerResolvePlugin = require("../plugins/importers/bowerResolve/Plugin");
+import IAdvancedColorFunctionsPlugin = require("../plugins/functions/advancedColorFunctions/IPlugin");
+import AdvancedColorFunctionsPlugin = require("../plugins/functions/advancedColorFunctions/Plugin");
+import ICubehelixPlugin = require("../plugins/functions/cubehelix/IPlugin");
+import CubehelixPlugin = require("../plugins/functions/cubehelix/Plugin");
+import IListsPlugin = require("../plugins/functions/lists/IPlugin");
+import ListsPlugin = require("../plugins/functions/lists/Plugin");
 
 
 import lessPluginInlineUrls = require("less-plugin-inline-urls");
@@ -115,6 +122,50 @@ class Compiler extends BaseCompiler implements ICompiler {
         return this._skeletonPlugin;
     }
 
+    private _advancedColorFunctionsPlugin:IAdvancedColorFunctionsPlugin;
+    protected createAdvancedColorFunctionsPlugin():IAdvancedColorFunctionsPlugin {
+        return new AdvancedColorFunctionsPlugin();
+    }
+    protected getAdvancedColorFunctionsPlugin():IAdvancedColorFunctionsPlugin {
+        if (!this._advancedColorFunctionsPlugin) {
+            this._advancedColorFunctionsPlugin = this.createAdvancedColorFunctionsPlugin();
+        }
+        return this._advancedColorFunctionsPlugin;
+    }
+
+    private _bowerResolvePlugin:IBowerResolvePlugin;
+    protected createBowerResolvePlugin():IBowerResolvePlugin {
+        return new BowerResolvePlugin();
+    }
+    protected getBowerResolvePlugin():IBowerResolvePlugin {
+        if (!this._bowerResolvePlugin) {
+            this._bowerResolvePlugin = this.createBowerResolvePlugin();
+        }
+        return this._bowerResolvePlugin;
+    }
+
+    private _cubehelixPlugin:ICubehelixPlugin;
+    protected createCubehelixPlugin():ICubehelixPlugin {
+        return new CubehelixPlugin();
+    }
+    protected getCubehelixPlugin():ICubehelixPlugin {
+        if (!this._cubehelixPlugin) {
+            this._cubehelixPlugin = this.createCubehelixPlugin();
+        }
+        return this._cubehelixPlugin;
+    }
+
+    private _listsPlugin:IListsPlugin;
+    protected createListsPlugin():IListsPlugin {
+        return new ListsPlugin();
+    }
+    protected getListsPlugin():IListsPlugin {
+        if (!this._listsPlugin) {
+            this._listsPlugin = this.createListsPlugin();
+        }
+        return this._listsPlugin;
+    }
+
     constructor(options:IOptions) {
         super(options);
         if (options && isDefined(options.pluginBootstrapUsed)) {
@@ -122,6 +173,39 @@ class Compiler extends BaseCompiler implements ICompiler {
         }
         if (options && isDefined(options.pluginCardinalUsed)) {
             this.getCardinalPlugin().setIsUsed(options.pluginCardinalUsed);
+        }
+        if (options && isDefined(options.pluginFlexboxgridUsed)) {
+            this.getFlexBoxGridPlugin().setIsEnabled(options.pluginFlexboxgridUsed);
+        }
+        if (options && isDefined(options.pluginIonicUsed)) {
+            this.getIonicPlugin().setIsEnabled(options.pluginIonicUsed);
+        }
+        if (options && isDefined(options.pluginLesshatUsed)) {
+            this.getLessHatPlugin().setIsEnabled(options.pluginLesshatUsed);
+        }
+        if (options && isDefined(options.pluginNpmImportUsed)) {
+            this.getNpmImportPlugin().setIsEnabled(options.pluginNpmImportUsed);
+        }
+        if (options && isDefined(options.pluginNpmImportPrefix)) {
+            this.getNpmImportPlugin().setPrefix(options.pluginNpmImportPrefix);
+        }
+        if (options && isDefined(options.pluginSkeletonUsed)) {
+            this.getSkeletonPlugin().setIsEnabled(options.pluginSkeletonUsed);
+        }
+        if (options && isDefined(options.pluginBowerResolveUsed)) {
+            this.getBowerResolvePlugin().setIsEnabled(options.pluginBowerResolveUsed);
+        }
+        if (options && isDefined(options.pluginAdvancedColorFunctionsUsed)) {
+            this.getAdvancedColorFunctionsPlugin().setIsEnabled(options.pluginAdvancedColorFunctionsUsed);
+        }
+        if (options && isDefined(options.pluginCubehelixUsed)) {
+            this.getCubehelixPlugin().setIsEnabled(options.pluginCubehelixUsed);
+        }
+        if (options && isDefined(options.pluginListsUsed)) {
+            this.getListsPlugin().setIsEnabled(options.pluginListsUsed);
+        }
+        if (options && isDefined(options.pluginsPriorities)) {
+            this.setPluginPriorities(options.pluginsPriorities);
         }
     }
 
@@ -159,7 +243,7 @@ class Compiler extends BaseCompiler implements ICompiler {
     }
 
     protected getPlugins(): IPlugin[] {
-        var plugins:IPlugin[]   = [
+        var plugins:IPlugin[] = [
             this.getBootstrapPlugin(),
             this.getCardinalPlugin(),
             this.getFlexBoxGridPlugin(),
@@ -167,16 +251,20 @@ class Compiler extends BaseCompiler implements ICompiler {
             this.getIonicPlugin(),
             this.getLessHatPlugin(),
             this.getNpmImportPlugin(),
-            this.getSkeletonPlugin()
+            this.getSkeletonPlugin(),
+            this.getBowerResolvePlugin(),
+            this.getAdvancedColorFunctionsPlugin()
         ];
         var priorities:string[] = this.getPluginsPriorities();
-        return plugins.filter((plugin:IPlugin):boolean => {
-            return PluginName.PRIORITIES.indexOf(plugin.getName()) !== -1;
-        }).sort((plugin1:IPlugin, plugin2:IPlugin):number => {
-            var index1:number = priorities.indexOf(plugin1.getName().toString()),
-                index2:number = priorities.indexOf(plugin2.getName().toString());
-            return index1 > index2 ? 1 : -1;
-        });
+        return plugins
+            .filter((plugin:IPlugin):boolean => {
+                return PluginName.PRIORITIES.indexOf(plugin.getName()) !== -1;
+            })
+            .sort((plugin1:IPlugin, plugin2:IPlugin):number => {
+                var index1:number = priorities.indexOf(plugin1.getName().toString()),
+                    index2:number = priorities.indexOf(plugin2.getName().toString());
+                return index1 > index2 ? 1 : -1;
+            });
     }
 
     protected preProcessing(options:{filename: string; content: string;}, callback:(errors:Error[], result:{css: string; maps: any; deps: string[];}) => void):void {
@@ -188,9 +276,13 @@ class Compiler extends BaseCompiler implements ICompiler {
             compress  : true,
             sourceMap : true,
             lint      : true,
-            plugins   : this.getPlugins().map((plugin:IPlugin):any => {
-                return plugin.getInstance()
-            })
+            plugins   : this.getPlugins()
+                .filter((plugin:IPlugin):boolean => {
+                    return plguin.isUsed()
+                })
+                .map((plugin:IPlugin):any => {
+                    return plugin.getInstance()
+                })
         }, (error:Error, result:less.Result):void => {
             if (!error) {
                 callback(null, {

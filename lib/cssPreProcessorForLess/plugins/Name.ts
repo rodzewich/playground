@@ -32,6 +32,8 @@ class Name {
     public static CUBEHELIX:Name = new Name("cubehelix", Category.FUNCTIONS);
     public static LESSHAT:Name = new Name("lesshat", Category.IMPORTERS);
     public static SKELETON:Name = new Name("skeleton", Category.IMPORTERS);
+    public static LISTS:Name = new Name("lists", Category.FUNCTIONS);
+    public static BOWER_RESOLVE:Name = new Name("bower-resolve", Category.IMPORTERS);
 
     public static PRIORITIES:Name[] = [
         Name.ADVANCED_COLOR_FUNCTIONS,
@@ -42,7 +44,8 @@ class Name {
         Name.IONIC,
         Name.CUBEHELIX,
         Name.LESSHAT,
-        Name.SKELETON
+        Name.SKELETON,
+        Name.LISTS
     ];
 
 }
