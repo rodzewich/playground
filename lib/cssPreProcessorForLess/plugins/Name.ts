@@ -34,6 +34,7 @@ class Name {
     public static SKELETON:Name = new Name("skeleton", Category.IMPORTERS);
     public static LISTS:Name = new Name("lists", Category.FUNCTIONS);
     public static BOWER_RESOLVE:Name = new Name("bower-resolve", Category.IMPORTERS);
+    public static AUTOPREFIX:Name = new Name("autoprefix", Category.POSTPROCESSORS);
 
     public static PRIORITIES:Name[] = [
         Name.ADVANCED_COLOR_FUNCTIONS,
@@ -45,7 +46,8 @@ class Name {
         Name.CUBEHELIX,
         Name.LESSHAT,
         Name.SKELETON,
-        Name.LISTS
+        Name.LISTS,
+        Name.AUTOPREFIX
     ];
 
 }

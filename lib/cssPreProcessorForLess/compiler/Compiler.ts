@@ -175,34 +175,34 @@ class Compiler extends BaseCompiler implements ICompiler {
             this.getCardinalPlugin().setIsUsed(options.pluginCardinalUsed);
         }
         if (options && isDefined(options.pluginFlexboxgridUsed)) {
-            this.getFlexBoxGridPlugin().setIsEnabled(options.pluginFlexboxgridUsed);
+            this.getFlexBoxGridPlugin().setIsUsed(options.pluginFlexboxgridUsed);
         }
         if (options && isDefined(options.pluginIonicUsed)) {
-            this.getIonicPlugin().setIsEnabled(options.pluginIonicUsed);
+            this.getIonicPlugin().setIsUsed(options.pluginIonicUsed);
         }
         if (options && isDefined(options.pluginLesshatUsed)) {
-            this.getLessHatPlugin().setIsEnabled(options.pluginLesshatUsed);
+            this.getLessHatPlugin().setIsUsed(options.pluginLesshatUsed);
         }
         if (options && isDefined(options.pluginNpmImportUsed)) {
-            this.getNpmImportPlugin().setIsEnabled(options.pluginNpmImportUsed);
+            this.getNpmImportPlugin().setIsUsed(options.pluginNpmImportUsed);
         }
         if (options && isDefined(options.pluginNpmImportPrefix)) {
             this.getNpmImportPlugin().setPrefix(options.pluginNpmImportPrefix);
         }
         if (options && isDefined(options.pluginSkeletonUsed)) {
-            this.getSkeletonPlugin().setIsEnabled(options.pluginSkeletonUsed);
+            this.getSkeletonPlugin().setIsUsed(options.pluginSkeletonUsed);
         }
         if (options && isDefined(options.pluginBowerResolveUsed)) {
-            this.getBowerResolvePlugin().setIsEnabled(options.pluginBowerResolveUsed);
+            this.getBowerResolvePlugin().setIsUsed(options.pluginBowerResolveUsed);
         }
         if (options && isDefined(options.pluginAdvancedColorFunctionsUsed)) {
-            this.getAdvancedColorFunctionsPlugin().setIsEnabled(options.pluginAdvancedColorFunctionsUsed);
+            this.getAdvancedColorFunctionsPlugin().setIsUsed(options.pluginAdvancedColorFunctionsUsed);
         }
         if (options && isDefined(options.pluginCubehelixUsed)) {
-            this.getCubehelixPlugin().setIsEnabled(options.pluginCubehelixUsed);
+            this.getCubehelixPlugin().setIsUsed(options.pluginCubehelixUsed);
         }
         if (options && isDefined(options.pluginListsUsed)) {
-            this.getListsPlugin().setIsEnabled(options.pluginListsUsed);
+            this.getListsPlugin().setIsUsed(options.pluginListsUsed);
         }
         if (options && isDefined(options.pluginsPriorities)) {
             this.setPluginPriorities(options.pluginsPriorities);

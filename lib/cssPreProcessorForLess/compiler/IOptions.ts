@@ -9,6 +9,11 @@ interface IOptions extends IBaseOptions {
     pluginNpmImportUsed?:boolean;
     pluginNpmImportPrefix?:boolean;
     pluginSkeletonUsed?:boolean;
+    pluginBowerResolveUsed?:boolean;
+    pluginAdvancedColorFunctionsUsed?:boolean;
+    pluginCubehelixUsed?:boolean;
+    pluginListsUsed?:boolean;
+    pluginsPriorities?:string[];
 }
 
 export = IOptions;
