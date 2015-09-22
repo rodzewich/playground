@@ -7,6 +7,7 @@ import Compiler = require("../compiler/Compiler");
 import ICompiler = require("../compiler/ICompiler");
 import ICompilerOptions = require("../compiler/IOptions");
 import typeOf = require("../../typeOf");
+import IMemory = require("../../memory/client/IClient");
 
 class Daemon extends BaseDaemon implements IDaemon {
 

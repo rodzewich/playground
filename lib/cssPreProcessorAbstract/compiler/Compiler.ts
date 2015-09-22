@@ -1,5 +1,4 @@
 /// <reference path="../../../types/node/node.d.ts" />
-/// <reference path="./sass.d.ts" />
 
 // todo: уметь использовать globals, functions, imports
 // todo: уметь устанавливать переменные
@@ -18,14 +17,13 @@ import deferred = require("../../deferred");
 import parallel = require("../../parallel");
 import IMemory = require("../../memory/client/IClient");
 import IResponse = require("../client/IResponse");
-import stylus = require("stylus");
 import path = require("path");
 import fs = require("fs");
 import BaseException = require("../../Exception");
 import LessException = require("../Exception");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
-import sass = require("node-sass");
+import ISourceMap = require("../../helpers/ISourceMap");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -325,7 +323,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         maps     : sourceMap,
                         content  : result,
                         contents : contents
-                    }, (errs:Error[], res:{css: string; maps: string;}):void => {
+                    }, (errs:Error[], res:{css: string; maps: ISourceMap;}):void => {
                         if (!errs || !errs.length) {
                             result    = res.css;
                             sourceMap = res.maps;

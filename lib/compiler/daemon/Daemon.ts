@@ -12,9 +12,6 @@ abstract class Daemon extends BaseDaemon implements IDaemon {
 
     constructor(options:IOptions) {
         super(options);
-        if (options && isDefined(options.memory)) {
-            this.setMemory(options.memory);
-        }
     }
 
     abstract compile(options:IRequest, callback:(errors:Error[], result:IResponse) => void):void;

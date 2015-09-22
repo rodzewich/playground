@@ -31,9 +31,6 @@ abstract class Compiler implements ICompiler {
         if (options && isDefined(options.sourcesDirectory)) {
             this.setSourcesDirectory(options.sourcesDirectory);
         }
-        if (options && isDefined(options.memory)) {
-            this.setMemory(options.memory);
-        }
         if (options && isDefined(options.errorBackgroundColor)) {
             this.setCssErrorsBackgroundColor(options.errorBackgroundColor);
         }
