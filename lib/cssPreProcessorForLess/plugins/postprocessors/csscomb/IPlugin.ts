@@ -1,8 +1,8 @@
 import IPluginBase = require("../IPlugin");
 
 interface IPlugin extends IPluginBase {
-    setBrowsers(value:string[]):void;
-    getBrowsers():string[];
+    setConfig(value:string):void;
+    getConfig():string;
 }
 
 export = IPlugin;

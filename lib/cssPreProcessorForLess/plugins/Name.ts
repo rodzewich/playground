@@ -35,6 +35,8 @@ class Name {
     public static LISTS:Name = new Name("lists", Category.FUNCTIONS);
     public static BOWER_RESOLVE:Name = new Name("bower-resolve", Category.IMPORTERS);
     public static AUTOPREFIX:Name = new Name("autoprefix", Category.POSTPROCESSORS);
+    public static CSSCOMB:Name = new Name("csscomb", Category.POSTPROCESSORS);
+    public static CLEAN_CSS:Name = new Name("clean-css", Category.POSTPROCESSORS);
 
     public static PRIORITIES:Name[] = [
         Name.ADVANCED_COLOR_FUNCTIONS,
@@ -47,7 +49,9 @@ class Name {
         Name.LESSHAT,
         Name.SKELETON,
         Name.LISTS,
-        Name.AUTOPREFIX
+        Name.AUTOPREFIX,
+        Name.CSSCOMB,
+        Name.CLEAN_CSS
     ];
 
 }

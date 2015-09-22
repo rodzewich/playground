@@ -38,6 +38,10 @@ import ICubehelixPlugin = require("../plugins/functions/cubehelix/IPlugin");
 import CubehelixPlugin = require("../plugins/functions/cubehelix/Plugin");
 import IListsPlugin = require("../plugins/functions/lists/IPlugin");
 import ListsPlugin = require("../plugins/functions/lists/Plugin");
+import IAutoprefixPlugin = require("../plugins/postprocessors/autoprefix/IPlugin");
+import AutoprefixPlugin = require("../plugins/postprocessors/autoprefix/Plugin");
+import ICsscombPlugin = require("../plugins/postprocessors/csscomb/IPlugin");
+import CsscombPlugin = require("../plugins/postprocessors/csscomb/Plugin");
 
 
 import lessPluginInlineUrls = require("less-plugin-inline-urls");
@@ -61,7 +65,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         return new CardinalPlugin();
     }
     protected getCardinalPlugin():ICardinalPlugin {
-        if (!thia._cardinalPlugin) {
+        if (!this._cardinalPlugin) {
             this._cardinalPlugin = this.createCardinalPlugin();
         }
         return this._cardinalPlugin;
@@ -166,6 +170,28 @@ class Compiler extends BaseCompiler implements ICompiler {
         return this._listsPlugin;
     }
 
+    private _autoprefixPlugin:IAutoprefixPlugin;
+    public createAutoprefixPlugin():IAutoprefixPlugin {
+        return new AutoprefixPlugin();
+    }
+    public getAutoprefixPlugin():IAutoprefixPlugin {
+        if (!this._autoprefixPlugin) {
+            this._autoprefixPlugin = this.createAutoprefixPlugin();
+        }
+        return this._autoprefixPlugin;
+    }
+
+    private _csscombPlugin:ICsscombPlugin;
+    protected createCsscombPlugin():ICsscombPlugin {
+        return new CsscombPlugin();
+    }
+    protected getCsscombPlugin():ICsscombPlugin {
+        if (!this._csscombPlugin) {
+            this._csscombPlugin = this.createCsscombPlugin();
+        }
+        return this._csscombPlugin;
+    }
+
     constructor(options:IOptions) {
         super(options);
         if (options && isDefined(options.pluginBootstrapUsed)) {
@@ -203,6 +229,18 @@ class Compiler extends BaseCompiler implements ICompiler {
         }
         if (options && isDefined(options.pluginListsUsed)) {
             this.getListsPlugin().setIsUsed(options.pluginListsUsed);
+        }
+        if (options && isDefined(options.pluginAutoprefixUsed)) {
+            this.getAutoprefixPlugin().setIsUsed(options.pluginAutoprefixUsed);
+        }
+        if (options && isDefined(options.pluginAutoprefixBrowsers)) {
+            this.getAutoprefixPlugin().setBrowsers(options.pluginAutoprefixBrowsers);
+        }
+        if (options && isDefined(options.pluginCsscombUsed)) {
+            this.getCsscombPlugin().setIsUsed(options.pluginCsscombUsed);
+        }
+        if (options && isDefined(options.pluginCsscombConfig)) {
+            this.getCsscombPlugin().setConfig(options.pluginCsscombConfig);
         }
         if (options && isDefined(options.pluginsPriorities)) {
             this.setPluginPriorities(options.pluginsPriorities);
@@ -253,7 +291,8 @@ class Compiler extends BaseCompiler implements ICompiler {
             this.getNpmImportPlugin(),
             this.getSkeletonPlugin(),
             this.getBowerResolvePlugin(),
-            this.getAdvancedColorFunctionsPlugin()
+            this.getAdvancedColorFunctionsPlugin(),
+            this.getAutoprefixPlugin()
         ];
         var priorities:string[] = this.getPluginsPriorities();
         return plugins
