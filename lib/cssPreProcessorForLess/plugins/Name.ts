@@ -24,6 +24,12 @@ class Name {
     }
 
     public static ADVANCED_COLOR_FUNCTIONS:Name = new Name("advanced-color-functions", Category.FUNCTIONS);
+    public static NPM_IMPORT:Name = new Name("npm-import", Category.IMPORTERS);
+    public static BOOTSTRAP:Name = new Name("bootstrap", Category.IMPORTERS);
+    public static CARDINAL:Name = new Name("cardinal", Category.IMPORTERS);
+    public static FLEXBOXGRID:Name = new Name("flexboxgrid", Category.IMPORTERS);
+    public static IONIC:Name = new Name("ionic", Category.IMPORTERS);
+    public static CUBEHELIX:Name = new Name("cubehelix", Category.FUNCTIONS);
 
 }
 

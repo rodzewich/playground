@@ -17,15 +17,15 @@ import less = require("less");
 import path = require("path");
 import lessPluginInlineUrls = require("less-plugin-inline-urls");
 import LessPluginCleanCss = require('less-plugin-clean-css');
-import LessPluginNpmImport = require("less-plugin-npm-import");
-import LessPluginBootstrap = require('less-plugin-bootstrap');
-import LessPluginCardinal = require("less-plugin-cardinal");
-import LessPluginFlexboxgrid = require('less-plugin-flexboxgrid');
-import LessPluginIonic = require('less-plugin-ionic');
+//import LessPluginNpmImport = require("less-plugin-npm-import");
+//import LessPluginBootstrap = require('less-plugin-bootstrap');
+//import LessPluginCardinal = require("less-plugin-cardinal");
+//import LessPluginFlexboxgrid = require('less-plugin-flexboxgrid');
+//import LessPluginIonic = require('less-plugin-ionic');
 import LessPluginLessHat = require('less-plugin-lesshat');
 import LessPluginSkeleton = require('less-plugin-skeleton');
 //import LessPluginAdvancedColorFunctions = require("less-plugin-advanced-color-functions");
-import LessPluginCubehelix = require("less-plugin-cubehelix");
+//import LessPluginCubehelix = require("less-plugin-cubehelix");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -45,29 +45,29 @@ class Compiler extends BaseCompiler implements ICompiler {
         return true;
     }
 
-    protected isUsedNpmImport(): boolean {
+    /*protected isUsedNpmImport(): boolean {
         return true;
-    }
+    }*/
 
-    protected isUsedBootstrap(): boolean {
+    /*protected isUsedBootstrap(): boolean {
         return true;
-    }
+    }*/
 
-    protected getNpmImportPrefix(): string {
+    /*protected getNpmImportPrefix(): string {
         return "npm://";
-    }
+    }*/
 
-    protected isUsedCardinal(): boolean {
+    /*protected isUsedCardinal(): boolean {
         return true;
-    }
+    }*/
 
-    protected isUsedFlexboxgrid(): boolean {
+    /*protected isUsedFlexboxgrid(): boolean {
         return true;
-    }
+    }*/
 
-    protected isUsedIonic(): boolean {
+    /*protected isUsedIonic(): boolean {
         return true;
-    }
+    }*/
 
     protected getExtensions():string [] {
         return [".less"];
@@ -81,13 +81,13 @@ class Compiler extends BaseCompiler implements ICompiler {
         return true;
     }
 
-    protected isUsedAdvancedColorFunctions(): boolean {
+    /*protected isUsedAdvancedColorFunctions(): boolean {
         return true;
-    }
+    }*/
 
-    protected isUsedCubehelix(): boolean {
+    /*protected isUsedCubehelix(): boolean {
         return true;
-    }
+    }*/
 
     protected getPluginsPriorities(): string[] {
         return [];
@@ -101,21 +101,21 @@ class Compiler extends BaseCompiler implements ICompiler {
         if (this.isUsedCleanCss()) {
             plugins.push(new LessPluginCleanCss({advanced: this.isUsedCleanCssAdvanced()}));
         }
-        if (this.isUsedNpmImport()) {
+        /*if (this.isUsedNpmImport()) {
             plugins.push(new LessPluginNpmImport({prefix: this.getNpmImportPrefix()}));
-        }
-        if (this.isUsedBootstrap()) {
+        }*/
+        /*if (this.isUsedBootstrap()) {
             plugins.push(new LessPluginBootstrap());
-        }
-        if (this.isUsedCardinal()) {
+        }*/
+        /*if (this.isUsedCardinal()) {
             plugins.push(new LessPluginCardinal());
-        }
-        if (this.isUsedFlexboxgrid()) {
+        }*/
+        /*if (this.isUsedFlexboxgrid()) {
             plugins.push(new LessPluginFlexboxgrid());
-        }
-        if (this.isUsedIonic()) {
+        }*/
+        /*if (this.isUsedIonic()) {
             plugins.push(new LessPluginIonic());
-        }
+        }*/
         if (this.isUsedLessHat()) {
             plugins.push(new LessPluginLessHat());
         }
@@ -125,9 +125,9 @@ class Compiler extends BaseCompiler implements ICompiler {
         /*if (this.isUsedAdvancedColorFunctions()) {
             plugins.push(new LessPluginAdvancedColorFunctions());
         }*/
-        if (this.isUsedCubehelix()) {
+        /*if (this.isUsedCubehelix()) {
             plugins.push(new LessPluginCubehelix());
-        }
+        }*/
         // todo: sort by priorities
         return plugins;
     }
