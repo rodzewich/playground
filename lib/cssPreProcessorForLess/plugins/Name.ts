@@ -30,6 +30,20 @@ class Name {
     public static FLEXBOXGRID:Name = new Name("flexboxgrid", Category.IMPORTERS);
     public static IONIC:Name = new Name("ionic", Category.IMPORTERS);
     public static CUBEHELIX:Name = new Name("cubehelix", Category.FUNCTIONS);
+    public static LESSHAT:Name = new Name("lesshat", Category.IMPORTERS);
+    public static SKELETON:Name = new Name("skeleton", Category.IMPORTERS);
+
+    public static PRIORITIES:Name[] = [
+        Name.ADVANCED_COLOR_FUNCTIONS,
+        Name.NPM_IMPORT,
+        Name.BOOTSTRAP,
+        Name.CARDINAL,
+        Name.FLEXBOXGRID,
+        Name.IONIC,
+        Name.CUBEHELIX,
+        Name.LESSHAT,
+        Name.SKELETON
+    ];
 
 }
 
