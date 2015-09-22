@@ -9,6 +9,8 @@ class Plugin extends PluginBase implements IPlugin {
         return Name.CLEAN_CSS;
     }
 
+    // todo: use options from https://github.com/jakubpawlowicz/clean-css
+
     public getInstance():any {
         return new LessPlugin();
     }
