@@ -37,6 +37,8 @@ class Name {
     public static AUTOPREFIX:Name = new Name("autoprefix", Category.POSTPROCESSORS);
     public static CSSCOMB:Name = new Name("csscomb", Category.POSTPROCESSORS);
     public static CLEAN_CSS:Name = new Name("clean-css", Category.POSTPROCESSORS);
+    public static CSSWRING:Name = new Name("csswring", Category.POSTPROCESSORS);
+    public static CSS_FLIP:Name = new Name("css-flip", Category.POSTPROCESSORS);
 
     public static PRIORITIES:Name[] = [
         Name.ADVANCED_COLOR_FUNCTIONS,
@@ -51,7 +53,9 @@ class Name {
         Name.LISTS,
         Name.AUTOPREFIX,
         Name.CSSCOMB,
-        Name.CLEAN_CSS
+        Name.CLEAN_CSS,
+        Name.CSSWRING,
+        Name.CSS_FLIP
     ];
 
 }

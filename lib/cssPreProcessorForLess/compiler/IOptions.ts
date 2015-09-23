@@ -13,6 +13,16 @@ interface IOptions extends IBaseOptions {
     pluginAdvancedColorFunctionsUsed?:boolean;
     pluginCubehelixUsed?:boolean;
     pluginListsUsed?:boolean;
+    pluginAutoprefixUsed?:boolean;
+    pluginAutoprefixBrowsers?:string[];
+    pluginCsscombUsed?:boolean;
+    pluginCsscombConfig?:string;
+    pluginCleanCssUsed?:boolean;
+    pluginCssWringUsed?:boolean;
+    pluginCssWringPreserveHacks?:boolean;
+    pluginCssWringRemoveAllComments?:boolean;
+    pluginCssFlipUsed?:boolean;
+
     pluginsPriorities?:string[];
 }
 

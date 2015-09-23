@@ -42,10 +42,15 @@ import IAutoprefixPlugin = require("../plugins/postprocessors/autoprefix/IPlugin
 import AutoprefixPlugin = require("../plugins/postprocessors/autoprefix/Plugin");
 import ICsscombPlugin = require("../plugins/postprocessors/csscomb/IPlugin");
 import CsscombPlugin = require("../plugins/postprocessors/csscomb/Plugin");
+import ICleanCssPlugin = require("../plugins/postprocessors/cleanCss/IPlugin");
+import CleanCssPlugin = require("../plugins/postprocessors/cleanCss/Plugin");
+import ICssWringPlugin = require("../plugins/postprocessors/cssWring/IPlugin");
+import CssWringPlugin = require("../plugins/postprocessors/cssWring/Plugin");
+import ICssFlipPlugin = require("../plugins/postprocessors/cssFlip/IPlugin");
+import CssFlipPlugin = require("../plugins/postprocessors/cssFlip/Plugin");
 
 
 import lessPluginInlineUrls = require("less-plugin-inline-urls");
-import LessPluginCleanCss = require('less-plugin-clean-css');
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -192,6 +197,39 @@ class Compiler extends BaseCompiler implements ICompiler {
         return this._csscombPlugin;
     }
 
+    private _cleanCssPlugin:ICleanCssPlugin;
+    protected createCleanCssPlugin():ICleanCssPlugin {
+        return new CleanCssPlugin();
+    }
+    protected getCleanCssPlugin():ICleanCssPlugin {
+        if (!this._cleanCssPlugin) {
+            this._cleanCssPlugin = this.createCleanCssPlugin();
+        }
+        return this._cleanCssPlugin;
+    }
+
+    private _cssWringPlugin:ICssWringPlugin;
+    protected createCssWringPlugin():ICssWringPlugin {
+        return new CssWringPlugin();
+    }
+    protected getCssWringPlugin():ICssWringPlugin {
+        if (!this._cssWringPlugin) {
+            this._cssWringPlugin = this.createCssWringPlugin();
+        }
+        return this._cssWringPlugin;
+    }
+
+    private _cssFlipPlugin:ICssFlipPlugin;
+    protected createCssFlipPlugin():ICssFlipPlugin {
+        return new CssFlipPlugin();
+    }
+    protected getCssFlipPlugin():ICssFlipPlugin {
+        if (!this._cssFlipPlugin) {
+            this._cssFlipPlugin = this.createCssFlipPlugin();
+        }
+        return this._cssFlipPlugin;
+    }
+
     constructor(options:IOptions) {
         super(options);
         if (options && isDefined(options.pluginBootstrapUsed)) {
@@ -236,26 +274,35 @@ class Compiler extends BaseCompiler implements ICompiler {
         if (options && isDefined(options.pluginAutoprefixBrowsers)) {
             this.getAutoprefixPlugin().setBrowsers(options.pluginAutoprefixBrowsers);
         }
+        // todo: implement other autoprefixer options
         if (options && isDefined(options.pluginCsscombUsed)) {
             this.getCsscombPlugin().setIsUsed(options.pluginCsscombUsed);
         }
         if (options && isDefined(options.pluginCsscombConfig)) {
             this.getCsscombPlugin().setConfig(options.pluginCsscombConfig);
         }
+        if (options && isDefined(options.pluginCleanCssUsed)) {
+            this.getCleanCssPlugin().setIsUsed(options.pluginCleanCssUsed);
+        }
+        if (options && isDefined(options.pluginCssWringUsed)) {
+            this.getCssWringPlugin().setIsUsed(options.pluginCssWringUsed);
+        }
+        if (options && isDefined(options.pluginCssWringPreserveHacks)) {
+            this.getCssWringPlugin().setIsPreserveHacks(options.pluginCssWringPreserveHacks);
+        }
+        if (options && isDefined(options.pluginCssWringRemoveAllComments)) {
+            this.getCssWringPlugin().setIsPreserveHacks(options.pluginCssWringRemoveAllComments);
+        }
+        if (options && isDefined(options.pluginCssFlipUsed)) {
+            this.getCssFlipPlugin().setIsUsed(options.pluginCssFlipUsed);
+        }
+        // todo: implement other clean-css options
         if (options && isDefined(options.pluginsPriorities)) {
             this.setPluginPriorities(options.pluginsPriorities);
         }
     }
 
     protected isUsedInlineUrls(): boolean {
-        return true;
-    }
-
-    protected isUsedCleanCss(): boolean {
-        return true;
-    }
-
-    protected isUsedCleanCssAdvanced(): boolean {
         return true;
     }
 
@@ -292,7 +339,10 @@ class Compiler extends BaseCompiler implements ICompiler {
             this.getSkeletonPlugin(),
             this.getBowerResolvePlugin(),
             this.getAdvancedColorFunctionsPlugin(),
-            this.getAutoprefixPlugin()
+            this.getAutoprefixPlugin(),
+            this.getCleanCssPlugin(),
+            this.getCssWringPlugin(),
+            this.getCssFlipPlugin()
         ];
         var priorities:string[] = this.getPluginsPriorities();
         return plugins
@@ -317,7 +367,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             lint      : true,
             plugins   : this.getPlugins()
                 .filter((plugin:IPlugin):boolean => {
-                    return plguin.isUsed()
+                    return plugin.isUsed()
                 })
                 .map((plugin:IPlugin):any => {
                     return plugin.getInstance()
