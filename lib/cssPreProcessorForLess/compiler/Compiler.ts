@@ -1,10 +1,6 @@
 /// <reference path="../../../types/node/node.d.ts" />
 /// <reference path="./less.d.ts" />
 
-// todo: уметь устанавливать переменные
-// todo: уметь устанавливать дефолтные импорты
-// todo: уметь устанавливать плагины
-// todo: уметь использовать Autoprefixer
 // todo https://www.npmjs.com/search?q=%22less-plugin%22
 
 // PREPROCESSORS
@@ -49,9 +45,64 @@
  * https://www.npmjs.com/package/simpless
  * https://www.npmjs.com/package/bee-less
  * https://www.npmjs.com/package/less-color-lighten
- * isostyle
+ * https://www.npmjs.com/package/isostyle
+ * https://www.npmjs.com/package/steal-less
+ * https://www.npmjs.com/package/lineman-less
+ * https://www.npmjs.com/package/npm-import-plugin-test
+ *
  */
 
+/**
+ * UI/Theme Frameworks and Components
+ * http://rriepe.github.io/1pxdeep/
+ * http://www.flathemes.com/
+ * https://www.bootpress.org/
+ * http://getbootstrap.com/
+ * https://github.com/bassjobsen/bootstrap-a11y-theme
+ * http://bootswatch.com/
+ * http://cardinalcss.com/
+ * https://github.com/firminoweb/csshorus
+ * http://designmodo.com/flat-free/
+ * https://github.com/vitto/frontsize-less
+ * http://brunodsgn.github.io/InContent/
+ * http://ink.sapo.pt/
+ * http://jbst.eu/
+ * http://www.knacss.com/
+ * http://imperavi.com/kube/
+ * http://metroui.org.ua/
+ * http://madscript.com/pre/
+ * https://github.com/amazingSurge/prelude
+ * http://danmalarkey.github.io/schema/
+ * http://www.semantic-ui.com/
+ * http://getuikit.com/
+ * http://bit.ly/ngBoilerplate
+ * http://github.com/metaskills/less-rails
+ * https://www.weepower.com/
+ */
+
+/**
+ * Grid Systems
+ * http://flexible.gs/
+ * https://github.com/amazingSurge/adaptGrid
+ * http://fluidable.com/
+ * http://goldengridsystem.com/
+ * https://github.com/bassjobsen/LESS-Zen-Grid
+ * https://github.com/chromice/order.less
+ * https://github.com/BuschFunker/responsibly
+ * http://responsiveboilerplate.com/
+ * http://semantic.gs/
+ */
+
+/**
+ * Mixin Libraries
+ * see http://lesscss.org/usage/
+ *
+ */
+
+import LessGlobalVariables = require("../../helpers/LessGlobalVariables");
+import ILessGlobalVariables = require("../../helpers/ILessGlobalVariables");
+import LessModifyVariables = require("../../helpers/LessModifyVariables");
+import ILessModifyVariables = require("../../helpers/ILessModifyVariables");
 import isDefined = require("../../isDefined");
 import BaseCompiler = require("../../cssPreProcessorAbstract/compiler/Compiler");
 import IOptions = require("./IOptions");
@@ -341,6 +392,60 @@ class Compiler extends BaseCompiler implements ICompiler {
         if (options && isDefined(options.pluginsPriorities)) {
             this.setPluginPriorities(options.pluginsPriorities);
         }
+
+        if (options && isDefined(options.globalVariables)) {
+            this.setGlobalVariables(options.globalVariables);
+        }
+        if (options && isDefined(options.modifyVariables)) {
+            this.setGlobalVariables(options.modifyVariables);
+        }
+    }
+
+
+
+    private _globalVariablesInstance:ILessGlobalVariables;
+    protected createGlobalVariablesInstance():ILessGlobalVariables {
+        return new LessGlobalVariables();
+    }
+    protected getGlobalVariablesInstance():ILessGlobalVariables {
+        if (!this._globalVariablesInstance) {
+            this._globalVariablesInstance = this.createGlobalVariablesInstance();
+        }
+    }
+    protected getGlobalVariable(name:string):any {
+        return this.getGlobalVariablesInstance().getVariable(name);
+    }
+    protected setGlobalVariable(name:string, value:any):any {
+        this.getGlobalVariablesInstance().setVariable(name, value);
+    }
+    protected getGlobalVariables():any {
+        return this.getGlobalVariablesInstance().getVariables();
+    }
+    protected setGlobalVariables(value:any):void {
+        this.getGlobalVariables().setVariables(value);
+    }
+
+
+    private _modifyVariablesInstance:ILessModifyVariables;
+    protected createModifyVariablesInstance():ILessModifyVariables {
+        return new LessModifyVariables();
+    }
+    protected getModifyVariablesInstance():ILessModifyVariables {
+        if (!this._modifyVariablesInstance) {
+            this._modifyVariablesInstance = this.createModifyVariablesInstance();
+        }
+    }
+    protected getModifyVariable(name:string):any {
+        return this.getModifyVariablesInstance().getVariable(name);
+    }
+    protected setModifyVariable(name:string, value:any):any {
+        this.getModifyVariablesInstance().setVariable(name, value);
+    }
+    protected getModifyVariables():any {
+        return this.getModifyVariablesInstance().getVariables();
+    }
+    protected setModifyVariables(value:any):void {
+        this.getModifyVariables().setVariables(value);
     }
 
     protected getExtensions():string [] {
@@ -402,6 +507,8 @@ class Compiler extends BaseCompiler implements ICompiler {
             compress  : true,
             sourceMap : true,
             lint      : true,
+            modifyVars: this.getModifyVariables(), // todo: проверить, что такой финт возможен
+            globalVars: this.getGlobalVariables(), // todo: проверить, что такой финт возможен
             plugins   : this.getPlugins()
                 .filter((plugin:IPlugin):boolean => {
                     return plugin.isUsed()

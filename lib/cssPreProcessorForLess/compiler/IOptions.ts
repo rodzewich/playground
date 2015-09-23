@@ -24,6 +24,8 @@ interface IOptions extends IBaseOptions {
     pluginCssFlipUsed?:boolean;
 
     pluginsPriorities?:string[];
+    globalVariables?:any;
+    modifyVariables?:any;
 }
 
 export = IOptions;
