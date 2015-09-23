@@ -1,7 +1,6 @@
-import IBaseOptions = require("../../compiler/compiler/IOptions");
+import IBaseOptions = require("../../cssPreProcessorAbstract/compiler/IOptions");
 
 interface IOptions extends IBaseOptions {
-    includeDirectories?: string[];
 }
 
 export = IOptions;

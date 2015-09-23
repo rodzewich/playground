@@ -1,4 +1,4 @@
-import IBaseManager = require("../../compiler/manager/IManager");
+import IBaseManager = require("../../cssPreProcessorAbstract/manager/IManager");
 
 interface IManager extends IBaseManager {
 }

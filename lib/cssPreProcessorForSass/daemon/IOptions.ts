@@ -1,4 +1,4 @@
-import IBaseOptions = require("../../compiler/daemon/IOptions");
+import IBaseOptions = require("../../cssPreProcessorAbstract/daemon/IOptions");
 
 interface IOptions extends IBaseOptions {
 }

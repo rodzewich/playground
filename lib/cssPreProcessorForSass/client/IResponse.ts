@@ -1,11 +1,6 @@
-import IBaseResponse = require("../../compiler/client/IResponse");
+import IBaseResponse = require("../../cssPreProcessorAbstract/client/IResponse");
 
 interface IResponse extends IBaseResponse {
-    source: string;
-    result: string;
-    deps: string[];
-    map: any;
-    date: number;
 }
 
 export = IResponse;

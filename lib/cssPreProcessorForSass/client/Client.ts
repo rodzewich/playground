@@ -3,7 +3,7 @@
 import typeOf = require("../../typeOf");
 import IOptions = require("./IOptions");
 import IClient = require("./IClient");
-import BaseClient = require("../../compiler/client/Client");
+import BaseClient = require("../../cssPreProcessorAbstract/client/Client");
 import IResponse = require("./IResponse");
 import IRequest = require("./IRequest");
 import path = require("path");
@@ -12,21 +12,8 @@ import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelpe
 
 class Client extends BaseClient {
 
-    private _includeDirectories:IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
-
     constructor(options:IOptions) {
         super(options);
-        if (options && typeOf(options.includeDirectories) !== "undefined") {
-            this.setIncludeDirectories(options.includeDirectories);
-        }
-    }
-
-    protected getIncludeDirectories():string[] {
-        return this._includeDirectories.getDirectories();
-    }
-
-    protected setIncludeDirectories(value:string[]):void {
-        this._includeDirectories.setDirectories(value);
     }
 
     protected getDaemon():string {

@@ -39,7 +39,7 @@ var logger:log4js.Logger = log4js.getLogger("worker"),
     memory:IMemory,
     daemon:IDaemon;
 
-process.title = "Stylus daemon";
+process.title = "Sass worker daemon";
 
 deferred([
     (next:() => void):void => {

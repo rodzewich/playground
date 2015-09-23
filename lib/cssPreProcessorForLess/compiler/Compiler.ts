@@ -403,8 +403,6 @@ class Compiler extends BaseCompiler implements ICompiler {
         }
     }
 
-
-
     private _globalVariablesInstance:ILessGlobalVariables;
     protected createGlobalVariablesInstance():ILessGlobalVariables {
         return new LessGlobalVariables();

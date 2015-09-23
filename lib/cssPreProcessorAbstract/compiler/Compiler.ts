@@ -38,6 +38,14 @@ class Compiler extends BaseCompiler implements ICompiler {
         }
     }
 
+    protected isBrandSpecificLogic():boolean {
+        return true;
+    }
+
+    protected isSupportLanguages():boolean {
+        return true;
+    }
+
     protected isThrowErrors():boolean {
         return false;
     }
@@ -67,270 +75,425 @@ class Compiler extends BaseCompiler implements ICompiler {
     }
 
     public compile(callback: (errors: Error[], result: IResponse) => void): void {
+        var filename:string          = this.getFilename(),
+            brandSpecific:boolean    = this.isBrandSpecificLogic(),
+            supportLanguages:boolean = this.isSupportLanguages(),
+            compile:((filename:string, callback:(errors:Error[], result:IResponse) => void) => void) =
+                (filename:string, callback:(errors:Error[], result:IResponse) => void):void => {
 
-        var resolve:string,
-            mtime:number,
-            content:string,
-            contents:({[key: string]: string}) = {},
-            dependencies:string[] = [],
-            sourceMap:ISourceMap  = null,
-            result:string         = null,
-            memory:IMemory        = this.getMemory(),
-            filename:string       = this.getFilename(),
-            resultTime:number     = parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
-            unlock:(callback?:(errors:Error[]) => void) => void,
-            completion:((errors:Error[], result:IResponse) => void) =
-                (errors:Error[], result:IResponse):void => {
-                    if (typeOf(callback) === "function") {
-                        if (errors && errors.length && this.isThrowErrors()) {
-                            callback(errors, null);
-                        } else if (errors && errors.length && result) {
-                            callback(null, <IResponse>{
-                                source : result.source,
-                                result : this.createCssErrors(errors),
-                                deps   : result.deps,
-                                map    : result.map,
-                                date   : result.date
-                            });
-                        } else if (errors && errors.length) {
-                            callback(null, <IResponse>{
-                                source : null,
-                                result : this.createCssErrors(errors),
-                                deps   : [],
-                                map    : {},
-                                date   : resultTime
-                            });
-                        } else {
-                            callback(null, result);
-                        }
-                    }
-                };
-
-        deferred([
-
-            // использование кеша
-            (next:() => void):void => {
-                if (this.isCacheUsed()) {
-                    memory.getItem(filename, (errors:Error[], response:IResponse):void => {
-                        completion(errors, response);
-                    });
-                } else {
-                    next();
-                }
-            },
-
-            // поиск исходника
-            (next:() => void):void => {
-                var directories:string[] = this.getIncludeDirectories(),
-                    errors:Error[] = [],
-                    actions:((next:() => void) => void)[] = [];
-                directories.unshift(this.getSourcesDirectory());
-                directories.forEach((directory:string):void => {
-                    this.getExtensions().forEach((extension:string):void => {
-                        actions.push((callback:() => void):void => {
-                            resolve = path.join(directory, filename + extension);
-                            fs.stat(resolve, (error:Error, stats:fs.Stats):void => {
-                                if (!error && stats.isFile()) {
-                                    mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
-                                    next();
+                    var resolve:string,
+                        mtime:number,
+                        content:string,
+                        contents:({[key: string]: string}) = {},
+                        dependencies:string[] = [],
+                        sourceMap:ISourceMap  = null,
+                        result:string         = null,
+                        memory:IMemory        = this.getMemory(),
+                        unlock:(callback?:(errors:Error[]) => void) => void,
+                        completion:((errors:Error[], result:IResponse) => void) =
+                        (errors:Error[], result:IResponse):void => {
+                            if (typeOf(callback) === "function") {
+                                if (errors && errors.length && this.isThrowErrors()) {
+                                    callback(errors, null);
+                                } else if (errors && errors.length && result) {
+                                    callback(null, <IResponse>{
+                                        source : result.source,
+                                        result : this.createCssErrors(errors),
+                                        deps   : result.deps,
+                                        map    : result.map,
+                                        date   : result.date
+                                    });
+                                } else if (errors && errors.length) {
+                                    callback(null, <IResponse>{
+                                        source : null,
+                                        result : this.createCssErrors(errors),
+                                        deps   : [],
+                                        map    : {},
+                                        date   : resultTime
+                                    });
                                 } else {
-                                    if (error && BaseException.getCode(error) !== "ENOENT") {
-                                        errors.push(error);
-                                    }
-                                    callback();
+                                    callback(null, result);
                                 }
-                            });
-                        });
-                    });
-                });
-                actions.push(():void => {
-                    completion(errors, null);
-                });
-                deferred(actions);
-            },
+                            }
+                        };
 
-            // проверка всех зависимостей
-            (next:() => void):void => {
-                var directories:string[];
-                memory.getItem(filename, (errors:Error[], response:IResponse):void => {
-                    if ((!errors || !errors.length) &&
-                        response && response.date >= mtime &&
-                        response.deps.length === 0) {
-                        completion(null, response);
-                    } else if ((!errors || !errors.length) &&
-                        response && response.date >= mtime &&
-                        response.deps.length !== 0) {
-                        directories = this.getIncludeDirectories();
-                        directories.unshift(this.getSourcesDirectory());
-                        parallel(response.deps.map((filename:string):((next:() => void) => void) => {
-                            return (done:() => void):void => {
-                                var actions:((next:() => void) => void)[] =
-                                        directories.map((directory:string):((next:() => void) => void) => {
-                                            var temp:string = path.join(directory, filename);
-                                            return (next:() => void):void => {
-                                                fs.stat(temp, function (error:Error, stats:fs.Stats) {
-                                                    if (!error && stats.isFile()) {
-                                                        mtime = Math.max(mtime, parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10));
-                                                    }
-                                                    next();
-                                                });
-                                            };
-                                        });
-                                actions.push(():void => {
-                                    done();
+                    deferred([
+
+                        // использование кеша
+                        (next:() => void):void => {
+                            if (this.isCacheUsed()) {
+                                memory.getItem(filename, (errors:Error[], response:IResponse):void => {
+                                    completion(errors, response);
                                 });
-                                deferred(actions);
-                            };
-                        }), ():void => {
-                            if (response.date >= mtime) {
-                                completion(null, response);
                             } else {
                                 next();
                             }
-                        });
-                    } else if (errors && errors.length) {
-                        completion(errors, null);
-                    } else {
-                        next();
-                    }
-                });
-            },
+                        },
 
-            // установка блокировки
-            (next:() => void):void => {
-                memory.lock(filename, (errors:Error[], result:(callback?:(errors:Error[]) => void) => void):void => {
-                    if (!errors || !errors.length) {
-                        unlock = result;
-                        next();
-                    } else {
-                        completion(errors, null);
-                    }
-                });
-            },
-
-            // контент файла
-            (next:() => void):void => {
-                var temp:Error[] = [];
-                fs.readFile(resolve, (error:Error, buffer:Buffer):void => {
-                    if (!error) {
-                        content = buffer.toString("utf8");
-                        next();
-                    } else {
-                        temp.push(error);
-                        deferred([
-                            // снятие блокировки
-                            (next:() => void):void => {
-                                unlock((errors:Error[]):void => {
-                                    if (errors && errors.length) {
-                                        temp = temp.concat(errors);
-                                    }
-                                    next();
+                        // поиск исходника
+                        (next:() => void):void => {
+                            var directories:string[] = this.getIncludeDirectories(),
+                                errors:Error[] = [],
+                                actions:((next:() => void) => void)[] = [];
+                            directories.unshift(this.getSourcesDirectory());
+                            directories.forEach((directory:string):void => {
+                                this.getExtensions().forEach((extension:string):void => {
+                                    actions.push((callback:() => void):void => {
+                                        resolve = path.join(directory, filename + extension);
+                                        fs.stat(resolve, (error:Error, stats:fs.Stats):void => {
+                                            if (!error && stats.isFile()) {
+                                                mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
+                                                next();
+                                            } else {
+                                                if (error && BaseException.getCode(error) !== "ENOENT") {
+                                                    errors.push(error);
+                                                }
+                                                callback();
+                                            }
+                                        });
+                                    });
                                 });
-                            },
-                            ():void => {
-                                completion(temp, null);
-                            }
-                        ]);
-                    }
-                });
-            },
+                            });
+                            actions.push(():void => {
+                                completion(errors, null);
+                            });
+                            deferred(actions);
+                        },
 
-            // препроцессинг
-            (next:() => void):void => {
-                var errors: Error[] = [];
-                this.preProcessing({
-                    filename : resolve,
-                    content  : content
-                }, (errs:Error[], res:{css: string; maps: any; deps: string[];}):void => {
-                    if (!errs || !errs.length) {
-                        sourceMap    = res.maps;
-                        dependencies = res.deps;
-                        result       = res.css;
-                        next();
-                    } else {
-                        errors = errors.concat(errs);
-                        deferred([
-                            // снятие блокировки
-                            (next:() => void):void => {
-                                unlock((errs:Error[]):void => {
-                                    if (errs && errs.length) {
+                        // проверка всех зависимостей
+                        (next:() => void):void => {
+                            var directories:string[];
+                            memory.getItem(filename, (errors:Error[], response:IResponse):void => {
+                                if ((!errors || !errors.length) &&
+                                    response && response.date >= mtime &&
+                                    response.deps.length === 0) {
+                                    completion(null, response);
+                                } else if ((!errors || !errors.length) &&
+                                    response && response.date >= mtime &&
+                                    response.deps.length !== 0) {
+                                    directories = this.getIncludeDirectories();
+                                    directories.unshift(this.getSourcesDirectory());
+                                    parallel(response.deps.map((filename:string):((next:() => void) => void) => {
+                                        return (done:() => void):void => {
+                                            var actions:((next:() => void) => void)[] =
+                                                    directories.map((directory:string):((next:() => void) => void) => {
+                                                        var temp:string = path.join(directory, filename);
+                                                        return (next:() => void):void => {
+                                                            fs.stat(temp, function (error:Error, stats:fs.Stats) {
+                                                                if (!error && stats.isFile()) {
+                                                                    mtime = Math.max(mtime, parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10));
+                                                                }
+                                                                next();
+                                                            });
+                                                        };
+                                                    });
+                                            actions.push(():void => {
+                                                done();
+                                            });
+                                            deferred(actions);
+                                        };
+                                    }), ():void => {
+                                        if (response.date >= mtime) {
+                                            completion(null, response);
+                                        } else {
+                                            next();
+                                        }
+                                    });
+                                } else if (errors && errors.length) {
+                                    completion(errors, null);
+                                } else {
+                                    next();
+                                }
+                            });
+                        },
+
+                        // установка блокировки
+                        (next:() => void):void => {
+                            memory.lock(filename, (errors:Error[], result:(callback?:(errors:Error[]) => void) => void):void => {
+                                if (!errors || !errors.length) {
+                                    unlock = result;
+                                    next();
+                                } else {
+                                    completion(errors, null);
+                                }
+                            });
+                        },
+
+                        // контент файла
+                        (next:() => void):void => {
+                            var temp:Error[] = [];
+                            fs.readFile(resolve, (error:Error, buffer:Buffer):void => {
+                                if (!error) {
+                                    content = buffer.toString("utf8");
+                                    next();
+                                } else {
+                                    temp.push(error);
+                                    deferred([
+                                        // снятие блокировки
+                                        (next:() => void):void => {
+                                            unlock((errors:Error[]):void => {
+                                                if (errors && errors.length) {
+                                                    temp = temp.concat(errors);
+                                                }
+                                                next();
+                                            });
+                                        },
+                                        ():void => {
+                                            completion(temp, null);
+                                        }
+                                    ]);
+                                }
+                            });
+                        },
+
+                        // препроцессинг
+                        (next:() => void):void => {
+                            var errors: Error[] = [];
+                            this.preProcessing({
+                                filename : resolve,
+                                content  : content
+                            }, (errs:Error[], res:{css: string; maps: any; deps: string[];}):void => {
+                                if (!errs || !errs.length) {
+                                    sourceMap    = res.maps;
+                                    dependencies = res.deps;
+                                    result       = res.css;
+                                    next();
+                                } else {
+                                    errors = errors.concat(errs);
+                                    deferred([
+                                        // снятие блокировки
+                                        (next:() => void):void => {
+                                            unlock((errs:Error[]):void => {
+                                                if (errs && errs.length) {
+                                                    errors = errors.concat(errs);
+                                                }
+                                                next();
+                                            });
+                                        },
+                                        ():void => {
+                                            completion(errors, <IResponse>{
+                                                source : content,
+                                                result : null,
+                                                deps   : [],
+                                                map    : {},
+                                                date   : resultTime
+                                            });
+                                        }
+                                    ]);
+                                }
+                            });
+                        },
+
+                        // загрузка исходников
+                        (next:() => void):void => {
+                            var errors:Error[] = [];
+                            parallel((sourceMap.sources || []).map((filename:string):((done:() => void) => void) => {
+                                return (done:() => void):void => {
+                                    fs.readFile(filename, (error:Error, content:Buffer):void => {
+                                        if (!error) {
+                                            contents[filename] = content.toString("utf8");
+                                        } else {
+                                            errors.push(error);
+                                        }
+                                        done();
+                                    });
+                                };
+                            }), ():void => {
+                                if (!errors.length) {
+                                    next();
+                                } else {
+                                    deferred([
+                                        // снятие блокировки
+                                        (next:() => void):void => {
+                                            unlock((errs:Error[]):void => {
+                                                if (errs && errs.length) {
+                                                    errors = errors.concat(errs);
+                                                }
+                                                next();
+                                            });
+                                        },
+                                        ():void => {
+                                            completion(errors, <IResponse>{
+                                                source : content,
+                                                result : result,
+                                                deps   : [],
+                                                map    : {},
+                                                date   : resultTime
+                                            });
+                                        }
+                                    ]);
+                                }
+                            });
+                        },
+
+                        // постпроцессинг
+                        (next:() => void):void => {
+                            var errors: Error[] = [];
+                            if (this.isUsedPostProcessing()) {
+                                this.postProcessing({
+                                    maps     : sourceMap,
+                                    content  : result,
+                                    contents : contents
+                                }, (errs:Error[], res:{css: string; maps: ISourceMap;}):void => {
+                                    if (!errs || !errs.length) {
+                                        result    = res.css;
+                                        sourceMap = res.maps;
+                                        next();
+                                    } else {
                                         errors = errors.concat(errs);
+                                        deferred([
+                                            // снятие блокировки
+                                            (next:() => void):void => {
+                                                unlock((errs:Error[]):void => {
+                                                    if (errs && errs.length) {
+                                                        errors = errors.concat(errs);
+                                                    }
+                                                    next();
+                                                });
+                                            },
+                                            ():void => {
+                                                completion(errors, <IResponse>{
+                                                    source : content,
+                                                    result : null,
+                                                    deps   : [],
+                                                    map    : {},
+                                                    date   : resultTime
+                                                });
+                                            }
+                                        ]);
                                     }
-                                    next();
                                 });
-                            },
-                            ():void => {
-                                completion(errors, <IResponse>{
-                                    source : content,
-                                    result : null,
-                                    deps   : [],
-                                    map    : {},
-                                    date   : resultTime
-                                });
-                            }
-                        ]);
-                    }
-                });
-            },
-
-            // загрузка исходников
-            (next:() => void):void => {
-                var errors:Error[] = [];
-                parallel((sourceMap.sources || []).map((filename:string):((done:() => void) => void) => {
-                    return (done:() => void):void => {
-                        fs.readFile(filename, (error:Error, content:Buffer):void => {
-                            if (!error) {
-                                contents[filename] = content.toString("utf8");
                             } else {
-                                errors.push(error);
+                                next();
                             }
-                            done();
-                        });
-                    };
-                }), ():void => {
-                    if (!errors.length) {
-                        next();
-                    } else {
-                        deferred([
-                            // снятие блокировки
-                            (next:() => void):void => {
-                                unlock((errs:Error[]):void => {
-                                    if (errs && errs.length) {
-                                        errors = errors.concat(errs);
+                        },
+
+                        // обрезание зависимостей
+                        (next:() => void):void => {
+                            var errors: Error[] = [],
+                                includeDirectories = this.getIncludeDirectories();
+                            includeDirectories.unshift(this.getSourcesDirectory());
+                            dependencies = dependencies.map((item:string):string => {
+                                var index:number,
+                                    length:number    = includeDirectories.length,
+                                    directory:string = path.dirname(filename),
+                                    importDirectory:string,
+                                    relative:string;
+                                for (index = 0; index < length; index++) {
+                                    importDirectory = includeDirectories[index];
+                                    relative = path.relative(importDirectory, item);
+                                    if (index === 0) {
+                                        relative = path.join(directory, relative);
                                     }
-                                    next();
-                                });
-                            },
-                            ():void => {
-                                completion(errors, <IResponse>{
+                                    if (relative.slice(0, 2) !== "..") {
+                                        break;
+                                    }
+                                }
+                                if (relative.slice(0, 2) === "..") {
+                                    errors.push(new Error("bla bla bla"));
+                                    return null;
+                                }
+                                return relative;
+                            });
+                            if (!errors.length) {
+                                next();
+                            } else {
+                                deferred([
+                                    // снятие блокировки
+                                    (next:() => void):void => {
+                                        unlock((errs:Error[]):void => {
+                                            if (errs && errs.length) {
+                                                errors = errors.concat(errs);
+                                            }
+                                            next();
+                                        });
+                                    },
+                                    ():void => {
+                                        completion(errors, <IResponse>{
+                                            source : content,
+                                            result : result,
+                                            deps   : [],
+                                            map    : {},
+                                            date   : resultTime
+                                        });
+                                    }
+                                ]);
+                            }
+                        },
+
+                        // обрезание мапов
+                        (next:() => void):void => {
+                            var errors: Error[] = [],
+                                includeDirectories = this.getIncludeDirectories();
+                            includeDirectories.unshift(this.getSourcesDirectory());
+                            sourceMap.sources = (sourceMap.sources || []).map((item:string):string => {
+                                var index:number,
+                                    length:number    = includeDirectories.length,
+                                    directory:string = path.dirname(filename),
+                                    importDirectory:string,
+                                    relative:string;
+                                for (index = 0; index < length; index++) {
+                                    importDirectory = includeDirectories[index];
+                                    relative = path.relative(importDirectory, item);
+                                    if (index === 0) {
+                                        relative = path.join(directory, relative);
+                                    }
+                                    if (relative.slice(0, 2) !== "..") {
+                                        break;
+                                    }
+                                }
+                                if (relative.slice(0, 2) === "..") {
+                                    errors.push(new Error("bla bla bla"));
+                                    return null;
+                                }
+                                return path.join("/", this.getWebRootDirectory(), relative);
+                            });
+                            if (!errors.length) {
+                                next();
+                            } else {
+                                deferred([
+                                    // снятие блокировки
+                                    (next:() => void):void => {
+                                        unlock((errs:Error[]):void => {
+                                            if (errs && errs.length) {
+                                                errors = errors.concat(errs);
+                                            }
+                                            next();
+                                        });
+                                    },
+                                    ():void => {
+                                        completion(errors, <IResponse>{
+                                            source : content,
+                                            result : result,
+                                            deps   : [],
+                                            map    : {},
+                                            date   : resultTime
+                                        });
+                                    }
+                                ]);
+                            }
+                        },
+
+                        // результат
+                        (next:() => void):void => {
+                            var errors:Error[]  = [],
+                                value:IResponse = {
                                     source : content,
                                     result : result,
-                                    deps   : [],
-                                    map    : {},
+                                    deps   : dependencies,
+                                    map    : sourceMap,
                                     date   : resultTime
-                                });
-                            }
-                        ]);
-                    }
-                });
-            },
-
-            // постпроцессинг
-            (next:() => void):void => {
-                var errors: Error[] = [];
-                if (this.isUsedPostProcessing()) {
-                    this.postProcessing({
-                        maps     : sourceMap,
-                        content  : result,
-                        contents : contents
-                    }, (errs:Error[], res:{css: string; maps: ISourceMap;}):void => {
-                        if (!errs || !errs.length) {
-                            result    = res.css;
-                            sourceMap = res.maps;
-                            next();
-                        } else {
-                            errors = errors.concat(errs);
+                                };
                             deferred([
+                                // сохранение результа
+                                (next:() => void):void => {
+                                    memory.setItem(filename, value, (errs:Error[]):void => {
+                                        if (errs && errs.length) {
+                                            errors = errors.concat(errs);
+                                        }
+                                        next();
+                                    });
+                                },
                                 // снятие блокировки
                                 (next:() => void):void => {
                                     unlock((errs:Error[]):void => {
@@ -340,176 +503,83 @@ class Compiler extends BaseCompiler implements ICompiler {
                                         next();
                                     });
                                 },
-                                ():void => {
-                                    completion(errors, <IResponse>{
-                                        source : content,
-                                        result : null,
-                                        deps   : [],
-                                        map    : {},
-                                        date   : resultTime
-                                    });
+                                // результат
+                                (next:() => void):void => {
+                                    if (!errors || !errors.length) {
+                                        completion(null, value);
+                                    } else {
+                                        completion(errors, <IResponse>{
+                                            source : content,
+                                            result : result,
+                                            deps   : [],
+                                            map    : {},
+                                            date   : resultTime
+                                        });
+                                    }
                                 }
                             ]);
                         }
-                    });
-                } else {
-                    next();
-                }
-            },
 
-            // обрезание зависимостей
-            (next:() => void):void => {
-                var errors: Error[] = [],
-                    includeDirectories = this.getIncludeDirectories();
-                includeDirectories.unshift(this.getSourcesDirectory());
-                dependencies = dependencies.map((item:string):string => {
-                    var index:number,
-                        length:number    = includeDirectories.length,
-                        directory:string = path.dirname(filename),
-                        importDirectory:string,
-                        relative:string;
-                    for (index = 0; index < length; index++) {
-                        importDirectory = includeDirectories[index];
-                        relative = path.relative(importDirectory, item);
-                        if (index === 0) {
-                            relative = path.join(directory, relative);
-                        }
-                        if (relative.slice(0, 2) !== "..") {
-                            break;
-                        }
-                    }
-                    if (relative.slice(0, 2) === "..") {
-                        errors.push(new Error("bla bla bla"));
-                        return null;
-                    }
-                    return relative;
-                });
-                if (!errors.length) {
-                    next();
-                } else {
-                    deferred([
-                        // снятие блокировки
-                        (next:() => void):void => {
-                            unlock((errs:Error[]):void => {
-                                if (errs && errs.length) {
-                                    errors = errors.concat(errs);
-                                }
-                                next();
-                            });
-                        },
-                        ():void => {
-                            completion(errors, <IResponse>{
-                                source : content,
-                                result : result,
-                                deps   : [],
-                                map    : {},
-                                date   : resultTime
-                            });
-                        }
                     ]);
-                }
-            },
 
-            // обрезание мапов
-            (next:() => void):void => {
-                var errors: Error[] = [],
-                    includeDirectories = this.getIncludeDirectories();
-                includeDirectories.unshift(this.getSourcesDirectory());
-                sourceMap.sources = (sourceMap.sources || []).map((item:string):string => {
-                    var index:number,
-                        length:number    = includeDirectories.length,
-                        directory:string = path.dirname(filename),
-                        importDirectory:string,
-                        relative:string;
-                    for (index = 0; index < length; index++) {
-                        importDirectory = includeDirectories[index];
-                        relative = path.relative(importDirectory, item);
-                        if (index === 0) {
-                            relative = path.join(directory, relative);
-                        }
-                        if (relative.slice(0, 2) !== "..") {
-                            break;
-                        }
-                    }
-                    if (relative.slice(0, 2) === "..") {
-                        errors.push(new Error("bla bla bla"));
-                        return null;
-                    }
-                    return path.join("/", this.getWebRootDirectory(), relative);
-                });
-                if (!errors.length) {
-                    next();
-                } else {
-                    deferred([
-                        // снятие блокировки
-                        (next:() => void):void => {
-                            unlock((errs:Error[]):void => {
-                                if (errs && errs.length) {
-                                    errors = errors.concat(errs);
-                                }
-                                next();
-                            });
-                        },
-                        ():void => {
-                            completion(errors, <IResponse>{
-                                source : content,
-                                result : result,
-                                deps   : [],
-                                map    : {},
-                                date   : resultTime
-                            });
-                        }
-                    ]);
-                }
-            },
+                };
 
-            // результат
-            (next:() => void):void => {
-                var errors:Error[]  = [],
-                    value:IResponse = {
-                        source : content,
-                        result : result,
-                        deps   : dependencies,
-                        map    : sourceMap,
-                        date   : resultTime
-                    };
-                deferred([
-                    // сохранение результа
-                    (next:() => void):void => {
-                        memory.setItem(filename, value, (errs:Error[]):void => {
-                            if (errs && errs.length) {
-                                errors = errors.concat(errs);
-                            }
-                            next();
-                        });
-                    },
-                    // снятие блокировки
-                    (next:() => void):void => {
-                        unlock((errs:Error[]):void => {
-                            if (errs && errs.length) {
-                                errors = errors.concat(errs);
-                            }
-                            next();
-                        });
-                    },
-                    // результат
-                    (next:() => void):void => {
-                        if (!errors || !errors.length) {
-                            completion(null, value);
+        var done:((errors:Error[], result:IResponse) => void) =
+                (errors:Error[], result:IResponse):void => {
+
+                };
+
+        if (!brandSpecific && !supportLanguages) {
+            compile(filename, callback);
+        } else if (brandSpecific && !supportLanguages) {
+            deferred([
+                (next:() => void):void => {
+                    compile(filename, (errors: Error[], result: IResponse): void => {
+                        if (errors && errors.length) {
+                            done(errors, null);
+                        } else if (result) {
+                            done(null, result);
                         } else {
-                            completion(errors, <IResponse>{
-                                source : content,
-                                result : result,
-                                deps   : [],
-                                map    : {},
-                                date   : resultTime
-                            });
+                            next();
                         }
+                    });
+                },
+                (next:() => void):void => {
+                    filename = filename.match(/^(.+)-(\d+)$/)[2];
+                    if (filename) {
+                        compile(filename, callback);
+                    } else {
+                        done(null, null);
                     }
-                ]);
-            }
+                }
+            ]);
+        } else if (!brandSpecific && supportLanguages) {
+            // todo: доделать !!!
+            deferred([
+                (next:() => void):void => {
+                    compile(filename, (errors: Error[], result: IResponse): void => {
+                        if (errors && errors.length) {
+                            done(errors, null);
+                        } else if (result) {
+                            done(null, result);
+                        } else {
+                            next();
+                        }
+                    });
+                },
+                (next:() => void):void => {
+                    filename = filename.match(/^(.+)-(\d+)$/)[2];
+                    if (filename) {
+                        compile(filename, callback);
+                    } else {
+                        done(null, null);
+                    }
+                }
+            ]);
+        } else {
 
-        ]);
+        }
+
 
     }
 

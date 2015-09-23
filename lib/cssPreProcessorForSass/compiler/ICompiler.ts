@@ -1,4 +1,4 @@
-import IBaseCompiler = require("../../compiler/compiler/ICompiler");
+import IBaseCompiler = require("../../cssPreProcessorAbstract/compiler/ICompiler");
 
 interface ICompiler extends IBaseCompiler {
 }
