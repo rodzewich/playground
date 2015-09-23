@@ -89,6 +89,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         sourceMap:ISourceMap  = null,
                         result:string         = null,
                         memory:IMemory        = this.getMemory(),
+                        resultTime:number     = parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
                         unlock:(callback?:(errors:Error[]) => void) => void,
                         completion:((errors:Error[], result:IResponse) => void) =
                         (errors:Error[], result:IResponse):void => {
