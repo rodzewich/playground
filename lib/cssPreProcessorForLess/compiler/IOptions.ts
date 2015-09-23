@@ -16,7 +16,6 @@ interface IOptions extends IBaseOptions {
     pluginAutoprefixUsed?:boolean;
     pluginAutoprefixBrowsers?:string[];
     pluginCsscombUsed?:boolean;
-    pluginCsscombConfig?:string;
     pluginCleanCssUsed?:boolean;
     pluginCssWringUsed?:boolean;
     pluginCssWringPreserveHacks?:boolean;

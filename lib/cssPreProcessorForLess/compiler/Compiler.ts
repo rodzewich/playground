@@ -144,8 +144,8 @@ import ICsscombPlugin = require("../plugins/postprocessors/csscomb/IPlugin");
 import CsscombPlugin = require("../plugins/postprocessors/csscomb/Plugin");
 import ICleanCssPlugin = require("../plugins/postprocessors/cleanCss/IPlugin");
 import CleanCssPlugin = require("../plugins/postprocessors/cleanCss/Plugin");
-import ICssWringPlugin = require("../plugins/postprocessors/cssWring/IPlugin");
-import CssWringPlugin = require("../plugins/postprocessors/cssWring/Plugin");
+import ICssWringPlugin = require("../plugins/postprocessors/csswring/IPlugin");
+import CssWringPlugin = require("../plugins/postprocessors/csswring/Plugin");
 import ICssFlipPlugin = require("../plugins/postprocessors/cssFlip/IPlugin");
 import CssFlipPlugin = require("../plugins/postprocessors/cssFlip/Plugin");
 
@@ -374,9 +374,6 @@ class Compiler extends BaseCompiler implements ICompiler {
         // todo: implement other autoprefixer options
         if (options && isDefined(options.pluginCsscombUsed)) {
             this.getCsscombPlugin().setIsUsed(options.pluginCsscombUsed);
-        }
-        if (options && isDefined(options.pluginCsscombConfig)) {
-            this.getCsscombPlugin().setConfig(options.pluginCsscombConfig);
         }
         if (options && isDefined(options.pluginCleanCssUsed)) {
             this.getCleanCssPlugin().setIsUsed(options.pluginCleanCssUsed);

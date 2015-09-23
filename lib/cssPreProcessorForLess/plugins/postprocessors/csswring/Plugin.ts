@@ -1,5 +1,5 @@
 import PluginBase = require("../Plugin");
-import IPlugin = require("../IPlugin");
+import IPlugin = require("./IPlugin");
 import Name = require("../../Name");
 import LessPlugin = require("less-plugin-csswring");
 import browserslist = require("browserslist");

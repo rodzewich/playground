@@ -6,7 +6,7 @@ interface IPlugin extends IPluginBase {
     setIsPreserveHacks(value:boolean):void;
     isRemoveAllComments():boolean;
     getIsRemoveAllComments():boolean;
-    setIsRemoveAllComments():boolean;
+    setIsRemoveAllComments(value:boolean):void;
 }
 
 export = IPlugin;

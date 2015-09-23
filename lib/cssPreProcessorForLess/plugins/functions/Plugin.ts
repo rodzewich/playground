@@ -1,6 +1,6 @@
 import PluginBase = require("../Plugin");
+import Category = require("../Category");
 import IPlugin = require("./IPlugin");
-import Type = require("../Type");
 
 abstract class Plugin extends PluginBase implements IPlugin {
 }
