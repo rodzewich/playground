@@ -1,7 +1,13 @@
 /// <reference path="../../../types/node/node.d.ts" />
 /// <reference path="./less.d.ts" />
 
-// todo https://www.npmjs.com/search?q=%22less-plugin%22
+/**
+ * todo: проверять новые плагины тут
+ * https://www.npmjs.com/browse/keyword/less%20plugins
+ * https://www.npmjs.com/search?q=%22less-plugin%22
+ * http://lesscss.org/usage/#plugins-list-of-less-plugins
+ */
+
 
 // PREPROCESSORS
 // todo: https://github.com/seven-phases-max/less-plugin-functions
