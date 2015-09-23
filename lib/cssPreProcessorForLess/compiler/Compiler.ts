@@ -5,8 +5,52 @@
 // todo: уметь устанавливать дефолтные импорты
 // todo: уметь устанавливать плагины
 // todo: уметь использовать Autoprefixer
-// todo использовать http://lesscss.org/usage/#plugins-list-of-less-plugins
-// todo использовать https://www.npmjs.com/browse/keyword/less%20plugins
+// todo https://www.npmjs.com/search?q=%22less-plugin%22
+
+// PREPROCESSORS
+// todo: https://github.com/seven-phases-max/less-plugin-functions
+// todo: https://github.com/just-boris/less-plugin-glob
+// todo: https://github.com/bassjobsen/less-plugin-group-css-media-queries
+// todo: https://github.com/less/less-plugin-inline-urls
+// todo: https://github.com/bassjobsen/less-plugin-pleeease
+// todo: https://github.com/less/less-plugin-rtl
+
+// todo: https://www.npmjs.com/package/less-plugin-cssgrace
+// todo: https://www.npmjs.com/package/less-plugin-property-order
+// todo: https://www.npmjs.com/package/less-plugin-est
+// todo: https://www.npmjs.com/package/less-plugin-semantic-ui
+// todo: https://www.npmjs.com/package/resolution-independence
+// todo: https://www.npmjs.com/package/less-plugin-absolute-urls
+// todo: https://www.npmjs.com/package/less-plugin-modular-scale
+// todo: https://www.npmjs.com/package/less-plugin-pattern-import
+/**
+ * https://www.npmjs.com/package/less-plugin-no-comment
+ * https://www.npmjs.com/package/less-plugin-theme-creator
+ * https://www.npmjs.com/package/less-plugin-custom-import
+ * https://www.npmjs.com/package/less-plugin-rewrite-import
+ * https://www.npmjs.com/package/less-plugin-theme
+ * https://www.npmjs.com/package/less-plugin-unique-directives
+ * https://www.npmjs.com/package/less-plugin-import-js
+ * https://www.npmjs.com/package/less-plugin-absolute-urls
+ *
+ * https://www.npmjs.com/package/less-plugin-alternative-imports
+ * https://www.npmjs.com/package/less-plugin-linter
+ * https://www.npmjs.com/package/less-plugin-modular-scale
+ * https://www.npmjs.com/package/less-import-aliases
+ * https://www.npmjs.com/package/less-src-replace
+ * https://www.npmjs.com/package/duo-less
+ * https://www.npmjs.com/package/anvil.less
+ * https://www.npmjs.com/package/builder-less
+ * https://www.npmjs.com/package/k-less
+ * https://www.npmjs.com/package/derby-less
+ * https://www.npmjs.com/package/ckstyle-less
+ * https://www.npmjs.com/package/fis-parser-nuomi-less
+ * https://www.npmjs.com/package/wintersmith-less
+ * https://www.npmjs.com/package/simpless
+ * https://www.npmjs.com/package/bee-less
+ * https://www.npmjs.com/package/less-color-lighten
+ * isostyle
+ */
 
 import isDefined = require("../../isDefined");
 import BaseCompiler = require("../../cssPreProcessorAbstract/compiler/Compiler");
@@ -48,9 +92,6 @@ import ICssWringPlugin = require("../plugins/postprocessors/cssWring/IPlugin");
 import CssWringPlugin = require("../plugins/postprocessors/cssWring/Plugin");
 import ICssFlipPlugin = require("../plugins/postprocessors/cssFlip/IPlugin");
 import CssFlipPlugin = require("../plugins/postprocessors/cssFlip/Plugin");
-
-
-import lessPluginInlineUrls = require("less-plugin-inline-urls");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
@@ -300,10 +341,6 @@ class Compiler extends BaseCompiler implements ICompiler {
         if (options && isDefined(options.pluginsPriorities)) {
             this.setPluginPriorities(options.pluginsPriorities);
         }
-    }
-
-    protected isUsedInlineUrls(): boolean {
-        return true;
     }
 
     protected getExtensions():string [] {
