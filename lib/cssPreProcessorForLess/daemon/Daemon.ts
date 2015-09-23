@@ -3,6 +3,7 @@ import ICompilerOptions = require("../compiler/IOptions");
 import IOptions = require("./IOptions");
 import IDaemon = require("./IDaemon");
 import Compiler = require("../compiler/Compiler");
+import ICompiler = require("../compiler/ICompiler");
 
 class Daemon extends BaseDaemon implements IDaemon {
 

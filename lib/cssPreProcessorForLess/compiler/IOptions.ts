@@ -7,7 +7,7 @@ interface IOptions extends IBaseOptions {
     pluginIonicUsed?:boolean;
     pluginLesshatUsed?:boolean;
     pluginNpmImportUsed?:boolean;
-    pluginNpmImportPrefix?:boolean;
+    pluginNpmImportPrefix?:string;
     pluginSkeletonUsed?:boolean;
     pluginBowerResolveUsed?:boolean;
     pluginAdvancedColorFunctionsUsed?:boolean;

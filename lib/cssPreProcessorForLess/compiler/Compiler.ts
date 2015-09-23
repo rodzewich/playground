@@ -413,6 +413,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         if (!this._globalVariablesInstance) {
             this._globalVariablesInstance = this.createGlobalVariablesInstance();
         }
+        return this._globalVariablesInstance;
     }
     protected getGlobalVariable(name:string):any {
         return this.getGlobalVariablesInstance().getVariable(name);
@@ -436,6 +437,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         if (!this._modifyVariablesInstance) {
             this._modifyVariablesInstance = this.createModifyVariablesInstance();
         }
+        return this._modifyVariablesInstance;
     }
     protected getModifyVariable(name:string):any {
         return this.getModifyVariablesInstance().getVariable(name);

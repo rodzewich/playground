@@ -8,7 +8,7 @@
 // todo: уметь управлять браузерами Autoprefixer'а
 // todo: подключить плагины https://www.npmjs.com/search?q=node-sass
 
-import BaseCompiler = require("../../compiler/compiler/Compiler");
+import BaseCompiler = require("../../cssPreProcessorAbstract/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
 import typeOf = require("../../typeOf");
@@ -16,7 +16,6 @@ import deferred = require("../../deferred");
 import parallel = require("../../parallel");
 import IMemory = require("../../memory/client/IClient");
 import IResponse = require("../client/IResponse");
-import stylus = require("stylus");
 import path = require("path");
 import fs = require("fs");
 import BaseException = require("../../Exception");
@@ -27,13 +26,8 @@ import sass = require("node-sass");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
-    private _includeDirectories: IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
-
     constructor(options: IOptions) {
         super(options);
-        if (options && typeOf(options.includeDirectories) !== "undefined") {
-            this.setIncludeDirectories(options.includeDirectories);
-        }
     }
 
     protected isThrowErrors(): boolean {
@@ -69,14 +63,6 @@ class Compiler extends BaseCompiler implements ICompiler {
     protected isSourceComments(): boolean {
         // true enables additional debugging information in the output file as CSS comments
         return false;
-    }
-
-    protected getIncludeDirectories(): string[] {
-        return this._includeDirectories.getDirectories();
-    }
-
-    protected setIncludeDirectories(value: string[]): void {
-        this._includeDirectories.setDirectories(value);
     }
 
     public compile(callback: (errors: Error[], result: IResponse) => void): void {
