@@ -589,41 +589,7 @@ class Compiler extends BaseCompiler implements ICompiler {
     }
 
     protected postProcessing(options:{content: string; maps: ISourceMap; contents: ({[key: string]: string})}, callback:(errors:Error[], result:{css: string; maps: ISourceMap;}) => void):void {
-        // todo: заглушка
         callback(null, {css: options.content, maps: options.maps});
-        /*var postcss:IPostcss = new Postcss();
-        postcss.compile(result, sourceMap, contents, (error:Error, res:IResult):void => {
-            if (!error) {
-                result = res.result;
-                if (this.isShowWarnings()) {
-                    // todo: show warnings
-                    res.messages.map();
-                }
-                sourceMap = res.map;
-                next();
-            } else {
-                deferred([
-                    // снятие блокировки
-                    (next:() => void):void => {
-                        unlock((errs:Error[]):void => {
-                            if (errs && errs.length) {
-                                errors = errors.concat(errs);
-                            }
-                            next();
-                        });
-                    },
-                    ():void => {
-                        completion([error], <IResponse>{
-                            source : content,
-                            result : result,
-                            deps   : [],
-                            map    : {},
-                            date   : resultTime
-                        });
-                    }
-                ]);
-            }
-        });*/
     }
 
 }
