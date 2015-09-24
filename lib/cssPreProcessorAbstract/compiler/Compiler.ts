@@ -75,9 +75,16 @@ class Compiler extends BaseCompiler implements ICompiler {
     }
 
     public compile(callback: (errors: Error[], result: IResponse) => void): void {
-        var filename:string          = this.getFilename(),
+        var temp:string,
+            filename:string          = this.getFilename(),
             brandSpecific:boolean    = this.isBrandSpecificLogic(),
             supportLanguages:boolean = this.isSupportLanguages(),
+            done:((errors:Error[], result:IResponse) => void) =
+                (errors:Error[], result:IResponse):void => {
+                    if (typeOf(callback) !== "function") {
+                        callback(errors, result);
+                    }
+                },
             compile:((filename:string, callback:(errors:Error[], result:IResponse) => void) => void) =
                 (filename:string, callback:(errors:Error[], result:IResponse) => void):void => {
 
@@ -525,14 +532,12 @@ class Compiler extends BaseCompiler implements ICompiler {
 
                 };
 
-        var done:((errors:Error[], result:IResponse) => void) =
-                (errors:Error[], result:IResponse):void => {
-
-                };
-
         if (!brandSpecific && !supportLanguages) {
+            // компилировать как есть
             compile(filename, callback);
         } else if (brandSpecific && !supportLanguages) {
+            // только бредирование
+            temp = filename.replace(/^(.+)-(?:\d+)$/, "$1");
             deferred([
                 (next:() => void):void => {
                     compile(filename, (errors: Error[], result: IResponse): void => {
@@ -540,44 +545,23 @@ class Compiler extends BaseCompiler implements ICompiler {
                             done(errors, null);
                         } else if (result) {
                             done(null, result);
-                        } else {
+                        } else if (temp !== filename) {
                             next();
+                        } else {
+                            done(null, null);
                         }
                     });
                 },
                 (next:() => void):void => {
-                    filename = filename.match(/^(.+)-(\d+)$/)[2];
-                    if (filename) {
-                        compile(filename, callback);
-                    } else {
-                        done(null, null);
-                    }
+                    compile(temp.replace(/^(.+)-(?:\d+)$/, "$1"), callback);
                 }
             ]);
         } else if (!brandSpecific && supportLanguages) {
-            // todo: доделать !!!
-            deferred([
-                (next:() => void):void => {
-                    compile(filename, (errors: Error[], result: IResponse): void => {
-                        if (errors && errors.length) {
-                            done(errors, null);
-                        } else if (result) {
-                            done(null, result);
-                        } else {
-                            next();
-                        }
-                    });
-                },
-                (next:() => void):void => {
-                    filename = filename.match(/^(.+)-(\d+)$/)[2];
-                    if (filename) {
-                        compile(filename, callback);
-                    } else {
-                        done(null, null);
-                    }
-                }
-            ]);
+            // только локализация
+            temp = filename.replace(/^(.+)-(?:[a-z]{2}(?:_[A-Z]{2})?)$/, "$1");
+            compile(temp, callback);
         } else {
+            // брендирование & локализация
 
         }
 
