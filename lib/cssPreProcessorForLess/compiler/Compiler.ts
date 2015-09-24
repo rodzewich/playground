@@ -461,7 +461,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         });
     }
     protected getPluginsPriorities():string[] {
-        if (this._pluginsPriorities) {
+        if (!this._pluginsPriorities) {
             this._pluginsPriorities = this.createDefaultPluginPriorities();
         }
         return this._pluginsPriorities;
@@ -511,13 +511,14 @@ class Compiler extends BaseCompiler implements ICompiler {
             lint      : true,
             modifyVars: this.getModifyVariables(), // todo: проверить, что такой финт возможен
             globalVars: this.getGlobalVariables(), // todo: проверить, что такой финт возможен
-            plugins   : this.getPlugins()
+            // todo: надо выяснять какой плагин падает
+            /*plugins   : this.getPlugins()
                 .filter((plugin:IPlugin):boolean => {
                     return plugin.isUsed()
                 })
                 .map((plugin:IPlugin):any => {
                     return plugin.getInstance()
-                })
+                })*/
         }, (error:Error, result:less.Result):void => {
             if (!error) {
                 callback(null, {

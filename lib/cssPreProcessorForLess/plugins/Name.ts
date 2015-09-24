@@ -1,4 +1,4 @@
-import Category = require("Category");
+import Category = require("./Category");
 
 class Name {
 

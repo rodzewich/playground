@@ -7,6 +7,7 @@ import Compiler = require("../compiler/Compiler");
 import ICompiler = require("../compiler/ICompiler");
 import ICompilerOptions = require("../compiler/IOptions");
 import typeOf = require("../../typeOf");
+import isDefined = require("../../isDefined");
 import IMemory = require("../../memory/client/IClient");
 
 class Daemon extends BaseDaemon implements IDaemon {
@@ -15,6 +16,9 @@ class Daemon extends BaseDaemon implements IDaemon {
 
     constructor(options:IOptions) {
         super(options);
+        if (options && isDefined(options.memory)) {
+            this.setMemory(options.memory);
+        }
     }
 
     protected setMemory(value:IMemory):void {

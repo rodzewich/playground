@@ -1,7 +1,7 @@
 import PluginBase = require("../Plugin");
 import IPlugin = require("../IPlugin");
 import Name = require("../../Name");
-import LessPlugin = require("less-plugin-advanced-color-functions");
+import lessPlugin = require("less-plugin-advanced-color-functions");
 
 class Plugin extends PluginBase implements IPlugin {
 
@@ -10,7 +10,7 @@ class Plugin extends PluginBase implements IPlugin {
     }
 
     public getInstance():any {
-        return new LessPlugin();
+        return lessPlugin;
     }
 
 }

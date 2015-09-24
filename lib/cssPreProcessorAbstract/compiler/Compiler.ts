@@ -75,13 +75,14 @@ class Compiler extends BaseCompiler implements ICompiler {
     }
 
     public compile(callback: (errors: Error[], result: IResponse) => void): void {
-        var temp:string,
+        var temp1:string,
+            temp2:string,
             filename:string          = this.getFilename(),
             brandSpecific:boolean    = this.isBrandSpecificLogic(),
             supportLanguages:boolean = this.isSupportLanguages(),
             done:((errors:Error[], result:IResponse) => void) =
                 (errors:Error[], result:IResponse):void => {
-                    if (typeOf(callback) !== "function") {
+                    if (typeOf(callback) === "function") {
                         callback(errors, result);
                     }
                 },
@@ -99,31 +100,31 @@ class Compiler extends BaseCompiler implements ICompiler {
                         resultTime:number     = parseInt(Number(new Date()).toString(10).slice(0, -3), 10),
                         unlock:(callback?:(errors:Error[]) => void) => void,
                         completion:((errors:Error[], result:IResponse) => void) =
-                        (errors:Error[], result:IResponse):void => {
-                            if (typeOf(callback) === "function") {
-                                if (errors && errors.length && this.isThrowErrors()) {
-                                    callback(errors, null);
-                                } else if (errors && errors.length && result) {
-                                    callback(null, <IResponse>{
-                                        source : result.source,
-                                        result : this.createCssErrors(errors),
-                                        deps   : result.deps,
-                                        map    : result.map,
-                                        date   : result.date
-                                    });
-                                } else if (errors && errors.length) {
-                                    callback(null, <IResponse>{
-                                        source : null,
-                                        result : this.createCssErrors(errors),
-                                        deps   : [],
-                                        map    : {},
-                                        date   : resultTime
-                                    });
-                                } else {
-                                    callback(null, result);
+                            (errors:Error[], result:IResponse):void => {
+                                if (typeOf(callback) === "function") {
+                                    if (errors && errors.length && this.isThrowErrors()) {
+                                        callback(errors, null);
+                                    } else if (errors && errors.length && result) {
+                                        callback(null, <IResponse>{
+                                            source : result.source,
+                                            result : this.createCssErrors(errors),
+                                            deps   : result.deps,
+                                            map    : result.map,
+                                            date   : result.date
+                                        });
+                                    } else if (errors && errors.length) {
+                                        callback(null, <IResponse>{
+                                            source : null,
+                                            result : this.createCssErrors(errors),
+                                            deps   : [],
+                                            map    : {},
+                                            date   : resultTime
+                                        });
+                                    } else {
+                                        callback(null, result);
+                                    }
                                 }
-                            }
-                        };
+                            };
 
                     deferred([
 
@@ -537,7 +538,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             compile(filename, callback);
         } else if (brandSpecific && !supportLanguages) {
             // только бредирование
-            temp = filename.replace(/^(.+)-(?:\d+)$/, "$1");
+            temp1 = filename.replace(/^(.+)-(?:\d+)$/, "$1");
             deferred([
                 (next:() => void):void => {
                     compile(filename, (errors: Error[], result: IResponse): void => {
@@ -545,7 +546,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             done(errors, null);
                         } else if (result) {
                             done(null, result);
-                        } else if (temp !== filename) {
+                        } else if (temp1 !== filename) {
                             next();
                         } else {
                             done(null, null);
@@ -553,16 +554,35 @@ class Compiler extends BaseCompiler implements ICompiler {
                     });
                 },
                 (next:() => void):void => {
-                    compile(temp.replace(/^(.+)-(?:\d+)$/, "$1"), callback);
+                    compile(temp1, callback);
                 }
             ]);
         } else if (!brandSpecific && supportLanguages) {
             // только локализация
-            temp = filename.replace(/^(.+)-(?:[a-z]{2}(?:_[A-Z]{2})?)$/, "$1");
-            compile(temp, callback);
+            temp1 = filename.replace(/^(.+)-(?:[a-z]{2}(?:_[A-Z]{2})?)$/, "$1");
+            compile(temp1, callback);
         } else {
             // брендирование & локализация
-
+            temp1 = filename.replace(/^(.+)-(?:[a-z]{2}(?:_[A-Z]{2})?)$/, "$1");
+            temp2 = temp1.replace(/^(.+)-(?:\d+)$/, "$1");
+            deferred([
+                (next:() => void):void => {
+                    compile(temp1, (errors:Error[], result:IResponse):void => {
+                        if (errors && errors.length) {
+                            done(errors, null);
+                        } else if (result) {
+                            done(null, result);
+                        } else if (temp1 !== temp2) {
+                            next();
+                        } else {
+                            done(null, null);
+                        }
+                    });
+                },
+                (next:() => void):void => {
+                    compile(temp2, callback);
+                }
+            ]);
         }
 
 
