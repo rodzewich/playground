@@ -106,7 +106,7 @@ export function init(options:InitOptions, done:(errors:Error[]) => void):void {
                                     actions.push((done:() => void):void => {
                                         manager.compile(filename, (errs:Error[]):void => {
                                             if (errs && errs.length) {
-                                                errors.concat(errs);
+                                                errors = errors.concat(errs);
                                             }
                                             done();
                                         });

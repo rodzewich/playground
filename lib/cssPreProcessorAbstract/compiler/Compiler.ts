@@ -7,8 +7,6 @@
 // todo: уметь управлять браузерами Autoprefixer'а
 // todo: подключить плагины https://www.npmjs.com/search?q=node-sass
 
-// TODO: ПРОВЕРИТЬ ПО ВСЕМУ ПРОЕКТУ ИСПОЛЬЗОВАНИЕ Array#concat
-
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
@@ -55,7 +53,7 @@ class Compiler extends BaseCompiler implements ICompiler {
     }
 
     protected getExtensions():string [] {
-        return [];
+        return null;
     }
 
     protected getIncludeDirectories(): string[] {

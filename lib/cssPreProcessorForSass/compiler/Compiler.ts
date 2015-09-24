@@ -242,7 +242,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             (next: () => void): void => {
                                 unlock((errors: Error[]): void => {
                                     if (errors && errors.length) {
-                                        temp.concat(errors);
+                                        temp = temp.concat(errors);
                                     }
                                     next();
                                 });
@@ -368,7 +368,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 (next: () => void): void => {
                                     memory.setItem(filename, value, (errors: Error[]): void => {
                                         if (errors && errors.length) {
-                                            temp.concat(errors);
+                                            temp = temp.concat(errors);
                                         }
                                         next();
                                     });
@@ -376,7 +376,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 (next: () => void): void => {
                                     unlock((errors: Error[]): void => {
                                         if (errors && errors.length) {
-                                            temp.concat(errors);
+                                            temp = temp.concat(errors);
                                         }
                                         next();
                                     });
@@ -411,7 +411,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                             (next: () => void): void => {
                                 unlock((errors: Error[]): void => {
                                     if (errors && errors.length) {
-                                        temp.concat(errors);
+                                        temp = temp.concat(errors);
                                     }
                                     next();
                                 });

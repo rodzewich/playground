@@ -136,7 +136,7 @@ class Manager extends Client implements IManager {
                                 this._pool.push(client);
                                 this._clients.push(client);
                             } else {
-                                errors.concat(errs);
+                                errors = errors.concat(errs);
                             }
                             done();
                         })
