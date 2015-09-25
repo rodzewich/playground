@@ -14,6 +14,7 @@ import BaseCompiler = require("../../cssPreProcessorAbstract/compiler/Compiler")
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
 import stylus = require("stylus");
+import path = require("path");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
