@@ -5,12 +5,12 @@
 // todo: уметь устанавливать дефолтные импорты
 // todo: уметь устанавливать плагины
 // todo: уметь управлять браузерами Autoprefixer'а
-// todo: подключить плагины https://www.npmjs.com/search?q=node-sass
 
 import BaseCompiler = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
 import typeOf = require("../../typeOf");
+import isDefined = require("../../isDefined");
 import deferred = require("../../deferred");
 import parallel = require("../../parallel");
 import IMemory = require("../../memory/client/IClient");
@@ -21,27 +21,98 @@ import BaseException = require("../../Exception");
 import LessException = require("../Exception");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
+import BrandSpecificLogic = require("../../helpers/BrandSpecificLogic");
+import IBrandSpecificLogic = require("../../helpers/IBrandSpecificLogic");
+import SupportLanguages = require("../../helpers/SupportLanguages");
+import ISupportLanguages = require("../../helpers/ISupportLanguages");
 import ISourceMap = require("../../helpers/ISourceMap");
 
 class Compiler extends BaseCompiler implements ICompiler {
 
     private _memory:IMemory;
 
-    private _includeDirectories: IIncludeDirectoriesHelper = new IncludeDirectoriesHelper();
+    private _includeDirectoriesInstance:IIncludeDirectoriesHelper;
 
-    constructor(options: IOptions) {
+    private _brandSpecificLogicInstance:IBrandSpecificLogic;
+
+    private _supportLanguagesInstance:ISupportLanguages;
+
+    protected createIncludeDirectoriesInstance():IIncludeDirectoriesHelper {
+        return new IncludeDirectoriesHelper();
+    }
+
+    protected getIncludeDirectoriesInstance():IIncludeDirectoriesHelper {
+        if (!this._includeDirectoriesInstance) {
+            this._includeDirectoriesInstance = this.createIncludeDirectoriesInstance();
+        }
+        return this._includeDirectoriesInstance;
+    }
+
+    protected createBrandSpecificLogicInstance():IBrandSpecificLogic {
+        return new BrandSpecificLogic();
+    }
+
+    protected getBrandSpecificLogicInstance():IBrandSpecificLogic {
+        if (!this._brandSpecificLogicInstance) {
+            this._brandSpecificLogicInstance = this.createBrandSpecificLogicInstance();
+        }
+        return this._brandSpecificLogicInstance;
+    }
+
+    protected createSupportLanguagesInstance():ISupportLanguages {
+        return new SupportLanguages();
+    }
+
+    protected getSupportLanguagesInstance():ISupportLanguages {
+        if (!this._supportLanguagesInstance) {
+            this._supportLanguagesInstance = this.createSupportLanguagesInstance();
+        }
+        return this._supportLanguagesInstance;
+    }
+
+    constructor(options:IOptions) {
         super(options);
-        if (options && typeOf(options.includeDirectories) !== "undefined") {
+        if (options && isDefined(options.includeDirectories)) {
             this.setIncludeDirectories(options.includeDirectories);
+        }
+        if (options && isDefined(options.brandSpecificLogic)) {
+            this.setIsBrandSpecificLogic(options.brandSpecificLogic);
+        }
+        if (options && isDefined(options.supportLanguages)) {
+            this.setIsSupportLanguages(options.supportLanguages);
         }
     }
 
-    protected isBrandSpecificLogic():boolean {
-        return true;
+    public isBrandSpecificLogic():boolean {
+        return this.getBrandSpecificLogicInstance().isUsed();
     }
 
-    protected isSupportLanguages():boolean {
-        return true;
+    public getIsBrandSpecificLogic():boolean {
+        return this.getBrandSpecificLogicInstance().getIsUsed();
+    }
+
+    public setIsBrandSpecificLogic(value:boolean):void {
+        this.getBrandSpecificLogicInstance().setIsUsed(value);
+    }
+
+    public getIncludeDirectories():string[] {
+        return this.getIncludeDirectoriesInstance().getDirectories();
+    }
+
+    public setIncludeDirectories(value:string[]):void {
+        this.getIncludeDirectoriesInstance().setDirectories(value);
+    }
+
+    public isSupportLanguages():boolean {
+        return this.getSupportLanguagesInstance().isSupport();
+    }
+
+    public getIsSupportLanguages():boolean {
+        return this.getSupportLanguagesInstance().getIsSupport();
+    }
+
+    public setIsSupportLanguages(value:boolean):void {
+        this.getSupportLanguagesInstance().setIsSupport(value);
     }
 
     protected isThrowErrors():boolean {
@@ -56,14 +127,6 @@ class Compiler extends BaseCompiler implements ICompiler {
         return null;
     }
 
-    protected getIncludeDirectories(): string[] {
-        return this._includeDirectories.getDirectories();
-    }
-
-    protected setIncludeDirectories(value: string[]): void {
-        this._includeDirectories.setDirectories(value);
-    }
-
     public setMemory(value:IMemory):void {
         this._memory = value;
     }
@@ -72,7 +135,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         return this._memory;
     }
 
-    public compile(callback: (errors: Error[], result: IResponse) => void): void {
+    public compile(callback:(errors:Error[], result:IResponse) => void):void {
         var temp1:string,
             temp2:string,
             filename:string          = this.getFilename(),
@@ -140,7 +203,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                         // поиск исходника
                         (next:() => void):void => {
                             var directories:string[] = this.getIncludeDirectories(),
-                                errors:Error[] = [],
+                                errors:Error[]       = [],
                                 actions:((next:() => void) => void)[] = [];
                             directories.unshift(this.getSourcesDirectory());
                             directories.forEach((directory:string):void => {
@@ -255,7 +318,7 @@ class Compiler extends BaseCompiler implements ICompiler {
 
                         // препроцессинг
                         (next:() => void):void => {
-                            var errors: Error[] = [];
+                            var errors:Error[] = [];
                             this.preProcessing({
                                 filename : resolve,
                                 content  : content
@@ -335,7 +398,7 @@ class Compiler extends BaseCompiler implements ICompiler {
 
                         // постпроцессинг
                         (next:() => void):void => {
-                            var errors: Error[] = [];
+                            var errors:Error[] = [];
                             if (this.isUsedPostProcessing()) {
                                 this.postProcessing({
                                     maps     : sourceMap,
@@ -377,7 +440,7 @@ class Compiler extends BaseCompiler implements ICompiler {
 
                         // обрезание зависимостей
                         (next:() => void):void => {
-                            var errors: Error[] = [],
+                            var errors:Error[]     = [],
                                 includeDirectories = this.getIncludeDirectories();
                             includeDirectories.unshift(this.getSourcesDirectory());
                             dependencies = dependencies.map((item:string):string => {
@@ -388,7 +451,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     relative:string;
                                 for (index = 0; index < length; index++) {
                                     importDirectory = includeDirectories[index];
-                                    relative = path.relative(importDirectory, item);
+                                    relative        = path.relative(importDirectory, item);
                                     if (index === 0) {
                                         relative = path.join(directory, relative);
                                     }
@@ -430,7 +493,7 @@ class Compiler extends BaseCompiler implements ICompiler {
 
                         // обрезание мапов
                         (next:() => void):void => {
-                            var errors: Error[] = [],
+                            var errors:Error[]     = [],
                                 includeDirectories = this.getIncludeDirectories();
                             includeDirectories.unshift(this.getSourcesDirectory());
                             sourceMap.sources = (sourceMap.sources || []).map((item:string):string => {
@@ -441,7 +504,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                     relative:string;
                                 for (index = 0; index < length; index++) {
                                     importDirectory = includeDirectories[index];
-                                    relative = path.relative(importDirectory, item);
+                                    relative        = path.relative(importDirectory, item);
                                     if (index === 0) {
                                         relative = path.join(directory, relative);
                                     }
@@ -539,7 +602,7 @@ class Compiler extends BaseCompiler implements ICompiler {
             temp1 = filename.replace(/^(.+)-(?:\d+)$/, "$1");
             deferred([
                 (next:() => void):void => {
-                    compile(filename, (errors: Error[], result: IResponse): void => {
+                    compile(filename, (errors:Error[], result:IResponse):void => {
                         if (errors && errors.length) {
                             done(errors, null);
                         } else if (result) {
@@ -591,7 +654,7 @@ class Compiler extends BaseCompiler implements ICompiler {
     }
 
     protected postProcessing(options:{content: string; maps: ISourceMap; contents: ({[key: string]: string})}, callback:(errors:Error[], result:{css: string; maps: ISourceMap;}) => void):void {
-        callback(null, {css: options.content, maps: options.maps});
+        callback(null, {css : options.content, maps : options.maps});
     }
 
 }

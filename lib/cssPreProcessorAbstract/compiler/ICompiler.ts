@@ -4,6 +4,14 @@ import IMemory = require("../../memory/client/IClient");
 interface ICompiler extends IBaseCompiler {
     setMemory(value:IMemory):void;
     getMemory():IMemory;
+    isBrandSpecificLogic():boolean;
+    getIsBrandSpecificLogic():boolean;
+    setIsBrandSpecificLogic(value:boolean):void;
+    getIncludeDirectories():string[];
+    setIncludeDirectories(value:string[]):void;
+    isSupportLanguages():boolean;
+    getIsSupportLanguages():boolean;
+    setIsSupportLanguages(value:boolean):void;
 }
 
 export = ICompiler;
