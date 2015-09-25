@@ -1,5 +1,6 @@
 {
   "USERS": {
-    "VARIABLE_NAME": "Custom value"
+    "VARIABLE_NAME": "Custom value",
+    "INTERNATIONAL_DIGITAL_LINE": "{LINK('INTERNATIONAL_DIGITAL_LINE', '../core')}"
   }
 }
