@@ -1,7 +1,7 @@
-import isTrue = require("../isTrue");
-import IBrandSpecificLogic = require("./IBrandSpecificLogic");
+import isTrue = require("../../isTrue");
+import IUsedPostProcessing = require("./IUsedPostProcessing");
 
-class BrandSpecificLogic implements IBrandSpecificLogic {
+class UsedPostProcessing {
 
     private _used:boolean = false;
 
@@ -19,4 +19,4 @@ class BrandSpecificLogic implements IBrandSpecificLogic {
 
 }
 
-export = BrandSpecificLogic;
+export = UsedPostProcessing;

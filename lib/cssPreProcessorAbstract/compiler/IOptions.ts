@@ -5,6 +5,8 @@ interface IOptions extends IBaseOptions {
     includeDirectories?:string[];
     brandSpecificLogic?:boolean;
     supportLanguages?:boolean;
+    throwErrors?:boolean;
+    usedPostProcessing?:boolean;
     memory?:IMemory;
 }
 

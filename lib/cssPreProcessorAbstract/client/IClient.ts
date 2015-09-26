@@ -11,6 +11,12 @@ interface IClient extends IBaseClient {
     isSupportLanguages():boolean;
     getIsSupportLanguages():boolean;
     setIsSupportLanguages(value:boolean):void;
+    isThrowErrors():boolean;
+    getIsThrowErrors():boolean;
+    setIsThrowErrors(value:boolean):void;
+    isUsedPostProcessing():boolean;
+    getIsUsedPostProcessing():boolean;
+    setIsUsedPostProcessing(value:boolean):void;
 }
 
 export = IClient;

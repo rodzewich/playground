@@ -1,4 +1,4 @@
-import isTrue = require("../isTrue");
+import isTrue = require("../../isTrue");
 import ISupportLanguages = require("./ISupportLanguages");
 
 class SupportLanguages implements ISupportLanguages {

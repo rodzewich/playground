@@ -6,12 +6,16 @@ import IOptions = require("./IOptions");
 import BaseClient = require("../../compiler/client/Client");
 import IResponse = require("./IResponse");
 import IRequest = require("./IRequest");
-import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
-import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
-import BrandSpecificLogic = require("../../helpers/BrandSpecificLogic");
-import IBrandSpecificLogic = require("../../helpers/IBrandSpecificLogic");
-import SupportLanguages = require("../../helpers/SupportLanguages");
-import ISupportLanguages = require("../../helpers/ISupportLanguages");
+import IIncludeDirectoriesHelper = require("../helpers/IIncludeDirectoriesHelper");
+import IncludeDirectoriesHelper = require("../helpers/IncludeDirectoriesHelper");
+import BrandSpecificLogic = require("../helpers/BrandSpecificLogic");
+import IBrandSpecificLogic = require("../helpers/IBrandSpecificLogic");
+import SupportLanguages = require("../helpers/SupportLanguages");
+import ISupportLanguages = require("../helpers/ISupportLanguages");
+import ThrowErrors = require("../helpers/ThrowErrors");
+import IThrowErrors = require("../helpers/IThrowErrors");
+import UsedPostProcessing = require("../helpers/UsedPostProcessing");
+import IUsedPostProcessing = require("../helpers/IUsedPostProcessing");
 
 class Client extends BaseClient {
 
@@ -20,6 +24,10 @@ class Client extends BaseClient {
     private _brandSpecificLogicInstance:IBrandSpecificLogic;
 
     private _supportLanguagesInstance:ISupportLanguages;
+
+    private _throwErrorsInstance:IThrowErrors;
+
+    private _usedPostProcessingInstance:IUsedPostProcessing;
 
     protected createIncludeDirectoriesInstance():IIncludeDirectoriesHelper {
         return new IncludeDirectoriesHelper();
@@ -54,6 +62,28 @@ class Client extends BaseClient {
         return this._supportLanguagesInstance;
     }
 
+    protected createThrowErrorsInstance():IThrowErrors {
+        return new ThrowErrors();
+    }
+
+    protected getThrowErrorsInstance():IThrowErrors {
+        if (!this._throwErrorsInstance) {
+            this._throwErrorsInstance = this.createThrowErrorsInstance();
+        }
+        return this._throwErrorsInstance;
+    }
+
+    protected createUsedPostProcessingInstance():IUsedPostProcessing {
+        return new UsedPostProcessing();
+    }
+
+    protected getUsedPostProcessingInstance():IUsedPostProcessing {
+        if (!this._usedPostProcessingInstance) {
+            this._usedPostProcessingInstance = this.createUsedPostProcessingInstance();
+        }
+        return this._usedPostProcessingInstance;
+    }
+
     constructor(options:IOptions) {
         super(options);
         if (options && isDefined(options.includeDirectories)) {
@@ -64,6 +94,12 @@ class Client extends BaseClient {
         }
         if (options && isDefined(options.supportLanguages)) {
             this.setIsSupportLanguages(options.supportLanguages);
+        }
+        if (options && isDefined(options.throwErrors)) {
+            this.setIsThrowErrors(options.throwErrors);
+        }
+        if (options && isDefined(options.usedPostProcessing)) {
+            this.setIsUsedPostProcessing(options.usedPostProcessing);
         }
     }
 
@@ -99,6 +135,30 @@ class Client extends BaseClient {
         this.getSupportLanguagesInstance().setIsSupport(value);
     }
 
+    public isThrowErrors():boolean {
+        return this.getThrowErrorsInstance().isThrow();
+    }
+
+    public getIsThrowErrors():boolean {
+        return this.getThrowErrorsInstance().getIsThrow();
+    }
+
+    public setIsThrowErrors(value:boolean):void {
+        return this.getThrowErrorsInstance().setIsThrow(value);
+    }
+
+    public isUsedPostProcessing():boolean {
+        return this.getUsedPostProcessingInstance().isUsed();
+    }
+
+    public getIsUsedPostProcessing():boolean {
+        return this.getUsedPostProcessingInstance().getIsUsed();
+    }
+
+    public setIsUsedPostProcessing(value:boolean):void {
+        this.getUsedPostProcessingInstance().setIsUsed(value);
+    }
+
     protected getRequest():IRequest {
         return <IRequest>{
             filename             : null,
@@ -106,6 +166,8 @@ class Client extends BaseClient {
             includeDirectories   : this.getIncludeDirectories(),
             brandSpecificLogic   : this.isBrandSpecificLogic(),
             supportLanguages     : this.isSupportLanguages(),
+            throwErrors          : this.isThrowErrors(),
+            usedPostProcessing   : this.isUsedPostProcessing(),
             errorBackgroundColor : this.getCssErrorsBackgroundColor(),
             errorTextColor       : this.getCssErrorsTextColor(),
             errorBlockPadding    : this.getCssErrorsBlockPadding(),

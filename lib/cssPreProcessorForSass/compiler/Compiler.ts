@@ -30,7 +30,7 @@ class Compiler extends BaseCompiler implements ICompiler {
         super(options);
     }
 
-    protected isThrowErrors(): boolean {
+    public isThrowErrors(): boolean {
         return false;
     }
 
