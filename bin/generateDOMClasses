@@ -1,0 +1,220 @@
+#!/usr/bin/env node
+var optimist = require("optimist"),
+    deferred = require("../lib/deferred"),
+    parallel = require("../lib/parallel"),
+    mkdir    = require("../lib/mkdir"),
+    path     = require("path"),
+    fs       = require("fs"),
+    argv     = require("optimist").
+        usage("Usage: generateDOMClasses -d [directory]\nGenerate document object model classes").
+        demand("d").alias("d", "directory").describe("d", "Output directory").
+        argv;
+
+var directory = path.isAbsolute(argv.directory) ?
+    path.normalize(argv.directory) :
+    path.join(process.cwd(), argv.directory);
+
+var config = {
+    internalClass1: ["span", "div", "table"],
+    internalClass2: ["strong", "col"],
+    attributesClass1 : [["align", "string"], ["styles","any"]],
+    attributesClass2 : [["classes", "string[]"]],
+    tagA: {
+        internal: {
+            extend: ["class1", "class2"],
+            tags : ["tag1", "tag2"]
+        },
+        attributes: {
+            extend: ["class1", "class2"],
+            attrs: [["attr1", "any"], ["attr2", "any"]]
+        },
+        listeners: {
+            extend: ["class1", "class2"],
+            listeners: ["listener1", "listener2"]
+        }
+    },
+    tagStrong: {
+
+    },
+    tagSpan: {
+
+    },
+    tagDiv: {
+
+    },
+    tagHtml: {
+
+    },
+    tagHead: {
+
+    },
+    tagTitle: {
+
+    }
+};
+
+function internal(classes, tags) {
+    var result = [];
+    function add(elements) {
+        elements.forEach(function (element) {
+            if (result.indexOf(element) === -1) {
+                result.push(element);
+            }
+        });
+    }
+    classes.forEach(function (element) {
+        var elements = config["internal" + element.slice(0, 1).toUpperCase() + element.slice(1)];
+        if (elements) {
+            add(elements);
+        } else {
+            console.log("bla bla bla");
+        }
+    });
+    if (tags) {
+        add(tags);
+    }
+    return result;
+}
+
+function attributes(classes, attrs) {
+    var result = [];
+    function add(elements) {
+        elements.forEach(function (element) {
+            if (result.indexOf(element) === -1) {
+                result.push(element);
+            }
+        });
+    }
+    classes.forEach(function (element) {
+        var elements = config["attributes" + element.slice(0, 1).toUpperCase() + element.slice(1)];
+        if (elements) {
+            add(elements);
+        } else {
+            console.log("bla bla bla");
+        }
+    });
+    if (attrs) {
+        add(attrs);
+    }
+    return result;
+}
+
+deferred([
+    function (next) {
+        mkdir(directory, function (errors) {
+            if (errors && errors.length) {
+                errors.forEach(function (error) {
+                    console.log(error.stack);
+                });
+            } else {
+                next();
+            }
+        });
+    },
+    function (next) {
+        var actions = [];
+        Object.keys(config)
+            .filter(function (key) {
+                return /^tag[A-Z][a-z]*$/.test(key);
+            })
+            .forEach(function (key) {
+                var tagName = key.slice(3).toLowerCase();
+                var element = config[key];
+                var internalExtend = [];
+                var internalTags = [];
+                var attributesExtend = [];
+                var attributesAttrs = [];
+                if (element.internal && element.internal.extend) {
+                    internalExtend = element.internal.extend;
+                }
+                if (element.internal && element.internal.tags) {
+                    internalTags = element.internal.tags;
+                }
+                if (element.attributes && element.attributes.extend) {
+                    attributesExtend = element.attributes.extend;
+                }
+                if (element.attributes && element.attributes.attrs) {
+                    attributesAttrs = element.attributes.attrs;
+                }
+                actions.push(function (done) {
+                    deferred([
+                        function (next) {
+                            mkdir(path.join(directory, "elements", tagName), function (errors) {
+                                if (errors && errors.length) {
+                                    errors.forEach(function (error) {
+                                        console.log(error.stack);
+                                    });
+                                } else {
+                                    next();
+                                }
+                            });
+                        },
+                        function (next) {
+                            var content = [
+                                "interface IElement<T> {",
+                                "}", "",
+                                "export = IElement;", ""
+                            ];
+                            fs.writeFile(path.join(directory, "elements", tagName, "IElement.ts"), content.join("\n"), function (error) {
+                                if (error) {
+                                    console.log(error);
+                                } else {
+                                    next();
+                                }
+                            });
+                        },
+                        function (next) {
+                            var content = [
+                                "interface IListeners<T> {",
+                                "}", "",
+                                "export = IListeners;", ""
+                            ];
+                            fs.writeFile(path.join(directory, "elements", tagName, "IListeners.ts"), content.join("\n"), function (error) {
+                                if (error) {
+                                    console.log(error);
+                                } else {
+                                    next();
+                                }
+                            });
+                        },
+                        function (next) {
+                            var internalElements = internal(internalExtend, internalTags);
+                            var attributeElements = attributes(attributesExtend, attributesAttrs);
+                            var content = [
+                                internalElements.map(function (element) {
+                                    return "import I" + element.slice(0, 1).toUpperCase() + element.slice(1) + "Element = require(\"../" + element + "/IElement\");";
+                                }).join("\n"),
+                                "import IListeners = require(\"./IListeners\");",
+                                "import IOptionsBase = require(\"../IOptions\");",
+                                "",
+                                "interface IOptions<T> extends IOptionsBase<T>{",
+                                attributeElements.map(function (attribute) {
+                                    return "    " + attribute[0] + "?:" + attribute[1] + ";";
+                                }).join("\n"),
+                                "    listeners?: IListeners<T>;",
+                                internalElements.length ?
+                                    "    items?: (\n" +
+                                    internalElements.map(function (element) {
+                                        return "        I" + element.slice(0, 1).toUpperCase() + element.slice(1) + "Element<T>";
+                                    }).join(" |\n") +
+                                    "\n    );"
+                                    :
+                                    "",
+                                "}", "",
+                                "export = IOptions;", ""
+                            ];
+                            fs.writeFile(path.join(directory, "elements", tagName, "IOptions.ts"), content.join("\n"), function (error) {
+                                if (error) {
+                                    console.log(error);
+                                } else {
+                                    next();
+                                }
+                            });
+                        },
+                        done
+                    ]);
+                });
+            });
+        parallel(actions, next);
+    }
+]);
