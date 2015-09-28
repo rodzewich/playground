@@ -647,6 +647,10 @@ class Compiler extends BaseCompiler implements ICompiler {
 
                 };
 
+        // todo: проверять зависимости от *.json файлов в случае необходимости
+        // todo: добавить postcss
+        // todo: добавить rework
+
         if (!brandSpecific && !supportLanguages) {
             // компилировать как есть
             compile(filename, callback);

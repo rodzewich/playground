@@ -7,8 +7,6 @@ import BaseClient = require("../../cssPreProcessorAbstract/client/Client");
 import IResponse = require("./IResponse");
 import IRequest = require("./IRequest");
 import path = require("path");
-import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
-import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
 
 class Client extends BaseClient {
 

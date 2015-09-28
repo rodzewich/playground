@@ -67,6 +67,7 @@
     "resolution-independence": "0.0.3",
     "source-map": "^0.4.4",
     "source-map-support": "^0.3.2",
-    "stylus": "^0.52.4"
+    "stylus": "^0.52.4",
+    "typescript": "^1.7.0-dev.20150926"
   }
 }

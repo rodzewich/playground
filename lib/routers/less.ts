@@ -30,6 +30,10 @@ export interface RouterOptions extends base.RouterOptions {
 export interface InitOptions extends base.InitOptions {
     temporaryDirectory: string;
     includeDirectories: string[];
+    brandSpecificLogic:boolean;
+    supportLanguages:boolean;
+    throwErrors:boolean;
+    usedPostProcessing:boolean;
     sourcesDirectory: string;
     memoryLocation: string;
     useCache: boolean;
@@ -45,6 +49,10 @@ export function init(options:InitOptions, done:(errors:Error[]) => void):void {
     var temporaryDirectory:string = options.temporaryDirectory,
         memoryLocation:string = options.memoryLocation,
         includeDirectories:string[] = options.includeDirectories,
+        brandSpecificLogic:boolean = options.brandSpecificLogic,
+        supportLanguages:boolean = options.supportLanguages,
+        throwErrors:boolean = options.throwErrors,
+        usedPostProcessing:boolean = options.usedPostProcessing,
         sourcesDirectory:string = options.sourcesDirectory,
         webRootDirectory:string = options.webRootDirectory,
         useCache:boolean = options.useCache,
@@ -71,17 +79,21 @@ export function init(options:InitOptions, done:(errors:Error[]) => void):void {
                 deferred([
                     (next:() => void):void => {
                         manager = new Manager({
-                            location: path.join(temporaryDirectory, "less-temp.sock"),
-                            memoryLocation: memoryLocation,
-                            sourcesDirectory: sourcesDirectory,
-                            includeDirectories: includeDirectories,
-                            webRootDirectory: webRootDirectory,
-                            errorBackgroundColor: errorBackgroundColor,
-                            errorTextColor: errorTextColor,
-                            errorBlockPadding: errorBlockPadding,
-                            errorFontSize: errorFontSize,
-                            numberOfProcesses: 10,
-                            useCache: false
+                            location : path.join(temporaryDirectory, "less-temp.sock"),
+                            memoryLocation : memoryLocation,
+                            sourcesDirectory : sourcesDirectory,
+                            includeDirectories : includeDirectories,
+                            brandSpecificLogic : brandSpecificLogic,
+                            supportLanguages : supportLanguages,
+                            throwErrors : throwErrors,
+                            usedPostProcessing : usedPostProcessing,
+                            webRootDirectory : webRootDirectory,
+                            errorBackgroundColor : errorBackgroundColor,
+                            errorTextColor : errorTextColor,
+                            errorBlockPadding : errorBlockPadding,
+                            errorFontSize : errorFontSize,
+                            numberOfProcesses : 10,
+                            useCache : false
                         });
                         manager.connect((errors:Error[]):void => {
                             if (!errors || !errors.length) {
@@ -144,6 +156,10 @@ export function init(options:InitOptions, done:(errors:Error[]) => void):void {
                 memoryLocation       : memoryLocation,
                 sourcesDirectory     : sourcesDirectory,
                 includeDirectories   : includeDirectories,
+                brandSpecificLogic : brandSpecificLogic,
+                supportLanguages : supportLanguages,
+                throwErrors : throwErrors,
+                usedPostProcessing : usedPostProcessing,
                 webRootDirectory     : webRootDirectory,
                 errorBackgroundColor : errorBackgroundColor,
                 errorTextColor       : errorTextColor,
