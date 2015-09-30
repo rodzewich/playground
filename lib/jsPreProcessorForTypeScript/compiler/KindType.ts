@@ -1,5 +1,7 @@
-// This file was automatically generated.
-// Please don't edit this file by hand.
+/******************************************************************************
+ *                   THIS FILE WAS AUTOMATICALLY GENERATED.                   *
+ *                    PLEASE DON'T EDIT THIS FILE BY HAND.                    *
+ ******************************************************************************/
 
 class KindType {
 
