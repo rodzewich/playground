@@ -34,6 +34,10 @@ require('source-map-support').install({
     }
 });
 
+require("./lib/test");
+
+return;
+
 /*var SourceCodePointCreator = require("./lib/helpers/SourceCodePointCreator"),
     creator = new SourceCodePointCreator();
 console.log(creator.create(fs.readFileSync("/home/rodzewich/Projects/playground/less_include_dir/test.scss").toString("utf8"), 30, 79));
@@ -165,6 +169,10 @@ deferred([
                             memoryLocation       : memorySocketAddress,
                             sourcesDirectory     : path.join(__dirname, "styles"),
                             includeDirectories   : [path.join(__dirname, "less_include_dir")],
+                            brandSpecificLogic   : true,
+                            supportLanguages     : true,
+                            throwErrors          : false,
+                            usedPostProcessing   : true,
                             webRootDirectory     : "/",
                             useCache             : false,
                             errorBackgroundColor : "#ffff00",

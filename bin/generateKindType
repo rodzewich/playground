@@ -6,6 +6,7 @@ var ts       = require("typescript"),
     path     = require("path"),
     deferred = require("../lib/deferred"),
     mkdir    = require("../lib/mkdir"),
+    colors   = require("colors"),
     argv     = require("optimist").
         usage("Usage: generateKindType -o [filename]\nGenerate actual KindType class.").
         demand("o").alias("o", "output").describe("o", "Output file location").
@@ -70,6 +71,6 @@ deferred([
         });
     },
     function () {
-        console.log("output:", output);
+        console.log(colors.green("output"), output);
     }
 ]);
