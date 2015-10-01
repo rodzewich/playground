@@ -1,18 +1,21 @@
 <html>
 <head>
-    <title>Title</title>
+    <title>Loading ...</title>
     <script>
-        setTimeout(function () {
-            debugger;
-        }, 0);
+        // init script
     </script>
 </head>
-<frameset rows="*" cols="300,*" border="2">
-    <frame src="about:blank" name="Фрейм 1">
-    <frameset rows="80,*,80" border="0">
-        <frame src="header.html" name="frame1" />
-        <frame src="about:blank" name="Фрейм 3">
-        <frame src="header.html" />
-    </frameset>
-</frameset>
+<script>
+    document.write('<frameset rows="*" cols="300,*" border="2">');
+    document.write('<frame src="about:blank" name="Фрейм 1">');
+    document.write('<frameset rows="80,*,80" border="0">');
+    document.write('<frame src="header.html" name="frame1" />');
+    document.write('<frame src="about:blank" name="Фрейм 3">');
+    document.write('<frame src="header.html" />');
+    document.write('</frameset>');
+    document.write('</frameset>');
+    setTimeout(function () {
+        // work with frames
+    }, 0);
+</script>
 </html>
