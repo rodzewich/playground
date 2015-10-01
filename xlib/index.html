@@ -1,16 +1,18 @@
 <html>
 <head>
-    <link href="/test.css" rel="stylesheet" />
+    <title>Title</title>
+    <script>
+        setTimeout(function () {
+            debugger;
+        }, 0);
+    </script>
 </head>
-<body>
-
-<div>
-    <span>
-    </span>
-    <p></p>
-    <button><span>button</span></button>
-    <div class="user-profile"></div>
-</div>
-
-</body>
+<frameset rows="*" cols="300,*" border="2">
+    <frame src="about:blank" name="Фрейм 1">
+    <frameset rows="80,*,80" border="0">
+        <frame src="header.html" name="frame1" />
+        <frame src="about:blank" name="Фрейм 3">
+        <frame src="header.html" />
+    </frameset>
+</frameset>
 </html>
