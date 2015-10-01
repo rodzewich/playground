@@ -15,6 +15,54 @@ var directory = path.isAbsolute(argv.directory) ?
     path.join(process.cwd(), argv.directory);
 
 var config = {
+
+    attributesCoreAttrs : {
+        includes   : [],
+        attributes : [
+            {
+                name : "id",
+                options : {
+                    imports : {},
+                    name    : "id",
+                    type    : "string"
+                },
+                interfaces : {
+                    imports    : {},
+                    implements : [
+                        "getId():string;",
+                        "setId(value:string):void;"
+                    ]
+                },
+                classes : {
+                    imports : {
+                        IIdAttr : "attributes/core/id/IIdAttr.ts",
+                        IdAttr  : "attributes/core/id/IdAttr.ts"
+                    },
+                    implements : [
+                        [
+                            "private _idAttr:IIdAttr;", "",
+                            "protected createIdAttr():IIdAttr {",
+                            "    return new IdAttr(this);",
+                            "}", "",
+                            "protected getIdAttr():IIdAttr {",
+                            "    if (!this._idAttr) {",
+                            "        this._idAttr = this.createIdAttr();",
+                            "    }",
+                            "    return this._idAttr;",
+                            "}", "",
+                            "public getId():string {",
+                            "    this.getIdAttr().getValue();",
+                            "}", "",
+                            "public setId(value:string):void {",
+                            "    this.getIdAttr().setValue(value);",
+                            "}", ""
+                        ]
+                    ]
+                }
+            }
+        ]
+    },
+
     internalClass1: ["span", "div", "table"],
     internalClass2: ["strong", "col"],
     attributesClass1 : [["align", "string"], ["styles","any"]],
