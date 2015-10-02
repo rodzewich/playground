@@ -1,18 +1,153 @@
 #!/usr/bin/env node
-var optimist = require("optimist"),
-    deferred = require("../lib/deferred"),
-    parallel = require("../lib/parallel"),
-    mkdir    = require("../lib/mkdir"),
-    path     = require("path"),
-    fs       = require("fs"),
-    argv     = require("optimist").
+var optimist  = require("optimist"),
+    deferred  = require("../lib/deferred"),
+    parallel  = require("../lib/parallel"),
+    mkdir     = require("../lib/mkdir"),
+    typeOf    = require("../lib/typeOf"),
+    path      = require("path"),
+    fs        = require("fs"),
+    getobject = require("getobject"),
+    argv      = require("optimist").
         usage("Usage: generateDOMClasses -d [directory]\nGenerate document object model classes").
         demand("d").alias("d", "directory").describe("d", "Output directory").
-        argv;
+        argv,
+    directory = path.isAbsolute(argv.directory) ?
+        path.normalize(argv.directory) :
+        path.join(process.cwd(), argv.directory);
 
-var directory = path.isAbsolute(argv.directory) ?
-    path.normalize(argv.directory) :
-    path.join(process.cwd(), argv.directory);
+var entities = {
+    core: {
+        attrs: [
+            {
+                name: "id"
+            }
+        ]
+    }
+};
+
+var elements = {
+    html: {
+        tags: ["a", "b"]
+    },
+    body: {},
+    head: {}
+};
+
+var actions = [];
+
+function attributes(tagName) {
+    return [
+        {
+            name: "href",
+        }
+    ];
+}
+
+function setterName(tagName, attrName) {
+    var attrs  = attributes(tagName),
+        length = attrs.length,
+        index;
+    for (index = 0; index < length; index++) {
+        if (getobject.get(attrs[index], "setter")) {
+            return getobject.get(attrs[index], "setter");
+        }
+    }
+    return "set" + attrName.slice(0, 1).toUpperCase() + attrName.slice(1);
+}
+
+Object.keys(elements).forEach(function (element) {
+    var object = elements[element];
+    actions.push(function (next) {
+        var elementDirectory = path.join(directory, "elements", element);
+        deferred([
+            function (next) {
+                mkdir(elementDirectory, next);
+            },
+            function () {
+                var binary  = !getobject.get(object, "unary"),
+                    tags    = typeOf(getobject.get(object, "tags")) === "array" ? getobject.get(object, "tags") : null,
+                    content = [
+                        "/******************************************************************************",
+                        " *                   THIS FILE WAS AUTOMATICALLY GENERATED.                   *",
+                        " *                    PLEASE DON'T EDIT THIS FILE BY HAND.                    *",
+                        " ******************************************************************************/",
+                        "",
+                        "import ElementBase = require(\"../Element\");",
+                        "import IElement = require(\"./IElement\");",
+                        "import IOptions = require(\"./IOptions\");",
+                        attributes(element).map(function (attr) {
+                            var name = getobject.get(attr, "name");
+                            var nameCamel = name.slice(0, 1).toUpperCase() + name.slice(1);
+                            return [
+                                "import I" + nameCamel + "Attr = require(\"../../attributes/" + element + "/I" + nameCamel + "\")",
+                                "import " + nameCamel + "Attr = require(\"../../attributes/" + element + "/" + nameCamel + "\")"
+                            ].join("\n");
+                        }).join("\n"),
+                        "",
+                        "class Element extends ElementBase implements IElement {", "",
+                        "    protected _tagName:string = " + JSON.stringify(element) + ";", "",
+                        "    protected _binary:boolean = " + JSON.stringify(binary) + ";", "",
+                        "    protected _allowTags:string[] = " + JSON.stringify(tags) + ";", "",
+                        "    constructor(options?:IOptions) {",
+                        "        super(options);",
+                        attributes(element).map(function (attr) {
+                            var name = getobject.get(attr, "name");
+                            return [
+                                "        if (options && " + JSON.stringify(name) + " in options) {",
+                                "            this." + setterName(element, name) + "(options." + name + ");",
+                                "        }"
+                            ].join("\n");
+                        }).join("\n"),
+                        "    }", "",
+                        attributes(element).map(function (attr) {
+                            var name = getobject.get(attr, "name");
+                            var nameCamel = name.slice(0, 1).toUpperCase() + name.slice(1);
+                            return [
+                                "    private _" + name + "Attr:I" + nameCamel + "Attr;", "",
+                                "    protected create" + nameCamel + "Attr():I" + nameCamel + "Attr {",
+                                "        return new " + nameCamel + "Attr();",
+                                "    }", "",
+                                "    protected get" + nameCamel + "Attr():I" + nameCamel + "Attr {",
+                                "        if (!this._" + name + "Attr) {",
+                                "            this._" + name + "Attr = this.create" + nameCamel + "Attr();",
+                                "            this.registryAttr(this._" + name + "Attr);",
+                                "        }",
+                                "        return this._" + name + "Attr;",
+                                "    }", ""
+                            ].join("\n");
+                        }).join("\n"),
+                        "}",
+                        "",
+                        "export = Element;",
+                        ""
+                    ].join("\n");
+                fs.writeFile(path.join(elementDirectory, "Element.ts"), content, next);
+            },
+            function (next) {
+                var content = [
+                    "interface IElement extends IElementBase {",
+                    "}",
+                    "",
+                    "export = IElement;",
+                    ""
+                ].join("\n");
+                fs.writeFile(path.join(elementDirectory, "IElement.ts"), content, next);
+            },
+            function () {
+                next();
+            }
+        ]);
+    });
+});
+
+actions.push(function () {
+    console.log("Successfully completed");
+});
+
+deferred(actions);
+
+return;
+
 
 var config = {
 
@@ -124,6 +259,7 @@ function internal(classes, tags) {
     return result;
 }
 
+/*
 function attributes(classes, attrs) {
     var result = [];
     function add(elements) {
@@ -146,6 +282,7 @@ function attributes(classes, attrs) {
     }
     return result;
 }
+*/
 
 deferred([
     function (next) {

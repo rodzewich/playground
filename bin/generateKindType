@@ -72,5 +72,6 @@ deferred([
     },
     function () {
         console.log(colors.green("output"), output);
+        console.log("Successfully completed");
     }
 ]);

@@ -1,4 +1,5 @@
 import tags = require("factory");
+import events = require("events");
 
 var canvas:IElement = tags.div({
     id    : "id",
@@ -17,7 +18,20 @@ var canvas:IElement = tags.div({
                                     text : "text1"
                                 }),
                                 tags.td({
-                                    text : "text2"
+                                    items : [
+                                        tags.button({
+                                            text : lang("COMMON.UPGRADE"),
+                                            onClick(event):void {
+                                                alert(lang("COMMON.CLICK"));
+                                            },
+                                            onDblClick():void {
+
+                                            },
+                                            onMouseOver():void {
+
+                                            }
+                                        })
+                                    ]
                                 })
                             ]
                         })
@@ -27,6 +41,17 @@ var canvas:IElement = tags.div({
         })
     ]
 });
+canvas.onClick((event):void => {
+
+});
+
+canvas.removeAllListeners();
+canvas.removeListener(events.button.CLICK);
+canvas.removeListener(evnets.button.MOUSE_OVER, callback);
+canvas.addListener(events.button.CLICK, ():void => {
+
+});
+canvas.fireListener(evnets.button.CLICK, new ClickEvent());
 
 canvas.toElement(document);
 canvas.toString();
