@@ -51,6 +51,15 @@ function attributes(tagName) {
         {
             name: "href",
             required: true
+        },
+        {
+            name: "id",
+            required: false,
+            type: "string"
+        },
+        {
+            name: "class",
+            required: true
         }
     ];
 }
@@ -199,7 +208,7 @@ Object.keys(elements).forEach(function (element) {
                     " *                    PLEASE DON'T EDIT THIS FILE BY HAND.                    *",
                     " ******************************************************************************/",
                     "",
-                    "interface IElement extends IElementBase {",
+                    "interface IElement extends IElementBase {", "",
                     "}",
                     "",
                     "export = IElement;",
@@ -207,6 +216,41 @@ Object.keys(elements).forEach(function (element) {
                 ].join("\n");
                 fs.writeFile(path.join(elementDirectory, "IElement.ts"), content, function () {
                     console.log(colors.green("output"), path.join(elementDirectory, "IElement.ts"));
+                    next();
+                });
+            },
+            function (next) {
+                var filename = path.join(elementDirectory, "IOptions.ts");
+                var content = [
+                    "/******************************************************************************",
+                    " *                   THIS FILE WAS AUTOMATICALLY GENERATED.                   *",
+                    " *                    PLEASE DON'T EDIT THIS FILE BY HAND.                    *",
+                    " ******************************************************************************/",
+                    "",
+                    'import IOptionsBase = require("../IOptions");',
+                    "",
+                    "interface IOptions extends IOptionsBase {",
+                    attributes(element).
+                        map(function (attr) {
+                            var name = getobject.get(attr, "name");
+                            var type = getobject.get(attr, "type") || "any";
+                            var required = !getobject.get(attr, "required") ? "?" : "";
+                            return message([
+                                '    {name}{required}:{type};'
+                            ], {
+                                name   : name,
+                                type : type,
+                                required : required
+                            });
+                        })
+                        .join("\n"),
+                    "}",
+                    "",
+                    "export = IOptions;",
+                    ""
+                ].join("\n");
+                fs.writeFile(filename, content, function () {
+                    console.log(colors.green("output"), filename);
                     next();
                 });
             },
