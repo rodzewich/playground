@@ -6,6 +6,7 @@ var optimist  = require("optimist"),
     typeOf    = require("../lib/typeOf"),
     path      = require("path"),
     fs        = require("fs"),
+    colors    = require("colors"),
     getobject = require("getobject"),
     argv      = require("optimist").
         usage("Usage: generateDOMClasses -d [directory]\nGenerate document object model classes").
@@ -54,6 +55,18 @@ function attributes(tagName) {
     ];
 }
 
+function message(content, params) {
+    var result;
+    if (typeOf(content) === "array") {
+        result = content.join("\n");
+    } else {
+        result = String(content);
+    }
+    return result.replace(/\{([a-z]+)\}/ig, function () {
+        return params[arguments[1]];
+    });
+}
+
 function setterName(tagName, attrName) {
     var attrs  = attributes(tagName),
         length = attrs.length,
@@ -86,7 +99,7 @@ Object.keys(elements).forEach(function (element) {
             function (next) {
                 mkdir(elementDirectory, next);
             },
-            function () {
+            function (next) {
                 var binary  = !getobject.get(object, "unary"),
                     content = [
                         "/******************************************************************************",
@@ -114,13 +127,18 @@ Object.keys(elements).forEach(function (element) {
                         "        super(options);",
                         attributes(element).
                             map(function (attr) {
-                                var name = getobject.get(attr, "name");
-                                return [
-                                    "        if (options && " + JSON.stringify(name) + " in options) {",
-                                    "            this." + setterName(element, name) + "(options." + name + ");",
-                                    "        }"
-                                ].join("\n");
-                            }).join("\n"),
+                                var name   = getobject.get(attr, "name"),
+                                    setter = setterName(element, name);
+                                return message([
+                                    '        if (options && "{name}" in options) {',
+                                    '            this.{setter}(options.{name});',
+                                    '        }'
+                                ], {
+                                    name   : name,
+                                    setter : setter
+                                });
+                            })
+                            .join("\n"),
                         attributes(element)
                             .filter(function (attr) {
                                 return getobject.get(attr, "required");
@@ -135,35 +153,44 @@ Object.keys(elements).forEach(function (element) {
                             }).join("\n"),
                         "    }", "",
                         attributes(element).map(function (attr) {
-                            var name = getobject.get(attr, "name");
-                            var type = getobject.get(attr, "type") || "any";
-                            var nameCamel = name.slice(0, 1).toUpperCase() + name.slice(1);
-                            return [
-                                "    private _" + name + "Attr:I" + nameCamel + "Attr;", "",
-                                "    protected create" + nameCamel + "Attr():I" + nameCamel + "Attr {",
-                                "        return new " + nameCamel + "Attr();",
+                            var name  = getobject.get(attr, "name"),
+                                type  = getobject.get(attr, "type") || "any",
+                                camel = name.slice(0, 1).toUpperCase() + name.slice(1);
+                            return message([
+                                "    private _{name}Attr:I{camel}Attr;", "",
+                                "    protected create{camel}Attr():I{camel}Attr {",
+                                "        return new {camel}Attr();",
                                 "    }", "",
-                                "    protected get" + nameCamel + "Attr():I" + nameCamel + "Attr {",
-                                "        if (!this._" + name + "Attr) {",
-                                "            this._" + name + "Attr = this.create" + nameCamel + "Attr();",
-                                "            this.registryAttr(this._" + name + "Attr);",
+                                "    protected get{camel}Attr():I{camel}Attr {",
+                                "        if (!this._{name}Attr) {",
+                                "            this._{name}Attr = this.create{camel}Attr();",
+                                "            this.registryAttr(this._{name}Attr);",
                                 "        }",
-                                "        return this._" + name + "Attr;",
+                                "        return this._{name}Attr;",
                                 "    }", "",
-                                "    public " + getterName(element, name) + "():" + type + " {",
-                                "        return this.get" + nameCamel + "Attr().getValue();",
+                                "    public {getter}():{type} {",
+                                "        return this.get{camel}Attr().getValue();",
                                 "    }", "",
-                                "    public " + setterName(element, name) + "(value:" + type + "):void {",
-                                "        this.set" + nameCamel + "Attr().setValue(value);",
+                                "    public {setter}(value:{type}):void {",
+                                "        this.set{camel}Attr().setValue(value);",
                                 "    }", ""
-                            ].join("\n");
+                            ], {
+                                name   : name,
+                                type   : type,
+                                camel  : camel,
+                                getter : getterName(element, name),
+                                setter : setterName(element, name)
+                            });
                         }).join("\n"),
                         "}",
                         "",
                         "export = Element;",
                         ""
                     ].join("\n");
-                fs.writeFile(path.join(elementDirectory, "Element.ts"), content, next);
+                fs.writeFile(path.join(elementDirectory, "Element.ts"), content, function () {
+                    console.log(colors.green("output"), path.join(elementDirectory, "Element.ts"));
+                    next();
+                });
             },
             function (next) {
                 var content = [
@@ -173,7 +200,10 @@ Object.keys(elements).forEach(function (element) {
                     "export = IElement;",
                     ""
                 ].join("\n");
-                fs.writeFile(path.join(elementDirectory, "IElement.ts"), content, next);
+                fs.writeFile(path.join(elementDirectory, "IElement.ts"), content, function () {
+                    console.log(colors.green("output"), path.join(elementDirectory, "IElement.ts"));
+                    next();
+                });
             },
             function () {
                 next();
