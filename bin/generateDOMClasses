@@ -128,7 +128,7 @@ Object.keys(elements).forEach(function (element) {
                             .map(function (attr) {
                                 var name = getobject.get(attr, "name");
                                 return [
-                                    "        if (!options || !!options." + name + ") {",
+                                    "        if (!options || !options." + name + ") {",
                                     "            throw new Error(\"Option \\\"" + name + "\\\" is required.\")",
                                     "        }"
                                 ].join("\n");
