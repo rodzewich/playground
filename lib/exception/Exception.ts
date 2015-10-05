@@ -37,15 +37,16 @@ class Exception implements IException {
     public set stack(value:string) {
     }
 
+    public toString():string {
+        return this.getName() + ": " + this.getMessage();
+    }
+
     public getName():string {
         return this._name;
     }
 
     public getStack():string {
-        return [
-            this.getName() + ": " + this.getMessage(),
-            this._stack
-        ].join("\n");
+        return [this.toString(), this._stack].join("\n");
     }
 
     public getMessage():string {
