@@ -34,21 +34,6 @@ require('source-map-support').install({
     }
 });
 
-var Exception = require("./lib/exception/Exception");
-
-function func1() {
-    function func2() {
-        function func3() {
-            throw new Exception({message: "sdf s df sd fs df s df sdf sdf"});
-        }
-        func3();
-    }
-    func2();
-}
-func1();
-
-return;
-
 /*var SourceCodePointCreator = require("./lib/helpers/SourceCodePointCreator"),
     creator = new SourceCodePointCreator();
 console.log(creator.create(fs.readFileSync("/home/rodzewich/Projects/playground/less_include_dir/test.scss").toString("utf8"), 30, 79));
