@@ -47,20 +47,20 @@ class CssErrorsHelper implements ICssErrorsHelper {
         var property:string,
             content:string[] = [],
             bodyBefore:any = {
-                "margin": "0 !important",
-                "overflow": "hidden !important",
-                "display": "block !important",
-                "padding": this.getBlockPadding() + " !important",
-                "color": this.getTextColor() + " !important",
-                "background-color": this.getBackgroundColor() + " !important",
-                "white-space": "pre !important",
-                "font-family": "'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace !important",
-                "font-size": this.getFontSize() + " !important",
-                "font-style": "normal !important",
-                "font-variant": "normal !important",
-                "font-weight": "400 !important",
-                "word-wrap": "break-word !important",
-                "content": JSON.stringify(errors.map(function (error:Error, index:number) {
+                "margin"           : "0 !important",
+                "overflow"         : "hidden !important",
+                "display"          : "block !important",
+                "padding"          : this.getBlockPadding() + " !important",
+                "color"            : this.getTextColor() + " !important",
+                "background-color" : this.getBackgroundColor() + " !important",
+                "white-space"      : "pre !important",
+                "font-family"      : "'Courier New',Courier,'Lucida Sans Typewriter','Lucida Typewriter',monospace !important",
+                "font-size"        : this.getFontSize() + " !important",
+                "font-style"       : "normal !important",
+                "font-variant"     : "normal !important",
+                "font-weight"      : "400 !important",
+                "word-wrap"        : "break-word !important",
+                "content"          : JSON.stringify(errors.map(function (error:Error, index:number) {
                     return String(index + 1) + ". " + Exception.getStack(error);
                 }).join("\n\n")).
                     replace(/\\n/g, "\\A ")/*.

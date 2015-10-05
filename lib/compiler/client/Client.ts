@@ -11,11 +11,10 @@ import MemoryLocationHelper = require("../../helpers/MemoryLocationHelper");
 import IMemoryLocationHelper = require("../../helpers/IMemoryLocationHelper");
 import SourcesDirectoryHelper = require("../../helpers/SourcesDirectoryHelper");
 import ISourcesDirectoryHelper = require("../../helpers/ISourcesDirectoryHelper");
-import IResourceLocation = require("../../helpers/IResourceLocation");
-import CssErrorsHelper = require("../../helpers/CssErrorsHelper");
-import ICssErrorsHelper = require("../../helpers/ICssErrorsHelper");
-import CacheHelper = require("../../helpers/CacheHelper");
-import ICacheHelper = require("../../helpers/ICacheHelper");
+import CssErrorsHelper = require("../helpers/CssErrorsHelper");
+import ICssErrorsHelper = require("../helpers/ICssErrorsHelper");
+import CacheHelper = require("../helpers/CacheHelper");
+import ICacheHelper = require("../helpers/ICacheHelper");
 import BaseClient = require("../../client/Client");
 import IOptions = require("./IOptions");
 import Exception = require("../Exception");
@@ -26,14 +25,35 @@ import cp = require("child_process");
 import log4js = require("log4js");
 
 require("../../../logger");
-
 var logger:log4js.Logger = log4js.getLogger("worker");
 
 class Client extends BaseClient implements IClient {
 
-    private _cache:ICacheHelper = new CacheHelper();
+    private _cacheHelper:ICacheHelper;
 
-    private _cssErrors:ICssErrorsHelper = new CssErrorsHelper();
+    protected createCacheHelperInstance():ICacheHelper {
+        return new CacheHelper();
+    }
+
+    protected getCacheHelperInstance():ICacheHelper {
+        if (!this._cacheHelper) {
+            this._cacheHelper = this.createCacheHelperInstance();
+        }
+        return this._cacheHelper;
+    }
+
+    private _cssErrorsHelper:ICssErrorsHelper;
+
+    protected createCssErrorsHelperInstance():ICssErrorsHelper {
+        return new CssErrorsHelper();
+    }
+
+    protected getCssErrorsHelperInstance():ICssErrorsHelper {
+        if (!this._cssErrorsHelper) {
+            this._cssErrorsHelper = this.createCssErrorsHelperInstance();
+        }
+        return this._cssErrorsHelper;
+    }
 
     private _memoryLocation:IMemoryLocationHelper = new MemoryLocationHelper();
 
@@ -52,17 +72,17 @@ class Client extends BaseClient implements IClient {
         if (options && isDefined(options.useCache)) {
             this.setIsCacheUsed(options.useCache);
         }
-        if (options && isDefined(options.errorBackgroundColor)) {
-            this.setCssErrorsBackgroundColor(options.errorBackgroundColor);
+        if (options && isDefined(options.errorsBackgroundColor)) {
+            this.setCssErrorsBackgroundColor(options.errorsBackgroundColor);
         }
-        if (options && isDefined(options.errorTextColor)) {
-            this.setCssErrorsTextColor(options.errorTextColor);
+        if (options && isDefined(options.errorsTextColor)) {
+            this.setCssErrorsTextColor(options.errorsTextColor);
         }
-        if (options && isDefined(options.errorBlockPadding)) {
-            this.setCssErrorsBlockPadding(options.errorBlockPadding);
+        if (options && isDefined(options.errorsBlockPadding)) {
+            this.setCssErrorsBlockPadding(options.errorsBlockPadding);
         }
-        if (options && isDefined(options.errorFontSize)) {
-            this.setCssErrorsFontSize(options.errorFontSize);
+        if (options && isDefined(options.errorsFontSize)) {
+            this.setCssErrorsFontSize(options.errorsFontSize);
         }
         if (options && isDefined(options.webRootDirectory)) {
             this.setWebRootDirectory(options.webRootDirectory);
@@ -86,52 +106,84 @@ class Client extends BaseClient implements IClient {
         };
     }
 
-    protected isCacheUsed():boolean {
-        return this._cache.isUsed();
+    public isCacheUsed():boolean {
+        return this.getCacheHelperInstance().isUsed();
     }
 
-    protected getIsCacheUsed():boolean {
-        return this._cache.getIsUsed();
+    public getIsCacheUsed():boolean {
+        return this.getCacheHelperInstance().getIsUsed();
     }
 
-    protected setIsCacheUsed(value:boolean):void {
-        return this._cache.setIsUsed(value);
+    public setIsCacheUsed(value:boolean):void {
+        return this.getCacheHelperInstance().setIsUsed(value);
     }
 
-    protected getCssErrorsBackgroundColor():string {
-        return this._cssErrors.getBackgroundColor();
+    public get cssErrorsBackgroundColor():string {
+        return this.getCssErrorsBackgroundColor();
     }
 
-    protected setCssErrorsBackgroundColor(value:string):void {
-        this._cssErrors.setBackgroundColor(value);
+    public getCssErrorsBackgroundColor():string {
+        return this.getCssErrorsHelperInstance().getBackgroundColor();
     }
 
-    protected getCssErrorsTextColor():string {
-        return this._cssErrors.getTextColor();
+    public set cssErrorsBackgroundColor(value:string) {
+        this.setCssErrorsBackgroundColor(value);
     }
 
-    protected setCssErrorsTextColor(value:string):void {
-        this._cssErrors.setTextColor(value);
+    public setCssErrorsBackgroundColor(value:string):void {
+        this.getCssErrorsHelperInstance().setBackgroundColor(value);
     }
 
-    protected getCssErrorsBlockPadding():string {
-        return this._cssErrors.getBlockPadding();
+    public get cssErrorsTextColor():string {
+        return this.getCssErrorsTextColor();
     }
 
-    protected setCssErrorsBlockPadding(value:string):void {
-        this._cssErrors.setBlockPadding(value);
+    public getCssErrorsTextColor():string {
+        return this.getCssErrorsHelperInstance().getTextColor();
     }
 
-    protected getCssErrorsFontSize():string {
-        return this._cssErrors.getFontSize();
+    public set cssErrorsTextColor(value:string) {
+        this.setCssErrorsTextColor(value);
     }
 
-    protected setCssErrorsFontSize(value:string):void {
-        return this._cssErrors.setFontSize(value);
+    public setCssErrorsTextColor(value:string):void {
+        this.getCssErrorsHelperInstance().setTextColor(value);
     }
 
-    protected createCssErrors(errors:Error[]):string {
-        return this._cssErrors.create(errors)
+    public get cssErrorsBlockPadding():string {
+        return this.getCssErrorsBlockPadding();
+    }
+
+    public getCssErrorsBlockPadding():string {
+        return this.getCssErrorsHelperInstance().getBlockPadding();
+    }
+
+    public set cssErrorsBlockPadding(value:string) {
+        this.setCssErrorsBlockPadding(value);
+    }
+
+    public setCssErrorsBlockPadding(value:string):void {
+        this.getCssErrorsHelperInstance().setBlockPadding(value);
+    }
+
+    public get cssErrorsFontSize():string {
+        return this.getCssErrorsFontSize();
+    }
+
+    public getCssErrorsFontSize():string {
+        return this.getCssErrorsHelperInstance().getFontSize();
+    }
+
+    public set cssErrorsFontSize(value:string) {
+        this.setCssErrorsFontSize(value);
+    }
+
+    public setCssErrorsFontSize(value:string):void {
+        return this.getCssErrorsHelperInstance().setFontSize(value);
+    }
+
+    public createCssErrors(errors:Error[]):string {
+        return this.getCssErrorsHelperInstance().create(errors)
     }
 
     public getMemoryLocation():string {

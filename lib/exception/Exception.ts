@@ -18,7 +18,7 @@ class Exception implements IException {
 
     protected _name:string = "Exception";
 
-    constructor(options:IOptions) {
+    constructor(options:IOptions, place?:any) {
         var temp:any = new Error();
         if (options && isDefined(options.message)) {
             this._message = String(options.message);
@@ -26,7 +26,7 @@ class Exception implements IException {
         if (options && isDefined(options.code)) {
             this._code = Math.max(0, parseInt(String(options.code), 10)) || 0;
         }
-        Error.captureStackTrace(temp, this._class);
+        Error.captureStackTrace(temp, place || this._class);
         this._stack = String(temp.stack).split("\n").slice(1).join("\n");
     }
 

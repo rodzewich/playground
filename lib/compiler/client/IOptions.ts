@@ -1,14 +1,14 @@
-import IBaseOptions = require("../../client/IOptions");
+import IOptionsBase = require("../../client/IOptions");
 
-interface IOptions extends IBaseOptions {
-    sourcesDirectory: string;
-    memoryLocation: string;
-    useCache: boolean;
-    errorBackgroundColor?: string;
-    errorTextColor?: string;
-    errorBlockPadding?: string;
-    errorFontSize?: string;
-    webRootDirectory: string;
+interface IOptions extends IOptionsBase {
+    sourcesDirectory:string;
+    memoryLocation:string;
+    useCache:boolean;
+    errorsBackgroundColor?:string;
+    errorsTextColor?:string;
+    errorsBlockPadding?:string;
+    errorsFontSize?:string;
+    webRootDirectory:string;
 }
 
 export = IOptions;

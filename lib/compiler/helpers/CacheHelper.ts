@@ -1,4 +1,4 @@
-/// <reference path="../isTrue.ts" />
+/// <reference path="../../isTrue.ts" />
 /// <reference path="./ICacheHelper.ts" />
 
 import isTrue = require("../isTrue");
