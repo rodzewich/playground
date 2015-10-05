@@ -34,10 +34,6 @@ require('source-map-support').install({
     }
 });
 
-require("./lib/test");
-
-return;
-
 /*var SourceCodePointCreator = require("./lib/helpers/SourceCodePointCreator"),
     creator = new SourceCodePointCreator();
 console.log(creator.create(fs.readFileSync("/home/rodzewich/Projects/playground/less_include_dir/test.scss").toString("utf8"), 30, 79));
@@ -45,9 +41,9 @@ console.log(creator.create(fs.readFileSync("/home/rodzewich/Projects/playground/
 return;*/
 
 
-var less = require("./lib/routers/less"),
+var less   = require("./lib/routers/less"),
     stylus = require("./lib/routers/stylus"),
-    sass = require("./lib/routers/sass");
+    sass   = require("./lib/routers/sass");
 
 
 /*var routers = {

@@ -4,6 +4,6 @@ for item in $(find ./lib -type f | grep "\.ts$" | sort); do
     tsc --newLine LF --sourceMap --noImplicitAny --removeComments --preserveConstEnums --target es5 --module commonjs ${item};
 done
 
-./bin/kindType --output ./lib/jsPreProcessorForTypeScript/compiler/KindType.ts
+./bin/generateKindType --output ./lib/jsPreProcessorForTypeScript/compiler/KindType.ts
 tsc --newLine LF --sourceMap --noImplicitAny --removeComments --preserveConstEnums --target es5 --module commonjs\
     ./lib/jsPreProcessorForTypeScript/compiler/KindType.ts;
