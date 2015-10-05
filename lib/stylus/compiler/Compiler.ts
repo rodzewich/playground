@@ -1,5 +1,4 @@
 /// <reference path="../../../types/node/node.d.ts" />
-/// <reference path="./autoprefixer.d.ts" />
 /// <reference path="./stylus.d.ts" />
 
 // todo: уметь использовать globals, functions, imports

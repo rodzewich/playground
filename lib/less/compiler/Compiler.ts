@@ -104,10 +104,10 @@
  *
  */
 
-import LessGlobalVariables = require("../../helpers/LessGlobalVariables");
-import ILessGlobalVariables = require("../../helpers/ILessGlobalVariables");
-import LessModifyVariables = require("../../helpers/LessModifyVariables");
-import ILessModifyVariables = require("../../helpers/ILessModifyVariables");
+import GlobalVariables = require("../helpers/GlobalVariables");
+import IGlobalVariables = require("../helpers/IGlobalVariables");
+import ModifyVariables = require("../helpers/ModifyVariables");
+import IModifyVariables = require("../helpers/IModifyVariables");
 import isDefined = require("../../isDefined");
 import BaseCompiler = require("../../css/compiler/Compiler");
 import IOptions = require("./IOptions");
@@ -403,11 +403,11 @@ class Compiler extends BaseCompiler implements ICompiler {
         }
     }
 
-    private _globalVariablesInstance:ILessGlobalVariables;
-    protected createGlobalVariablesInstance():ILessGlobalVariables {
-        return new LessGlobalVariables();
+    private _globalVariablesInstance:IGlobalVariables;
+    protected createGlobalVariablesInstance():IGlobalVariables {
+        return new GlobalVariables();
     }
-    protected getGlobalVariablesInstance():ILessGlobalVariables {
+    protected getGlobalVariablesInstance():IGlobalVariables {
         if (!this._globalVariablesInstance) {
             this._globalVariablesInstance = this.createGlobalVariablesInstance();
         }
@@ -427,11 +427,11 @@ class Compiler extends BaseCompiler implements ICompiler {
     }
 
 
-    private _modifyVariablesInstance:ILessModifyVariables;
-    protected createModifyVariablesInstance():ILessModifyVariables {
-        return new LessModifyVariables();
+    private _modifyVariablesInstance:IModifyVariables;
+    protected createModifyVariablesInstance():IModifyVariables {
+        return new ModifyVariables();
     }
-    protected getModifyVariablesInstance():ILessModifyVariables {
+    protected getModifyVariablesInstance():IModifyVariables {
         if (!this._modifyVariablesInstance) {
             this._modifyVariablesInstance = this.createModifyVariablesInstance();
         }

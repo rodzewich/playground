@@ -1,6 +1,6 @@
-import ILessVariables = require("./ILessVariables");
+import IVariables = require("./IVariables");
 
-class LessVariables implements ILessVariables {
+class Variables implements IVariables {
 
     private _variables:{[key:string]:any} = {};
 
@@ -23,4 +23,4 @@ class LessVariables implements ILessVariables {
     }
 }
 
-export = LessVariables;
+export = Variables;
