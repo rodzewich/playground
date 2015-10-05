@@ -3,13 +3,13 @@
 import http = require("http");
 
 export interface Memory {
-    [key: string]: Buffer;
+    [key:string]:Buffer;
 }
 
 export interface RouterOptions {
-    request: http.ServerRequest;
-    response: http.ServerResponse;
-    accessLog?: boolean;
+    request:http.ServerRequest;
+    response:http.ServerResponse;
+    accessLog?:boolean;
 }
 
 export interface InitOptions {
