@@ -1,4 +1,3 @@
-import typeOf = require("../typeOf");
 import IOptions = require("./IOptions");
 import IException = require("./IException");
 import isDefined = require("../isDefined");
@@ -28,12 +27,12 @@ class Exception implements IException {
             this._code = Math.max(0, parseInt(String(options.code), 10)) || 0;
         }
         Error.captureStackTrace(temp, place || this._class);
-        if (options && typeOf(options.stack)) {
+        if (options && isDefined(options.stack)) {
             this._stack = String(options.stack);
         } else {
             this._stack = String(temp.stack).split("\n").slice(1).join("\n");
         }
-        if (options && typeOf(options.name)) {
+        if (options && isDefined(options.name)) {
             this._name = String(options.name);
         }
     }
