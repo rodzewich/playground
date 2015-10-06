@@ -8,47 +8,61 @@ import Exception = require("../Exception");
 import isDefined = require("../isDefined");
 import MeLocationHelper = require("../helpers/MeLocationHelper");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
+import HandlersRegistration = require("../helpers/HandlersRegistration");
+import IHandlersRegistration = require("../helpers/IHandlersRegistration");
 
 class Client implements IClient {
-
-    private _meLocation:IMeLocationHelper = new MeLocationHelper();
 
     private _socket:net.Socket;
 
     private _started:boolean = false;
 
-    private _increment:number = 0;
+    private _handlersRegistration:IHandlersRegistration;
 
-    private _callbacks:any = {};
+    protected createHandlersRegistration():IHandlersRegistration {
+        return new HandlersRegistration();
+    }
+
+    protected getHandlersRegistration():IHandlersRegistration {
+        if (!this._handlersRegistration) {
+            this._handlersRegistration = this.createHandlersRegistration();
+        }
+        return this._handlersRegistration;
+    }
+
+    private _meLocationHelper:IMeLocationHelper;
+
+    protected createMeLocationHelper():IMeLocationHelper {
+        return new MeLocationHelper();
+    }
+
+    protected getMeLocationHelper():IMeLocationHelper {
+        if (!this._meLocationHelper) {
+            this._meLocationHelper = this.createMeLocationHelper();
+        }
+        return this._meLocationHelper;
+    }
 
     constructor(options:IOptions) {
         if (options && isDefined(options.location)) {
-            this.getMeLocation().setLocation(options.location);
+            this.setLocation(options.location);
         }
     }
 
-    public getMeLocation():IMeLocationHelper {
-        return this._meLocation;
+    public get location():string {
+        return this.getLocation();
     }
 
-    private generateIdentifier():number {
-        return this._increment++;
+    public set location(value:string) {
+        this.setLocation(value);
     }
 
-    private registerHandler(callback:(errors:Error[], response:any) => void):number {
-        var id:number = null;
-        if (typeof callback === "function") {
-            id = this.generateIdentifier();
-            this._callbacks[id] = callback;
-        }
-        return id;
+    public getLocation():string {
+        return this.getMeLocationHelper().getLocation();
     }
 
-    private findHandlerById(id:number):(errors:Error[], response:any) => void {
-        if (this._callbacks[id]) {
-            return <(errors:Error[], response:any) => void>this._callbacks[id];
-        }
-        return null;
+    public setLocation(value:string):void {
+        this.getMeLocationHelper().setLocation(value);
     }
 
     protected call(callback:(errors:Error[], response:any) => void, ...args:any[]):void {
@@ -59,7 +73,7 @@ class Client implements IClient {
             throw new Exception("bla bla bla");
         }
         this._socket.write(JSON.stringify({
-                id   : this.registerHandler(callback),
+                id   : this.getHandlersRegistration().register(callback),
                 args : args
             }) + "\n");
     }
@@ -114,7 +128,7 @@ class Client implements IClient {
                 getCallback:() => ((errors:Error[], response:any) => void) = ():((errors:Error[], response:any) => void) => {
                     var options:any = getOptions(),
                         id:number   = <number>options.id;
-                    return this.findHandlerById(id) || null;
+                    return this.getHandlersRegistration().find(id) || null;
                 };
 
             data = Buffer.concat([data, buffer]);
