@@ -1,4 +1,4 @@
-import ResourceLocation = require("./ResourceLocation");
+import ResourceLocation = require("../../helpers/ResourceLocation");
 
 class MemoryLocationHelper extends ResourceLocation {
 }

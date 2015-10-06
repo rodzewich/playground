@@ -1,4 +1,4 @@
-import IResourceLocation = require("./IResourceLocation");
+import IResourceLocation = require("../../helpers/IResourceLocation");
 
 interface IMemoryLocationHelper extends IResourceLocation {
 }

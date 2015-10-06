@@ -5,12 +5,12 @@ import typeOf = require("../../typeOf");
 import isDefined = require("../../isDefined");
 import deferred = require("../../deferred");
 import WrapperException = require("../../WrapperException");
-import WebRootDirectoryHelper = require("../../helpers/WebRootDirectoryHelper");
-import IWebRootDirectoryHelper = require("../../helpers/IWebRootDirectoryHelper");
-import MemoryLocationHelper = require("../../helpers/MemoryLocationHelper");
-import IMemoryLocationHelper = require("../../helpers/IMemoryLocationHelper");
-import SourcesDirectoryHelper = require("../../helpers/SourcesDirectoryHelper");
-import ISourcesDirectoryHelper = require("../../helpers/ISourcesDirectoryHelper");
+import WebRootDirectoryHelper = require("../helpers/WebRootDirectoryHelper");
+import IWebRootDirectoryHelper = require("../helpers/IWebRootDirectoryHelper");
+import MemoryLocationHelper = require("../helpers/MemoryLocationHelper");
+import IMemoryLocationHelper = require("../helpers/IMemoryLocationHelper");
+import SourcesDirectoryHelper = require("../helpers/SourcesDirectoryHelper");
+import ISourcesDirectoryHelper = require("../helpers/ISourcesDirectoryHelper");
 import CssErrorsHelper = require("../helpers/CssErrorsHelper");
 import ICssErrorsHelper = require("../helpers/ICssErrorsHelper");
 import CacheHelper = require("../helpers/CacheHelper");
@@ -55,11 +55,44 @@ class Client extends BaseClient implements IClient {
         return this._cssErrorsHelper;
     }
 
-    private _memoryLocation:IMemoryLocationHelper = new MemoryLocationHelper();
+    private _memoryLocationHelper:IMemoryLocationHelper;
 
-    private _sourcesDirectory:ISourcesDirectoryHelper = new SourcesDirectoryHelper();
+    protected createMemoryLocationHelper():IMemoryLocationHelper {
+        return new MemoryLocationHelper();
+    }
 
-    private _webRootDirectory:IWebRootDirectoryHelper = new WebRootDirectoryHelper();
+    protected getMemoryLocationHelper():IMemoryLocationHelper {
+        if (!this._memoryLocationHelper) {
+            this._memoryLocationHelper = this.createMemoryLocationHelper();
+        }
+        return this._memoryLocationHelper;
+    }
+
+    private _sourcesDirectoryHelper:ISourcesDirectoryHelper;
+
+    protected createSourcesDirectoryHelper():ISourcesDirectoryHelper {
+        return new SourcesDirectoryHelper();
+    }
+
+    protected getSourcesDirectoryHelper():ISourcesDirectoryHelper {
+        if (!this._sourcesDirectoryHelper) {
+            this._sourcesDirectoryHelper = this.createSourcesDirectoryHelper();
+        }
+        return this._sourcesDirectoryHelper;
+    }
+
+    private _webRootDirectoryHelper:IWebRootDirectoryHelper;
+
+    protected createWebRootDirectoryHelper():IWebRootDirectoryHelper {
+        return new WebRootDirectoryHelper();
+    }
+
+    protected getWebRootDirectoryHelper():IWebRootDirectoryHelper {
+        if (!this._webRootDirectoryHelper) {
+            this._webRootDirectoryHelper = this.createWebRootDirectoryHelper();
+        }
+        return this._webRootDirectoryHelper;
+    }
 
     constructor(options:IOptions) {
         super(options);
@@ -89,21 +122,20 @@ class Client extends BaseClient implements IClient {
         }
     }
 
-    protected getDaemon():string {
+    public get daemon():string {
+        return this.getDaemon();
+    }
+
+    public getDaemon():string {
         return null;
     }
 
-    protected getRequest():IRequest {
-        return <IRequest>{
-            filename             : null,
-            sourcesDirectory     : this.getSourcesDirectory(),
-            errorBackgroundColor : this.getCssErrorsBackgroundColor(),
-            errorTextColor       : this.getCssErrorsTextColor(),
-            errorBlockPadding    : this.getCssErrorsBlockPadding(),
-            errorFontSize        : this.getCssErrorsFontSize(),
-            webRootDirectory     : this.getWebRootDirectory(),
-            useCache             : this.isCacheUsed()
-        };
+    public get useCache():boolean {
+        return this.getIsCacheUsed();
+    }
+
+    public set useCache(value:boolean) {
+        this.setIsCacheUsed(value);
     }
 
     public isCacheUsed():boolean {
@@ -186,49 +218,83 @@ class Client extends BaseClient implements IClient {
         return this.getCssErrorsHelperInstance().create(errors)
     }
 
+    public get memoryLocation():string {
+        return this.getMemoryLocation();
+    }
+
+    public set memoryLocation(value:string) {
+        this.setMemoryLocation(value);
+    }
+
     public getMemoryLocation():string {
-        return this._memoryLocation.getLocation();
+        return this.getMemoryLocationHelper().getLocation();
     }
 
     public setMemoryLocation(value:string):void {
-        this._memoryLocation.setLocation(value);
+        this.getMemoryLocationHelper().setLocation(value);
     }
 
-    protected getSourcesDirectory():string {
-        return this._sourcesDirectory.getLocation();
+    public get sourcesDirectory():string {
+        return this.getSourcesDirectory();
     }
 
-    protected setSourcesDirectory(value:string):void {
-        this._sourcesDirectory.setLocation(value);
+    public set sourcesDirectory(value:string) {
+        this.setSourcesDirectory(value);
     }
 
-    protected getWebRootDirectory():string {
-        return this._webRootDirectory.getLocation();
+    public getSourcesDirectory():string {
+        return this.getSourcesDirectoryHelper().getLocation();
     }
 
-    protected setWebRootDirectory(value:string):void {
-        this._webRootDirectory.setLocation(value)
+    public setSourcesDirectory(value:string):void {
+        this.getSourcesDirectoryHelper().setLocation(value);
+    }
+
+    public get webRootDirectory():string {
+        return this.getWebRootDirectory();
+    }
+
+    public set webRootDirectory(value:string) {
+        this.setWebRootDirectory(value);
+    }
+
+    public getWebRootDirectory():string {
+        return this.getWebRootDirectoryHelper().getLocation();
+    }
+
+    public setWebRootDirectory(value:string):void {
+        this.getWebRootDirectoryHelper().setLocation(value)
+    }
+
+    protected createRequest(filename:string):IRequest {
+        return <IRequest>{
+            filename             : filename,
+            sourcesDirectory     : this.getSourcesDirectory(),
+            errorBackgroundColor : this.getCssErrorsBackgroundColor(),
+            errorTextColor       : this.getCssErrorsTextColor(),
+            errorBlockPadding    : this.getCssErrorsBlockPadding(),
+            errorFontSize        : this.getCssErrorsFontSize(),
+            webRootDirectory     : this.getWebRootDirectory(),
+            useCache             : this.isCacheUsed()
+        };
     }
 
     public compile(filename:string, callback?:(errors:Error[], result:IResponse) => void):void {
-        var request:IRequest;
         if (typeOf(filename) !== "string") {
-            throw new Exception("bla bla bla");
+            throw new Exception("filename should be a string");
         }
-        request = this.getRequest();
-        request.filename = filename;
         this.call((errors:Error[], response?:any):void => {
-            var temp:Error[] = null,
+            var errs:Error[] = null,
                 result:any = null;
             if (errors && errors.length) {
-                temp = errors;
+                errs = errors;
             } else {
                 result = response || null;
             }
             if (typeOf(callback) === "function") {
-                callback(temp, <IResponse>result);
+                callback(errs, <IResponse>result);
             }
-        }, "compile", request);
+        }, "compile", this.createRequest(filename));
     }
 
     public connect(callback:(errors:Error[]) => void):void {
