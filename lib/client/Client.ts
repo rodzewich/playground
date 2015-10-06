@@ -129,7 +129,7 @@ class Client implements IClient {
                 },
                 getCallback:() => ((errors:Error[], response:any) => void) = ():((errors:Error[], response:any) => void) => {
                     var options:any = getOptions(),
-                        id:number   = <number>options.id;
+                        id:number   = <string>options.id;
                     return this.getHandlersRegistration().find(id) || null;
                 };
 
