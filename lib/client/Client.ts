@@ -66,16 +66,18 @@ class Client implements IClient {
     }
 
     protected call(callback:(errors:Error[], response:any) => void, ...args:any[]):void {
+        var request:string;
         if (!this._socket) {
             throw new Exception("Client wasn't connect");
         }
         if (typeof callback !== "function") {
             throw new Exception("bla bla bla");
         }
-        this._socket.write(JSON.stringify({
-                id   : this.getHandlersRegistration().register(callback),
-                args : args
-            }) + "\n");
+        request = JSON.stringify({
+            id   : this.getHandlersRegistration().register(callback),
+            args : args
+        });
+        this._socket.write(request + "\n");
     }
 
     public connect(callback:(errors:Error[]) => void):void {
@@ -89,7 +91,7 @@ class Client implements IClient {
                 }
                 callback(error ? [error] : null);
             },
-            socket:net.Socket = net.createConnection(this.getMeLocation().getLocation(), ():void => {
+            socket:net.Socket = net.createConnection(this.getLocation(), ():void => {
                 handler(null);
             });
         socket.addListener("error", handler);
