@@ -6,6 +6,7 @@ import net = require("net");
 import WrapperException = require("../WrapperException");
 import Exception = require("../Exception");
 import isDefined = require("../isDefined");
+import isFunction = require("../isFunction");
 import MeLocationHelper = require("../helpers/MeLocationHelper");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
 import HandlersRegistration = require("../helpers/HandlersRegistration");
@@ -68,10 +69,10 @@ class Client implements IClient {
     protected call(callback:(errors:Error[], response:any) => void, ...args:any[]):void {
         var request:string;
         if (!this._socket) {
-            throw new Exception("Client wasn't connect");
+            throw new Exception("connection is not ready");
         }
-        if (typeof callback !== "function") {
-            throw new Exception("bla bla bla");
+        if (!isFunction(callback)) {
+            throw new Exception("callback should be a function");
         }
         request = JSON.stringify({
             id   : this.getHandlersRegistration().register(callback),
@@ -140,7 +141,7 @@ class Client implements IClient {
                 if (index !== -1) {
                     response = string.slice(0, index + 1);
                     callback = getCallback();
-                    if (typeof callback === "function") {
+                    if (isFunction(callback)) {
                         callback(getErrors(), getResult());
                     }
                     data = data.slice((new Buffer(response, "utf8")).length + 1);
