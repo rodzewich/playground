@@ -3,8 +3,8 @@
 import IClient = require("./IClient");
 import IOptions = require("./IOptions");
 import net = require("net");
-import WrapperException = require("../WrapperException");
-import Exception = require("../Exception");
+import Exception = require("../exception/Exception");
+import IExceptionOptions = require("../exception/Options");
 import isDefined = require("../isDefined");
 import isFunction = require("../isFunction");
 import MeLocationHelper = require("../helpers/MeLocationHelper");
@@ -69,10 +69,10 @@ class Client implements IClient {
     protected call(callback:(errors:Error[], response:any) => void, ...args:any[]):void {
         var request:string;
         if (!this._socket) {
-            throw new Exception("connection is not ready");
+            throw new Exception({message : "connection is not ready"});
         }
         if (!isFunction(callback)) {
-            throw new Exception("callback should be a function");
+            throw new Exception({message : "callback should be a function"});
         }
         request = JSON.stringify({
             id   : this.getHandlersRegistration().register(callback),
@@ -115,11 +115,11 @@ class Client implements IClient {
                         length:number,
                         result:Error[] = [],
                         options:any  = getOptions(),
-                        errors:any[] = <any[]>options.errors;
+                        errors:any[] = <IExceptionOptions[]>options.errors;
                     if (errors && errors.length) {
                         length = errors.length;
                         for (index = 0; index < length; index++) {
-                            result.push(new WrapperException(errors[index]));
+                            result.push(new Exception(errors[index]));
                         }
                     }
                     return result.length ? result : null;

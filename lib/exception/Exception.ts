@@ -37,6 +37,27 @@ class Exception implements IException {
         }
     }
 
+    public get name():string {
+        return this.getName();
+    }
+
+    public set name(value:string) {
+    }
+
+    public get message():string {
+        return this.getMessage();
+    }
+
+    public set message(value:string) {
+    }
+
+    public get code():number {
+        return this.getCode();
+    }
+
+    public set code(value:number) {
+    }
+
     public get stack():string {
         return this.getStack();
     }

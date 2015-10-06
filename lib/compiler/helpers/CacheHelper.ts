@@ -1,7 +1,4 @@
-/// <reference path="../../isTrue.ts" />
-/// <reference path="./ICacheHelper.ts" />
-
-import isTrue = require("../isTrue");
+import isTrue = require("../../isTrue");
 import ICacheHelper = require("./ICacheHelper");
 
 class CacheHelper implements ICacheHelper {

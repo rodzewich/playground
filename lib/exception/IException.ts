@@ -1,4 +1,7 @@
 interface IException {
+    name:string;
+    code:number;
+    message:string;
     stack:string;
     toString():string;
     getName():string;

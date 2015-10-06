@@ -4,7 +4,6 @@
 import typeOf = require("../../typeOf");
 import isDefined = require("../../isDefined");
 import deferred = require("../../deferred");
-import WrapperException = require("../../WrapperException");
 import WebRootDirectoryHelper = require("../helpers/WebRootDirectoryHelper");
 import IWebRootDirectoryHelper = require("../helpers/IWebRootDirectoryHelper");
 import MemoryLocationHelper = require("../helpers/MemoryLocationHelper");
