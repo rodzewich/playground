@@ -1,6 +1,11 @@
+import IException = require("../exception/IException");
+
 interface IDaemon {
-    start(callback?:(errors:Error[]) => void): void;
-    stop(callback?:() => void): void;
+    location: string;
+    start(callback?:(errors:IException[]) => void): void;
+    stop(callback?:(errors:IException[]) => void): void;
+    getLocation():string;
+    setLocation(value:string):void;
 }
 
 export = IDaemon;

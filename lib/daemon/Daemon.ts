@@ -10,7 +10,18 @@ import MeLocationHelper = require("../helpers/MeLocationHelper");
 
 class Daemon implements IDaemon {
 
-    protected _location:IMeLocationHelper = new MeLocationHelper();
+    private _meLocationHelper:IMeLocationHelper;
+
+    protected createMeLocationHelper():IMeLocationHelper {
+        return new MeLocationHelper();
+    }
+
+    protected getMeLocationHelper():IMeLocationHelper {
+        if (!this._meLocationHelper) {
+            this._meLocationHelper = this.createMeLocationHelper();
+        }
+        return this._meLocationHelper;
+    }
 
     protected _server:net.Server;
 
@@ -20,12 +31,20 @@ class Daemon implements IDaemon {
         this.setLocation(options.location);
     }
 
-    protected setLocation(value:string):void {
-        this._location.setLocation(value);
+    public get location():string {
+        return this.getLocation();
     }
 
-    protected getLocation():string {
-        return this._location.getLocation();
+    public set location(value:string) {
+        this.setLocation(value);
+    }
+
+    public getLocation():string {
+        return this.getMeLocationHelper().getLocation();
+    }
+
+    public setLocation(value:string):void {
+        this.getMeLocationHelper().setLocation(value);
     }
 
     protected handler(request:any, callback:(response:any) => void):void {
@@ -92,9 +111,9 @@ class Daemon implements IDaemon {
         this._server = server;
     }
 
-    public stop(callback?:() => void):void {
+    public stop(callback?:(errors:IException[]) => void):void {
         if (!this._started) {
-            throw new Exception("bla bla bla");
+            throw new Exception({message: "daemon cannot be stopped"});
         }
         this._server.close(():void => {
             this._server = undefined;
