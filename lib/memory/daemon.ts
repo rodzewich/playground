@@ -18,11 +18,11 @@ process.addListener('uncaughtException', function (error:Error) {
     logger.fatal(error);
 });
 
-import optimist  = require("optimist");
-import IDaemon   = require("./daemon/IDaemon");
-import Daemon    = require("./daemon/Daemon");
-import log4js    = require("../../logger");
-import Exception = require("../exception/Exception");
+import optimist   = require("optimist");
+import IDaemon    = require("./daemon/IDaemon");
+import Daemon     = require("./daemon/Daemon");
+import log4js     = require("../../logger");
+import Exception  = require("../exception/Exception");
 import IException = require("../exception/IException");
 
 require("../mapping");
