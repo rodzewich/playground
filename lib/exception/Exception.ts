@@ -13,6 +13,8 @@ class Exception implements IException {
 
     private _code:number = 0;
 
+    private _type:string = null;
+
     private _stack:string = "";
 
     protected _class:any = Exception;
@@ -22,7 +24,7 @@ class Exception implements IException {
     protected _data:{[index:string]:any} = {};
 
     constructor(options:IOptions, place?:any) {
-        var temp:any,
+        var temp:any = new Error(),
             property:string;
         if (options && isDefined(options.message)) {
             this._message = String(options.message);
@@ -34,11 +36,22 @@ class Exception implements IException {
         if (options && isDefined(options.stack)) {
             this._stack = String(options.stack);
         } else {
-            temp = new Error();
             this._stack = String(temp.stack).split("\n").slice(1).join("\n");
         }
         if (options && isDefined(options.name)) {
             this._name = String(options.name);
+        }
+        if (options && isDefined(options.type)) {
+            this._type = String(options.type)
+                .replace(/[^a-z0-9]/i, "")
+                .replace(/([a-z])([A-Z])/g, "$1_$2")
+                .toUpperCase();
+        }
+        if (!this._type) {
+            this._type = this.getName()
+                .replace(/[^a-z0-9]/i, "")
+                .replace(/([a-z])([A-Z])/g, "$1_$2")
+                .toUpperCase();
         }
         if (options && isObject(options.data)) {
             for (property in options.data) {
@@ -71,6 +84,20 @@ class Exception implements IException {
     public set code(value:number) {
     }
 
+    public get type():string {
+        return this.getType();
+    }
+
+    public set type(value:string) {
+    }
+
+    public get data():{[index:string]:any} {
+        return this.getData();
+    }
+
+    public set data(value:{[index:string]:any}) {
+    }
+
     public get stack():string {
         return this.getStack();
     }
@@ -98,6 +125,10 @@ class Exception implements IException {
         return this._code;
     }
 
+    public getType():string {
+        return this._type;
+    }
+
     public getData():{[index:string]:any} {
         return this._data;
     }
@@ -108,6 +139,7 @@ class Exception implements IException {
             message : error.message,
             stack   : error.stack,
             code    : error.code,
+            type    : error.type,
             data    : data
         });
     }

@@ -1,6 +1,7 @@
 interface IException {
     name:string;
     code:number;
+    type:string;
     message:string;
     stack:string;
     data:{[index:string]:any};
@@ -9,6 +10,7 @@ interface IException {
     getStack():string;
     getMessage():string;
     getCode():number;
+    getType():string;
     getData():{[index:string]:any};
 }
 

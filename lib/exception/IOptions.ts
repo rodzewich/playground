@@ -4,6 +4,7 @@ interface IOptions {
     data?:{[index:string]:any};
     name?:string;
     code?:number;
+    type?:string;
 }
 
 export = IOptions;
