@@ -2,6 +2,12 @@
 /// <reference path="../../types/optimist/optimist.d.ts" />
 /// <reference path="../../types/log4js/log4js.d.ts" />
 
+process.addListener('uncaughtException', function (er) {
+    // todo
+    /*console.error(er.stack)
+     process.exit(1)*/
+});
+
 import optimist    = require("optimist");
 import IDaemon     = require("./daemon/IDaemon");
 import Daemon      = require("./daemon/Daemon");
