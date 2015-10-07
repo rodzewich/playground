@@ -3,14 +3,21 @@
     {
       "type": "file",
       "absolute": false,
-      "filename": "logs/worker.log",
+      "filename": "logs/server.log",
       "maxLogSize": 20480,
       "category": "worker"
     },
     {
       "type": "file",
       "absolute": false,
-      "filename": "logs/client.log",
+      "filename": "logs/server.log",
+      "maxLogSize": 20480,
+      "category": "memory"
+    },
+    {
+      "type": "file",
+      "absolute": false,
+      "filename": "logs/server.log",
       "maxLogSize": 20480,
       "category": "client"
     }
