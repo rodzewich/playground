@@ -7,11 +7,7 @@ process.addListener('uncaughtException', function (error:Error) {
     if (!messageSent) {
         process.stderr.write(JSON.stringify({
                 started : false,
-                errors  : [{
-                    name    : error.name,
-                    message : error.message,
-                    stack   : error.stack
-                }]
+                errors  : [Exception.convertFromError(error).toObject()]
             }) + "\n");
         messageSent = true;
     }
@@ -28,10 +24,8 @@ import IException = require("../exception/IException");
 require("../mapping");
 var logger:log4js.Logger = log4js.getLogger("memory");
 var argv:any = optimist
-    .usage("Usage: daemon -l [filename]\nMemory daemon")
-    .demand("l")
-    .alias("l", "location")
-    .describe("l", "Socket location")
+    .usage("Usage: daemon -l [location]\nMemory daemon")
+    .demand("l").alias("l", "location").describe("l", "Daemon socket location")
     .argv;
 var daemon:IDaemon = new Daemon({
     location : argv.location
