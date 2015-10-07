@@ -23,8 +23,8 @@ require("../../logger");
 var logger:log4js.Logger = log4js.getLogger("worker"),
     argv:any = require("optimist").
         usage("Usage: daemon -l [worker] -m [memory]\nLess daemon").
-        demand("l").alias("l", "location").describe("l", "Less worker unix socket path").
-        demand("m").alias("m", "memory").describe("m", "Memory worker unix socket path").
+        demand("l").alias("l", "location").describe("l", "Worker socket path").
+        demand("m").alias("m", "memory").describe("m", "Memory socket path").
         argv,
     handler:(errors:Error[]) => void = (errors:Error[]):void => {
         if (errors && errors.length) {

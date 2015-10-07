@@ -31,7 +31,7 @@ var argv:any = optimist
     .usage("Usage: daemon -l [filename]\nMemory daemon")
     .demand("l")
     .alias("l", "location")
-    .describe("l", "Unix socket location")
+    .describe("l", "Socket location")
     .argv;
 var daemon:IDaemon = new Daemon({
     location : argv.location
