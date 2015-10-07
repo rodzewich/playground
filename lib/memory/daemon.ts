@@ -2,16 +2,23 @@
 /// <reference path="../../types/optimist/optimist.d.ts" />
 /// <reference path="../../types/log4js/log4js.d.ts" />
 
-process.addListener('uncaughtException', function (er) {
-    // todo
-    /*console.error(er.stack)
-     process.exit(1)*/
+process.addListener('uncaughtException', function (error:Error) {
+    process.stderr.write(JSON.stringify({
+            started : false,
+            errors  : [{
+                name    : error.name,
+                message : error.message,
+                stack   : error.stack
+            }]
+        }) + "\n");
+    logger.fatal(errors);
 });
 
 import optimist    = require("optimist");
 import IDaemon     = require("./daemon/IDaemon");
 import Daemon      = require("./daemon/Daemon");
 import log4js      = require("log4js");
+import Exception = require("../exception/Exception");
 import WrapperException = require("../WrapperException");
 
 require("../mapping");
@@ -30,19 +37,24 @@ var logger:log4js.Logger = log4js.getLogger("worker"),
 
 process.title = "Memory daemon";
 
-daemon.start((errors:Error[]):void => {
+daemon.start((errors:Exception[]):void => {
+    var index:number,
+        length:number;
     if (errors && errors.length) {
         process.stderr.write(JSON.stringify({
-            started: false,
-            errors: errors.map((error:Error):any => {
-                return WrapperException.convertToObject(error)
-            })
-        }) + "\n");
-        logger.fatal("Something went wrong", errors);
+                started : false,
+                errors  : errors.map((error:Exception):any => {
+                    return error.toObject();
+                })
+            }) + "\n");
+        length = errors.length;
+        for (index = 0; index < length; index++) {
+            logger.fatal(errors[index].getStack());
+        }
     } else {
         process.stderr.write(JSON.stringify({
-            started: true
-        }) + "\n");
+                started : true
+            }) + "\n");
         logger.info("Memory daemon started");
     }
 });
