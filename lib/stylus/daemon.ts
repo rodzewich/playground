@@ -11,7 +11,9 @@ process.addListener('uncaughtException', function (error:Error) {
             }) + "\n");
         messageSent = true;
     }
-    logger.fatal(error);
+    if (logger) {
+        logger.fatal(error);
+    }
 });
 
 import Exception  = require("../exception/Exception");

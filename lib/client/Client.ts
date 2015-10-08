@@ -3,7 +3,10 @@
 import IClient = require("./IClient");
 import IOptions = require("./IOptions");
 import net = require("net");
+import deferred = require("../deferred");
+import isFunction = require("../isFunction");
 import Exception = require("../exception/Exception");
+import IException = require("../exception/IException");
 import IExceptionOptions = require("../exception/IOptions");
 import isDefined = require("../isDefined");
 import isFunction = require("../isFunction");
@@ -14,8 +17,25 @@ import IHandlersRegistration = require("../helpers/IHandlersRegistration");
 
 class Client implements IClient {
 
-    private _socket:net.Socket;
+    private _socket:net.Socket = null;
 
+    private _connecting:boolean = false;
+
+    private _disconnecting:boolean = false;
+
+    private _connected:boolean = false;
+
+    private _disconnected:boolean = false;
+
+    private _connectCallbacks:((errors:IException[]) => void)[] = [];
+
+    private _disconnectCallbacks:((errors:IException[]) => void)[] = [];
+
+    private _needConnect:boolean = false;
+
+    private _needDisconnect:boolean = false;
+
+    // @deprecated
     private _started:boolean = false;
 
     private _handlersRegistration:IHandlersRegistration;
@@ -66,7 +86,7 @@ class Client implements IClient {
         this.getMeLocationHelper().setLocation(value);
     }
 
-    protected call(callback:(errors:Error[], response:any) => void, ...args:any[]):void {
+    protected call(callback:(errors:IException[], response:any) => void, ...args:any[]):void {
         var request:string;
         if (!this._socket) {
             throw new Exception({message : "connection is not ready"});
@@ -81,7 +101,35 @@ class Client implements IClient {
         this._socket.write(request + "\n");
     }
 
-    public connect(callback:(errors:Error[]) => void):void {
+    public connect(callback?:(errors:IException[]) => void):void {
+        deferred([
+            (next:() => void):void => {
+                if (isFunction(callback)) {
+                    this._connectCallbacks.push(callback);
+                }
+                next();
+            },
+            (next:() => void):void => {
+                if (!this._connected && !this._connecting) {
+
+                }
+            },
+            ():void => {
+                function call(callback:(errors:IException[]) => void):void {
+                    setTimeout(():void => {
+                        callback(null);
+                    }, 0);
+                }
+
+                if (this._connected) {
+                    while (this._connectCallbacks.length) {
+                        call(this._connectCallbacks.shift());
+                    }
+                }
+            }
+        ]);
+
+
         var data:Buffer = new Buffer(0),
             handler:(error?:Error) => void = (error?:Error):void => {
                 socket.removeListener("error", handler);
@@ -152,7 +200,7 @@ class Client implements IClient {
         this._socket = socket;
     }
 
-    public disconnect(callback:(errors:Error[]) => void):void {
+    public disconnect(callback?:(errors:IException[]) => void):void {
         // todo: реализовать потом
         setTimeout((): void => {
             callback(null);
