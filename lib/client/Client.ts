@@ -92,7 +92,7 @@ class Client implements IClient {
             }
         }
 
-        if (!this._socket || !this._connected || !this._disconnecting) {
+        if (!this._socket || !this._connected || this._disconnecting) {
             handler([new Exception({message : "connection is not ready"})], null);
         } else {
             request = JSON.stringify({
