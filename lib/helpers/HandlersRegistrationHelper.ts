@@ -32,6 +32,10 @@ class HandlersRegistrationHelper implements IHandlersRegistrationHelper {
         return result;
     }
 
+    public clear():void {
+        this._handlers = {};
+    }
+
     public find(id:string):Function {
         var handler:Function = this._handlers[id] || null;
         if (handler) {

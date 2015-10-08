@@ -4,6 +4,7 @@ import IClient = require("./IClient");
 import IOptions = require("./IOptions");
 import fs = require("fs");
 import net = require("net");
+import log4js   = require("../../logger");
 import deferred = require("../deferred");
 import isFunction = require("../isFunction");
 import Exception = require("../exception/Exception");
@@ -15,6 +16,8 @@ import MeLocationHelper = require("../helpers/MeLocationHelper");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
 import HandlersRegistrationHelper = require("../helpers/HandlersRegistrationHelper");
 import IHandlersRegistrationHelper = require("../helpers/IHandlersRegistrationHelper");
+
+var logger:log4js.Logger = log4js.getLogger("client");
 
 class Client implements IClient {
 
@@ -104,12 +107,18 @@ class Client implements IClient {
                 })
             },
             ():void => {
-                request = JSON.stringify({
-                    id   : this.getHandlersRegistrationHelper().register(callback),
-                    args : args
-                });
-                this._server.write(request);
-                this._server.write(new Buffer([0x00]));
+                if (this._server) {
+                    request = JSON.stringify({
+                        id   : this.getHandlersRegistrationHelper().register(callback),
+                        args : args
+                    });
+                    this._server.write(request);
+                    this._server.write(new Buffer([0x00]));
+                } else {
+                    setTimeout(():void => {
+                        handler([new Exception({message : "connection is not ready"})]);
+                    }, 0);
+                }
             }
         ]);
     }
@@ -145,8 +154,10 @@ class Client implements IClient {
                     handler:(error:NodeJS.ErrnoException) => void =
                         (error:NodeJS.ErrnoException):void => {
                             server.removeListener("error", handler);
-                            this._connecting  = false;
-                            this._needConnect = false;
+                            server.addListener("error", (error:NodeJS.ErrnoException):void => {
+                                logger.error(error);
+                            });
+                            this._connecting = false;
                             if (error) {
                                 this._server       = null;
                                 this._connected    = false;
@@ -158,6 +169,7 @@ class Client implements IClient {
                                     syscall : error.syscall
                                 }));
                             } else {
+                                this._server       = server;
                                 this._connected    = true;
                                 this._disconnected = false;
                                 connected(null);
@@ -167,65 +179,61 @@ class Client implements IClient {
                     this._needConnect = true;
                 } else if (!this._connected && !this._connecting) {
                     this._connecting = true;
+                    this._needConnect = false;
                     data = new Buffer(0);
                     server = net.createConnection(this.getLocation(), ():void => {
                         handler(null);
                     });
                     server.addListener("error", handler);
                     server.addListener("data", (buffer:Buffer):void => {
-                        var result:any,
+                        var temp:Buffer,
+                            diff:number,
+                            cache:any,
                             index:number,
+                            length:number,
                             response:string,
-                            options:any,
-                            callback:(errors:Error[], response?:any) => void,
-                            string:string,
-                            getOptions:() => any = ():any => {
+                            callback:(errors:IException[], response?:any) => void;
+
+                        function options():any {
+                            if (!isDefined(cache)) {
                                 try {
-                                    return JSON.parse(response) || {};
+                                    cache = JSON.parse(response) || {};
                                 } catch (error) {
-                                    return {};
+                                    cache = {};
                                 }
-                            },
-                            getErrors:() => Error[] = ():Error[] => {
-                                var index:number,
-                                    length:number,
-                                    result:Error[] = [],
-                                    options:any  = getOptions(),
-                                    errors:any[] = <IExceptionOptions[]>options.errors;
-                                if (errors && errors.length) {
-                                    length = errors.length;
-                                    for (index = 0; index < length; index++) {
-                                        result.push(new Exception(errors[index]));
-                                    }
-                                }
-                                return result.length ? result : null;
-                            },
-                            getResult:() => any = ():any => {
-                                var options:any = getOptions();
-                                return options.result || null;
-                            },
-                            getCallback:() => ((errors:Error[], response:any) => void) = ():((errors:Error[], response:any) => void) => {
-                                var options:any = getOptions(),
-                                    id:string   = <string>options.id;
-                                return this.getHandlersRegistrationHelper().find(id) || null;
-                            };
-
-                        data = Buffer.concat([data, buffer]);
-                        do {
-                            string = data.toString("utf8");
-                            index  = string.indexOf("\n");
-                            if (index !== -1) {
-                                response = string.slice(0, index + 1);
-                                callback = getCallback();
-                                if (isFunction(callback)) {
-                                    callback(getErrors(), getResult());
-                                }
-                                data = data.slice((new Buffer(response, "utf8")).length + 1);
                             }
-                        } while (index !== -1);
+                            return cache;
+                        }
 
+                        function errors():IException[] {
+                            if (typeOf(options().errors) === "array") {
+                                (<IExceptionOptions[]>options().errors).map((error:IExceptionOptions):IException => {
+                                    return new Exception(error);
+                                })
+                            }
+                            return null;
+                        }
+
+                        function result():any {
+                            return options().result || null;
+                        }
+
+                        data   = Buffer.concat([data, buffer]);
+                        temp   = data;
+                        length = data.length;
+                        for (index = 0; index < length; index++) {
+                            if (data[index] === 0x00) {
+                                diff     = data.length - temp.length;
+                                temp     = data.slice(index + 1);
+                                response = data.slice(diff, index).toString("utf8");
+                                callback = <(errors:IException[], response?:any) => void>this.getHandlersRegistrationHelper().find(<string>options().id) || null;
+                                if (isFunction(callback)) {
+                                    callback(errors(), result());
+                                }
+                            }
+                        }
+                        data = temp;
                     });
-                    this._server = server;
                 } else {
                     next();
                 }
@@ -263,6 +271,7 @@ class Client implements IClient {
                 next();
             },
             (next:() => void):void => {
+                this._server.removeListener("data");
                 this._server.close(() => {
 
                 });
