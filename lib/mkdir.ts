@@ -1,11 +1,12 @@
 /// <reference path="../types/node/node.d.ts" />
 
-import fs = require("fs");
-import path = require("path");
-import deferred = require("./deferred");
-import Exception = require("./exception/Exception");
+import fs         = require("fs");
+import path       = require("path");
+import deferred   = require("./deferred");
+import Exception  = require("./exception/Exception");
+import IException = require("./exception/IException");
 
-function mkdir(directory:string, callback:(error:Exception) => void):void {
+function mkdir(directory:string, callback:(error:IException) => void):void {
     deferred([
         (next:() => void):void => {
             fs.mkdir(directory, (error:NodeJS.ErrnoException):void => {
@@ -24,7 +25,7 @@ function mkdir(directory:string, callback:(error:Exception) => void):void {
             });
         },
         (next:() => void):void => {
-            mkdir(path.dirname(directory), (error:Exception):void => {
+            mkdir(path.dirname(directory), (error:IException):void => {
                 if (error) {
                     callback(error);
                 } else {
