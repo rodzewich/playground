@@ -2,6 +2,7 @@
 
 import IClient = require("./IClient");
 import IOptions = require("./IOptions");
+import fs = require("fs");
 import net = require("net");
 import deferred = require("../deferred");
 import isFunction = require("../isFunction");
@@ -17,7 +18,7 @@ import IHandlersRegistrationHelper = require("../helpers/IHandlersRegistrationHe
 
 class Client implements IClient {
 
-    private _socket:net.Socket = null;
+    private _server:net.Socket = null;
 
     private _connecting:boolean = false;
 
@@ -92,15 +93,25 @@ class Client implements IClient {
             }
         }
 
-        if (!this._socket || !this._connected || this._disconnecting) {
-            handler([new Exception({message : "connection is not ready"})], null);
-        } else {
-            request = JSON.stringify({
-                id   : this.getHandlersRegistrationHelper().register(callback),
-                args : args
-            });
-            this._socket.write(request + "\n"); // todo: посылать безопастный разделитель !!!
-        }
+        deferred([
+            (next:() => void):void => {
+                this.connect((errors:IException[]):void => {
+                    if (errors && errors.length) {
+                        handler(errors);
+                    } else {
+                        next();
+                    }
+                })
+            },
+            ():void => {
+                request = JSON.stringify({
+                    id   : this.getHandlersRegistrationHelper().register(callback),
+                    args : args
+                });
+                this._server.write(request);
+                this._server.write(new Buffer([0x00]));
+            }
+        ]);
     }
 
     public connect(callback?:(errors:IException[]) => void):void {
@@ -130,14 +141,14 @@ class Client implements IClient {
             },
             (next:() => void):void => {
                 var data:Buffer,
-                    socket:net.Socket,
+                    server:net.Socket,
                     handler:(error:NodeJS.ErrnoException) => void =
                         (error:NodeJS.ErrnoException):void => {
-                            socket.removeListener("error", handler);
+                            server.removeListener("error", handler);
                             this._connecting  = false;
                             this._needConnect = false;
                             if (error) {
-                                this._socket       = null;
+                                this._server       = null;
                                 this._connected    = false;
                                 this._disconnected = true;
                                 connected(Exception.convertFromError(error, {
@@ -157,11 +168,11 @@ class Client implements IClient {
                 } else if (!this._connected && !this._connecting) {
                     this._connecting = true;
                     data = new Buffer(0);
-                    socket = net.createConnection(this.getLocation(), ():void => {
+                    server = net.createConnection(this.getLocation(), ():void => {
                         handler(null);
                     });
-                    socket.addListener("error", handler);
-                    socket.addListener("data", (buffer:Buffer):void => {
+                    server.addListener("error", handler);
+                    server.addListener("data", (buffer:Buffer):void => {
                         var result:any,
                             index:number,
                             response:string,
@@ -214,7 +225,9 @@ class Client implements IClient {
                         } while (index !== -1);
 
                     });
-                    this._socket = socket;
+                    this._server = server;
+                } else {
+                    next();
                 }
             },
             ():void => {
@@ -226,10 +239,40 @@ class Client implements IClient {
     }
 
     public disconnect(callback?:(errors:IException[]) => void):void {
-        // todo: реализовать потом
-        setTimeout((): void => {
-            callback(null);
-        }, 0);
+        var disconnected:(errors:IException[]) => void =
+                (errors:IException[]):void => {
+                    function call(callback:(errors:IException[]) => void):void {
+                        setTimeout(():void => {
+                            callback(errors);
+                        }, 0);
+                    }
+
+                    while (this._disconnectCallbacks.length) {
+                        call(this._disconnectCallbacks.shift());
+                    }
+
+                    if (this._needConnect) {
+                        this.connect();
+                    }
+                };
+        deferred([
+            (next:() => void):void => {
+                if (isFunction(callback)) {
+                    this._disconnectCallbacks.push(callback);
+                }
+                next();
+            },
+            (next:() => void):void => {
+                this._server.close(() => {
+
+                });
+            },
+            (next:() => void):void => {
+                fs.unlink(this.getLocation(), (error:NodeJS.ErrnoException):void => {
+
+                });
+            }
+        ]);
     }
 
 }
