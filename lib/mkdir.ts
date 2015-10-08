@@ -3,19 +3,26 @@
 import fs         = require("fs");
 import path       = require("path");
 import deferred   = require("./deferred");
+import isFunction = require("./isFunction");
 import Exception  = require("./exception/Exception");
 import IException = require("./exception/IException");
 
-function mkdir(directory:string, callback:(error:IException) => void):void {
+function mkdir(directory:string, callback?:(error:IException) => void):void {
+    function handler(error:IException) {
+        if (isFunction(callback)) {
+            callback(error);
+        }
+    }
+
     deferred([
         (next:() => void):void => {
             fs.mkdir(directory, (error:NodeJS.ErrnoException):void => {
                 if (!error || error.code === "EEXIST") {
-                    callback(null);
+                    handler(null);
                 } else if (error.code === "ENOENT") {
                     next();
                 } else {
-                    callback(Exception.convertFromError(error), {
+                    handler(Exception.convertFromError(error), {
                         code    : error.code,
                         errno   : error.errno,
                         path    : error.path,
@@ -27,7 +34,7 @@ function mkdir(directory:string, callback:(error:IException) => void):void {
         (next:() => void):void => {
             mkdir(path.dirname(directory), (error:IException):void => {
                 if (error) {
-                    callback(error);
+                    handler(error);
                 } else {
                     next();
                 }
@@ -36,14 +43,14 @@ function mkdir(directory:string, callback:(error:IException) => void):void {
         ():void => {
             fs.mkdir(directory, (error:NodeJS.ErrnoException):void => {
                 if (error) {
-                    callback(Exception.convertFromError(error), {
+                    handler(Exception.convertFromError(error), {
                         code    : error.code,
                         errno   : error.errno,
                         path    : error.path,
                         syscall : error.syscall
                     });
                 } else {
-                    callback(null);
+                    handler(null);
                 }
             });
         }
