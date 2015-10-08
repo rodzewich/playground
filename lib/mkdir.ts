@@ -24,14 +24,9 @@ function mkdir(directory:string, callback:(error:Exception) => void):void {
             });
         },
         (next:() => void):void => {
-            mkdir(path.dirname(directory), (error:NodeJS.ErrnoException):void => {
+            mkdir(path.dirname(directory), (error:Exception):void => {
                 if (error) {
-                    callback(Exception.convertFromError(error), {
-                        code    : error.code,
-                        errno   : error.errno,
-                        path    : error.path,
-                        syscall : error.syscall
-                    });
+                    callback(error);
                 } else {
                     next();
                 }
