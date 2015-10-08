@@ -1,3 +1,4 @@
+import IObject = require("./IObject");
 import IOptions = require("./IOptions");
 import IException = require("./IException");
 import isDefined = require("../isDefined");
@@ -63,6 +64,15 @@ class Exception implements IException {
     }
 
     public set stack(value:string) {
+    }
+
+    public toObject():IObject {
+        return <IObject>{
+            message: this.getMessage(),
+            stack: this.getStack(),
+            name: this.getName(),
+            code: this.getCode()
+        };
     }
 
     public toString():string {

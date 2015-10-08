@@ -4,7 +4,7 @@ import IClient = require("./IClient");
 import IOptions = require("./IOptions");
 import net = require("net");
 import Exception = require("../exception/Exception");
-import IExceptionOptions = require("../exception/Options");
+import IExceptionOptions = require("../exception/IOptions");
 import isDefined = require("../isDefined");
 import isFunction = require("../isFunction");
 import MeLocationHelper = require("../helpers/MeLocationHelper");
@@ -130,7 +130,7 @@ class Client implements IClient {
                 },
                 getCallback:() => ((errors:Error[], response:any) => void) = ():((errors:Error[], response:any) => void) => {
                     var options:any = getOptions(),
-                        id:number   = <string>options.id;
+                        id:string   = <string>options.id;
                     return this.getHandlersRegistration().find(id) || null;
                 };
 

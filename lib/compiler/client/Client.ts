@@ -16,7 +16,7 @@ import CacheHelper = require("../helpers/CacheHelper");
 import ICacheHelper = require("../helpers/ICacheHelper");
 import BaseClient = require("../../client/Client");
 import IOptions = require("./IOptions");
-import Exception = require("../Exception");
+import Exception = require("../exception/Exception");
 import IClient = require("./IClient");
 import IResponse = require("./IResponse");
 import IRequest = require("./IRequest");
@@ -30,26 +30,26 @@ class Client extends BaseClient implements IClient {
 
     private _cacheHelper:ICacheHelper;
 
-    protected createCacheHelperInstance():ICacheHelper {
+    protected createCacheHelper():ICacheHelper {
         return new CacheHelper();
     }
 
-    protected getCacheHelperInstance():ICacheHelper {
+    protected getCacheHelper():ICacheHelper {
         if (!this._cacheHelper) {
-            this._cacheHelper = this.createCacheHelperInstance();
+            this._cacheHelper = this.createCacheHelper();
         }
         return this._cacheHelper;
     }
 
     private _cssErrorsHelper:ICssErrorsHelper;
 
-    protected createCssErrorsHelperInstance():ICssErrorsHelper {
+    protected createCssErrorsHelper():ICssErrorsHelper {
         return new CssErrorsHelper();
     }
 
-    protected getCssErrorsHelperInstance():ICssErrorsHelper {
+    protected getCssErrorsHelper():ICssErrorsHelper {
         if (!this._cssErrorsHelper) {
-            this._cssErrorsHelper = this.createCssErrorsHelperInstance();
+            this._cssErrorsHelper = this.createCssErrorsHelper();
         }
         return this._cssErrorsHelper;
     }
@@ -105,16 +105,16 @@ class Client extends BaseClient implements IClient {
             this.setIsCacheUsed(options.useCache);
         }
         if (options && isDefined(options.errorsBackgroundColor)) {
-            this.setCssErrorsBackgroundColor(options.errorsBackgroundColor);
+            this.setErrorsBackgroundColor(options.errorsBackgroundColor);
         }
         if (options && isDefined(options.errorsTextColor)) {
-            this.setCssErrorsTextColor(options.errorsTextColor);
+            this.setErrorsTextColor(options.errorsTextColor);
         }
         if (options && isDefined(options.errorsBlockPadding)) {
-            this.setCssErrorsBlockPadding(options.errorsBlockPadding);
+            this.setErrorsBlockPadding(options.errorsBlockPadding);
         }
         if (options && isDefined(options.errorsFontSize)) {
-            this.setCssErrorsFontSize(options.errorsFontSize);
+            this.setErrorsFontSize(options.errorsFontSize);
         }
         if (options && isDefined(options.webRootDirectory)) {
             this.setWebRootDirectory(options.webRootDirectory);
@@ -138,83 +138,83 @@ class Client extends BaseClient implements IClient {
     }
 
     public isCacheUsed():boolean {
-        return this.getCacheHelperInstance().isUsed();
+        return this.getCacheHelper().isUsed();
     }
 
     public getIsCacheUsed():boolean {
-        return this.getCacheHelperInstance().getIsUsed();
+        return this.getCacheHelper().getIsUsed();
     }
 
     public setIsCacheUsed(value:boolean):void {
-        return this.getCacheHelperInstance().setIsUsed(value);
+        return this.getCacheHelper().setIsUsed(value);
     }
 
-    public get cssErrorsBackgroundColor():string {
-        return this.getCssErrorsBackgroundColor();
+    public get errorsBackgroundColor():string {
+        return this.getErrorsBackgroundColor();
     }
 
-    public getCssErrorsBackgroundColor():string {
-        return this.getCssErrorsHelperInstance().getBackgroundColor();
+    public set errorsBackgroundColor(value:string) {
+        this.setErrorsBackgroundColor(value);
     }
 
-    public set cssErrorsBackgroundColor(value:string) {
-        this.setCssErrorsBackgroundColor(value);
+    public getErrorsBackgroundColor():string {
+        return this.getCssErrorsHelper().getBackgroundColor();
     }
 
-    public setCssErrorsBackgroundColor(value:string):void {
-        this.getCssErrorsHelperInstance().setBackgroundColor(value);
+    public setErrorsBackgroundColor(value:string):void {
+        this.getCssErrorsHelper().setBackgroundColor(value);
     }
 
-    public get cssErrorsTextColor():string {
-        return this.getCssErrorsTextColor();
+    public get errorsTextColor():string {
+        return this.getErrorsTextColor();
     }
 
-    public getCssErrorsTextColor():string {
-        return this.getCssErrorsHelperInstance().getTextColor();
+    public set errorsTextColor(value:string) {
+        this.setErrorsTextColor(value);
     }
 
-    public set cssErrorsTextColor(value:string) {
-        this.setCssErrorsTextColor(value);
+    public getErrorsTextColor():string {
+        return this.getCssErrorsHelper().getTextColor();
     }
 
-    public setCssErrorsTextColor(value:string):void {
-        this.getCssErrorsHelperInstance().setTextColor(value);
+    public setErrorsTextColor(value:string):void {
+        this.getCssErrorsHelper().setTextColor(value);
     }
 
-    public get cssErrorsBlockPadding():string {
-        return this.getCssErrorsBlockPadding();
+    public get errorsBlockPadding():string {
+        return this.getErrorsBlockPadding();
     }
 
-    public getCssErrorsBlockPadding():string {
-        return this.getCssErrorsHelperInstance().getBlockPadding();
+    public set errorsBlockPadding(value:string) {
+        this.setErrorsBlockPadding(value);
     }
 
-    public set cssErrorsBlockPadding(value:string) {
-        this.setCssErrorsBlockPadding(value);
+    public getErrorsBlockPadding():string {
+        return this.getCssErrorsHelper().getBlockPadding();
     }
 
-    public setCssErrorsBlockPadding(value:string):void {
-        this.getCssErrorsHelperInstance().setBlockPadding(value);
+    public setErrorsBlockPadding(value:string):void {
+        this.getCssErrorsHelper().setBlockPadding(value);
     }
 
-    public get cssErrorsFontSize():string {
-        return this.getCssErrorsFontSize();
+    public get errorsFontSize():string {
+        return this.getErrorsFontSize();
     }
 
-    public getCssErrorsFontSize():string {
-        return this.getCssErrorsHelperInstance().getFontSize();
+    public set errorsFontSize(value:string) {
+        this.setErrorsFontSize(value);
     }
 
-    public set cssErrorsFontSize(value:string) {
-        this.setCssErrorsFontSize(value);
+    public getErrorsFontSize():string {
+        return this.getCssErrorsHelper().getFontSize();
     }
 
-    public setCssErrorsFontSize(value:string):void {
-        return this.getCssErrorsHelperInstance().setFontSize(value);
+    public setErrorsFontSize(value:string):void {
+        return this.getCssErrorsHelper().setFontSize(value);
     }
 
     public createCssErrors(errors:Error[]):string {
-        return this.getCssErrorsHelperInstance().create(errors)
+        return this.getCssErrorsHelper().create(errors)
     }
 
     public get memoryLocation():string {
@@ -267,20 +267,20 @@ class Client extends BaseClient implements IClient {
 
     protected createRequest(filename:string):IRequest {
         return <IRequest>{
-            filename             : filename,
-            sourcesDirectory     : this.getSourcesDirectory(),
-            errorBackgroundColor : this.getCssErrorsBackgroundColor(),
-            errorTextColor       : this.getCssErrorsTextColor(),
-            errorBlockPadding    : this.getCssErrorsBlockPadding(),
-            errorFontSize        : this.getCssErrorsFontSize(),
-            webRootDirectory     : this.getWebRootDirectory(),
-            useCache             : this.isCacheUsed()
+            filename              : filename,
+            sourcesDirectory      : this.getSourcesDirectory(),
+            errorsBackgroundColor : this.getErrorsBackgroundColor(),
+            errorsTextColor       : this.getErrorsTextColor(),
+            errorsBlockPadding    : this.getErrorsBlockPadding(),
+            errorsFontSize        : this.getErrorsFontSize(),
+            webRootDirectory      : this.getWebRootDirectory(),
+            useCache              : this.isCacheUsed()
         };
     }
 
     public compile(filename:string, callback?:(errors:Error[], result:IResponse) => void):void {
         if (typeOf(filename) !== "string") {
-            throw new Exception("filename should be a string");
+            throw new Exception({message: "filename should be a string"});
         }
         this.call((errors:Error[], response?:any):void => {
             var errs:Error[] = null,
@@ -301,7 +301,7 @@ class Client extends BaseClient implements IClient {
             (next:() => void):void => {
                 var command:cp.ChildProcess = cp.spawn(process.execPath, [
                         this.getDaemon(),
-                        "--location", this.getMeLocation().getLocation(),
+                        "--location", this.getLocation(),
                         "--memory", this.getMemoryLocation()
                     ]),
                     data:Buffer = new Buffer(0),
@@ -331,21 +331,26 @@ class Client extends BaseClient implements IClient {
                             try {
                                 result = JSON.parse(json) || {
                                     started: false,
-                                    errors: [{message: "Unknown error"}]
+                                    errors: [new Exception({message: "unknown error"}).toObject()]
                                 };
                             } catch (err) {
                                 logger.warn("Worker send error content", data.toString("utf8"));
                                 process.stderr.write(data);
                                 result = {
                                     started: false,
-                                    errors: [WrapperException.convertToObject(err)]
+                                    errors: [new Exception({
+                                        name: err.name,
+                                        message: err.message,
+                                        stack: err.stack,
+                                        code: err.code
+                                    }).toObject()]
                                 };
                             }
                             data = data.slice((new Buffer(json, "utf8")).length + 1);
                             if (!result.started) {
                                 if (typeOf(result.errors) === "array") {
                                     errors = (<any[]>result.errors).map((item:any):Error => {
-                                        return new WrapperException(item);
+                                        return new Exception(item);
                                     });
                                 }
                                 logger.fatal("Something went wrong", errors); // todo: по другому выводить ошибки

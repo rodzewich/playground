@@ -3,14 +3,14 @@
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
 import isDefined = require("../../isDefined");
-import CssErrorsHelper = require("../../helpers/CssErrorsHelper");
-import ICssErrorsHelper = require("../../helpers/ICssErrorsHelper");
+import CssErrorsHelper = require("../helpers/CssErrorsHelper");
+import ICssErrorsHelper = require("../helpers/ICssErrorsHelper");
 import WebRootDirectoryHelper = require("../helpers/WebRootDirectoryHelper");
 import IWebRootDirectoryHelper = require("../helpers/IWebRootDirectoryHelper");
-import CacheHelper = require("../../helpers/CacheHelper");
-import ICacheHelper = require("../../helpers/ICacheHelper");
-import SourcesDirectoryHelper = require("../../helpers/SourcesDirectoryHelper");
-import ISourcesDirectoryHelper = require("../../helpers/ISourcesDirectoryHelper");
+import CacheHelper = require("../helpers/CacheHelper");
+import ICacheHelper = require("../helpers/ICacheHelper");
+import SourcesDirectoryHelper = require("../helpers/SourcesDirectoryHelper");
+import ISourcesDirectoryHelper = require("../helpers/ISourcesDirectoryHelper");
 
 abstract class Compiler implements ICompiler {
 

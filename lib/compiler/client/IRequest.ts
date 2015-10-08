@@ -1,10 +1,10 @@
 interface IRequest {
     filename:string;
     sourcesDirectory:string;
-    errorBackgroundColor:string;
-    errorTextColor:string;
-    errorBlockPadding:string;
-    errorFontSize:string;
+    errorsBackgroundColor:string;
+    errorsTextColor:string;
+    errorsBlockPadding:string;
+    errorsFontSize:string;
     webRootDirectory:string;
     useCache:boolean;
 }

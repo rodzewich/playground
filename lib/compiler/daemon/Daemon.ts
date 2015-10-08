@@ -5,7 +5,7 @@ import IResponse = require("../client/IResponse");
 import IRequest = require("../client/IRequest");
 import Compiler = require("../compiler/Compiler");
 import isDefined = require("../../isDefined");
-import WrapperException = require("../../WrapperException");
+import Exception = require("../../exception/Exception");
 import IMemory = require("../../memory/client/IClient");
 
 abstract class Daemon extends BaseDaemon implements IDaemon {
@@ -26,7 +26,12 @@ abstract class Daemon extends BaseDaemon implements IDaemon {
                     this.compile(<IRequest>args[0], (errors:Error[], result:IResponse):void => {
                         if (errors && errors.length) {
                             response.errors = errors.map((error:Error):any => {
-                                return WrapperException.convertToObject(error);
+                                return new Exception({
+                                    name: error.name,
+                                    message: error.message,
+                                    stack: error.stack,
+                                    code: error.code
+                                }).toObject();
                             });
                         } else {
                             response.result = result || null;

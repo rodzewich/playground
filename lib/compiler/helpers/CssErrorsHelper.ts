@@ -1,5 +1,5 @@
 import ICssErrorsHelper = require("./ICssErrorsHelper");
-import Exception = require("../Exception");
+import Exception = require("../exception/Exception");
 
 class CssErrorsHelper implements ICssErrorsHelper {
 
@@ -43,7 +43,7 @@ class CssErrorsHelper implements ICssErrorsHelper {
         this._fontSize = value;
     }
 
-    public create(errors:Error[]):string {
+    public create(exceptions:Exception[]):string {
         var property:string,
             content:string[] = [],
             bodyBefore:any = {
@@ -60,8 +60,8 @@ class CssErrorsHelper implements ICssErrorsHelper {
                 "font-variant"     : "normal !important",
                 "font-weight"      : "400 !important",
                 "word-wrap"        : "break-word !important",
-                "content"          : JSON.stringify(errors.map(function (error:Error, index:number) {
-                    return String(index + 1) + ". " + Exception.getStack(error);
+                "content"          : JSON.stringify(exceptions.map(function (exception:Exception, index:number) {
+                    return String(index + 1) + ". " + exception.getStack();
                 }).join("\n\n")).
                     replace(/\\n/g, "\\A ")/*.
                  replace(/&/g, '&amp;').

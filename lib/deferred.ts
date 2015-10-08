@@ -1,9 +1,5 @@
-/// <reference path="../types/node/node.d.ts" />
-/// <reference path="./typeOf.ts" />
-/// <reference path="./Exception.ts" />
-
 import typeOf = require("./typeOf");
-import Exception = require("./Exception");
+import Exception = require("./exception/Exception");
 
 function deferred(actions:((next:() => void) => void)[]):void {
     var index:number,
@@ -21,7 +17,7 @@ function deferred(actions:((next:() => void) => void)[]):void {
     }
 
     if (typeOf(actions) !== "array") {
-        throw new Exception("bla bla bla");
+        throw new Exception({message: "Incorrect actions argument"});
     }
     length = actions.length;
     for (index = 0; index < length; index++) {

@@ -4,7 +4,7 @@ import IDaemon = require("./IDaemon");
 import IOptions = require("./IOptions");
 import path = require("path");
 import net = require("net");
-import Exception = require("../Exception");
+import Exception = require("../exception/Exception");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
 import MeLocationHelper = require("../helpers/MeLocationHelper");
 
@@ -94,7 +94,7 @@ class Daemon implements IDaemon {
 
     public stop(callback?:() => void):void {
         if (!this._started) {
-            throw new Exception("bla bla bla");
+            throw new Exception({message: "bla bla bla"});
         }
         this._server.close(():void => {
             this._server = undefined;
