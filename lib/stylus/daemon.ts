@@ -29,7 +29,7 @@ var memory:IMemory;
 var daemon:IDaemon;
 var logger:log4js.Logger = log4js.getLogger("stylus");
 var argv:any = optimist
-    .usage("Usage: sylus -l [daemon] -m [memory]")
+    .usage("Usage: stylus -l [daemon] -m [memory]")
     .demand("l").alias("l", "location").describe("l", "Daemon socket location")
     .demand("m").alias("m", "memory").describe("m", "Memory socket location")
     .argv;
