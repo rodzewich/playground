@@ -4,7 +4,7 @@
 import IException = require("./exception/IException");
 
 function displayException(error:IException) {
-    var columns = process.stdout.columns,
+    var columns = process.stdout.columns || 80,
         colors  = require("colors");
     function spaces(num:number) {
         return new Array(num + 1).join(" ");
