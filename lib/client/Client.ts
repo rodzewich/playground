@@ -113,7 +113,7 @@ class Client implements IClient {
                         args : args
                     });
                     this._server.write(request);
-                    this._server.write(new Buffer([0x00]));
+                    this._server.write(new Buffer([0x0a]));
                 } else {
                     setTimeout(():void => {
                         handler([new Exception({message : "connection is not ready"})]);
@@ -222,7 +222,7 @@ class Client implements IClient {
                         temp   = data;
                         length = data.length;
                         for (index = 0; index < length; index++) {
-                            if (data[index] === 0x00) {
+                            if (data[index] === 0x0a) {
                                 diff     = data.length - temp.length;
                                 temp     = data.slice(index + 1);
                                 response = data.slice(diff, index).toString("utf8");
