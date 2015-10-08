@@ -12,8 +12,8 @@ import isDefined = require("../isDefined");
 import isFunction = require("../isFunction");
 import MeLocationHelper = require("../helpers/MeLocationHelper");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
-import HandlersRegistration = require("../helpers/HandlersRegistration");
-import IHandlersRegistration = require("../helpers/IHandlersRegistration");
+import HandlersRegistrationHelper = require("../helpers/HandlersRegistrationHelper");
+import IHandlersRegistrationHelper = require("../helpers/IHandlersRegistrationHelper");
 
 class Client implements IClient {
 
@@ -35,15 +35,15 @@ class Client implements IClient {
 
     private _needDisconnect:boolean = false;
 
-    private _handlersRegistration:IHandlersRegistration;
+    private _handlersRegistration:IHandlersRegistrationHelper;
 
-    protected createHandlersRegistration():IHandlersRegistration {
-        return new HandlersRegistration();
+    protected createHandlersRegistrationHelper():IHandlersRegistrationHelper {
+        return new HandlersRegistrationHelper();
     }
 
-    protected getHandlersRegistration():IHandlersRegistration {
+    protected getHandlersRegistrationHelper():IHandlersRegistrationHelper {
         if (!this._handlersRegistration) {
-            this._handlersRegistration = this.createHandlersRegistration();
+            this._handlersRegistration = this.createHandlersRegistrationHelper();
         }
         return this._handlersRegistration;
     }
@@ -83,19 +83,24 @@ class Client implements IClient {
         this.getMeLocationHelper().setLocation(value);
     }
 
-    protected call(callback:(errors:IException[], response:any) => void, ...args:any[]):void {
+    protected call(callback?:(errors:IException[], response:any) => void, ...args:any[]):void {
         var request:string;
+
+        function handler(errors:IException[], response:any):void {
+            if (isFunction(callback)) {
+                callback(errors, response);
+            }
+        }
+
         if (!this._socket || !this._connected || !this._disconnecting) {
-            throw new Exception({message : "connection is not ready"});
+            handler([new Exception({message : "connection is not ready"})], null);
+        } else {
+            request = JSON.stringify({
+                id   : this.getHandlersRegistrationHelper().register(callback),
+                args : args
+            });
+            this._socket.write(request + "\n"); // todo: посылать безопастный разделитель !!!
         }
-        if (!isFunction(callback)) {
-            throw new Exception({message : "callback should be a function"});
-        }
-        request = JSON.stringify({
-            id   : this.getHandlersRegistration().register(callback),
-            args : args
-        });
-        this._socket.write(request + "\n");
     }
 
     public connect(callback?:(errors:IException[]) => void):void {
@@ -115,6 +120,7 @@ class Client implements IClient {
                         this.disconnect();
                     }
                 };
+
         deferred([
             (next:() => void):void => {
                 if (isFunction(callback)) {
@@ -190,7 +196,7 @@ class Client implements IClient {
                             getCallback:() => ((errors:Error[], response:any) => void) = ():((errors:Error[], response:any) => void) => {
                                 var options:any = getOptions(),
                                     id:string   = <string>options.id;
-                                return this.getHandlersRegistration().find(id) || null;
+                                return this.getHandlersRegistrationHelper().find(id) || null;
                             };
 
                         data = Buffer.concat([data, buffer]);
