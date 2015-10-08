@@ -14,17 +14,17 @@ process.addListener('uncaughtException', function (error:Error) {
     logger.fatal(error);
 });
 
-import optimist   = require("optimist");
+import Exception  = require("../exception/Exception");
+import IException = require("../exception/IException");
 import IDaemon    = require("./daemon/IDaemon");
 import Daemon     = require("./daemon/Daemon");
 import log4js     = require("../../logger");
-import Exception  = require("../exception/Exception");
-import IException = require("../exception/IException");
+import optimist   = require("optimist");
 
 require("../mapping");
 var logger:log4js.Logger = log4js.getLogger("memory");
 var argv:any = optimist
-    .usage("Usage: daemon -l [location]\nMemory daemon")
+    .usage("Usage: memory -l [location]")
     .demand("l").alias("l", "location").describe("l", "Daemon socket location")
     .argv;
 var daemon:IDaemon = new Daemon({

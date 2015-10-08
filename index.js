@@ -1,28 +1,6 @@
 /*jslint */
 /*global require */
 
-function showError(error) {
-    var colors = require("colors");
-    var columns = 90;
-    function spaces(num) {
-        return new Array(num + 1).join(" ");
-    }
-    console.log();
-    console.log(" " + colors.bgRed.white(spaces(columns + 3)));
-    console.log(" " + colors.bgRed.white("   " + error.split("\n")[0] + spaces(columns - error.split("\n")[0].length)));
-    error.split("\n").slice(1).forEach(function (line) {
-        console.log(" " + colors.bgRed.white("   " + line + spaces(columns - line.length)));
-    });
-    console.log(" " + colors.bgRed.white(spaces(columns + 3)));
-    console.log();
-}
-
-
-showError(new Error("bla bla bla").stack);
-
-return;
-
-
 var fs                   = require("fs"),
     http                 = require("http"),
     path                 = require("path"),
