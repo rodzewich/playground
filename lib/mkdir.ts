@@ -2,6 +2,7 @@
 
 import fs         = require("fs");
 import path       = require("path");
+import constants  = require("constants");
 import deferred   = require("./deferred");
 import isFunction = require("./isFunction");
 import Exception  = require("./exception/Exception");
@@ -17,9 +18,9 @@ function mkdir(directory:string, callback?:(error:IException) => void):void {
     deferred([
         (next:() => void):void => {
             fs.mkdir(directory, (error:NodeJS.ErrnoException):void => {
-                if (!error || error.code === "EEXIST") {
+                if (!error || error.errno === constants.EEXIST) {
                     handler(null);
-                } else if (error.code === "ENOENT") {
+                } else if (error.errno === constants.ENOENT) {
                     next();
                 } else {
                     handler(Exception.convertFromError(error), {

@@ -56,7 +56,8 @@ class Exception implements IException {
         }
         if (options && isObject(options.data)) {
             for (property in options.data) {
-                if (!options.data.hasOwnProperty(property)) {
+                if (!options.data.hasOwnProperty(property) ||
+                    !isDefined(options.data[property])) {
                     continue;
                 }
                 this._data[property] = options.data[property];

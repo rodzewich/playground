@@ -35,9 +35,6 @@ class Client implements IClient {
 
     private _needDisconnect:boolean = false;
 
-    // @deprecated
-    private _started:boolean = false;
-
     private _handlersRegistration:IHandlersRegistration;
 
     protected createHandlersRegistration():IHandlersRegistration {
@@ -88,7 +85,7 @@ class Client implements IClient {
 
     protected call(callback:(errors:IException[], response:any) => void, ...args:any[]):void {
         var request:string;
-        if (!this._socket) {
+        if (!this._socket || !this._connected || !this._disconnecting) {
             throw new Exception({message : "connection is not ready"});
         }
         if (!isFunction(callback)) {
@@ -102,6 +99,22 @@ class Client implements IClient {
     }
 
     public connect(callback?:(errors:IException[]) => void):void {
+        var connected:(errors:IException[]) => void =
+                (errors:IException[]):void => {
+                    function call(callback:(errors:IException[]) => void):void {
+                        setTimeout(():void => {
+                            callback(errors);
+                        }, 0);
+                    }
+
+                    while (this._connectCallbacks.length) {
+                        call(this._connectCallbacks.shift());
+                    }
+
+                    if (this._needDisconnect) {
+                        this.disconnect();
+                    }
+                };
         deferred([
             (next:() => void):void => {
                 if (isFunction(callback)) {
@@ -110,94 +123,100 @@ class Client implements IClient {
                 next();
             },
             (next:() => void):void => {
-                if (!this._connected && !this._connecting) {
+                var data:Buffer,
+                    socket:net.Socket,
+                    handler:(error:NodeJS.ErrnoException) => void =
+                        (error:NodeJS.ErrnoException):void => {
+                            socket.removeListener("error", handler);
+                            this._connecting  = false;
+                            this._needConnect = false;
+                            if (error) {
+                                this._socket       = null;
+                                this._connected    = false;
+                                this._disconnected = true;
+                                connected(Exception.convertFromError(error, {
+                                    code    : error.code,
+                                    errno   : error.errno,
+                                    path    : error.path,
+                                    syscall : error.syscall
+                                }));
+                            } else {
+                                this._connected    = true;
+                                this._disconnected = false;
+                                connected(null);
+                            }
+                        };
+                if (this._disconnecting) {
+                    this._needConnect = true;
+                } else if (!this._connected && !this._connecting) {
+                    this._connecting = true;
+                    data = new Buffer(0);
+                    socket = net.createConnection(this.getLocation(), ():void => {
+                        handler(null);
+                    });
+                    socket.addListener("error", handler);
+                    socket.addListener("data", (buffer:Buffer):void => {
+                        var result:any,
+                            index:number,
+                            response:string,
+                            options:any,
+                            callback:(errors:Error[], response?:any) => void,
+                            string:string,
+                            getOptions:() => any = ():any => {
+                                try {
+                                    return JSON.parse(response) || {};
+                                } catch (error) {
+                                    return {};
+                                }
+                            },
+                            getErrors:() => Error[] = ():Error[] => {
+                                var index:number,
+                                    length:number,
+                                    result:Error[] = [],
+                                    options:any  = getOptions(),
+                                    errors:any[] = <IExceptionOptions[]>options.errors;
+                                if (errors && errors.length) {
+                                    length = errors.length;
+                                    for (index = 0; index < length; index++) {
+                                        result.push(new Exception(errors[index]));
+                                    }
+                                }
+                                return result.length ? result : null;
+                            },
+                            getResult:() => any = ():any => {
+                                var options:any = getOptions();
+                                return options.result || null;
+                            },
+                            getCallback:() => ((errors:Error[], response:any) => void) = ():((errors:Error[], response:any) => void) => {
+                                var options:any = getOptions(),
+                                    id:string   = <string>options.id;
+                                return this.getHandlersRegistration().find(id) || null;
+                            };
 
+                        data = Buffer.concat([data, buffer]);
+                        do {
+                            string = data.toString("utf8");
+                            index  = string.indexOf("\n");
+                            if (index !== -1) {
+                                response = string.slice(0, index + 1);
+                                callback = getCallback();
+                                if (isFunction(callback)) {
+                                    callback(getErrors(), getResult());
+                                }
+                                data = data.slice((new Buffer(response, "utf8")).length + 1);
+                            }
+                        } while (index !== -1);
+
+                    });
+                    this._socket = socket;
                 }
             },
             ():void => {
-                function call(callback:(errors:IException[]) => void):void {
-                    setTimeout(():void => {
-                        callback(null);
-                    }, 0);
-                }
-
-                if (this._connected) {
-                    while (this._connectCallbacks.length) {
-                        call(this._connectCallbacks.shift());
-                    }
+                if (this._connected && !this._disconnecting) {
+                    connected(null);
                 }
             }
         ]);
-
-
-        var data:Buffer = new Buffer(0),
-            handler:(error?:Error) => void = (error?:Error):void => {
-                socket.removeListener("error", handler);
-                if (error) {
-                    this._socket = undefined;
-                } else {
-                    this._started = true;
-                }
-                callback(error ? [error] : null);
-            },
-            socket:net.Socket = net.createConnection(this.getLocation(), ():void => {
-                handler(null);
-            });
-        socket.addListener("error", handler);
-        socket.addListener("data", (buffer:Buffer):void => {
-            var result:any,
-                index:number,
-                response:string,
-                options:any,
-                callback:(errors:Error[], response?:any) => void,
-                string:string,
-                getOptions:() => any = ():any => {
-                    try {
-                        return JSON.parse(response) || {};
-                    } catch (error) {
-                        return {};
-                    }
-                },
-                getErrors:() => Error[] = ():Error[] => {
-                    var index:number,
-                        length:number,
-                        result:Error[] = [],
-                        options:any  = getOptions(),
-                        errors:any[] = <IExceptionOptions[]>options.errors;
-                    if (errors && errors.length) {
-                        length = errors.length;
-                        for (index = 0; index < length; index++) {
-                            result.push(new Exception(errors[index]));
-                        }
-                    }
-                    return result.length ? result : null;
-                },
-                getResult:() => any = ():any => {
-                    var options:any = getOptions();
-                    return options.result || null;
-                },
-                getCallback:() => ((errors:Error[], response:any) => void) = ():((errors:Error[], response:any) => void) => {
-                    var options:any = getOptions(),
-                        id:string   = <string>options.id;
-                    return this.getHandlersRegistration().find(id) || null;
-                };
-
-            data = Buffer.concat([data, buffer]);
-            do {
-                string = data.toString("utf8");
-                index  = string.indexOf("\n");
-                if (index !== -1) {
-                    response = string.slice(0, index + 1);
-                    callback = getCallback();
-                    if (isFunction(callback)) {
-                        callback(getErrors(), getResult());
-                    }
-                    data = data.slice((new Buffer(response, "utf8")).length + 1);
-                }
-            } while (index !== -1);
-
-        });
-        this._socket = socket;
     }
 
     public disconnect(callback?:(errors:IException[]) => void):void {
