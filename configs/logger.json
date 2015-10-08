@@ -10,7 +10,35 @@
     {
       "type": "file",
       "absolute": false,
-      "filename": "logs/client.log",
+      "filename": "logs/worker.log",
+      "maxLogSize": 20480,
+      "category": "memory"
+    },
+    {
+      "type": "file",
+      "absolute": false,
+      "filename": "logs/worker.log",
+      "maxLogSize": 20480,
+      "category": "less"
+    },
+    {
+      "type": "file",
+      "absolute": false,
+      "filename": "logs/worker.log",
+      "maxLogSize": 20480,
+      "category": "sass"
+    },
+    {
+      "type": "file",
+      "absolute": false,
+      "filename": "logs/worker.log",
+      "maxLogSize": 20480,
+      "category": "stylus"
+    },
+    {
+      "type": "file",
+      "absolute": false,
+      "filename": "logs/server.log",
       "maxLogSize": 20480,
       "category": "client"
     }

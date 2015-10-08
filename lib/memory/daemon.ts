@@ -1,42 +1,60 @@
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../../types/optimist/optimist.d.ts" />
-/// <reference path="../../types/log4js/log4js.d.ts" />
 
-import optimist    = require("optimist");
-import IDaemon     = require("./daemon/IDaemon");
-import Daemon      = require("./daemon/Daemon");
-import log4js      = require("log4js");
-import WrapperException = require("../WrapperException");
+var messageSent = false;
+process.title = "Memory daemon";
+process.addListener('uncaughtException', function (error:Error) {
+    if (!messageSent) {
+        process.stderr.write(JSON.stringify({
+                started : false,
+                errors  : [Exception.convertFromError(error).toObject()]
+            }) + "\n");
+        messageSent = true;
+    }
+    logger.fatal(error);
+});
+
+import optimist   = require("optimist");
+import IDaemon    = require("./daemon/IDaemon");
+import Daemon     = require("./daemon/Daemon");
+import log4js     = require("../../logger");
+import Exception  = require("../exception/Exception");
+import IException = require("../exception/IException");
 
 require("../mapping");
-require("../../logger");
+var logger:log4js.Logger = log4js.getLogger("memory");
+var argv:any = optimist
+    .usage("Usage: daemon -l [location]\nMemory daemon")
+    .demand("l").alias("l", "location").describe("l", "Daemon socket location")
+    .argv;
+var daemon:IDaemon = new Daemon({
+    location : argv.location
+});
 
-var logger:log4js.Logger = log4js.getLogger("worker"),
-    argv:any = require("optimist").
-        usage("Usage: daemon -l [filename]\nMemory daemon").
-        demand("l").
-        alias("l", "location").
-        describe("l", "Unix socket location").
-        argv,
-    daemon:IDaemon = new Daemon({
-        location: argv.location
-    });
-
-process.title = "Memory daemon";
-
-daemon.start((errors:Error[]):void => {
+daemon.start((errors:IException[]):void => {
+    var index:number,
+        length:number;
     if (errors && errors.length) {
-        process.stderr.write(JSON.stringify({
-            started: false,
-            errors: errors.map((error:Error):any => {
-                return WrapperException.convertToObject(error)
-            })
-        }) + "\n");
-        logger.fatal("Something went wrong", errors);
+        if (!messageSent) {
+            process.stderr.write(JSON.stringify({
+                    started : false,
+                    errors  : errors.map((error:IException):any => {
+                        return error.toObject();
+                    })
+                }) + "\n");
+            messageSent = true;
+        }
+        length = errors.length;
+        for (index = 0; index < length; index++) {
+            logger.fatal(errors[index].getStack());
+        }
     } else {
-        process.stderr.write(JSON.stringify({
-            started: true
-        }) + "\n");
+        if (!messageSent) {
+            process.stderr.write(JSON.stringify({
+                    started : true
+                }) + "\n");
+            messageSent = true;
+        }
         logger.info("Memory daemon started");
     }
 });
