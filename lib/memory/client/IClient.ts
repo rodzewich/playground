@@ -5,6 +5,10 @@ interface IClient extends IBaseClient {
     namespace:string;
     getNamespace():string;
     setNamespace(value:string):void;
+    ping(callback?:(errors:IException[]) => void):void;
+    getNamespaces(callback?:(errors:IException[], response:string[]) => void):void;
+    hasNamespace(value:string, callback?:(errors:IException[], response:boolean) => void):void;
+    removeNamespace(value:string, callback?:(errors:IException[]) => void):void;
     getItem(key:string, callback?:(errors:IException[], response:any) => void): void;
     getItems(keys:string[], callback?:(errors:IException[], response:any) => void): void;
     setItem(key:string, value:any, callback?:(errors:IException[]) => void): void;

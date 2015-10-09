@@ -1,6 +1,11 @@
+import Exception = require("../exception/Exception");
 import BaseDaemon = require("../../daemon/Daemon");
 import IDaemon = require("./IDaemon");
 import IOptions = require("./IOptions");
+
+// todo: 1. добавить логирование!
+// todo: 4. дописать hasNamespace, getNamespaces, removeNamespace
+// todo: 5. сделать пинг
 
 class Daemon extends BaseDaemon implements IDaemon {
 
@@ -219,10 +224,7 @@ class Daemon extends BaseDaemon implements IDaemon {
                     callback(response);
                     break;
                 default:
-                    // todo: use WrapperException
-                    response.error = {
-                        message: "Command not found"
-                    };
+                    response.error = new Exception({message: "unknown command"}).toObject();
                     callback(response);
                     break;
             }
