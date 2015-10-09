@@ -2,7 +2,9 @@ import IClient        = require("./IClient");
 import IOptions       = require("./IOptions");
 import BaseClient     = require("../../client/Client");
 import typeOf         = require("../../typeOf");
-import Exception      = require("../Exception");
+import isFunction      = require("../../isFunction");
+import Exception      = require("../exception/Exception");
+import IException      = require("../exception/IException");
 import NamespaceHelper  = require("../../helpers/NamespaceHelper");
 import INamespaceHelper = require("../../helpers/INamespaceHelper");
 
@@ -15,140 +17,195 @@ import INamespaceHelper = require("../../helpers/INamespaceHelper");
 
 class Client extends BaseClient implements IClient {
 
-    protected _namespace:INamespaceHelper = new NamespaceHelper("default");
+    private _namespaceHelper:INamespaceHelper;
+
+    protected createNamespaceHelper():INamespaceHelper {
+        return new NamespaceHelper("default");
+    }
+
+    protected getNamespaceHelper():INamespaceHelper {
+        if (!this._namespaceHelper) {
+            this._namespaceHelper = this.createNamespaceHelper();
+        }
+        return this._namespaceHelper;
+    }
+
+    public getNamespace():string {
+        return this.getNamespaceHelper().getValue();
+    }
+
+    public setNamespace(value:string):void {
+        this.getNamespaceHelper().setValue(value);
+    }
+
+    public get namespace():string {
+        return this.getNamespace();
+    }
+
+    public set namespace(value:string) {
+        return this.setNamespace(value);
+    }
 
     constructor(options:IOptions) {
         super(options);
         if (options && typeof options.namespace !== "undefined") {
-            this.getNamespace().setValue(options.namespace);
+            this.setNamespace(options.namespace);
         }
     }
 
-    public getNamespace():INamespaceHelper {
-        return this._namespace;
+    public getItem(key:string, callback?:(errors:IException[], response:any) => void):void {
+        function handler(errors:IException[], response:any):void {
+            if (isFunction(callback)) {
+                callback(errors, response);
+            }
+        }
+        if (typeOf(key) !== "string") {
+            handler([new Exception({message : "key should be a string"})], null);
+        } else {
+            this.call((errors:IException[], response:any):void => {
+                var errs:IException[] = null,
+                    result:any = null;
+                if (errors && errors.length) {
+                    errs = errors;
+                } else {
+                    result = response || null
+                }
+                handler(errs, result);
+            }, this.getNamespace(), "getItem", key);
+        }
     }
 
-    public getItem(key:string, callback:(errors:Error[], response:any) => void):void {
+    public getItems(keys:string[], callback?:(errors:IException[], response:any) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors:Error[], response:any):void => {
-            var temp:Error[] = null,
+        this.call((errors:IException[], response:any):void => {
+            var errs:IException[] = null,
                 result:any = null;
             if (errors && errors.length) {
-                temp = errors;
+                errs = errors;
             } else {
                 result = response || null
             }
-            callback(temp, result);
-        }, this.getNamespace().getValue(), "getItem", key);
+            callback(errs, result);
+        }, this.getNamespace(), "getItems", keys);
     }
 
-    public getItems(keys:string[], callback:(errors:Error[], response:any) => void):void {
+    public setItem(key:string, value:any, callback?:(errors:IException[]) => void):void {
+        function handler(errors:IException[], response:any):void {
+            if (isFunction(callback)) {
+                callback(errors, response);
+            }
+        }
+        if (typeOf(key) !== "string") {
+            handler([new Exception({message : "key should be a string"})], null);
+        } else {
+            this.call((errors:IException[], response:any):void => {
+                var errs:IException[] = null;
+                if (errors && errors.length) {
+                    errs = errors;
+                }
+                callback(errs);
+            }, this.getNamespace(), "setItem", key, value);
+        }
+    }
+
+    public setItems(data:any, callback?:(errors:IException[]) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors:Error[], response:any):void => {
-            var temp:Error[] = null,
+        this.call((errors:IException[], response:any):void => {
+            var errs:IException[] = null;
+            if (errors && errors.length) {
+                errs = errors;
+            }
+            callback(errs);
+        }, this.getNamespace(), "setItems", data);
+    }
+
+    public removeItem(key:string, callback?:(errors:IException[]) => void):void {
+        function handler(errors:IException[], response:any):void {
+            if (isFunction(callback)) {
+                callback(errors, response);
+            }
+        }
+        if (typeOf(key) !== "string") {
+            handler([new Exception({message : "key should be a string"})], null);
+        } else {
+            this.call((errors:IException[], response:any):void => {
+                var errs:IException[] = null;
+                if (errors && errors.length) {
+                    errs = errors;
+                }
+                callback(errs);
+            }, this.getNamespace(), "removeItem", key);
+        }
+    }
+
+    public removeItems(keys:string[], callback?:(errors:IException[]) => void) {
+        // todo: проверять входящие параметры
+        this.call((errors:IException[], response:any):void => {
+            var errs:IException[] = null;
+            if (errors && errors.length) {
+                errs = errors;
+            }
+            callback(errs);
+        }, this.getNamespace(), "removeItems", keys);
+    }
+
+    public hasItem(key:string, callback?:(errors:IException[], response:boolean) => void):void {
+        function handler(errors:IException[], response:any):void {
+            if (isFunction(callback)) {
+                callback(errors, response);
+            }
+        }
+        if (typeOf(key) !== "string") {
+            handler([new Exception({message : "key should be a string"})], null);
+        } else {
+            this.call((errors:IException[], response:any):void => {
+                var errs:IException[] = null,
+                    result:boolean    = null;
+                if (errors && errors.length) {
+                    errs = errors;
+                } else {
+                    result = !!<boolean>response;
+                }
+                callback(errs, result);
+            }, this.getNamespace(), "hasItem", key);
+        }
+    }
+
+    public hasItems(keys:string[], callback?:(errors:IException[], response:any) => void):void {
+        // todo: проверять входящие параметры
+        this.call((errors:IException[], response:any):void => {
+            var errs:IException[] = null,
                 result:any = null;
             if (errors && errors.length) {
-                temp = errors;
-            } else {
-                result = response || null
-            }
-            callback(temp, result);
-        }, this.getNamespace().getValue(), "getItems", keys);
-    }
-
-    public setItem(key:string, value:any, callback:(errors:Error[]) => void):void {
-        // todo: проверять входящие параметры
-        this.call((errors:Error[], response:any):void => {
-            var temp:Error[] = null;
-            if (errors && errors.length) {
-                temp = errors;
-            }
-            callback(temp);
-        }, this.getNamespace().getValue(), "setItem", key, value);
-    }
-
-    public setItems(data:any, callback:(errors:Error[]) => void):void {
-        // todo: проверять входящие параметры
-        this.call((errors:Error[], response:any):void => {
-            var temp:Error[] = null;
-            if (errors && errors.length) {
-                temp = errors;
-            }
-            callback(temp);
-        }, this.getNamespace().getValue(), "setItems", data);
-    }
-
-    public removeItem(key:string, callback:(errors:Error[]) => void):void {
-        // todo: проверять входящие параметры
-        this.call((errors:Error[], response:any):void => {
-            var temp:Error[] = null;
-            if (errors && errors.length) {
-                temp = errors;
-            }
-            callback(temp);
-        }, this.getNamespace().getValue(), "removeItem", key);
-    }
-
-    public removeItems(keys:string[], callback:(errors:Error[]) => void) {
-        // todo: проверять входящие параметры
-        this.call((errors:Error[], response:any):void => {
-            var temp:Error[] = null;
-            if (errors && errors.length) {
-                temp = errors;
-            }
-            callback(temp);
-        }, this.getNamespace().getValue(), "removeItems", keys);
-    }
-
-    public hasItem(key:string, callback:(errors:Error[], response:boolean) => void):void {
-        // todo: проверять входящие параметры
-        this.call((errors:Error[], response:any):void => {
-            var temp:Error[] = null,
-                result:boolean = null;
-            if (errors && errors.length) {
-                temp = errors;
-            } else {
-                result = !!<boolean>response;
-            }
-            callback(temp, result);
-        }, this.getNamespace().getValue(), "hasItem", key);
-    }
-
-    public hasItems(keys:string[], callback:(errors:Error[], response:any) => void):void {
-        // todo: проверять входящие параметры
-        this.call((errors:Error[], response:any):void => {
-            var temp:Error[] = null,
-                result:any = null;
-            if (errors && errors.length) {
-                temp = errors;
+                errs = errors;
             } else {
                 result = response || null;
             }
-            callback(temp, result);
-        }, this.getNamespace().getValue(), "hasItems", keys);
+            callback(errs, result);
+        }, this.getNamespace(), "hasItems", keys);
     }
 
-    public getKey(index:number, callback:(errors:Error[], response:string) => void):void {
+    public getKey(index:number, callback?:(errors:IException[], response:string) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors:Error[], response:any):void => {
-            var temp:Error[] = null,
+        this.call((errors:IException[], response:any):void => {
+            var errs:IException[] = null,
                 result:string = null;
             if (errors && errors.length) {
-                temp = errors;
+                errs = errors;
             } else {
                 result = String(<string>response || "");
             }
-            callback(temp, result);
-        }, this.getNamespace().getValue(), "getKey", index);
+            callback(errs, result);
+        }, this.getNamespace(), "getKey", index);
     }
 
-    public getKeys(indexes:number[], callback:(errors:Error[], response:string[]) => void):void {
+    public getKeys(indexes:number[], callback?:(errors:IException[], response:string[]) => void):void {
         // todo: проверять входящие параметры
-        this.call((errors:Error[], response:any):void => {
-            var temp:Error[] = null,
+        this.call((errors:IException[], response:any):void => {
+            var errs:IException[] = null,
                 result:string[] = null;
             if (errors && errors.length) {
-                temp = errors;
+                errs = errors;
             } else {
                 result = <string[]>response || null;
                 if (typeOf(result) !== "array" && typeOf(result) !== null) {
@@ -159,45 +216,54 @@ class Client extends BaseClient implements IClient {
                     });
                 }
             }
-            callback(temp, result);
-        }, this.getNamespace().getValue(), "getKeys", indexes);
+            callback(errs, result);
+        }, this.getNamespace(), "getKeys", indexes);
     }
 
-    public getLength(callback:(errors:Error[], response:number) => void):void {
-        // todo: проверять входящие параметры
-        this.call((errors:Error[], response:any):void => {
-            var temp:Error[] = null,
+    public getLength(callback?:(errors:IException[], response:number) => void):void {
+        this.call((errors:IException[], response:any):void => {
+            var errs:IException[] = null,
                 result:number = null;
             if (errors && errors.length) {
-                temp = errors;
+                errs = errors;
             } else {
                 result = Math.max(0, parseInt(String(<any>response), 10) || 0);
             }
-            callback(temp, result);
-        }, this.getNamespace().getValue(), "getLength");
+            callback(errs, result);
+        }, this.getNamespace(), "getLength");
     }
 
-    public lock(key:string, callback:(errors:Error[], unlock:(callback:(errors:Error[]) => void) => void) => void):void {
-        // todo: проверять входящие параметры
-        var unlock:(callback:(errors:Error[]) => void) => void = (callback:(errors:Error[]) => void):void => {
-            this.call((errors:Error[], response:any):void => {
-                var temp:Error[] = null;
-                if (errors && errors.length) {
-                    temp = errors;
+    public lock(key:string, callback?:(errors:IException[], unlock:(callback?:(errors:IException[]) => void) => void) => void):void {
+        function handler(errors:IException[], response:any):void {
+            if (isFunction(callback)) {
+                callback(errors, response);
+            }
+        }
+        var unlock:(callback?:(errors:IException[]) => void) => void = (callback?:(errors:IException[]) => void):void => {
+            function handler(errors:IException[], response:any):void {
+                if (isFunction(callback)) {
+                    callback(errors, response);
                 }
-                callback(temp);
-            }, this.getNamespace().getValue(), "unlock", key);
+            }
+            this.call((errors:IException[], response:any):void => {
+                var errs:IException[] = null;
+                if (errors && errors.length) {
+                    errs = errors;
+                }
+                handler(errs);
+            }, this.getNamespace(), "unlock", key);
         };
         if (typeOf(key) !== "string") {
-            throw new Exception("bla bla bla");
+            handler([new Exception({message : "key should be a string"})], null);
+        } else {
+            this.call((errors:IException[], response:any):void => {
+                var errs:IException[] = null;
+                if (errors && errors.length) {
+                    errs = errors;
+                }
+                callback(errs, unlock);
+            }, this.getNamespace(), "lock", key);
         }
-        this.call((errors:Error[], response:any):void => {
-            var temp:Error[] = null;
-            if (errors && errors.length) {
-                temp = errors;
-            }
-            callback(temp, unlock);
-        }, this.getNamespace().getValue(), "lock", key);
     }
 
 }

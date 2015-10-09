@@ -4,6 +4,7 @@ import IClient = require("./IClient");
 import IOptions = require("./IOptions");
 import fs = require("fs");
 import net = require("net");
+import constants  = require("constants");
 import log4js   = require("../../logger");
 import deferred = require("../deferred");
 import isFunction = require("../isFunction");
@@ -21,7 +22,7 @@ var logger:log4js.Logger = log4js.getLogger("client");
 
 class Client implements IClient {
 
-    private _server:net.Socket = null;
+    private _client:net.Socket = null;
 
     private _connecting:boolean = false;
 
@@ -107,13 +108,13 @@ class Client implements IClient {
                 })
             },
             ():void => {
-                if (this._server) {
+                if (this._client) {
                     request = JSON.stringify({
                         id   : this.getHandlersRegistrationHelper().register(callback),
                         args : args
                     });
-                    this._server.write(request);
-                    this._server.write(new Buffer([0x0a]));
+                    this._client.write(request);
+                    this._client.write(new Buffer([0x0a]));
                 } else {
                     setTimeout(():void => {
                         handler([new Exception({message : "connection is not ready"})]);
@@ -150,16 +151,16 @@ class Client implements IClient {
             },
             (next:() => void):void => {
                 var data:Buffer,
-                    server:net.Socket,
+                    client:net.Socket,
                     handler:(error:NodeJS.ErrnoException) => void =
                         (error:NodeJS.ErrnoException):void => {
-                            server.removeListener("error", handler);
-                            server.addListener("error", (error:NodeJS.ErrnoException):void => {
+                            client.removeListener("error", handler);
+                            client.addListener("error", (error:NodeJS.ErrnoException):void => {
                                 logger.error(error);
                             });
                             this._connecting = false;
                             if (error) {
-                                this._server       = null;
+                                this._client       = null;
                                 this._connected    = false;
                                 this._disconnected = true;
                                 connected(Exception.convertFromError(error, {
@@ -169,7 +170,7 @@ class Client implements IClient {
                                     syscall : error.syscall
                                 }));
                             } else {
-                                this._server       = server;
+                                this._client       = client;
                                 this._connected    = true;
                                 this._disconnected = false;
                                 connected(null);
@@ -178,14 +179,14 @@ class Client implements IClient {
                 if (this._disconnecting) {
                     this._needConnect = true;
                 } else if (!this._connected && !this._connecting) {
-                    this._connecting = true;
+                    this._connecting  = true;
                     this._needConnect = false;
                     data = new Buffer(0);
-                    server = net.createConnection(this.getLocation(), ():void => {
+                    client = net.createConnection(this.getLocation(), ():void => {
                         handler(null);
                     });
-                    server.addListener("error", handler);
-                    server.addListener("data", (buffer:Buffer):void => {
+                    client.addListener("error", handler);
+                    client.addListener("data", (buffer:Buffer):void => {
                         var temp:Buffer,
                             diff:number,
                             cache:any,
@@ -271,15 +272,42 @@ class Client implements IClient {
                 next();
             },
             (next:() => void):void => {
-                this._server.removeListener("data");
-                this._server.close(() => {
-
-                });
+                if (!this._connecting) {
+                    this._needDisconnect = true;
+                } else if (!this._disconnected && !this._disconnecting) {
+                    this._disconnecting  = true;
+                    this._needDisconnect = false;
+                    deferred([
+                        (next:() => void):void => {
+                            this._client.removeAllListeners("data");
+                            this._client.close(() => {
+                                next();
+                            });
+                            this._client = null;
+                        },
+                        (next:() => void):void => {
+                            fs.unlink(this.getLocation(), (error:NodeJS.ErrnoException):void => {
+                                if (!error || error && error.errno === constants.ENOENT) {
+                                    disconnected(null);
+                                } else {
+                                    disconnected(Exception.convertFromError(error, {
+                                        code    : error.code,
+                                        errno   : error.errno,
+                                        path    : error.path,
+                                        syscall : error.syscall
+                                    }));
+                                }
+                            });
+                        }
+                    ]);
+                } else {
+                    next();
+                }
             },
-            (next:() => void):void => {
-                fs.unlink(this.getLocation(), (error:NodeJS.ErrnoException):void => {
-
-                });
+            ():void => {
+                if (this._disconnected && !this._connecting) {
+                    disconnected(null);
+                }
             }
         ]);
     }
