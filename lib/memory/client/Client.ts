@@ -66,6 +66,10 @@ class Client extends BaseClient implements IClient {
         // todo: implement it
     }
 
+    public ping(callback?:(errors:IException[]) => void):void {
+        // todo: implement it
+    }
+
     public getItem(key:string, callback?:(errors:IException[], response:any) => void):void {
         function handler(errors:IException[], response:any):void {
             if (isFunction(callback)) {
