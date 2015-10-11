@@ -37,7 +37,7 @@ class Exception implements IException {
         if (options && isDefined(options.stack)) {
             this._stack = String(options.stack);
         } else {
-            this._stack = String(temp.stack).split("\n").slice(1).join("\n");
+            this._stack = [this.toString(), String(temp.stack).split("\n").slice(1).join("\n")].join("\n");
         }
         if (options && isDefined(options.name)) {
             this._name = String(options.name);
@@ -125,7 +125,7 @@ class Exception implements IException {
     }
 
     public getStack():string {
-        return [this.toString(), this._stack].join("\n");
+        return this._stack;
     }
 
     public getMessage():string {
@@ -144,7 +144,7 @@ class Exception implements IException {
         return this._data;
     }
 
-    public static convertFromError(error:any, data:{[index:string]:any}):IException {
+    public static convertFromError(error:any, data?:{[index:string]:any}):IException {
         return new Exception({
             name    : error.name,
             message : error.message,

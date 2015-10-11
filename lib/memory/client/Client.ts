@@ -51,7 +51,7 @@ class Client extends BaseClient implements IClient {
     }
 
     public set namespace(value:string) {
-        return this.setNamespace(value);
+        this.setNamespace(value);
     }
 
     public getNamespaces(callback?:(errors:IException[], response:string[]) => void):void {
@@ -109,15 +109,15 @@ class Client extends BaseClient implements IClient {
     }
 
     public setItem(key:string, value:any, callback?:(errors:IException[]) => void):void {
-        function handler(errors:IException[], response:any):void {
+        function handler(errors:IException[]):void {
             if (isFunction(callback)) {
                 setTimeout(():void => {
-                    callback(errors, response);
+                    callback(errors);
                 }, 0);
             }
         }
         if (!isString(key)) {
-            handler([new Exception({message : "key should be a string"})], null);
+            handler([new Exception({message : "key should be a string"})]);
         } else {
             this.call((errors:IException[], response:any):void => {
                 var errs:IException[] = null;
@@ -149,7 +149,7 @@ class Client extends BaseClient implements IClient {
             }
         }
         if (!isString(key)) {
-            handler([new Exception({message : "key should be a string"})], null);
+            handler([new Exception({message : "key should be a string"})]);
         } else {
             this.call((errors:IException[], response:any):void => {
                 handler(errors && errors.length ? errors : null);
