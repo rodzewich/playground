@@ -124,7 +124,7 @@ class Client extends BaseClient implements IClient {
                 if (errors && errors.length) {
                     errs = errors;
                 }
-                callback(errs);
+                handler(errs);
             }, this.getNamespace(), "setItem", key, value);
         }
     }

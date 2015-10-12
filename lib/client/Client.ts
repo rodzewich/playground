@@ -197,7 +197,7 @@ class Client implements IClient {
                         } else if (error && error.code === "ENOENT" ||
                             stats && !stats.isSocket()) {
                             connected([new Exception({
-                                message: "connection not exists",
+                                message: "socket is not exists",
                                 data: {
                                     code: error.code,
                                     errno: error.errno,
