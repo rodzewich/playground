@@ -1,6 +1,5 @@
 import INamespaceHelper = require("./INamespaceHelper");
 import isDefined = require("../isDefined");
-import Exception = require("../Exception");
 
 class NamespaceHelper implements INamespaceHelper {
 
@@ -17,11 +16,7 @@ class NamespaceHelper implements INamespaceHelper {
     }
 
     public setValue(value:any):void {
-        var temp:string = String(value || "");
-        if (!/^[a-z]\w*$/.test(temp)) {
-            throw new Exception("Invalid namespace name");
-        }
-        this._value = temp;
+        this._value = String(value || "");
     }
 
 }

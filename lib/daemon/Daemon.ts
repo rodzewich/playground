@@ -14,9 +14,13 @@ import MeLocationHelper = require("../helpers/MeLocationHelper");
 require("../../logger");
 var logger:log4js.Logger = log4js.getLogger("daemon");
 
-class Daemon implements IDaemon {
+abstract class Daemon implements IDaemon {
 
     protected _server:net.Server;
+
+    protected _starting:boolean = false;
+
+    protected _stopping:boolean = false;
 
     protected _started:boolean = false;
 
@@ -117,7 +121,7 @@ class Daemon implements IDaemon {
                         data    = data.slice((new Buffer(request, "utf8")).length + 1);
                         this.handler(parse(request), (response:any):void => {
                             socket.write(JSON.stringify(response));
-                            socket.write("\n");
+                            socket.write(new Buffer([0x0a]));
                         });
                     }
                 } while (index !== -1)
