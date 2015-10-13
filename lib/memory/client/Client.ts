@@ -15,11 +15,9 @@ import NamespaceHelper  = require("../../helpers/NamespaceHelper");
 import INamespaceHelper = require("../../helpers/INamespaceHelper");
 import log4js           = require("../../../logger");
 
-
 // todo: 1. добавить логирование!
 // todo: 3. дописать постоянные соединения через pool
 // todo: 4. дописать hasNamespace, getNamespaces, removeNamespace
-// todo: implement ttl parametr
 // todo: implement inc & dec
 
 var logger:log4js.Logger = log4js.getLogger("memory");
@@ -157,7 +155,7 @@ class Client extends BaseClient implements IClient {
 
     }
 
-    public setItem(key:string, value:any, callback?:(errors:IException[]) => void):void {
+    public setItem(key:string, value:any, callback?:(errors:IException[]) => void, ttl?:number):void {
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -174,15 +172,17 @@ class Client extends BaseClient implements IClient {
 
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})]);
+        } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
+            handler([new Exception({message : "ttl should be a positive integer"})], null);
         } else {
             this.call((errors:IException[], response:any):void => {
                 handler(errors && errors.length ? errors : null);
-            }, "setItem", this.getNamespace(), key, value);
+            }, "setItem", this.getNamespace(), key, value, ttl ? Math.floor(ttl) : null);
         }
 
     }
 
-    public setItems(data:{[index:string]:any;}|any, callback?:(errors:IException[]) => void):void {
+    public setItems(data:{[index:string]:any;}|any, callback?:(errors:IException[]) => void, ttl?:number):void {
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -198,11 +198,13 @@ class Client extends BaseClient implements IClient {
         }
 
         if (!isObject(data) || !Object.keys(data).length) {
-            handler([new Exception({message: "data should be a non empty object"})], null);
+            handler([new Exception({message : "data should be a non empty object"})], null);
+        } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
+            handler([new Exception({message : "ttl should be a positive integer"})], null);
         } else {
             this.call((errors:IException[], response:any):void => {
                 handler(errors && errors.length ? errors : null);
-            }, "setItems", this.getNamespace(), data);
+            }, "setItems", this.getNamespace(), data, ttl ? Math.floor(ttl) : null);
         }
 
     }
