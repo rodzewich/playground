@@ -62,10 +62,10 @@ deferred([
                 location: location,
                 namespace: namespace
             });
-        assert.equal(client.location, location);
-        assert.equal(client.getLocation(), location);
-        assert.equal(client.namespace, namespace);
-        assert.equal(client.getNamespace(), namespace);
+        assert.strictEqual(client.location, location);
+        assert.strictEqual(client.getLocation(), location);
+        assert.strictEqual(client.namespace, namespace);
+        assert.strictEqual(client.getNamespace(), namespace);
         next();
     },
     // set options via setters
@@ -77,10 +77,10 @@ deferred([
             });
         client.location = location;
         client.namespace = namespace;
-        assert.equal(client.location, location);
-        assert.equal(client.getLocation(), location);
-        assert.equal(client.namespace, namespace);
-        assert.equal(client.getNamespace(), namespace);
+        assert.strictEqual(client.location, location);
+        assert.strictEqual(client.getLocation(), location);
+        assert.strictEqual(client.namespace, namespace);
+        assert.strictEqual(client.getNamespace(), namespace);
         next();
     },
     // set options via methods
@@ -92,10 +92,10 @@ deferred([
             });
         client.setLocation(location);
         client.setNamespace(namespace);
-        assert.equal(client.location, location);
-        assert.equal(client.getLocation(), location);
-        assert.equal(client.namespace, namespace);
-        assert.equal(client.getNamespace(), namespace);
+        assert.strictEqual(client.location, location);
+        assert.strictEqual(client.getLocation(), location);
+        assert.strictEqual(client.namespace, namespace);
+        assert.strictEqual(client.getNamespace(), namespace);
         next();
     },
     // try connect
@@ -105,10 +105,10 @@ deferred([
                 location: location
             });
         client.connect((errors:IException[]):void => {
-            assert.equal(errors.length, 1);
+            assert.strictEqual(errors.length, 1);
             errors.forEach((error:IException):void => {
-                assert.equal(error.getMessage(), "socket is not exists");
-                assert.equal(error instanceof Exception, true);
+                assert.strictEqual(error.getMessage(), "socket is not exists");
+                assert.strictEqual(error instanceof Exception, true);
             });
             next();
         });
@@ -119,8 +119,8 @@ deferred([
             client:IClient = new Client({
                 location: location
             });
-        assert.equal(client.namespace, "default");
-        assert.equal(client.getNamespace(), "default");
+        assert.strictEqual(client.namespace, "default");
+        assert.strictEqual(client.getNamespace(), "default");
         next();
     },
     // ping
