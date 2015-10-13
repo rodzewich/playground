@@ -1,3 +1,4 @@
+import IInformation = require("../IInformation");
 import IBaseClient = require("../../client/IClient");
 import IException = require("../exception/IException");
 
@@ -6,6 +7,7 @@ interface IClient extends IBaseClient {
     getNamespace():string;
     setNamespace(value:string):void;
     ping(callback?:(errors:IException[]) => void):void;
+    getInfo(callback?:(errors:IException[], response:IInformation) => void):void;
     getNamespaces(callback?:(errors:IException[], response:string[]) => void):void;
     hasNamespace(value:string, callback?:(errors:IException[], response:boolean) => void):void;
     removeNamespace(value:string, callback?:(errors:IException[]) => void):void;

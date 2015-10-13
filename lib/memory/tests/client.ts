@@ -1,6 +1,7 @@
 /// <reference path="../../../types/chai/chai.d.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
 
+import fs = require("fs");
 import path = require("path");
 import assert = require("assert");
 import Client = require("../client/Client");
@@ -32,14 +33,28 @@ function setup(callback:() => void):void {
 }
 
 function shutdown(callback:() => void):void {
-    daemon.stop((errors:IException[]):void => {
-        assert.strictEqual(errors, null);
-        callback();
-    });
+    deferred([
+        (next:() => void):void => {
+            daemon.stop((errors:IException[]):void => {
+                assert.strictEqual(errors, null);
+                next();
+            });
+        },
+        (next:() => void):void => {
+            fs.stat(daemon.location, (error: NodeJS.ErrnoException, stats: fs.Stats):void => {
+                assert.strictEqual(error.code, "ENOENT");
+                next();
+            });
+        },
+        ():void => {
+            callback();
+        }
+    ]);
 }
 
 deferred([
     setup,
+    // set options via constructor
     (next:() => void):void => {
         var location:string = path.join(__dirname, "location.sock"),
             namespace:string = "something",
@@ -53,6 +68,7 @@ deferred([
         assert.equal(client.getNamespace(), namespace);
         next();
     },
+    // set options via setters
     (next:() => void):void => {
         var location:string = path.join(__dirname, "location.sock"),
             namespace:string = "something",
@@ -67,6 +83,7 @@ deferred([
         assert.equal(client.getNamespace(), namespace);
         next();
     },
+    // set options via methods
     (next:() => void):void => {
         var location:string = path.join(__dirname, "location.sock"),
             namespace:string = "something",
@@ -81,6 +98,7 @@ deferred([
         assert.equal(client.getNamespace(), namespace);
         next();
     },
+    // try connect
     (next:() => void):void => {
         var location:string = path.join(__dirname, "location.sock"),
             client:IClient = new Client({
@@ -95,6 +113,7 @@ deferred([
             next();
         });
     },
+    // default namespace
     (next:() => void):void => {
         var location:string = path.join(__dirname, "location.sock"),
             client:IClient = new Client({
@@ -108,7 +127,12 @@ deferred([
         var client:IClient = new Client({
             location: daemon.location
         });
-        client.setItem("test", "test");
+        deferred([
+            (next:() => void):void => {
+
+            }
+        ]);
+        client.setItem("test1", "test");
         next();
     },
     shutdown

@@ -1,3 +1,4 @@
+import IInformation     = require("../IInformation");
 import isNull           = require("../../isNull");
 import isString         = require("../../isString");
 import isArray          = require("../../isArray");
@@ -52,6 +53,10 @@ class Client extends BaseClient implements IClient {
 
     public set namespace(value:string) {
         this.setNamespace(value);
+    }
+
+    public getInfo(callback?:(errors:IException[], response:IInformation) => void):void {
+        // todo: implement it
     }
 
     public getNamespaces(callback?:(errors:IException[], response:string[]) => void):void {
