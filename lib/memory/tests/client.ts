@@ -123,6 +123,22 @@ deferred([
         assert.equal(client.getNamespace(), "default");
         next();
     },
+    // ping
+    (next:() => void):void => {
+        var client:IClient = new Client({
+            location: daemon.location
+        });
+        client.ping((errors):void => {
+            console.log(errors);
+            assert.strictEqual(errors, null);
+            next();
+        });
+        client.increment("key", (errors):void => {
+            console.log(errors);
+            assert.strictEqual(errors, null);
+            next();
+        });
+    },
     // set/get items
     (next:() => void):void => {
         var client:IClient = new Client({
