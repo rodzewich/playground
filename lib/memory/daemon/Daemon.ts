@@ -1,3 +1,4 @@
+import ExceptionBase = require("../../exception/Exception");
 import Exception = require("../exception/Exception");
 import BaseDaemon = require("../../daemon/Daemon");
 import IDaemon = require("./IDaemon");
@@ -154,78 +155,102 @@ class Daemon extends BaseDaemon implements IDaemon {
     }
 
     protected handler(request:any, callback:(response:any) => void):void {
-        super.handler(request, (response:any) => {
-            var args:any[] = request.args || [],
-                command:string = <string>args.shift(),
-                namespace:string = <string>args.shift();
-            switch (command) {
-                case "getItem":
-                    response.result = this.getItem(namespace, <string>args[0]);
+
+        function handler(response:any):void {
+            if (isFunction(callback)) {
+                setTimeout((): void => {
                     callback(response);
-                    break;
-                case "getItems":
-                    response.result = this.getItems(namespace, <string[]>args[0]);
-                    callback(response);
-                    break;
-                case "setItem":
-                    response.result = null;
-                    this.setItem(namespace, <string>args[0], <any>args[1]);
-                    callback(response);
-                    break;
-                case "setItems":
-                    response.result = null;
-                    this.setItems(namespace, <any>args[0]);
-                    callback(response);
-                    break;
-                case "removeItem":
-                    response.result = null;
-                    this.removeItem(namespace, <string>args[0]);
-                    callback(response);
-                    break;
-                case "removeItems":
-                    response.result = null;
-                    this.removeItems(namespace, <string[]>args[0]);
-                    callback(response);
-                    break;
-                case "hasItem":
-                    response.result = this.hasItem(namespace, <string>args[0]);
-                    callback(response);
-                    break;
-                case "hasItems":
-                    response.result = this.hasItems(namespace, <string[]>args[0]);
-                    callback(response);
-                    break;
-                case "getKey":
-                    response.result = this.getKey(namespace, <number>args[0]);
-                    callback(response);
-                    break;
-                case "getKeys":
-                    response.result = this.getKeys(namespace, <number[]>args[0]);
-                    callback(response);
-                    break;
-                case "getLength":
-                    response.result = this.getLength(namespace);
-                    callback(response);
-                    break;
-                case "lock":
-                    response.result = null;
-                    this.lock(namespace, <string>args[0], (error?:Error):void => {
-                        if (error) {
-                            response.error = error;
-                        }
-                        callback(response);
-                    });
-                    break;
-                case "unlock":
-                    response.result = null;
-                    this.unlock(namespace, <string>args[0]);
-                    callback(response);
-                    break;
-                default:
-                    response.error = new Exception({message: "unknown command"}).toObject();
-                    callback(response);
-                    break;
+                }, 0);
             }
+        }
+
+        super.handler(request, (response:any) => {
+
+            var args:any[]     = request.args || [],
+                command:string = <string>args.shift(),
+                error:IException;
+
+            try {
+
+                switch (command) {
+                    case "getItem":
+                        response.result = this.getItem(<string>args[0], <string>args[1]);
+                        handler(response);
+                        break;
+                    case "getItems":
+                        response.result = this.getItems(<string>args[0], <string[]>args[1]);
+                        handler(response);
+                        break;
+                    case "setItem":
+                        response.result = null;
+                        this.setItem(<string>args[0], <string>args[1], <any>args[2]);
+                        handler(response);
+                        break;
+                    case "setItems":
+                        response.result = null;
+                        this.setItems(<string>args[0], <any>args[1]);
+                        handler(response);
+                        break;
+                    case "removeItem":
+                        response.result = null;
+                        this.removeItem(<string>args[0], <string>args[1]);
+                        handler(response);
+                        break;
+                    case "removeItems":
+                        response.result = null;
+                        this.removeItems(<string>args[0], <string[]>args[1]);
+                        handler(response);
+                        break;
+                    case "hasItem":
+                        response.result = this.hasItem(<string>args[0], <string>args[1]);
+                        handler(response);
+                        break;
+                    case "hasItems":
+                        response.result = this.hasItems(<string>args[0], <string[]>args[1]);
+                        handler(response);
+                        break;
+                    case "getKey":
+                        response.result = this.getKey(<string>args[0], <number>args[1]);
+                        handler(response);
+                        break;
+                    case "getKeys":
+                        response.result = this.getKeys(<string>args[0], <number[]>args[1]);
+                        handler(response);
+                        break;
+                    case "getLength":
+                        response.result = this.getLength(<string>args[0]);
+                        handler(response);
+                        break;
+                    case "lock":
+                        response.result = null;
+                        this.lock(<string>args[0], <string>args[1], (error?:Error):void => {
+                            if (error) {
+                                response.error = error;
+                            }
+                            handler(response);
+                        });
+                        break;
+                    case "unlock":
+                        response.result = null;
+                        this.unlock(<string>args[0], <string>args[1]);
+                        handler(response);
+                        break;
+                    default:
+                        error = new Exception({message: "unknown command"});
+                        response.error = error.toObject();
+                        logger.error(error.getStack());
+                        handler(response);
+                        break;
+                }
+
+            } catch (error) {
+
+                response.error = ExceptionBase.convertFromError(error).toObject();
+                logger.error(ExceptionBase.convertFromError(error).getStack());
+                handler(response);
+
+            }
+
         });
     }
 
