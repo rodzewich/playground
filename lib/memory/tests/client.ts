@@ -159,6 +159,20 @@ deferred([
                 });
             },
             (next:() => void):void => {
+                client.setItem(null, "test1", (errors):void => {
+                    assert.notStrictEqual(errors, null);
+                    assert.strictEqual(errors[0].message, "key should be a string");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getItem(null, (errors):void => {
+                    assert.notStrictEqual(errors, null);
+                    assert.strictEqual(errors[0].message, "key should be a string");
+                    next();
+                });
+            },
+            (next:() => void):void => {
                 client.setItems({
                     key2: "test2",
                     key3: "test3"
@@ -173,6 +187,21 @@ deferred([
                     assert.strictEqual(result.key1, "test1");
                     assert.strictEqual(result.key2, "test2");
                     assert.strictEqual(result.key3, "test3");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.setItems(null, (errors):void => {
+                    assert.notStrictEqual(errors, null);
+                    assert.strictEqual(errors[0].message, "data should be a non empty object");
+                    next();
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getItems(null, (errors):void => {
+                    assert.notStrictEqual(errors, null);
+                    assert.strictEqual(errors[0].message, "keys should be a non empty strings array");
                     next();
                 });
             },
