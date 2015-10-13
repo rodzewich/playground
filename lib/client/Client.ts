@@ -160,7 +160,7 @@ class Client implements IClient {
                     this._client.write(request);
                     this._client.write(new Buffer([0x0a]));
                     timeout = setTimeout(():void => {
-
+                        handler([new Exception({message : "bla bla bla"})], null);
                     }, this.getTimeout());
                 } else {
                     logger.warn("connection is not ready");
