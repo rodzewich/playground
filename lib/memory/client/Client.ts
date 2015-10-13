@@ -3,7 +3,7 @@ import isNull           = require("../../isNull");
 import isDefined        = require("../../isDefined");
 import isArray          = require("../../isArray");
 import isString         = require("../../isString");
-import isArray          = require("../../isArray");
+import isObject         = require("../../isObject");
 import isNumber         = require("../../isNumber");
 import isFunction       = require("../../isFunction");
 import IClient          = require("./IClient");
@@ -66,14 +66,50 @@ class Client extends BaseClient implements IClient {
 
     public getNamespaces(callback?:(errors:IException[], response:string[]) => void):void {
 
-        this.call((errors:IException[]):void => {
-            handler(errors && errors.length ? errors : null);
+        function handler(errors:IException[], response:string[]):void {
+            if (isFunction(callback)) {
+                setTimeout(():void => {
+                    callback(errors, response);
+                }, 0);
+            }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
+        }
+
+        this.call((errors:IException[], response:string[]):void => {
+            handler(errors && errors.length ? errors : null,
+                !errors || !errors.length && response ? response : null);
         }, "getNamespaces");
 
     }
 
     public hasNamespace(namespace:string, callback?:(errors:IException[], response:boolean) => void):void {
-        // todo: implement it
+
+        function handler(errors:IException[], response:boolean):void {
+            if (isFunction(callback)) {
+                setTimeout(():void => {
+                    callback(errors, response);
+                }, 0);
+            }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
+        }
+
+        if (!isString(namespace)) {
+            handler([new Exception({message : "namespace should be a string"})], null);
+        } else {
+            this.call((errors:IException[], response:boolean):void => {
+                handler(errors && errors.length ? errors : null,
+                    !errors || !errors.length ? !!response : null);
+            }, "hasNamespace", namespace);
+        }
+
     }
 
     public removeNamespace(namespace:string, callback?:(errors:IException[]) => void):void {
@@ -142,12 +178,12 @@ class Client extends BaseClient implements IClient {
             }
         }
 
-        if (!isArray(keys) || !keys.length || keys.reduce((previous:boolean, element:number):boolean => {
+        if (!isArray(keys) || !keys.length || keys.reduce((previous:boolean, element:string):boolean => {
                 return previous && isString(element);
             }, true)) {
             handler([new Exception({message: "keys should be a non empty strings array"})], null);
         } else {
-            this.call((errors:IException[], response:any):void => {
+            this.call((errors:IException[], response:{[index:string]:any;}|any):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length && isDefined(response) ? response : null);
             }, "getItems", this.getNamespace(), keys);
@@ -173,9 +209,9 @@ class Client extends BaseClient implements IClient {
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})]);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
-            handler([new Exception({message : "ttl should be a positive integer"})], null);
+            handler([new Exception({message : "ttl should be a positive integer"})]);
         } else {
-            this.call((errors:IException[], response:any):void => {
+            this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
             }, "setItem", this.getNamespace(), key, value, ttl ? Math.floor(ttl) : null);
         }
@@ -198,13 +234,67 @@ class Client extends BaseClient implements IClient {
         }
 
         if (!isObject(data) || !Object.keys(data).length) {
-            handler([new Exception({message : "data should be a non empty object"})], null);
+            handler([new Exception({message : "data should be a non empty object"})]);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
-            handler([new Exception({message : "ttl should be a positive integer"})], null);
+            handler([new Exception({message : "ttl should be a positive integer"})]);
         } else {
-            this.call((errors:IException[], response:any):void => {
+            this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
             }, "setItems", this.getNamespace(), data, ttl ? Math.floor(ttl) : null);
+        }
+
+    }
+
+    public getTtl(key:string, callback?:(errors:IException[], response:number) => void):void {
+
+        function handler(errors:IException[], response:number):void {
+            if (isFunction(callback)) {
+                setTimeout(():void => {
+                    callback(errors, response);
+                }, 0);
+            }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
+        }
+
+        if (!isString(key)) {
+            handler([new Exception({message : "key should be a string"})], null);
+        } else {
+            this.call((errors:IException[], response:any):void => {
+                handler(errors && errors.length ? errors : null,
+                    !errors || !errors.length && isDefined(response) ? response : null);
+            }, "getTtl", this.getNamespace(), key);
+        }
+
+    }
+
+    public getTtls(keys:string[], callback?:(errors:IException[], response:{[index:string]:number;}|any) => void):void {
+
+        function handler(errors:IException[], response:{[index:string]:number;}|any):void {
+            if (isFunction(callback)) {
+                setTimeout(():void => {
+                    callback(errors, response);
+                }, 0);
+            }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
+        }
+
+        if (!isArray(keys) || !keys.length || keys.reduce((previous:boolean, element:string):boolean => {
+                return previous && isString(element);
+            }, true)) {
+            handler([new Exception({message: "keys should be a non empty strings array"})], null);
+        } else {
+            this.call((errors:IException[], response:{[index:string]:number;}|any):void => {
+                handler(errors && errors.length ? errors : null,
+                    !errors || !errors.length && isDefined(response) ? response : null);
+            }, "getTtls", this.getNamespace(), keys);
         }
 
     }
@@ -227,7 +317,7 @@ class Client extends BaseClient implements IClient {
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})]);
         } else {
-            this.call((errors:IException[], response:any):void => {
+            this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
             }, "removeItem", this.getNamespace(), key);
         }
@@ -249,12 +339,12 @@ class Client extends BaseClient implements IClient {
             }
         }
 
-        if (!isArray(keys) || !keys.length || keys.reduce((previous:boolean, element:number):boolean => {
+        if (!isArray(keys) || !keys.length || keys.reduce((previous:boolean, element:string):boolean => {
                 return previous && isString(element);
             }, true)) {
-            handler([new Exception({message: "keys should be a non empty strings array"})], null);
+            handler([new Exception({message: "keys should be a non empty strings array"})]);
         } else {
-            this.call((errors:IException[], response:any):void => {
+            this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
             }, "removeItems", this.getNamespace(), keys);
         }
@@ -279,82 +369,95 @@ class Client extends BaseClient implements IClient {
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})], null);
         } else {
-            this.call((errors:IException[], response:any):void => {
+            this.call((errors:IException[], response:boolean):void => {
                 handler(errors && errors.length ? errors : null,
-                    !errors ? !!<boolean>response : null);
+                    !errors || !errors.length ? !!response : null);
             }, "hasItem", this.getNamespace(), key);
         }
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     public hasItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:boolean;}|any) => void):void {
-        // todo: проверять входящие параметры
-        this.call((errors:IException[], response:any):void => {
-            var errs:IException[] = null,
-                result:any = null;
-            if (errors && errors.length) {
-                errs = errors;
-            } else {
-                result = response || null;
+
+        function handler(errors:IException[], response:{[index:string]:boolean;}|any):void {
+            if (isFunction(callback)) {
+                setTimeout(():void => {
+                    callback(errors, response);
+                }, 0);
             }
-            callback(errs, result);
-        }, "hasItems", this.getNamespace(), keys);
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
+        }
+
+        if (!isArray(keys) || !keys.length || keys.reduce((previous:boolean, element:string):boolean => {
+                return previous && isString(element);
+            }, true)) {
+            handler([new Exception({message: "keys should be a non empty strings array"})], null);
+        } else {
+            this.call((errors:IException[], response:{[index:string]:boolean;}|any):void => {
+                handler(errors && errors.length ? errors : null,
+                    !errors || !errors.length && response ? response : null);
+            }, "hasItems", this.getNamespace(), keys);
+        }
+
     }
 
     public getKey(index:number, callback?:(errors:IException[], response:string) => void):void {
+
         function handler(errors:IException[], response:string):void {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
                 }, 0);
             }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
         }
+
         if (!isNumber(index)) {
             handler([new Exception({message : "index should be a number"})], null);
         } else  {
-            this.call((errors:IException[], response:any):void => {
-                handler(errors ? errors : null,
-                    !errors ? String(<string>response || "") || null : null);
+            this.call((errors:IException[], response:string):void => {
+                handler(errors && errors.length ? errors : null,
+                    !errors || !errors.length ? String(response || "") || null : null);
             }, "getKey", this.getNamespace(), index);
         }
+
     }
 
     public getKeys(indexes:number[], callback?:(errors:IException[], response:string[]) => void):void {
+
         function handler(errors:IException[], response:string[]):void {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
                 }, 0);
             }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
         }
-        if (!isArray(indexes) || !indexes.reduce((previous:boolean, element:number):boolean => {
+
+        if (!isArray(indexes) || !indexes.length || !indexes.reduce((previous:boolean, element:number):boolean => {
                 return previous && isNumber(element);
             }, true)) {
             handler([new Exception({message : "indexes should be a numbers array"})], null);
         } else {
-            this.call((errors:IException[], response:any):void => {
+            this.call((errors:IException[], response:string[]):void => {
                 var errs:IException[] = null,
                     result:string[] = null;
                 if (errors && errors.length) {
                     errs = errors;
                 } else {
-                    result = <string[]>response || null;
+                    result = response || null;
                     if (!isArray(result) && !isNull(result)) {
                         result = [];
                     } else if (isArray(result)) {
@@ -369,40 +472,72 @@ class Client extends BaseClient implements IClient {
     }
 
     public getLength(callback?:(errors:IException[], response:number) => void):void {
+
         function handler(errors:IException[], response:number):void {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
                 }, 0);
             }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
         }
-        this.call((errors:IException[], response:any):void => {
+
+        this.call((errors:IException[], response:number):void => {
             handler(errors && errors.length ? errors : null,
-                !errors || !errors.length ? Math.max(0, parseInt(String(<any>response), 10) || 0) : null);
+                !errors || !errors.length ? Math.max(0, parseInt(String(response), 10) || 0) : null);
         }, "getLength", this.getNamespace());
+
+    }
+
+    public increment(key:string, callback?:(errors:IException[], response:string) => void, ttL?:number):void {
+        // todo: implement it
+    }
+
+    public decrement(key:string, callback?:(errors:IException[], response:string) => void, ttL?:number):void {
+        // todo: implement it
     }
 
     public lock(key:string, callback?:(errors:IException[], unlock:(callback?:(errors:IException[]) => void) => void) => void):void {
+
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, unlock);
                 }, 0);
             }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
         }
+
         var unlock:(callback?:(errors:IException[]) => void) => void =
                 (callback?:(errors:IException[]) => void):void => {
+
                     function handler(errors:IException[]):void {
                         if (isFunction(callback)) {
                             setTimeout(():void => {
                                 callback(errors);
                             }, 0);
                         }
+                        if (errors) {
+                            errors.forEach((error:IException):void => {
+                                logger.error(error.getStack());
+                            });
+                        }
                     }
-                    this.call((errors:IException[], response:any):void => {
+
+                    this.call((errors:IException[]):void => {
                         handler(errors && errors.length ? errors : null);
                     }, "unlock", this.getNamespace(), key);
+
                 };
+
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})]);
         } else {
@@ -410,6 +545,7 @@ class Client extends BaseClient implements IClient {
                 handler(errors && errors.length ? errors : null);
             }, "lock", this.getNamespace(), key);
         }
+
     }
 
 }
