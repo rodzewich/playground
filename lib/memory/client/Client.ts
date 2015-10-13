@@ -15,8 +15,6 @@ import NamespaceHelper  = require("../../helpers/NamespaceHelper");
 import INamespaceHelper = require("../../helpers/INamespaceHelper");
 import log4js           = require("../../../logger");
 
-// todo: 3. дописать постоянные соединения через pool
-
 var logger:log4js.Logger = log4js.getLogger("memory");
 
 class Client extends BaseClient implements IClient {

@@ -123,17 +123,29 @@ deferred([
         assert.equal(client.getNamespace(), "default");
         next();
     },
+    // set/get items
     (next:() => void):void => {
         var client:IClient = new Client({
             location: daemon.location
         });
         deferred([
             (next:() => void):void => {
-
+                client.setItem("test1", "content", (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getItem("test1", (errors, value):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(value, "content");
+                    next();
+                });
+            },
+            ():void => {
+                next();
             }
         ]);
-        client.setItem("test1", "test");
-        next();
     },
     shutdown
 ]);

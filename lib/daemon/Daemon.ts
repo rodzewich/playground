@@ -104,31 +104,34 @@ abstract class Daemon implements IDaemon {
             var data = new Buffer(0);
 
             socket.addListener("error", (error:Error):void => {
-                logger.warn(Exception.convertFromError(error).getStack());
+                logger.error(Exception.convertFromError(error).getStack());
             });
 
             socket.addListener("data", (buffer:Buffer):void => {
                 var index:number,
                     request:string,
-                    str:string;
+                    temp:Buffer,
+                    diff:number,
+                    length:number;
                 data = Buffer.concat([data, buffer]);
-                do {
-                    str   = data.toString("utf8");
-                    index = str.indexOf("\n");
-                    if (index !== -1) {
-                        // todo: reimplement
-                        request = str.slice(0, index + 1);
-                        data    = data.slice((new Buffer(request, "utf8")).length + 1);
+                temp = data;
+                length = data.length;
+                for (index = 0; index < length; index++) {
+                    if (data[index] === 0x0a) {
+                        diff = data.length - temp.length;
+                        temp = data.slice(index + 1);
+                        request = data.slice(diff, index).toString("utf8");
                         this.handler(parse(request), (response:any):void => {
                             socket.write(JSON.stringify(response));
                             socket.write(new Buffer([0x0a]));
                         });
                     }
-                } while (index !== -1)
+                }
+                data = temp;
             });
 
             socket.addListener("end", ():void => {
-                logger.info("Client disconnected");
+                logger.info("client disconnected");
             });
 
         });

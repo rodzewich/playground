@@ -121,6 +121,28 @@ class Client implements IClient {
         this.getTimeoutHelper().setValue(timeout);
     }
 
+    public get connected():boolean {
+        return this.isConnected();
+    }
+
+    public set connected(value:boolean) {
+    }
+
+    public isConnected():boolean {
+        return this._connected;
+    }
+
+    public get disconnected():boolean {
+        return this.isDisconnected();
+    }
+
+    public set disconnected(value:boolean) {
+    }
+
+    public isDisconnected():boolean {
+        return this._disconnected;
+    }
+
     protected call(callback?:(errors:IException[], response:any) => void, ...args:any[]):void {
         var request:string,
             timeout:NodeJS.Timer,
