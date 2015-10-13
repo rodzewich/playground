@@ -17,6 +17,8 @@ import log4js           = require("../../../logger");
 // todo: 1. добавить логирование!
 // todo: 3. дописать постоянные соединения через pool
 // todo: 4. дописать hasNamespace, getNamespaces, removeNamespace
+// todo: implement ttl parametr
+// todo: implement inc & dec
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
@@ -78,14 +80,13 @@ class Client extends BaseClient implements IClient {
         // todo: implement it
     }
 
-    public ping(callback?:(errors:IException[]) => void, timeout:number = 100):void {
-        var temp:number = Math.max(0, parseInt(String(timeout), 10) || 0) || 0,
-            alreadyCalled:boolean = false;
+    public ping(callback?:(errors:IException[]) => void):void {
 
         function handler(errors:IException[]):void {
-            if (isFunction(callback) && !alreadyCalled) {
-                alreadyCalled = true;
-                callback(errors);
+            if (isFunction(callback)) {
+                setTimeout(():void => {
+                    callback(errors);
+                }, 0);
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -98,9 +99,6 @@ class Client extends BaseClient implements IClient {
             handler(errors && errors.length ? errors : null);
         }, "ping");
 
-        setTimeout(():void => {
-            handler([new Exception({message: "bla bla bla"})]);
-        }, temp);
     }
 
     public getItem(key:string, callback?:(errors:IException[], response:any) => void):void {
