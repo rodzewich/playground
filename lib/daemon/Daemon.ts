@@ -94,7 +94,7 @@ abstract class Daemon implements IDaemon {
                 this._server = undefined;
                 handler([Exception.convertFromError(error)]);
             } else {
-                logger.info("Opened daemon", this._server.address());
+                logger.info("opened daemon", this._server.address());
                 this._started = true;
                 handler(null);
             }
@@ -148,12 +148,15 @@ abstract class Daemon implements IDaemon {
             }
         }
 
+        console.log("closing");
         if (!this._server) {
             handler([new Exception({message : "daemon cannot be stopped"})]);
         } else if (!this._started) {
             // throw new Exception({message: "daemon cannot be stopped"});
         } else {
+            console.log("closing"); // todo: not working !!!
             this._server.close(():void => {
+                console.log("closed");
                 this._server  = undefined;
                 this._started = false;
                 handler(null);
