@@ -11,16 +11,18 @@ interface IClient extends IBaseClient {
     getNamespaces(callback?:(errors:IException[], response:string[]) => void):void;
     hasNamespace(namespace:string, callback?:(errors:IException[], response:boolean) => void):void;
     removeNamespace(namespace:string, callback?:(errors:IException[]) => void):void;
-    getItem(key:string, callback?:(errors:IException[], response:any) => void): void;
-    getItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:any;}|any) => void): void;
-    setItem(key:string, value:any, callback?:(errors:IException[]) => void): void;
-    setItems(data:{[index:string]:any;}|any, callback?:(errors:IException[]) => void): void;
+    getItem(key:string, callback?:(errors:IException[], response:any) => void):void;
+    getItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:any;}|any) => void):void;
+    setItem(key:string, value:any, callback?:(errors:IException[]) => void, ttl?:number):void;
+    setItems(data:{[index:string]:any;}|any, callback?:(errors:IException[]) => void, ttl?:number):void;
+    getTtl(key:string, callback?:(errors:IException[], response:number) => void):void;
+    getTtls(keys:string[], callback?:(errors:IException[], response:{[index:string]:number;}|any) => void):void;
     removeItem(key:string, callback?:(errors:IException[]) => void):void;
     removeItems(keys:string[], callback?:(errors:IException[]) => void):void;
     hasItem(key:string, callback?:(errors:IException[], response:boolean) => void):void;
     hasItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:boolean;}|any) => void):void;
-    getKey(index:number, callback?:(errors:IException[], response:string) => void): void;
-    getKeys(indexes:number[], callback?:(errors:IException[], response:string[]) => void): void;
+    getKey(index:number, callback?:(errors:IException[], response:string) => void):void;
+    getKeys(indexes:number[], callback?:(errors:IException[], response:string[]) => void):void;
     getLength(callback?:(errors:IException[], response:number) => void):void;
     lock(key:string, callback?:(errors:IException[], unlock:(callback?:(errors:IException[]) => void) => void) => void):void;
 }
