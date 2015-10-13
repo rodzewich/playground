@@ -11,11 +11,14 @@ import Exception        = require("../exception/Exception");
 import IException       = require("../exception/IException");
 import NamespaceHelper  = require("../../helpers/NamespaceHelper");
 import INamespaceHelper = require("../../helpers/INamespaceHelper");
+import log4js           = require("../../../logger");
+
 
 // todo: 1. добавить логирование!
 // todo: 3. дописать постоянные соединения через pool
 // todo: 4. дописать hasNamespace, getNamespaces, removeNamespace
-// todo: 5. сделать пинг
+
+var logger:log4js.Logger = log4js.getLogger("memory");
 
 class Client extends BaseClient implements IClient {
 
@@ -43,16 +46,16 @@ class Client extends BaseClient implements IClient {
         return this.getNamespaceHelper().getValue();
     }
 
-    public setNamespace(value:string):void {
-        this.getNamespaceHelper().setValue(value);
+    public setNamespace(namespace:string):void {
+        this.getNamespaceHelper().setValue(namespace);
     }
 
     public get namespace():string {
         return this.getNamespace();
     }
 
-    public set namespace(value:string) {
-        this.setNamespace(value);
+    public set namespace(namespace:string) {
+        this.setNamespace(namespace);
     }
 
     public getInfo(callback?:(errors:IException[], response:IInformation) => void):void {
@@ -60,19 +63,44 @@ class Client extends BaseClient implements IClient {
     }
 
     public getNamespaces(callback?:(errors:IException[], response:string[]) => void):void {
+
+        this.call((errors:IException[]):void => {
+            handler(errors && errors.length ? errors : null);
+        }, "getNamespaces");
+
+    }
+
+    public hasNamespace(namespace:string, callback?:(errors:IException[], response:boolean) => void):void {
         // todo: implement it
     }
 
-    public hasNamespace(value:string, callback?:(errors:IException[], response:boolean) => void):void {
+    public removeNamespace(namespace:string, callback?:(errors:IException[]) => void):void {
         // todo: implement it
     }
 
-    public removeNamespace(value:string, callback?:(errors:IException[]) => void):void {
-        // todo: implement it
-    }
+    public ping(callback?:(errors:IException[]) => void, timeout:number = 100):void {
+        var temp:number = Math.max(0, parseInt(String(timeout), 10) || 0) || 0,
+            alreadyCalled:boolean = false;
 
-    public ping(callback?:(errors:IException[]) => void):void {
-        // todo: implement it
+        function handler(errors:IException[]):void {
+            if (isFunction(callback) && !alreadyCalled) {
+                alreadyCalled = true;
+                callback(errors);
+            }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
+        }
+
+        this.call((errors:IException[]):void => {
+            handler(errors && errors.length ? errors : null);
+        }, "ping");
+
+        setTimeout(():void => {
+            handler([new Exception({message: "bla bla bla"})]);
+        }, temp);
     }
 
     public getItem(key:string, callback?:(errors:IException[], response:any) => void):void {
@@ -95,11 +123,11 @@ class Client extends BaseClient implements IClient {
                     result = response || null
                 }
                 handler(errs, result);
-            }, this.getNamespace(), "getItem", key);
+            }, "getItem", this.getNamespace(), key);
         }
     }
 
-    public getItems(keys:string[], callback?:(errors:IException[], response:any) => void):void {
+    public getItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:any;}|any) => void):void {
         // todo: проверять входящие параметры
         this.call((errors:IException[], response:any):void => {
             var errs:IException[] = null,
@@ -110,7 +138,7 @@ class Client extends BaseClient implements IClient {
                 result = response || null
             }
             callback(errs, result);
-        }, this.getNamespace(), "getItems", keys);
+        }, "getItems", this.getNamespace(), keys);
     }
 
     public setItem(key:string, value:any, callback?:(errors:IException[]) => void):void {
@@ -130,11 +158,11 @@ class Client extends BaseClient implements IClient {
                     errs = errors;
                 }
                 handler(errs);
-            }, this.getNamespace(), "setItem", key, value);
+            }, "setItem", this.getNamespace(), key, value);
         }
     }
 
-    public setItems(data:any, callback?:(errors:IException[]) => void):void {
+    public setItems(data:{[index:string]:any;}|any, callback?:(errors:IException[]) => void):void {
         // todo: проверять входящие параметры
         this.call((errors:IException[], response:any):void => {
             var errs:IException[] = null;
@@ -142,7 +170,7 @@ class Client extends BaseClient implements IClient {
                 errs = errors;
             }
             callback(errs);
-        }, this.getNamespace(), "setItems", data);
+        }, "setItems", this.getNamespace(), data);
     }
 
     public removeItem(key:string, callback?:(errors:IException[]) => void):void {
@@ -158,7 +186,7 @@ class Client extends BaseClient implements IClient {
         } else {
             this.call((errors:IException[], response:any):void => {
                 handler(errors && errors.length ? errors : null);
-            }, this.getNamespace(), "removeItem", key);
+            }, "removeItem", this.getNamespace(), key);
         }
     }
 
@@ -170,7 +198,7 @@ class Client extends BaseClient implements IClient {
                 errs = errors;
             }
             callback(errs);
-        }, this.getNamespace(), "removeItems", keys);
+        }, "removeItems", this.getNamespace(), keys);
     }
 
     public hasItem(key:string, callback?:(errors:IException[], response:boolean) => void):void {
@@ -187,11 +215,11 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:any):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors ? !!<boolean>response : null);
-            }, this.getNamespace(), "hasItem", key);
+            }, "hasItem", this.getNamespace(), key);
         }
     }
 
-    public hasItems(keys:string[], callback?:(errors:IException[], response:any) => void):void {
+    public hasItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:boolean;}|any) => void):void {
         // todo: проверять входящие параметры
         this.call((errors:IException[], response:any):void => {
             var errs:IException[] = null,
@@ -202,7 +230,7 @@ class Client extends BaseClient implements IClient {
                 result = response || null;
             }
             callback(errs, result);
-        }, this.getNamespace(), "hasItems", keys);
+        }, "hasItems", this.getNamespace(), keys);
     }
 
     public getKey(index:number, callback?:(errors:IException[], response:string) => void):void {
@@ -219,7 +247,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:any):void => {
                 handler(errors ? errors : null,
                     !errors ? String(<string>response || "") || null : null);
-            }, this.getNamespace(), "getKey", index);
+            }, "getKey", this.getNamespace(), index);
         }
     }
 
@@ -252,7 +280,7 @@ class Client extends BaseClient implements IClient {
                     }
                 }
                 handler(errs, result);
-            }, this.getNamespace(), "getKeys", indexes);
+            }, "getKeys", this.getNamespace(), indexes);
         }
     }
 
@@ -267,7 +295,7 @@ class Client extends BaseClient implements IClient {
         this.call((errors:IException[], response:any):void => {
             handler(errors && errors.length ? errors : null,
                 !errors || !errors.length ? Math.max(0, parseInt(String(<any>response), 10) || 0) : null);
-        }, this.getNamespace(), "getLength");
+        }, "getLength", this.getNamespace());
     }
 
     public lock(key:string, callback?:(errors:IException[], unlock:(callback?:(errors:IException[]) => void) => void) => void):void {
@@ -289,14 +317,14 @@ class Client extends BaseClient implements IClient {
                     }
                     this.call((errors:IException[], response:any):void => {
                         handler(errors && errors.length ? errors : null);
-                    }, this.getNamespace(), "unlock", key);
+                    }, "unlock", this.getNamespace(), key);
                 };
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})]);
         } else {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, this.getNamespace(), "lock", key);
+            }, "lock", this.getNamespace(), key);
         }
     }
 

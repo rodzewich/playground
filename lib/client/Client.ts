@@ -16,6 +16,8 @@ import MeLocationHelper = require("../helpers/MeLocationHelper");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
 import HandlersRegistrationHelper = require("../helpers/HandlersRegistrationHelper");
 import IHandlersRegistrationHelper = require("../helpers/IHandlersRegistrationHelper");
+import TimeoutHelper = require("../helpers/TimeoutHelper");
+import ITimeoutHelper = require("../helpers/ITimeoutHelper");
 
 var logger:log4js.Logger = log4js.getLogger("client");
 
@@ -65,9 +67,25 @@ class Client implements IClient {
         return this._meLocationHelper;
     }
 
+    private _timeoutHelper:ITimeoutHelper;
+
+    protected createTimeoutHelper():ITimeoutHelper {
+        return new TimeoutHelper(50);
+    }
+
+    protected getTimeoutHelper():ITimeoutHelper {
+        if (!this._timeoutHelper) {
+            this._timeoutHelper = this.createTimeoutHelper();
+        }
+        return this._timeoutHelper;
+    }
+
     constructor(options:IOptions) {
         if (options && isDefined(options.location)) {
             this.setLocation(options.location);
+        }
+        if (options && isDefined(options.timeout)) {
+            this.setTimeout(options.timeout);
         }
     }
 
@@ -75,24 +93,51 @@ class Client implements IClient {
         return this.getLocation();
     }
 
-    public set location(value:string) {
-        this.setLocation(value);
+    public set location(location:string) {
+        this.setLocation(location);
+    }
+
+    public get timeout():number {
+        return this.getTimeout();
+    }
+
+    public set timeout(timeout:number) {
+        this.setTimeout(timeout);
     }
 
     public getLocation():string {
         return this.getMeLocationHelper().getLocation();
     }
 
-    public setLocation(value:string):void {
-        this.getMeLocationHelper().setLocation(value);
+    public setLocation(location:string):void {
+        this.getMeLocationHelper().setLocation(location);
+    }
+
+    public getTimeout():number {
+        return this.getTimeoutHelper().getValue();
+    }
+
+    public setTimeout(timeout:number):void {
+        this.getTimeoutHelper().setValue(timeout);
     }
 
     protected call(callback?:(errors:IException[], response:any) => void, ...args:any[]):void {
-        var request:string;
+        var request:string,
+            timeout:NodeJS.Timer,
+            alreadyCalled:boolean = false;
 
         function handler(errors:IException[], response:any):void {
-            if (isFunction(callback)) {
-                callback(errors, response);
+            if (isFunction(callback) && !alreadyCalled) {
+                setTimeout(():void => {
+                    callback(errors, response);
+                }, 0);
+            }
+            alreadyCalled = true;
+            clearTimeout(timeout);
+            if (errors && errors.length) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
             }
         }
 
@@ -114,11 +159,12 @@ class Client implements IClient {
                     });
                     this._client.write(request);
                     this._client.write(new Buffer([0x0a]));
+                    timeout = setTimeout(():void => {
+
+                    }, this.getTimeout());
                 } else {
-                    setTimeout(():void => {
-                        logger.warn("connection is not ready");
-                        handler([new Exception({message : "connection is not ready"})], null);
-                    }, 0);
+                    logger.warn("connection is not ready");
+                    handler([new Exception({message : "connection is not ready"})], null);
                 }
             }
         ]);
@@ -130,7 +176,6 @@ class Client implements IClient {
             client:net.Socket,
             connected:(errors:IException[]) => void =
                 (errors:IException[]):void => {
-
                     var call:(callback:(errors:IException[]) => void) => void =
                         (callback:(errors:IException[]) => void):void => {
                         setTimeout(():void => {
@@ -189,20 +234,20 @@ class Client implements IClient {
                     fs.stat(this.getLocation(), (error:NodeJS.ErrnoException, stats:fs.Stats):void => {
                         if (error && error.code !== "ENOENT") {
                             connected([Exception.convertFromError(error, {
-                                code: error.code,
-                                errno: error.errno,
-                                path: error.path,
-                                syscall: error.syscall
+                                code    : error.code,
+                                errno   : error.errno,
+                                path    : error.path,
+                                syscall : error.syscall
                             })]);
                         } else if (error && error.code === "ENOENT" ||
                             stats && !stats.isSocket()) {
                             connected([new Exception({
-                                message: "socket is not exists",
-                                data: {
-                                    code: error.code,
-                                    errno: error.errno,
-                                    path: error.path,
-                                    syscall: error.syscall
+                                message : "socket is not exists",
+                                data    : {
+                                    code    : error.code,
+                                    errno   : error.errno,
+                                    path    : error.path,
+                                    syscall : error.syscall
                                 }
                             })]);
                         } else {
