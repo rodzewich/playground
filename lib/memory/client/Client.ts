@@ -213,7 +213,7 @@ class Client extends BaseClient implements IClient {
             }
         }
 
-        if (!isArray(keys) || !keys.length || keys.reduce((previous:boolean, element:string):boolean => {
+        if (!isArray(keys) || !keys.length || !keys.reduce((previous:boolean, element:string):boolean => {
                 return previous && isString(element);
             }, true)) {
             handler([new Exception({message: "keys should be a non empty strings array"})], null);

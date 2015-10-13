@@ -124,7 +124,7 @@ deferred([
         next();
     },
     // ping
-    (next:() => void):void => {
+    /*(next:() => void):void => {
         var client:IClient = new Client({
             location: daemon.location
         });
@@ -138,7 +138,7 @@ deferred([
             assert.strictEqual(errors, null);
             next();
         });
-    },
+    },*/
     // set/get items
     (next:() => void):void => {
         var client:IClient = new Client({
@@ -146,15 +146,33 @@ deferred([
         });
         deferred([
             (next:() => void):void => {
-                client.setItem("test1", "content", (errors):void => {
+                client.setItem("key1", "test1", (errors):void => {
                     assert.strictEqual(errors, null);
                     next();
                 });
             },
             (next:() => void):void => {
-                client.getItem("test1", (errors, value):void => {
+                client.getItem("key1", (errors, value):void => {
                     assert.strictEqual(errors, null);
-                    assert.strictEqual(value, "content");
+                    assert.strictEqual(value, "test1");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.setItems({
+                    key2: "test2",
+                    key3: "test3"
+                }, (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getItems(["key1", "key2", "key3"], (errors, result):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(result.key1, "test1");
+                    assert.strictEqual(result.key2, "test2");
+                    assert.strictEqual(result.key3, "test3");
                     next();
                 });
             },
@@ -162,6 +180,10 @@ deferred([
                 next();
             }
         ]);
+    },
+    // has/remove items
+    (next:() => void):void => {
+
     },
     shutdown
 ]);
