@@ -41,7 +41,7 @@ function shutdown(callback:() => void):void {
             });
         },
         (next:() => void):void => {
-            fs.stat(daemon.location, (error: NodeJS.ErrnoException, stats: fs.Stats):void => {
+            fs.stat(daemon.location, (error: NodeJS.ErrnoException):void => {
                 assert.strictEqual(error.code, "ENOENT");
                 next();
             });
