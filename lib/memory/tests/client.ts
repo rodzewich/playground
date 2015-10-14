@@ -335,7 +335,7 @@ deferred([
             (next:() => void):void => {
                 client.getKey(null, (errors) => {
                     assert.notStrictEqual(errors, null);
-                    assert.strictEqual(errors[0].getMessage(), "index should be a number");
+                    assert.strictEqual(errors[0].getMessage(), "index should be a positive number");
                     next();
                 });
             },
@@ -349,7 +349,7 @@ deferred([
             (next:() => void):void => {
                 client.getKeys(null, (errors) => {
                     assert.notStrictEqual(errors, null);
-                    assert.strictEqual(errors[0].getMessage(), "indexes should be a numbers array");
+                    assert.strictEqual(errors[0].getMessage(), "indexes should be a positive numbers array");
                     next();
                 });
             },
@@ -399,6 +399,26 @@ deferred([
                 client.hasNamespace("another", (errors, response):void => {
                     assert.strictEqual(errors, null);
                     assert.strictEqual(response, false);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.removeNamespace("custom", (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.hasNamespace("custom", (errors, response):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(response, false);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getItem("key1", (errors, response:any):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(response, null);
                     next();
                 });
             },

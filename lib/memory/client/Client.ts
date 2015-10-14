@@ -482,9 +482,9 @@ class Client extends BaseClient implements IClient {
         }
 
         if (!isArray(indexes) || !indexes.length || !indexes.reduce((previous:boolean, element:number):boolean => {
-                return previous && isNumber(element);
+                return previous && isNumber(element) && element >= 0;
             }, true)) {
-            handler([new Exception({message : "indexes should be a numbers array"})], null);
+            handler([new Exception({message : "indexes should be a positive numbers array"})], null);
         } else {
             this.call((errors:IException[], response:string[]):void => {
                 var errs:IException[] = null,
