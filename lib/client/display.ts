@@ -1,3 +1,6 @@
+/// <reference path="../../types/node/node.d.ts" />
+/// <reference path="../../types/colors/colors.d.ts" />
+
 import colors = require("colors");
 
 class Type {

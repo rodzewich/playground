@@ -172,6 +172,27 @@ class Client extends BaseClient implements IClient {
 
     }
 
+    public stop(callback?:(errors:IException[]) => void):void {
+
+        function handler(errors:IException[]):void {
+            if (isFunction(callback)) {
+                setTimeout(():void => {
+                    callback(errors);
+                }, 0);
+            }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
+        }
+
+        this.call((errors:IException[]):void => {
+            handler(errors && errors.length ? errors : null);
+        }, null, "stop");
+
+    }
+
     public getItem(key:string, callback?:(errors:IException[], response:any) => void):void {
 
         function handler(errors:IException[], response:any):void {
@@ -352,7 +373,7 @@ class Client extends BaseClient implements IClient {
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})], null);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
-            handler([new Exception({message : "ttl should be a positive integer"})]);
+            handler([new Exception({message : "ttl should be a positive integer"})], null);
         } else {
             this.call((errors:IException[], response:any):void => {
                 handler(errors && errors.length ? errors : null,
@@ -382,7 +403,7 @@ class Client extends BaseClient implements IClient {
             }, true)) {
             handler([new Exception({message: "keys should be a non empty strings array"})], null);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
-            handler([new Exception({message : "ttl should be a positive integer"})]);
+            handler([new Exception({message : "ttl should be a positive integer"})], null);
         } else {
             this.call((errors:IException[], response:{[index:string]:number;}|any):void => {
                 handler(errors && errors.length ? errors : null,

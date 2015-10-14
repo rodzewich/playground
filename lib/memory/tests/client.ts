@@ -433,7 +433,8 @@ deferred([
     (next:() => void):void => {
         var current:string,
             client:IClient = new Client({
-                location : daemon.location
+                location : daemon.location,
+                debug    : true
             });
         parallel([
             (done:() => void):void => {

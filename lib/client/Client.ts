@@ -20,12 +20,12 @@ import HandlersRegistrationHelper = require("../helpers/HandlersRegistrationHelp
 import IHandlersRegistrationHelper = require("../helpers/IHandlersRegistrationHelper");
 import TimeoutHelper = require("../helpers/TimeoutHelper");
 import ITimeoutHelper = require("../helpers/ITimeoutHelper");
+import DebugHelper = require("../helpers/DebugHelper");
+import IDebugHelper = require("../helpers/IDebugHelper");
 
 var logger:log4js.Logger = log4js.getLogger("client");
 
 class Client implements IClient {
-
-    private _debug:boolean = true;
 
     private _client:net.Socket = null;
 
@@ -71,6 +71,19 @@ class Client implements IClient {
         return this._meLocationHelper;
     }
 
+    private _debugHelper:IDebugHelper;
+
+    protected createDebugHelper():IDebugHelper {
+        return new DebugHelper();
+    }
+
+    protected getDebugHelper():IDebugHelper {
+        if (!this._debugHelper) {
+            this._debugHelper = this.createDebugHelper();
+        }
+        return this._debugHelper;
+    }
+
     private _timeoutHelper:ITimeoutHelper;
 
     protected createTimeoutHelper():ITimeoutHelper {
@@ -91,6 +104,9 @@ class Client implements IClient {
         if (options && isDefined(options.timeout)) {
             this.setTimeout(options.timeout);
         }
+        if (options && isDefined(options.debug)) {
+            this.setIsDebug(options.debug);
+        }
     }
 
     public get location():string {
@@ -109,8 +125,24 @@ class Client implements IClient {
         this.setTimeout(timeout);
     }
 
+    public get debug():boolean {
+        return this.getIsDebug();
+    }
+
+    public set debug(value:boolean) {
+        this.setIsDebug(value);
+    }
+
     public isDebug():boolean {
-        return this._debug;
+        return this.getDebugHelper().isDebug();
+    }
+
+    public getIsDebug():boolean {
+        return this.getDebugHelper().getIsDebug();
+    }
+
+    public setIsDebug(value:boolean):void {
+        this.getDebugHelper().setIsDebug(value);
     }
 
     public getLocation():string {
@@ -151,7 +183,7 @@ class Client implements IClient {
         return this._disconnected;
     }
 
-    protected call(callback?:(errors:IException[], response:any) => void, timeout:number, ...args:any[]):void {
+    protected call(callback?:(errors:IException[], response:any) => void, timeout?:number, ...args:any[]):void {
         var request:string,
             timer:NodeJS.Timer,
             alreadyCalled:boolean = false;

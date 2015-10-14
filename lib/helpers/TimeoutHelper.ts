@@ -9,7 +9,7 @@ class TimeoutHelper implements ITimeoutHelper {
 
     protected DEFAULT:number = 300;
 
-    constructor(value:number) {
+    constructor(value?:number) {
         this._value = this.DEFAULT;
         if (isDefined(value)) {
             this.setValue(value);
