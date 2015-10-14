@@ -7,6 +7,7 @@ interface IClient extends IBaseClient {
     getNamespace():string;
     setNamespace(namespace:string):void;
     ping(callback?:(errors:IException[]) => void):void;
+    stop(callback?:(errors:IException[]) => void):void;
     getInfo(callback?:(errors:IException[], response:IInformation) => void):void;
     getNamespaces(callback?:(errors:IException[], response:string[]) => void):void;
     hasNamespace(namespace:string, callback?:(errors:IException[], response:boolean) => void):void;
