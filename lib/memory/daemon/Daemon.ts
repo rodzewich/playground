@@ -135,7 +135,7 @@ class Daemon extends BaseDaemon implements IDaemon {
         return Object.keys(this._memory[namespace]).length;
     }
 
-    public lock(namespace:string, key:string, callback:(error?:Error) => void):void {
+    public lock(namespace:string, key:string, callback?:(error:Exception) => void):void {
         if (!this._locks[namespace]) {
             this._locks[namespace] = {};
         }
@@ -154,17 +154,19 @@ class Daemon extends BaseDaemon implements IDaemon {
     }
 
     public unlock(namespace:string, key:string):void {
-        var callback:(error?:Error) => void;
+        var callback:(error:Exception) => void;
         if (this._locks[namespace]) {
             delete this._locks[namespace][key];
         }
         if (this._queues[namespace][key]) {
-            callback = (<((error?:Error) => void)[]>this._queues[namespace][key]).shift();
-            if (typeof callback === "function") {
+            callback = (<((error:Exception) => void)[]>this._queues[namespace][key]).shift();
+            if (isFunction(callback)) {
                 this._locks[namespace][key] = true;
-                callback(null);
+                setTimeout(():void => {
+                    callback(null);
+                }, 0);
             }
-            if (!(<((error?:Error) => void)[]>this._queues[namespace][key]).length) {
+            if (!(<((error:Exception) => void)[]>this._queues[namespace][key]).length) {
                 delete this._queues[namespace][key];
             }
         }
@@ -256,9 +258,9 @@ class Daemon extends BaseDaemon implements IDaemon {
                         break;
                     case "lock":
                         response.result = null;
-                        this.lock(<string>args[0], <string>args[1], (error?:Error):void => {
+                        this.lock(<string>args[0], <string>args[1], (error:Exception):void => {
                             if (error) {
-                                response.errors = error;
+                                response.errors = [error.toObject()];
                             }
                             handler(response);
                         });

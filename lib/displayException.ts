@@ -1,11 +1,11 @@
 /// <reference path="../types/node/node.d.ts" />
 /// <reference path="../types/colors/colors.d.ts" />
 
+import colors     = require("colors");
 import IException = require("./exception/IException");
 
 function displayException(error:IException) {
-    var columns = process.stdout.columns || 80,
-        colors  = require("colors");
+    var columns = process.stdout.columns || 80;
     function spaces(num:number) {
         return new Array(num + 1).join(" ");
     }

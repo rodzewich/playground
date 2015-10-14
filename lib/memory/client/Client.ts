@@ -73,7 +73,7 @@ class Client extends BaseClient implements IClient {
         this.call((errors:IException[], response:IInformation):void => {
             handler(errors && errors.length ? errors : null,
                 !errors || !errors.length ? response || null : null);
-        }, "getInfo", this.getNamespace());
+        }, null, "getInfo", this.getNamespace());
 
 
     }
@@ -96,7 +96,7 @@ class Client extends BaseClient implements IClient {
         this.call((errors:IException[], response:string[]):void => {
             handler(errors && errors.length ? errors : null,
                 !errors || !errors.length ? response || null : null);
-        }, "getNamespaces");
+        }, null, "getNamespaces");
 
     }
 
@@ -121,7 +121,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:boolean):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? !!response : null);
-            }, "hasNamespace", namespace);
+            }, null, "hasNamespace", namespace);
         }
 
     }
@@ -146,7 +146,7 @@ class Client extends BaseClient implements IClient {
         } else {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, "removeNamespace", this.getNamespace(), namespace);
+            }, null, "removeNamespace", namespace);
         }
 
     }
@@ -168,7 +168,7 @@ class Client extends BaseClient implements IClient {
 
         this.call((errors:IException[]):void => {
             handler(errors && errors.length ? errors : null);
-        }, "ping");
+        }, null, "ping");
 
     }
 
@@ -193,7 +193,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:any):void => {
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && isDefined(response) ? response : null);
-            }, "getItem", this.getNamespace(), key);
+            }, null, "getItem", this.getNamespace(), key);
         }
 
     }
@@ -221,7 +221,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:{[index:string]:any;}|any):void => {
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && isDefined(response) ? response : null);
-            }, "getItems", this.getNamespace(), keys);
+            }, null, "getItems", this.getNamespace(), keys);
         }
 
     }
@@ -248,7 +248,7 @@ class Client extends BaseClient implements IClient {
         } else {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, "setItem", this.getNamespace(), key, value, ttl ? Math.floor(ttl) : null);
+            }, null, "setItem", this.getNamespace(), key, value, ttl ? Math.floor(ttl) : null);
         }
 
     }
@@ -275,7 +275,7 @@ class Client extends BaseClient implements IClient {
         } else {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, "setItems", this.getNamespace(), data, ttl ? Math.floor(ttl) : null);
+            }, null, "setItems", this.getNamespace(), data, ttl ? Math.floor(ttl) : null);
         }
 
     }
@@ -301,7 +301,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:any):void => {
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && isDefined(response) ? response : null);
-            }, "getTtl", this.getNamespace(), key);
+            }, null, "getTtl", this.getNamespace(), key);
         }
 
     }
@@ -329,7 +329,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:{[index:string]:number;}|any):void => {
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && isDefined(response) ? response : null);
-            }, "getTtls", this.getNamespace(), keys);
+            }, null, "getTtls", this.getNamespace(), keys);
         }
 
     }
@@ -357,7 +357,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:any):void => {
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && isDefined(response) ? response : null);
-            }, "setTtl", this.getNamespace(), key, ttl);
+            }, null, "setTtl", this.getNamespace(), key, ttl);
         }
 
     }
@@ -387,7 +387,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:{[index:string]:number;}|any):void => {
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && isDefined(response) ? response : null);
-            }, "setTtls", this.getNamespace(), keys, ttl);
+            }, null, "setTtls", this.getNamespace(), keys, ttl);
         }
 
     }
@@ -412,7 +412,7 @@ class Client extends BaseClient implements IClient {
         } else {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, "removeItem", this.getNamespace(), key);
+            }, null, "removeItem", this.getNamespace(), key);
         }
 
     }
@@ -439,7 +439,7 @@ class Client extends BaseClient implements IClient {
         } else {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, "removeItems", this.getNamespace(), keys);
+            }, null, "removeItems", this.getNamespace(), keys);
         }
 
     }
@@ -465,7 +465,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:boolean):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? !!response : null);
-            }, "hasItem", this.getNamespace(), key);
+            }, null, "hasItem", this.getNamespace(), key);
         }
 
     }
@@ -493,7 +493,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:{[index:string]:boolean;}|any):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? response || null : null);
-            }, "hasItems", this.getNamespace(), keys);
+            }, null, "hasItems", this.getNamespace(), keys);
         }
 
     }
@@ -519,7 +519,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:string):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? String(response || "") || null : null);
-            }, "getKey", this.getNamespace(), index);
+            }, null, "getKey", this.getNamespace(), index);
         }
 
     }
@@ -560,7 +560,7 @@ class Client extends BaseClient implements IClient {
                     }
                 }
                 handler(errs, result);
-            }, "getKeys", this.getNamespace(), indexes);
+            }, null, "getKeys", this.getNamespace(), indexes);
         }
     }
 
@@ -582,7 +582,7 @@ class Client extends BaseClient implements IClient {
         this.call((errors:IException[], response:number):void => {
             handler(errors && errors.length ? errors : null,
                 !errors || !errors.length ? Math.max(0, parseInt(String(response), 10) || 0) : null);
-        }, "getLength", this.getNamespace());
+        }, null, "getLength", this.getNamespace());
 
     }
 
@@ -607,7 +607,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:string):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? response || null : null);
-            }, "increment", this.getNamespace(), key);
+            }, null, "increment", this.getNamespace(), key);
         }
 
     }
@@ -633,7 +633,7 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[], response:string):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? response || null : null);
-            }, "decrement", this.getNamespace(), key);
+            }, null, "decrement", this.getNamespace(), key);
         }
 
     }
@@ -671,7 +671,7 @@ class Client extends BaseClient implements IClient {
 
                     this.call((errors:IException[]):void => {
                         handler(errors && errors.length ? errors : null);
-                    }, "unlock", this.getNamespace(), key);
+                    }, null, "unlock", this.getNamespace(), key);
 
                 };
 
@@ -680,7 +680,7 @@ class Client extends BaseClient implements IClient {
         } else {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, "lock", this.getNamespace(), key);
+            }, -1, "lock", this.getNamespace(), key);
         }
 
     }

@@ -60,15 +60,13 @@ abstract class Daemon implements IDaemon {
     }
 
     protected handler(request:any, callback:(response:any) => void):void {
-        var id:number;
         if (!request) {
             setTimeout(():void => {
                 callback({});
             }, 0)
         } else {
-            id = Math.max(0, parseInt(String(request.id || 0), 10) || 0);
             setTimeout(():void => {
-                callback({id: id});
+                callback({id: String(request.id)});
             }, 0)
         }
     }

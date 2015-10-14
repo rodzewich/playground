@@ -3,9 +3,14 @@ import ITimeoutHelper = require("./ITimeoutHelper");
 
 class TimeoutHelper implements ITimeoutHelper {
 
-    private _value:number = 50;
+    private _value:number;
+
+    protected MINIMUM:number = 50;
+
+    protected DEFAULT:number = 300;
 
     constructor(value:number) {
+        this._value = this.DEFAULT;
         if (isDefined(value)) {
             this.setValue(value);
         }
@@ -16,7 +21,7 @@ class TimeoutHelper implements ITimeoutHelper {
     }
 
     public setValue(value:number):void {
-        this._value = Math.max(50, parseInt(String(value), 10) || 0);
+        this._value = Math.max(this.MINIMUM, parseInt(String(value), 10) || 0);
     }
 
 }

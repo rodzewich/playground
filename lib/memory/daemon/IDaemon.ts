@@ -16,7 +16,7 @@ interface IDaemon extends IBaseDaemon {
     getKey(namespace:string, index:number):string;
     getKeys(namespace:string, indexes:number[]):string[];
     getLength(namespace:string):number;
-    lock(namespace:string, key:string, callback:(error?:IException) => void):void;
+    lock(namespace:string, key:string, callback?:(error:IException) => void):void;
     unlock(namespace:string, key:string):void;
 }
 

@@ -11,6 +11,7 @@ import IDaemon = require("../client/IDaemon");
 import IException = require("../../exception/IException");
 import Exception = require("../../exception/Exception");
 import deferred = require("../../deferred");
+import parallel = require("../../parallel");
 import displayException = require("../../displayException");
 
 require("../../mapping");
@@ -362,8 +363,8 @@ deferred([
     // namespaces
     (next:() => void):void => {
         var client:IClient = new Client({
-            location: daemon.location,
-            namespace: "custom"
+            location  : daemon.location,
+            namespace : "custom"
         });
         deferred([
             (next:() => void):void => {
@@ -430,11 +431,75 @@ deferred([
     },
     // locks
     (next:() => void):void => {
-        var client:IClient = new Client({
-            location: daemon.location
+        var current:string,
+            client:IClient = new Client({
+                location : daemon.location
+            });
+        parallel([
+            (done:() => void):void => {
+                client.lock("key", (errors, unlock:(callback?:(errors:IException[]) => void) => void):void => {
+                    current = "lock1";
+                    assert.strictEqual(errors, null);
+                    client.getItem("inc", (errors, value):void => {
+                        assert.strictEqual(errors, null);
+                        assert.strictEqual(current, "lock1");
+                        client.setItem("inc", (value || 0) + 1, (errors):void => {
+                            assert.strictEqual(errors, null);
+                            assert.strictEqual(current, "lock1");
+                            unlock((errors):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(current, "lock1");
+                                done();
+                            });
+                        });
+                    });
+                });
+            },
+            (done:() => void):void => {
+                client.lock("key", (errors, unlock:(callback?:(errors:IException[]) => void) => void):void => {
+                    current = "lock2";
+                    assert.strictEqual(errors, null);
+                    client.getItem("inc", (errors, value):void => {
+                        assert.strictEqual(errors, null);
+                        assert.strictEqual(current, "lock2");
+                        client.setItem("inc", (value || 0) + 1, (errors):void => {
+                            assert.strictEqual(errors, null);
+                            assert.strictEqual(current, "lock2");
+                            unlock((errors):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(current, "lock2");
+                                done();
+                            });
+                        });
+                    });
+                });
+            },
+            (done:() => void):void => {
+                client.lock("key", (errors, unlock:(callback?:(errors:IException[]) => void) => void):void => {
+                    current = "lock3";
+                    assert.strictEqual(errors, null);
+                    client.getItem("inc", (errors, value):void => {
+                        assert.strictEqual(errors, null);
+                        assert.strictEqual(current, "lock3");
+                        client.setItem("inc", (value || 0) + 1, (errors):void => {
+                            assert.strictEqual(errors, null);
+                            assert.strictEqual(current, "lock3");
+                            unlock((errors):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(current, "lock3");
+                                done();
+                            });
+                        });
+                    });
+                });
+            },
+        ], ():void => {
+            client.getItem("inc", (errors, value):void => {
+                assert.strictEqual(errors, null);
+                assert.strictEqual(value, 3);
+                next();
+            });
         });
-        deferred([
-        ]);
     },
     // ttls
     (next:() => void):void => {
