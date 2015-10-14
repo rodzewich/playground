@@ -125,6 +125,7 @@ deferred([
         next();
     },
     // todo: test timeout
+    // todo: test debug
     // ping
     (next:() => void):void => {
         var client:IClient = new Client({
