@@ -455,8 +455,8 @@ class Client extends BaseClient implements IClient {
             }
         }
 
-        if (!isNumber(index)) {
-            handler([new Exception({message : "index should be a number"})], null);
+        if (!isNumber(index) || isNaN(index) || index < 0) {
+            handler([new Exception({message : "index should be a positive number"})], null);
         } else  {
             this.call((errors:IException[], response:string):void => {
                 handler(errors && errors.length ? errors : null,

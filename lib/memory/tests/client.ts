@@ -287,7 +287,157 @@ deferred([
     },
     // length
     (next:() => void):void => {
-
+        var client:IClient = new Client({
+            location: daemon.location
+        });
+        deferred([
+            (next:() => void):void => {
+                client.getLength((errors, result:number):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(result, 0);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.setItems({
+                    key2: "test2",
+                    key3: "test3"
+                }, (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getLength((errors, result:number):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(result, 2);
+                    next();
+                });
+            },
+            ():void => {
+                next();
+            }
+        ]);
+    },
+    // keys
+    (next:() => void):void => {
+        var client:IClient = new Client({
+            location: daemon.location
+        });
+        deferred([
+            (next:() => void):void => {
+                client.getKey(0, (errors, response:string) => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(response, "key2");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getKey(null, (errors) => {
+                    assert.notStrictEqual(errors, null);
+                    assert.strictEqual(errors[0].getMessage(), "index should be a number");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getKeys([0, 1], (errors, response:string[]) => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(response.length, 2);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getKeys(null, (errors) => {
+                    assert.notStrictEqual(errors, null);
+                    assert.strictEqual(errors[0].getMessage(), "indexes should be a numbers array");
+                    next();
+                });
+            },
+            ():void => {
+                next();
+            }
+        ]);
+    },
+    // namespaces
+    (next:() => void):void => {
+        var client:IClient = new Client({
+            location: daemon.location,
+            namespace: "custom"
+        });
+        deferred([
+            (next:() => void):void => {
+                client.getNamespaces((errors, response):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(response.length, 1);
+                    assert.notStrictEqual(response.indexOf("default"), -1);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.setItem("key1", "test1", (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getNamespaces((errors, response):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(response.length, 2);
+                    assert.notStrictEqual(response.indexOf("default"), -1);
+                    assert.notStrictEqual(response.indexOf("custom"), -1);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.hasNamespace("custom", (errors, response):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(response, true);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.hasNamespace("another", (errors, response):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(response, false);
+                    next();
+                });
+            },
+            ():void => {
+                next();
+            }
+        ]);
+    },
+    // locks
+    (next:() => void):void => {
+        var client:IClient = new Client({
+            location: daemon.location
+        });
+        deferred([
+        ]);
+    },
+    // ttls
+    (next:() => void):void => {
+        var client:IClient = new Client({
+            location: daemon.location
+        });
+        deferred([
+        ]);
+    },
+    // info
+    (next:() => void):void => {
+        var client:IClient = new Client({
+            location: daemon.location
+        });
+        deferred([
+        ]);
+    },
+    // increment/decrement
+    (next:() => void):void => {
+        var client:IClient = new Client({
+            location: daemon.location
+        });
+        deferred([
+        ]);
     },
     shutdown
 ]);

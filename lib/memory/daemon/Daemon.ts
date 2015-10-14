@@ -22,6 +22,10 @@ class Daemon extends BaseDaemon implements IDaemon {
         super(options);
     }
 
+    public getNamespaces():string[] {
+        return Object.keys(this._memory);
+    }
+
     protected getItem(namespace:string, key:string):any {
         if (this._memory[namespace] && typeof this._memory[namespace][key] !== "undefined") {
             return this._memory[namespace][key];
@@ -178,6 +182,10 @@ class Daemon extends BaseDaemon implements IDaemon {
 
                 switch (command) {
                     case "ping":
+                        handler(response);
+                        break;
+                    case "getNamespaces":
+                        response.result = this.getNamespaces();
                         handler(response);
                         break;
                     case "getItem":
