@@ -17,6 +17,8 @@ interface IClient extends IBaseClient {
     setItems(data:{[index:string]:any;}|any, callback?:(errors:IException[]) => void, ttl?:number):void;
     getTtl(key:string, callback?:(errors:IException[], response:number) => void):void;
     getTtls(keys:string[], callback?:(errors:IException[], response:{[index:string]:number;}|any) => void):void;
+    setTtl(key:string, ttl:number, callback?:(errors:IException[]) => void):void;
+    setTtls(keys:string[], ttl:number, callback?:(errors:IException[]) => void):void;
     increment(key:string, callback?:(errors:IException[], response:string) => void, ttL?:number):void;
     decrement(key:string, callback?:(errors:IException[], response:string) => void, ttL?:number):void;
     removeItem(key:string, callback?:(errors:IException[]) => void):void;

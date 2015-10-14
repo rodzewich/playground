@@ -1,14 +1,14 @@
 import ExceptionBase = require("../../exception/Exception");
 import Exception     = require("../exception/Exception");
+import IException    = require("../exception/IException");
 import BaseDaemon    = require("../../daemon/Daemon");
 import isFunction    = require("../../isFunction");
+import isDefined     = require("../../isDefined");
 import IDaemon       = require("./IDaemon");
 import IOptions      = require("./IOptions");
 import log4js        = require("../../../logger");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
-
-// todo: 1. добавить логирование!
 
 class Daemon extends BaseDaemon implements IDaemon {
 
@@ -26,14 +26,22 @@ class Daemon extends BaseDaemon implements IDaemon {
         return Object.keys(this._memory);
     }
 
-    protected getItem(namespace:string, key:string):any {
+    public hasNamespace(namespace:string):boolean {
+        return isDefined(this._memory[namespace]);
+    }
+
+    public removeNamespace(namespace:string):void {
+        delete this._memory[namespace];
+    }
+
+    public getItem(namespace:string, key:string):any {
         if (this._memory[namespace] && typeof this._memory[namespace][key] !== "undefined") {
             return this._memory[namespace][key];
         }
         return null;
     }
 
-    protected getItems(namespace:string, keys:string[]):any {
+    public getItems(namespace:string, keys:string[]):any {
         var index:number,
             length = keys.length,
             result:any = {};
@@ -47,14 +55,14 @@ class Daemon extends BaseDaemon implements IDaemon {
         return result;
     }
 
-    protected setItem(namespace:string, key:string, value:any):void {
+    public setItem(namespace:string, key:string, value:any):void {
         if (!this._memory[namespace]) {
             this._memory[namespace] = {};
         }
         this._memory[namespace][key] = value;
     }
 
-    protected setItems(namespace:string, data:any):void {
+    public setItems(namespace:string, data:any):void {
         var property:string;
         if (!this._memory[namespace]) {
             this._memory[namespace] = {};
@@ -67,13 +75,13 @@ class Daemon extends BaseDaemon implements IDaemon {
         }
     }
 
-    protected removeItem(namespace:string, key:string):void {
+    public removeItem(namespace:string, key:string):void {
         if (this._memory[namespace]) {
             delete this._memory[namespace][key];
         }
     }
 
-    protected removeItems(namespace:string, keys:string[]):void {
+    public removeItems(namespace:string, keys:string[]):void {
         var index:number,
             length:number;
         if (this._memory[namespace]) {
@@ -84,11 +92,11 @@ class Daemon extends BaseDaemon implements IDaemon {
         }
     }
 
-    protected hasItem(namespace:string, key:string):boolean {
+    public hasItem(namespace:string, key:string):boolean {
         return !!(this._memory[namespace] && this._memory[namespace][key]);
     }
 
-    protected hasItems(namespace:string, keys:string[]):boolean[] {
+    public hasItems(namespace:string, keys:string[]):boolean[] {
         var index:number,
             length:number = keys.length,
             result:any = {};
@@ -102,14 +110,14 @@ class Daemon extends BaseDaemon implements IDaemon {
         return result;
     }
 
-    protected getKey(namespace:string, index:number):string {
+    public getKey(namespace:string, index:number):string {
         if (!this._memory[namespace]) {
             return null;
         }
         return Object.keys(this._memory[namespace])[index];
     }
 
-    protected getKeys(namespace:string, indexes:number[]):string[] {
+    public getKeys(namespace:string, indexes:number[]):string[] {
         var index:number,
             length:number = indexes.length,
             result:string[] = [],
@@ -120,14 +128,14 @@ class Daemon extends BaseDaemon implements IDaemon {
         return result;
     }
 
-    protected getLength(namespace:string):number {
+    public getLength(namespace:string):number {
         if (!this._memory[namespace]) {
             return 0;
         }
         return Object.keys(this._memory[namespace]).length;
     }
 
-    protected lock(namespace:string, key:string, callback:(error?:Error) => void):void {
+    public lock(namespace:string, key:string, callback:(error?:Error) => void):void {
         if (!this._locks[namespace]) {
             this._locks[namespace] = {};
         }
@@ -145,7 +153,7 @@ class Daemon extends BaseDaemon implements IDaemon {
         }
     }
 
-    protected unlock(namespace:string, key:string):void {
+    public unlock(namespace:string, key:string):void {
         var callback:(error?:Error) => void;
         if (this._locks[namespace]) {
             delete this._locks[namespace][key];
@@ -182,10 +190,20 @@ class Daemon extends BaseDaemon implements IDaemon {
 
                 switch (command) {
                     case "ping":
+                        response.result = null;
                         handler(response);
                         break;
                     case "getNamespaces":
                         response.result = this.getNamespaces();
+                        handler(response);
+                        break;
+                    case "hasNamespace":
+                        response.result = this.hasNamespace(<string>args[0]);
+                        handler(response);
+                        break;
+                    case "removeNamespace":
+                        response.result = null;
+                        this.removeNamespace(<string>args[0]);
                         handler(response);
                         break;
                     case "getItem":
