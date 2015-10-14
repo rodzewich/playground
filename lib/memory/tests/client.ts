@@ -526,6 +526,14 @@ deferred([
         deferred([
         ]);
     },
+    // stop
+    (next:() => void):void => {
+        var client:IClient = new Client({
+            location: daemon.location
+        });
+        deferred([
+        ]);
+    },
     shutdown
 ]);
 
