@@ -123,6 +123,7 @@ deferred([
         assert.strictEqual(client.getNamespace(), "default");
         next();
     },
+    // todo: test timeout
     // ping
     (next:() => void):void => {
         var client:IClient = new Client({
