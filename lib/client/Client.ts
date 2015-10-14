@@ -182,7 +182,7 @@ class Client implements IClient {
                     this._client.write(request);
                     this._client.write(new Buffer([0x0a]));
                     timeout = setTimeout(():void => {
-                        handler([new Exception({message : "bla bla bla"})], null);
+                        handler([new Exception({message : "connection timed out"})], null);
                     }, this.getTimeout());
                 } else {
                     logger.warn("connection is not ready");
@@ -305,9 +305,9 @@ class Client implements IClient {
 
                         function errors():IException[] {
                             if (isArray(options().errors)) {
-                                (<IExceptionOptions[]>options().errors).map((error:IExceptionOptions):IException => {
+                                return (<IExceptionOptions[]>options().errors).map((error:IExceptionOptions):IException => {
                                     var exception:IException = new Exception(error);
-                                    logger.warn(exception.getStack());
+                                    logger.error(exception.getStack());
                                     return exception;
                                 })
                             }

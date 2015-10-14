@@ -124,21 +124,15 @@ deferred([
         next();
     },
     // ping
-    /*(next:() => void):void => {
+    (next:() => void):void => {
         var client:IClient = new Client({
             location: daemon.location
         });
         client.ping((errors):void => {
-            console.log(errors);
             assert.strictEqual(errors, null);
             next();
         });
-        client.increment("key", (errors):void => {
-            console.log(errors);
-            assert.strictEqual(errors, null);
-            next();
-        });
-    },*/
+    },
     // set/get items
     (next:() => void):void => {
         var client:IClient = new Client({
@@ -211,6 +205,87 @@ deferred([
         ]);
     },
     // has/remove items
+    (next:() => void):void => {
+        var client:IClient = new Client({
+            location: daemon.location
+        });
+        deferred([
+            (next:() => void):void => {
+                client.hasItem("key1", (errors, result:boolean):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(result, true);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.hasItem("key4", (errors, result:boolean):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(result, false);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.hasItems(["key1", "key2", "key3", "key4"], (errors, result:{[index:string]:boolean}|any):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(result.key1, true);
+                    assert.strictEqual(result.key2, true);
+                    assert.strictEqual(result.key3, true);
+                    assert.strictEqual(result.key4, false);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.removeItem("key1", (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.removeItems(["key2", "key3"], (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.hasItems(["key1", "key2", "key3", "key4"], (errors, result:{[index:string]:boolean}|any):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(result.key1, false);
+                    assert.strictEqual(result.key2, false);
+                    assert.strictEqual(result.key3, false);
+                    assert.strictEqual(result.key4, false);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.hasItem(null, (errors):void => {
+                    assert.strictEqual(errors[0].getMessage(), "key should be a string");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.hasItems(null, (errors):void => {
+                    assert.strictEqual(errors[0].getMessage(), "keys should be a non empty strings array");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.removeItem(null, (errors):void => {
+                    assert.strictEqual(errors[0].getMessage(), "key should be a string");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.removeItems(null, (errors):void => {
+                    assert.strictEqual(errors[0].getMessage(), "keys should be a non empty strings array");
+                    next();
+                });
+            },
+            ():void => {
+                next();
+            }
+        ]);
+    },
+    // length
     (next:() => void):void => {
 
     },

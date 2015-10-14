@@ -1,8 +1,12 @@
 import ExceptionBase = require("../../exception/Exception");
-import Exception = require("../exception/Exception");
-import BaseDaemon = require("../../daemon/Daemon");
-import IDaemon = require("./IDaemon");
-import IOptions = require("./IOptions");
+import Exception     = require("../exception/Exception");
+import BaseDaemon    = require("../../daemon/Daemon");
+import isFunction    = require("../../isFunction");
+import IDaemon       = require("./IDaemon");
+import IOptions      = require("./IOptions");
+import log4js        = require("../../../logger");
+
+var logger:log4js.Logger = log4js.getLogger("memory");
 
 // todo: 1. добавить логирование!
 
@@ -173,6 +177,9 @@ class Daemon extends BaseDaemon implements IDaemon {
             try {
 
                 switch (command) {
+                    case "ping":
+                        handler(response);
+                        break;
                     case "getItem":
                         response.result = this.getItem(<string>args[0], <string>args[1]);
                         handler(response);
@@ -225,7 +232,7 @@ class Daemon extends BaseDaemon implements IDaemon {
                         response.result = null;
                         this.lock(<string>args[0], <string>args[1], (error?:Error):void => {
                             if (error) {
-                                response.error = error;
+                                response.errors = error;
                             }
                             handler(response);
                         });
@@ -237,7 +244,7 @@ class Daemon extends BaseDaemon implements IDaemon {
                         break;
                     default:
                         error = new Exception({message: "unknown command"});
-                        response.error = error.toObject();
+                        response.errors = [error.toObject()];
                         logger.error(error.getStack());
                         handler(response);
                         break;
@@ -245,7 +252,7 @@ class Daemon extends BaseDaemon implements IDaemon {
 
             } catch (error) {
 
-                response.error = ExceptionBase.convertFromError(error).toObject();
+                response.errors = ExceptionBase.convertFromError(error).toObject();
                 logger.error(ExceptionBase.convertFromError(error).getStack());
                 handler(response);
 
