@@ -236,7 +236,6 @@ class Client implements IClient {
                         if (timeout) {
                             temp.setValue(timeout);
                         }
-
                         timer = setTimeout(():void => {
                             handler([new Exception({
                                 message : "request timed out",
@@ -365,11 +364,8 @@ class Client implements IClient {
                     });
                     client.addListener("error", handler);
                     client.addListener("data", (buffer:Buffer):void => {
-                        var temp:Buffer,
-                            diff:number,
-                            cache:any,
+                        var cache:any,
                             index:number,
-                            length:number,
                             response:string,
                             callback:(errors:IException[], response?:any) => void;
 
@@ -378,19 +374,16 @@ class Client implements IClient {
                         }
 
                         function options():any {
-                            if (!isDefined(cache)) {
-                                try {
-                                    cache = JSON.parse(response) || {};
-                                } catch (error) {
-                                    cache = {};
-                                }
+                            try {
+                                return JSON.parse(response) || {};
+                            } catch (error) {
+                                return {};
                             }
-                            return cache;
                         }
 
                         function errors():IException[] {
-                            if (isArray(options().errors)) {
-                                return (<IExceptionOptions[]>options().errors).map((error:IExceptionOptions):IException => {
+                            if (isArray(cache.errors)) {
+                                return (<IExceptionOptions[]>cache.errors).map((error:IExceptionOptions):IException => {
                                     var exception:IException = new Exception(error);
                                     if (debug) {
                                         helpers.displayErrorData(exception.getStack());
@@ -403,24 +396,22 @@ class Client implements IClient {
                         }
 
                         function result():any {
-                            return options().result || null;
+                            return cache.result || null;
                         }
 
                         data = Buffer.concat([data, buffer]);
-                        temp = data;
-                        length = data.length;
-                        for (index = 0; index < length; index++) {
-                            if (data[index] === 0x0a) {
-                                diff = data.length - temp.length;
-                                temp = data.slice(index + 1);
-                                response = data.slice(diff, index).toString("utf8");
-                                callback = <(errors:IException[], response?:any) => void>this.getHandlersRegistrationHelper().find(<string>options().id) || null;
-                                if (isFunction(callback)) {
-                                    callback(errors(), result());
-                                }
+                        index = data.indexOf(0x0a);
+                        while (index !== -1) {
+                            response = data.slice(0, index).toString("utf8");
+                            data = data.slice(index + 1);
+                            cache = options();
+                            callback = <(errors:IException[], response?:any) => void>this.getHandlersRegistrationHelper().find(<string>cache.id) || null;
+                            index = data.indexOf(0x0a);
+                            if (isFunction(callback)) {
+                                callback(errors(), result());
                             }
                         }
-                        data = temp;
+
                     });
                 }
             ]);

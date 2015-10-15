@@ -38,9 +38,7 @@ class HandlersRegistrationHelper implements IHandlersRegistrationHelper {
 
     public find(id:string):Function {
         var handler:Function = this._handlers[id] || null;
-        if (handler) {
-            delete this._handlers[id];
-        }
+        delete this._handlers[id];
         return handler;
     }
 

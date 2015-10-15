@@ -411,7 +411,7 @@ class Client extends BaseClient implements IClient {
 
     public setBins(data:{[index:string]:any;}|any, ttl:number, callback?:(errors:IException[]) => void):void {
 
-        var temp:{[index:string]:string},
+        var temp:{[index:string]:string} = {},
             property:string;
 
         function handler(errors:IException[]):void {

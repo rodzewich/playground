@@ -21,6 +21,7 @@ process.addListener('uncaughtException', function (error:Error) {
 });
 
 var daemon:IDaemon;
+var debug:boolean = true;
 
 function setup(callback:() => void):void {
     var location:string = path.join(__dirname, "location_" + Number(new Date()).toString(16) + ".sock");
@@ -60,8 +61,9 @@ deferred([
         var location:string = path.join(__dirname, "location.sock"),
             namespace:string = "something",
             client:IClient = new Client({
-                location: location,
-                namespace: namespace
+                location  : location,
+                namespace : namespace,
+                debug     : debug
             });
         assert.strictEqual(client.location, location);
         assert.strictEqual(client.getLocation(), location);
@@ -74,7 +76,8 @@ deferred([
         var location:string = path.join(__dirname, "location.sock"),
             namespace:string = "something",
             client:IClient = new Client({
-                location: path.join(__dirname, "something.sock")
+                location : path.join(__dirname, "something.sock"),
+                debug    : debug
             });
         client.location = location;
         client.namespace = namespace;
@@ -89,7 +92,8 @@ deferred([
         var location:string = path.join(__dirname, "location.sock"),
             namespace:string = "something",
             client:IClient = new Client({
-                location: path.join(__dirname, "something.sock")
+                location : path.join(__dirname, "something.sock"),
+                debug    : debug
             });
         client.setLocation(location);
         client.setNamespace(namespace);
@@ -103,7 +107,8 @@ deferred([
     (next:() => void):void => {
         var location:string = path.join(__dirname, "location.sock"),
             client:IClient = new Client({
-                location: location
+                location : location,
+                debug    : debug
             });
         client.connect((errors:IException[]):void => {
             assert.strictEqual(errors.length, 1);
@@ -118,7 +123,8 @@ deferred([
     (next:() => void):void => {
         var location:string = path.join(__dirname, "location.sock"),
             client:IClient = new Client({
-                location: location
+                location : location,
+                debug    : debug
             });
         assert.strictEqual(client.namespace, "default");
         assert.strictEqual(client.getNamespace(), "default");
@@ -129,7 +135,8 @@ deferred([
     // ping
     (next:() => void):void => {
         var client:IClient = new Client({
-            location: daemon.location
+            location : daemon.location,
+            debug    : debug
         });
         client.ping((errors):void => {
             assert.strictEqual(errors, null);
@@ -139,7 +146,8 @@ deferred([
     // set/get items
     (next:() => void):void => {
         var client:IClient = new Client({
-            location: daemon.location
+            location : daemon.location,
+            debug    : debug
         });
         deferred([
             (next:() => void):void => {
@@ -210,7 +218,8 @@ deferred([
     // has/remove items
     (next:() => void):void => {
         var client:IClient = new Client({
-            location: daemon.location
+            location : daemon.location,
+            debug    : debug
         });
         deferred([
             (next:() => void):void => {
@@ -291,7 +300,8 @@ deferred([
     // length
     (next:() => void):void => {
         var client:IClient = new Client({
-            location: daemon.location
+            location : daemon.location,
+            debug    : debug
         });
         deferred([
             (next:() => void):void => {
@@ -325,7 +335,8 @@ deferred([
     // keys
     (next:() => void):void => {
         var client:IClient = new Client({
-            location: daemon.location
+            location : daemon.location,
+            debug    : debug
         });
         deferred([
             (next:() => void):void => {
@@ -365,7 +376,8 @@ deferred([
     (next:() => void):void => {
         var client:IClient = new Client({
             location  : daemon.location,
-            namespace : "custom"
+            namespace : "custom",
+            debug     : debug
         });
         deferred([
             (next:() => void):void => {
@@ -434,7 +446,8 @@ deferred([
     (next:() => void):void => {
         var current:string,
             client:IClient = new Client({
-                location : daemon.location
+                location : daemon.location,
+                debug    : debug
             });
         parallel([
             (done:() => void):void => {
@@ -506,7 +519,7 @@ deferred([
     (next:() => void):void => {
         var client:IClient = new Client({
             location : daemon.location,
-            debug: true
+            debug    : debug
         });
         deferred([
             (next:() => void):void => {

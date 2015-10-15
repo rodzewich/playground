@@ -20,6 +20,27 @@ class Daemon extends BaseDaemon implements IDaemon {
 
     private _queues:any = {};
 
+    private _timers:{[namespace:string]:{[index:string]:NodeJS.Timer}} = {};
+
+    private _removeTimeout(namespace:string, key:string):void {
+        if (isDefined(this._timers[namespace]) &&
+            isDefined(this._timers[namespace][key])) {
+            clearTimeout(this._timers[namespace][key]);
+            delete this._timers[namespace][key];
+        }
+    }
+
+    private _setupTimeout(namespace:string, key:string, ttl:number):void {
+        if (isNumber(ttl) && !isNaN(ttl) && ttl >= 0) {
+            if (!isDefined(this._timers[namespace])) {
+                this._timers[namespace] = {};
+            }
+            this._timers[namespace][key] = setTimeout(():void => {
+                this.removeItem(namespace, key);
+            }, ttl);
+        }
+    }
+
     constructor(options:IOptions) {
         super(options);
     }
@@ -33,11 +54,37 @@ class Daemon extends BaseDaemon implements IDaemon {
     }
 
     public removeNamespace(namespace:string):void {
-        delete this._memory[namespace];
+        var property:string;
+        if (isDefined(this._memory[namespace])) {
+            delete this._memory[namespace];
+        }
+        if (isDefined(this._timers[namespace])) {
+            for (property in this._timers[namespace]) {
+                if (!this._timers[namespace].hasOwnProperty(property)) {
+                    continue;
+                }
+                this._removeTimeout(namespace, property);
+            }
+            delete this._timers[namespace];
+        }
     }
 
     public getItem(namespace:string, key:string):any {
-        if (this._memory[namespace] && typeof this._memory[namespace][key] !== "undefined") {
+        var buffer:Buffer,
+            length:number,
+            value:number[],
+            index:number;
+        if (isDefined(this._memory[namespace]) &&
+            isDefined(this._memory[namespace][key])) {
+            if (this._memory[namespace][key] instanceof Buffer) {
+                buffer = <Buffer>this._memory[namespace][key];
+                length = buffer.length;
+                value  = [];
+                for (index = 0; index < length; index) {
+                    value.push(buffer[index]);
+                }
+                return value;
+            }
             return this._memory[namespace][key];
         }
         return null;
@@ -45,83 +92,84 @@ class Daemon extends BaseDaemon implements IDaemon {
 
     public getItems(namespace:string, keys:string[]):any {
         var index:number,
-            length = keys.length,
+            length:number = keys.length,
             result:any = {};
         for (index = 0; index < length; index++) {
-            if (!this._memory[namespace]) {
-                result[keys[index]] = null;
-                continue;
-            }
-            result[keys[index]] = this._memory[namespace][keys[index]] || null;
+            result[keys[index]] = this.getItem(namespace, keys[index]);
         }
         return result;
     }
 
-    private _timers:{[namespace:string]:{[index:string]:NodeJS.Timer}} = {};
+    public getBin(namespace:string, key:string):any {
+        if (isDefined(this._memory[namespace]) &&
+            isDefined(this._memory[namespace][key]) &&
+            this._memory[namespace][key] instanceof Buffer) {
+            return this._memory[namespace][key].toString("base64");
+        }
+        return null;
+    }
+
+    public getBins(namespace:string, keys:string[]):any {
+        var index:number,
+            length:number = keys.length,
+            result:any = {};
+        for (index = 0; index < length; index++) {
+            result[keys[index]] = this.getBin(namespace, keys[index]);
+        }
+        return result;
+    }
 
     public setItem(namespace:string, key:string, value:any, ttl:number):void {
         if (!isDefined(this._memory[namespace])) {
             this._memory[namespace] = {};
         }
-        if (!isDefined(this._timers[namespace])) {
-            this._timers[namespace] = {};
-        }
-        if (isDefined(this._timers[namespace][key])) {
-            clearTimeout(this._timers[namespace][key]);
-            delete this._timers[namespace][key];
-        }
-        if (isNumber(ttl) && !isNaN(ttl) && ttl >= 0) {
-            this._timers[namespace][key] = setTimeout(():void => {
-                /*if (isDefined(this._timers[namespace]) &&
-                    isDefined(this._timers[namespace][key])) {
-                    delete this._timers[namespace][key];
-                }
-                if (isDefined(this._memory[namespace]) &&
-                    isDefined(this._memory[namespace][key])) {
-                    delete this._memory[namespace][key];
-                }*/
-            }, ttl);
-        }
+        this._removeTimeout(namespace, key);
+        this._setupTimeout(namespace, key, ttl);
         this._memory[namespace][key] = value;
     }
 
     public setItems(namespace:string, data:any, ttl:number):void {
         var property:string;
-        if (!this._memory[namespace]) {
-            this._memory[namespace] = {};
-        }
         for (property in data) {
             if (!data.hasOwnProperty(property)) {
                 continue;
             }
-            /*if (this._timers[property]) {
-                clearTimeout(this._timers[property]);
-                delete this._timers[property];
+            this.setItem(namespace, property, data[property], ttl);
+        }
+    }
+
+    public setBin(namespace:string, key:string, value:string, ttl:number):void {
+        if (!isDefined(this._memory[namespace])) {
+            this._memory[namespace] = {};
+        }
+        this._removeTimeout(namespace, key);
+        this._setupTimeout(namespace, key, ttl);
+        this._memory[namespace][key] = new Buffer(value, "base64");
+    }
+
+    public setBins(namespace:string, data:{[index:string]:string}|any, ttl:number):void {
+        var property:string;
+        for (property in data) {
+            if (!data.hasOwnProperty(property)) {
+                continue;
             }
-            if (isNumber(ttl) && !isNaN(ttl) && ttl >= 0) {
-                this._timers[property] = setTimeout(():void => {
-                    delete this._timers[property];
-                    delete this._memory[namespace][property];
-                }, ttl);
-            }*/
-            this._memory[namespace][property] = data[property];
+            this.setBin(namespace, property, data[property], ttl);
         }
     }
 
     public removeItem(namespace:string, key:string):void {
-        if (this._memory[namespace]) {
+        if (isDefined(this._memory[namespace]) &&
+            isDefined(this._memory[namespace][key])) {
             delete this._memory[namespace][key];
         }
+        this._removeTimeout(namespace, key);
     }
 
     public removeItems(namespace:string, keys:string[]):void {
         var index:number,
-            length:number;
-        if (this._memory[namespace]) {
-            length = keys.length;
-            for (index = 0; index < length; index++) {
-                delete this._memory[namespace][keys[index]];
-            }
+            length:number = keys.length;
+        for (index = 0; index < length; index++) {
+            this.removeItem(namespace, keys[index]);
         }
     }
 
@@ -131,17 +179,11 @@ class Daemon extends BaseDaemon implements IDaemon {
     }
 
     public hasItems(namespace:string, keys:string[]):boolean[] {
-        var key:string,
-            index:number,
+        var index:number,
             length:number = keys.length,
             result:any = {};
         for (index = 0; index < length; index++) {
-            key = keys[index];
-            if (!isDefined(this._memory[namespace])) {
-                result[key] = false;
-                continue;
-            }
-            result[key] = isDefined(this._memory[namespace][key]);
+            result[keys[index]] = this.hasItem(namespace, keys[index]);
         }
         return result;
     }
@@ -252,6 +294,14 @@ class Daemon extends BaseDaemon implements IDaemon {
                         response.result = this.getItems(<string>args[0], <string[]>args[1]);
                         handler(response);
                         break;
+                    case "getBin":
+                        response.result = this.getBin(<string>args[0], <string>args[1]);
+                        handler(response);
+                        break;
+                    case "getBins":
+                        response.result = this.getBins(<string>args[0], <string[]>args[1]);
+                        handler(response);
+                        break;
                     case "setItem":
                         response.result = null;
                         this.setItem(<string>args[0], <string>args[1], <any>args[2], <number>args[3]);
@@ -260,6 +310,16 @@ class Daemon extends BaseDaemon implements IDaemon {
                     case "setItems":
                         response.result = null;
                         this.setItems(<string>args[0], <any>args[1], <number>args[2]);
+                        handler(response);
+                        break;
+                    case "setBin":
+                        response.result = null;
+                        this.setBin(<string>args[0], <string>args[1], <any>args[2], <number>args[3]);
+                        handler(response);
+                        break;
+                    case "setBins":
+                        response.result = null;
+                        this.setBins(<string>args[0], <any>args[1], <number>args[2]);
                         handler(response);
                         break;
                     case "removeItem":
