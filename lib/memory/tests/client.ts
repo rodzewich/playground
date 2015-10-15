@@ -143,7 +143,7 @@ deferred([
         });
         deferred([
             (next:() => void):void => {
-                client.setItem("key1", "test1", (errors):void => {
+                client.setItem("key1", "test1", null, (errors):void => {
                     assert.strictEqual(errors, null);
                     next();
                 });
@@ -156,7 +156,7 @@ deferred([
                 });
             },
             (next:() => void):void => {
-                client.setItem(null, "test1", (errors):void => {
+                client.setItem(null, "test1", null, (errors):void => {
                     assert.notStrictEqual(errors, null);
                     assert.strictEqual(errors[0].message, "key should be a string");
                     next();
@@ -173,7 +173,7 @@ deferred([
                 client.setItems({
                     key2: "test2",
                     key3: "test3"
-                }, (errors):void => {
+                }, null, (errors):void => {
                     assert.strictEqual(errors, null);
                     next();
                 });
@@ -188,7 +188,7 @@ deferred([
                 });
             },
             (next:() => void):void => {
-                client.setItems(null, (errors):void => {
+                client.setItems(null, null, (errors):void => {
                     assert.notStrictEqual(errors, null);
                     assert.strictEqual(errors[0].message, "data should be a non empty object");
                     next();
@@ -305,7 +305,7 @@ deferred([
                 client.setItems({
                     key2: "test2",
                     key3: "test3"
-                }, (errors):void => {
+                }, null, (errors):void => {
                     assert.strictEqual(errors, null);
                     next();
                 });
@@ -377,7 +377,7 @@ deferred([
                 });
             },
             (next:() => void):void => {
-                client.setItem("key1", "test1", (errors):void => {
+                client.setItem("key1", "test1", null, (errors):void => {
                     assert.strictEqual(errors, null);
                     next();
                 });
@@ -434,6 +434,7 @@ deferred([
     (next:() => void):void => {
         var current:string,
             client:IClient = new Client({
+                debug: true,
                 location : daemon.location
             });
         parallel([
@@ -444,7 +445,7 @@ deferred([
                     client.getItem("inc", (errors, value):void => {
                         assert.strictEqual(errors, null);
                         assert.strictEqual(current, "lock1");
-                        client.setItem("inc", (value || 0) + 1, (errors):void => {
+                        client.setItem("inc", null, (value || 0) + 1, (errors):void => {
                             assert.strictEqual(errors, null);
                             assert.strictEqual(current, "lock1");
                             unlock((errors):void => {
@@ -463,7 +464,7 @@ deferred([
                     client.getItem("inc", (errors, value):void => {
                         assert.strictEqual(errors, null);
                         assert.strictEqual(current, "lock2");
-                        client.setItem("inc", (value || 0) + 1, (errors):void => {
+                        client.setItem("inc", null, (value || 0) + 1, (errors):void => {
                             assert.strictEqual(errors, null);
                             assert.strictEqual(current, "lock2");
                             unlock((errors):void => {
@@ -482,7 +483,7 @@ deferred([
                     client.getItem("inc", (errors, value):void => {
                         assert.strictEqual(errors, null);
                         assert.strictEqual(current, "lock3");
-                        client.setItem("inc", (value || 0) + 1, (errors):void => {
+                        client.setItem("inc", null, (value || 0) + 1, (errors):void => {
                             assert.strictEqual(errors, null);
                             assert.strictEqual(current, "lock3");
                             unlock((errors):void => {
@@ -508,6 +509,15 @@ deferred([
             location: daemon.location
         });
         deferred([
+            (next:() => void):void => {
+                client.removeNamespace("default", (errors):void => {
+                    assert.strictEqual(errors, null);
+                });
+            },
+            (next:() => void):void => {
+                client.setItem()
+            }
+
         ]);
     },
     // info

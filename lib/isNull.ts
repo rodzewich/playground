@@ -1,7 +1,7 @@
 import typeOf = require("./typeOf");
 
 function isNull(value:any):boolean {
-    return typeOf(value) === "number";
+    return typeOf(value) === "null";
 }
 
 export = isNull;

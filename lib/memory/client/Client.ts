@@ -247,7 +247,7 @@ class Client extends BaseClient implements IClient {
 
     }
 
-    public setItem(key:string, value:any, callback?:(errors:IException[]) => void, ttl?:number):void {
+    public setItem(key:string, value:any, ttl:number, callback?:(errors:IException[]) => void):void {
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -274,7 +274,7 @@ class Client extends BaseClient implements IClient {
 
     }
 
-    public setItems(data:{[index:string]:any;}|any, callback?:(errors:IException[]) => void, ttl?:number):void {
+    public setItems(data:{[index:string]:any;}|any, ttl:number, callback?:(errors:IException[]) => void):void {
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {

@@ -14,8 +14,8 @@ interface IClient extends IBaseClient {
     removeNamespace(namespace:string, callback?:(errors:IException[]) => void):void;
     getItem(key:string, callback?:(errors:IException[], response:any) => void):void;
     getItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:any;}|any) => void):void;
-    setItem(key:string, value:any, callback?:(errors:IException[]) => void, ttl?:number):void;
-    setItems(data:{[index:string]:any;}|any, callback?:(errors:IException[]) => void, ttl?:number):void;
+    setItem(key:string, value:any, ttl:number, callback?:(errors:IException[]) => void):void;
+    setItems(data:{[index:string]:any;}|any, ttl:number, callback?:(errors:IException[]) => void):void;
     getTtl(key:string, callback?:(errors:IException[], response:number) => void):void;
     getTtls(keys:string[], callback?:(errors:IException[], response:{[index:string]:number;}|any) => void):void;
     setTtl(key:string, ttl:number, callback?:(errors:IException[]) => void):void;
