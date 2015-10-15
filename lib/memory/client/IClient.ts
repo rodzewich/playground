@@ -1,6 +1,6 @@
 import IInformation = require("../IInformation");
-import IBaseClient = require("../../client/IClient");
-import IException = require("../exception/IException");
+import IBaseClient  = require("../../client/IClient");
+import IException   = require("../exception/IException");
 
 interface IClient extends IBaseClient {
     namespace:string;

@@ -511,12 +511,174 @@ deferred([
             (next:() => void):void => {
                 client.removeNamespace("default", (errors):void => {
                     assert.strictEqual(errors, null);
+                    next();
                 });
             },
             (next:() => void):void => {
-                client.setItem()
+                client.setItem("key1", "test1", 1000, (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                parallel([
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            client.hasItem("key1", (errors, response:boolean):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(response, true);
+                                done();
+                            });
+                        }, 500);
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            client.hasItem("key1", (errors, response:boolean):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(response, false);
+                                done();
+                            });
+                        }, 1000);
+                    },
+                ], ():void => {
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.setItems({
+                    key2: "test2",
+                    key3: "test3"
+                }, 1000, (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                parallel([
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            client.hasItem("key2", (errors, response:boolean):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(response, true);
+                                done();
+                            });
+                        }, 500);
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            client.hasItem("key3", (errors, response:boolean):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(response, true);
+                                done();
+                            });
+                        }, 500);
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            client.hasItem("key2", (errors, response:boolean):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(response, false);
+                                done();
+                            });
+                        }, 1000);
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            client.hasItem("key3", (errors, response:boolean):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(response, false);
+                                done();
+                            });
+                        }, 1000);
+                    }
+                ], ():void => {
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.setBin("key1", "test1", 1000, (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                parallel([
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            client.hasItem("key1", (errors, response:boolean):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(response, true);
+                                done();
+                            });
+                        }, 500);
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            client.hasItem("key1", (errors, response:boolean):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(response, false);
+                                done();
+                            });
+                        }, 1000);
+                    },
+                ], ():void => {
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.setBins({
+                    key2: "test2",
+                    key3: "test3"
+                }, 1000, (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                parallel([
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            client.hasItem("key2", (errors, response:boolean):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(response, true);
+                                done();
+                            });
+                        }, 500);
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            client.hasItem("key3", (errors, response:boolean):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(response, true);
+                                done();
+                            });
+                        }, 500);
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            client.hasItem("key2", (errors, response:boolean):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(response, false);
+                                done();
+                            });
+                        }, 1000);
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            client.hasItem("key3", (errors, response:boolean):void => {
+                                assert.strictEqual(errors, null);
+                                assert.strictEqual(response, false);
+                                done();
+                            });
+                        }, 1000);
+                    }
+                ], ():void => {
+                    next();
+                });
+            },
+            ():void => {
+                next();
             }
-
         ]);
     },
     // info
