@@ -11,6 +11,7 @@ import IOptions         = require("./IOptions");
 import BaseClient       = require("../../client/Client");
 import Exception        = require("../exception/Exception");
 import IException       = require("../exception/IException");
+import ExceptionBase    = require("../../exception/Exception");
 import NamespaceHelper  = require("../../helpers/NamespaceHelper");
 import INamespaceHelper = require("../../helpers/INamespaceHelper");
 import log4js           = require("../../../logger");
@@ -241,7 +242,80 @@ class Client extends BaseClient implements IClient {
         } else {
             this.call((errors:IException[], response:{[index:string]:any;}|any):void => {
                 handler(errors && errors.length ? errors : null,
-                    (!errors || !errors.length) && isDefined(response) ? response : null);
+                    (!errors || !errors.length) && response ? response : null);
+            }, null, "getItems", this.getNamespace(), keys);
+        }
+
+    }
+
+    public getBin(key:string, callback?:(errors:IException[], response:Buffer) => void):void {
+
+        function handler(errors:IException[], response:any):void {
+            if (isFunction(callback)) {
+                setTimeout(():void => {
+                    callback(errors, response);
+                }, 0);
+            }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
+        }
+
+        if (!isString(key)) {
+            handler([new Exception({message : "key should be a string"})], null);
+        } else {
+            this.call((errors:IException[], response:Buffer):void => {
+                try {
+                    handler(errors && errors.length ? errors : null,
+                        (!errors || !errors.length) && isDefined(response) ? new Buffer(String(response), "base64") : null);
+                } catch (err) {
+                    handler([ExceptionBase.convertFromError(err)], null);
+                }
+            }, null, "getBin", this.getNamespace(), key);
+        }
+
+    }
+
+    public getBins(keys:string[], callback?:(errors:IException[], response:{[index:string]:Buffer;}|any) => void):void {
+
+        function handler(errors:IException[], response:{[index:string]:any;}|any):void {
+            if (isFunction(callback)) {
+                setTimeout(():void => {
+                    callback(errors, response);
+                }, 0);
+            }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
+        }
+
+        if (!isArray(keys) || !keys.length || !keys.reduce((previous:boolean, element:string):boolean => {
+                return previous && isString(element);
+            }, true)) {
+            handler([new Exception({message: "keys should be a non empty strings array"})], null);
+        } else {
+            this.call((errors:IException[], response:{[index:string]:Buffer;}|any):void => {
+                var temp:{[index:string]:Buffer;} = null,
+                    property:string;
+                try {
+                    if (response) {
+                        temp = {};
+                        for (property in response) {
+                            if (!response.hasOwnProperty(property)) {
+                                continue;
+                            }
+                            temp[property] = new Buffer(String(response[property]), "base64");
+                        }
+                    }
+                } catch (err) {
+                    handler([ExceptionBase.convertFromError(err)], null);
+                }
+                handler(errors && errors.length ? errors : null,
+                    (!errors || !errors.length) && response ? temp : null);
             }, null, "getItems", this.getNamespace(), keys);
         }
 
@@ -297,6 +371,80 @@ class Client extends BaseClient implements IClient {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
             }, null, "setItems", this.getNamespace(), data, ttl ? Math.floor(ttl) : null);
+        }
+
+    }
+
+    public setBin(key:string, value:any, ttl:number, callback?:(errors:IException[]) => void):void {
+
+        var temp:string;
+
+        function handler(errors:IException[]):void {
+            if (isFunction(callback)) {
+                setTimeout(():void => {
+                    callback(errors);
+                }, 0);
+            }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
+        }
+
+        if (!isString(key)) {
+            handler([new Exception({message : "key should be a string"})]);
+        } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
+            handler([new Exception({message : "ttl should be a positive integer"})]);
+        } else {
+            if (value instanceof Buffer) {
+                temp = value.toString("base64");
+            } else {
+                temp = new Buffer(String(value)).toString("base64");
+            }
+            this.call((errors:IException[]):void => {
+                handler(errors && errors.length ? errors : null);
+            }, null, "setBin", this.getNamespace(), key, temp, ttl ? Math.floor(ttl) : null);
+        }
+
+    }
+
+    public setBins(data:{[index:string]:any;}|any, ttl:number, callback?:(errors:IException[]) => void):void {
+
+        var temp:{[index:string]:string},
+            property:string;
+
+        function handler(errors:IException[]):void {
+            if (isFunction(callback)) {
+                setTimeout(():void => {
+                    callback(errors);
+                }, 0);
+            }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
+        }
+
+        if (!isObject(data) || !Object.keys(data).length) {
+            handler([new Exception({message : "data should be a non empty object"})]);
+        } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
+            handler([new Exception({message : "ttl should be a positive integer"})]);
+        } else {
+            for (property in data) {
+                if (!data.hasOwnProperty(property)) {
+                    continue;
+                }
+                if (data[property] instanceof Buffer) {
+                    temp[property] = (<Buffer>data[property]).toString("base64");
+                } else {
+                    temp[property] = new Buffer(String(data[property])).toString("base64");
+                }
+            }
+            this.call((errors:IException[]):void => {
+                handler(errors && errors.length ? errors : null);
+            }, null, "setBins", this.getNamespace(), temp, ttl ? Math.floor(ttl) : null);
         }
 
     }

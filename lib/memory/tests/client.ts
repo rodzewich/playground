@@ -434,7 +434,6 @@ deferred([
     (next:() => void):void => {
         var current:string,
             client:IClient = new Client({
-                debug: true,
                 location : daemon.location
             });
         parallel([
@@ -445,7 +444,7 @@ deferred([
                     client.getItem("inc", (errors, value):void => {
                         assert.strictEqual(errors, null);
                         assert.strictEqual(current, "lock1");
-                        client.setItem("inc", null, (value || 0) + 1, (errors):void => {
+                        client.setItem("inc", (value || 0) + 1, null, (errors):void => {
                             assert.strictEqual(errors, null);
                             assert.strictEqual(current, "lock1");
                             unlock((errors):void => {
@@ -464,7 +463,7 @@ deferred([
                     client.getItem("inc", (errors, value):void => {
                         assert.strictEqual(errors, null);
                         assert.strictEqual(current, "lock2");
-                        client.setItem("inc", null, (value || 0) + 1, (errors):void => {
+                        client.setItem("inc", (value || 0) + 1, null, (errors):void => {
                             assert.strictEqual(errors, null);
                             assert.strictEqual(current, "lock2");
                             unlock((errors):void => {
@@ -483,7 +482,7 @@ deferred([
                     client.getItem("inc", (errors, value):void => {
                         assert.strictEqual(errors, null);
                         assert.strictEqual(current, "lock3");
-                        client.setItem("inc", null, (value || 0) + 1, (errors):void => {
+                        client.setItem("inc", (value || 0) + 1, null, (errors):void => {
                             assert.strictEqual(errors, null);
                             assert.strictEqual(current, "lock3");
                             unlock((errors):void => {
@@ -506,7 +505,7 @@ deferred([
     // ttls
     (next:() => void):void => {
         var client:IClient = new Client({
-            location: daemon.location
+            location : daemon.location
         });
         deferred([
             (next:() => void):void => {
@@ -529,6 +528,14 @@ deferred([
         ]);
     },
     // increment/decrement
+    (next:() => void):void => {
+        var client:IClient = new Client({
+            location: daemon.location
+        });
+        deferred([
+        ]);
+    },
+    // bin data
     (next:() => void):void => {
         var client:IClient = new Client({
             location: daemon.location
