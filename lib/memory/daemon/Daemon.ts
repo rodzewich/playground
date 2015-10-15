@@ -7,6 +7,8 @@ import isDefined     = require("../../isDefined");
 import IDaemon       = require("./IDaemon");
 import IOptions      = require("./IOptions");
 import log4js        = require("../../../logger");
+import isNumber      = require("../../isNumber");
+import isDefined     = require("../../isDefined");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
@@ -55,14 +57,35 @@ class Daemon extends BaseDaemon implements IDaemon {
         return result;
     }
 
-    public setItem(namespace:string, key:string, value:any):void {
-        if (!this._memory[namespace]) {
+    private _timers:{[namespace:string]:{[index:string]:NodeJS.Timer}} = {};
+
+    public setItem(namespace:string, key:string, value:any, ttl:number):void {
+        if (!isDefined(this._memory[namespace])) {
             this._memory[namespace] = {};
+        }
+        if (!isDefined(this._timers[namespace])) {
+            this._timers[namespace] = {};
+        }
+        if (isDefined(this._timers[namespace][key])) {
+            clearTimeout(this._timers[namespace][key]);
+            delete this._timers[namespace][key];
+        }
+        if (isNumber(ttl) && !isNaN(ttl) && ttl >= 0) {
+            this._timers[namespace][key] = setTimeout(():void => {
+                /*if (isDefined(this._timers[namespace]) &&
+                    isDefined(this._timers[namespace][key])) {
+                    delete this._timers[namespace][key];
+                }
+                if (isDefined(this._memory[namespace]) &&
+                    isDefined(this._memory[namespace][key])) {
+                    delete this._memory[namespace][key];
+                }*/
+            }, ttl);
         }
         this._memory[namespace][key] = value;
     }
 
-    public setItems(namespace:string, data:any):void {
+    public setItems(namespace:string, data:any, ttl:number):void {
         var property:string;
         if (!this._memory[namespace]) {
             this._memory[namespace] = {};
@@ -71,6 +94,16 @@ class Daemon extends BaseDaemon implements IDaemon {
             if (!data.hasOwnProperty(property)) {
                 continue;
             }
+            /*if (this._timers[property]) {
+                clearTimeout(this._timers[property]);
+                delete this._timers[property];
+            }
+            if (isNumber(ttl) && !isNaN(ttl) && ttl >= 0) {
+                this._timers[property] = setTimeout(():void => {
+                    delete this._timers[property];
+                    delete this._memory[namespace][property];
+                }, ttl);
+            }*/
             this._memory[namespace][property] = data[property];
         }
     }
@@ -93,28 +126,31 @@ class Daemon extends BaseDaemon implements IDaemon {
     }
 
     public hasItem(namespace:string, key:string):boolean {
-        return !!(this._memory[namespace] && this._memory[namespace][key]);
+        return isDefined(this._memory[namespace]) &&
+            isDefined(this._memory[namespace][key]);
     }
 
     public hasItems(namespace:string, keys:string[]):boolean[] {
-        var index:number,
+        var key:string,
+            index:number,
             length:number = keys.length,
             result:any = {};
         for (index = 0; index < length; index++) {
-            if (!this._memory[namespace]) {
-                result[keys[index]] = false;
+            key = keys[index];
+            if (!isDefined(this._memory[namespace])) {
+                result[key] = false;
                 continue;
             }
-            result[keys[index]] = typeof this._memory[namespace][keys[index]] !== "undefined";
+            result[key] = isDefined(this._memory[namespace][key]);
         }
         return result;
     }
 
     public getKey(namespace:string, index:number):string {
-        if (!this._memory[namespace]) {
+        if (!isDefined(this._memory[namespace])) {
             return null;
         }
-        return Object.keys(this._memory[namespace])[index];
+        return Object.keys(this._memory[namespace])[index] || null;
     }
 
     public getKeys(namespace:string, indexes:number[]):string[] {
@@ -218,12 +254,12 @@ class Daemon extends BaseDaemon implements IDaemon {
                         break;
                     case "setItem":
                         response.result = null;
-                        this.setItem(<string>args[0], <string>args[1], <any>args[2]);
+                        this.setItem(<string>args[0], <string>args[1], <any>args[2], <number>args[3]);
                         handler(response);
                         break;
                     case "setItems":
                         response.result = null;
-                        this.setItems(<string>args[0], <any>args[1]);
+                        this.setItems(<string>args[0], <any>args[1], <number>args[2]);
                         handler(response);
                         break;
                     case "removeItem":

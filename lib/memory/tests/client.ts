@@ -505,7 +505,8 @@ deferred([
     // ttls
     (next:() => void):void => {
         var client:IClient = new Client({
-            location : daemon.location
+            location : daemon.location,
+            debug: true
         });
         deferred([
             (next:() => void):void => {

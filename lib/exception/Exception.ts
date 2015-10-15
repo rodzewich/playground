@@ -33,12 +33,6 @@ class Exception implements IException {
         if (options && isDefined(options.code)) {
             this._code = Math.max(0, parseInt(String(options.code), 10)) || 0;
         }
-        Error.captureStackTrace(temp, place || this._class);
-        if (options && isDefined(options.stack)) {
-            this._stack = String(options.stack);
-        } else {
-            this._stack = [this.toString(), String(temp.stack).split("\n").slice(1).join("\n")].join("\n");
-        }
         if (options && isDefined(options.name)) {
             this._name = String(options.name);
         }
@@ -62,6 +56,18 @@ class Exception implements IException {
                 }
                 this._data[property] = options.data[property];
             }
+        }
+        Error.captureStackTrace(temp, place || this._class);
+        if (options && isDefined(options.stack)) {
+            this._stack = String(options.stack);
+        } else {
+            this._stack = [
+                this.toString(),
+                "    data: " + JSON.stringify(this.getData()),
+                "    type: " + this.getType(),
+                "    code: " + this.getCode(),
+                String(temp.stack).split("\n").slice(1).join("\n")
+            ].join("\n");
         }
     }
 

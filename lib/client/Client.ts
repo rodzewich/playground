@@ -5,7 +5,7 @@ import IOptions = require("./IOptions");
 import fs = require("fs");
 import net = require("net");
 import colors = require("colors");
-import display = require("./display");
+import helpers = require("./helpers");
 import log4js   = require("../../logger");
 import deferred = require("../deferred");
 import Exception = require("../exception/Exception");
@@ -186,7 +186,8 @@ class Client implements IClient {
     protected call(callback?:(errors:IException[], response:any) => void, timeout?:number, ...args:any[]):void {
         var request:string,
             timer:NodeJS.Timer,
-            alreadyCalled:boolean = false;
+            alreadyCalled:boolean = false,
+            debug:boolean = this.isDebug();
 
         function handler(errors:IException[], response:any):void {
             if (isFunction(callback) && !alreadyCalled) {
@@ -198,8 +199,8 @@ class Client implements IClient {
             clearTimeout(timer);
             if (errors && errors.length) {
                 errors.forEach((error:IException):void => {
-                    if (this.isDebug()) {
-                        display.error(error.getStack());
+                    if (debug) {
+                        helpers.displayErrorData(error.getStack());
                     }
                     logger.error(error.getStack());
                 });
@@ -217,24 +218,32 @@ class Client implements IClient {
                 })
             },
             ():void => {
-                var temp:ITimeoutHelper;
+                var id:string,
+                    temp:ITimeoutHelper;
                 if (this._client) {
+                    id = this.getHandlersRegistrationHelper().register(handler);
                     request = JSON.stringify({
-                        id   : this.getHandlersRegistrationHelper().register(handler),
+                        id   : id,
                         args : args
                     });
                     this._client.write(request);
                     this._client.write(new Buffer([0x0a]));
-                    if (this.isDebug()) {
-                        display.input(request);
+                    if (debug) {
+                        helpers.displayInputData(request);
                     }
                     if (timeout !== -1) {
                         temp = this.createTimeoutHelper();
                         if (timeout) {
                             temp.setValue(timeout);
                         }
+
                         timer = setTimeout(():void => {
-                            handler([new Exception({message : "connection timed out"})], null);
+                            handler([new Exception({
+                                message : "request timed out",
+                                data : {
+                                    requestId : id
+                                }
+                            })], null);
                         }, timeout ? temp.getValue() : this.getTimeout());
                     }
                 } else {
@@ -248,6 +257,7 @@ class Client implements IClient {
     public connect(callback?:(errors:IException[]) => void):void {
         var data:Buffer,
             client:net.Socket,
+            debug:boolean = this.isDebug(),
             connected:(errors:IException[]) => void =
                 (errors:IException[]):void => {
                     var call:(callback:(errors:IException[]) => void) => void =
@@ -275,14 +285,14 @@ class Client implements IClient {
                             path    : error.path,
                             syscall : error.syscall
                         });
-                        if (this.isDebug()) {
-                            display.error(exception.getStack())
+                        if (debug) {
+                            helpers.displayErrorData(exception.getStack())
                         }
                         logger.error(exception.getStack());
                     });
                     client.addListener("close", ():void => {
-                        if (this.isDebug()) {
-                            display.error("server closed connection");
+                        if (debug) {
+                            helpers.displayErrorData("server closed connection");
                         }
                         logger.error("server closed connection");
                         this.disconnect();
@@ -292,8 +302,8 @@ class Client implements IClient {
                         this._client       = null;
                         this._connected    = false;
                         this._disconnected = true;
-                        if (this.isDebug()) {
-                            display.error("can not connect to: " + this.getLocation());
+                        if (debug) {
+                            helpers.displayErrorData("can not connect to: " + this.getLocation());
                         }
                         logger.warn("can not connect to: " + this.getLocation());
                         connected([Exception.convertFromError(error, {
@@ -306,8 +316,8 @@ class Client implements IClient {
                         this._client       = client;
                         this._connected    = true;
                         this._disconnected = false;
-                        if (this.isDebug()) {
-                            display.input("successful connected to: " + this.getLocation());
+                        if (debug) {
+                            helpers.displayInputData("successful connected to: " + this.getLocation());
                         }
                         logger.info("successful connected to: " + this.getLocation());
                         connected(null);
@@ -363,8 +373,8 @@ class Client implements IClient {
                             response:string,
                             callback:(errors:IException[], response?:any) => void;
 
-                        if (this.isDebug()) {
-                            display.output(buffer.toString("utf8"))
+                        if (debug) {
+                            helpers.displayOutputData(buffer.toString("utf8"))
                         }
 
                         function options():any {
@@ -382,8 +392,8 @@ class Client implements IClient {
                             if (isArray(options().errors)) {
                                 return (<IExceptionOptions[]>options().errors).map((error:IExceptionOptions):IException => {
                                     var exception:IException = new Exception(error);
-                                    if (this.isDebug()) {
-                                        display.error(exception.getStack());
+                                    if (debug) {
+                                        helpers.displayErrorData(exception.getStack());
                                     }
                                     logger.error(exception.getStack());
                                     return exception;
@@ -420,7 +430,8 @@ class Client implements IClient {
     }
 
     public disconnect(callback?:(errors:IException[]) => void):void {
-        var disconnected:(errors:IException[]) => void =
+        var debug:boolean = this.isDebug(),
+            disconnected:(errors:IException[]) => void =
                 (errors:IException[]):void => {
                     var call:(callback:(errors:IException[]) => void) => void =
                         function call(callback:(errors:IException[]) => void):void {
@@ -449,8 +460,8 @@ class Client implements IClient {
             this._client.destroy();
             this._client = null;
             setTimeout(():void => {
-                if (this.isDebug()) {
-                    display.input("successful disconnected from: " + this.getLocation());
+                if (debug) {
+                    helpers.displayInputData("successful disconnected from: " + this.getLocation());
                 }
                 logger.info("successful disconnected from: " + this.getLocation());
                 disconnected(null);
