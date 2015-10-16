@@ -1,8 +1,8 @@
 import IInformation = require("../IInformation");
-import IBaseClient  = require("../../client/IClient");
+import IClientBase  = require("../../client/IClient");
 import IException   = require("../exception/IException");
 
-interface IClient extends IBaseClient {
+interface IClient extends IClientBase {
     namespace:string;
     getNamespace():string;
     setNamespace(namespace:string):void;
