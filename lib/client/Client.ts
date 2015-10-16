@@ -25,7 +25,7 @@ import IDebugHelper = require("../helpers/IDebugHelper");
 
 var logger:log4js.Logger = log4js.getLogger("client");
 
-class Client implements IClient {
+abstract class Client implements IClient {
 
     private _client:net.Socket = null;
 
