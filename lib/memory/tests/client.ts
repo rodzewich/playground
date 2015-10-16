@@ -790,6 +790,9 @@ deferred([
                     assert.strictEqual(value, "-3");
                     next();
                 });
+            },
+            ():void => {
+                next();
             }
         ]);
     },
