@@ -10,6 +10,7 @@ import log4js        = require("../../../logger");
 import isNumber      = require("../../isNumber");
 import isDefined     = require("../../isDefined");
 import IInformation  = require("../IInformation");
+import IObject       = require("../exception/IObject");
 import IIncrementlyBigIntegerHelper = require("../../helpers/IIncrementlyBigIntegerHelper");
 import IncrementlyBigIntegerHelper  = require("../../helpers/IncrementlyBigIntegerHelper");
 
@@ -246,7 +247,7 @@ class Daemon extends BaseDaemon implements IDaemon {
         return (<IIncrementlyBigIntegerHelper>this._memory[namespace][key]).decrement();
     }
 
-    public lock(namespace:string, key:string, callback?:(error:Exception) => void):void {
+    public lock(namespace:string, key:string, callback?:(errors:Exception[]) => void):void {
         if (!this._locks[namespace]) {
             this._locks[namespace] = {};
         }
@@ -305,6 +306,11 @@ class Daemon extends BaseDaemon implements IDaemon {
                     case "ping":
                         response.result = null;
                         handler(response);
+                        break;
+                    case "stop":
+                        response.result = null;
+                        handler(response);
+                        this.stop();
                         break;
                     case "getNamespaces":
                         response.result = this.getNamespaces();
@@ -398,10 +404,12 @@ class Daemon extends BaseDaemon implements IDaemon {
                         handler(response);
                         break;
                     case "lock":
-                        response.result = null;
-                        this.lock(<string>args[0], <string>args[1], (error:Exception):void => {
-                            if (error) {
-                                response.errors = [error.toObject()];
+                        this.lock(<string>args[0], <string>args[1], (errors:Exception[]):void => {
+                            response.result = null;
+                            if (errors && errors.length) {
+                                response.errors = errors.map((error:Exception):IObject => {
+                                    return error.toObject();
+                                });
                             }
                             handler(response);
                         });

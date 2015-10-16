@@ -210,6 +210,17 @@ deferred([
                     next();
                 });
             },
+            (next:() => void):void => {
+                var disconnected:boolean = false;
+                client.disconnect((errors):void => {
+                    assert.strictEqual(errors, null);
+                    disconnected = true;
+                    next();
+                });
+                setTimeout(():void => {
+                    assert.strictEqual(disconnected, true);
+                }, 1000);
+            },
             ():void => {
                 next();
             }
@@ -886,13 +897,18 @@ deferred([
     },
     // stop
     (next:() => void):void => {
-        var client:IClient = new Client({
-            location : daemon.location,
-            debug    : debug
-        });
+        var stopped:boolean = false,
+            client:IClient  = new Client({
+                location : daemon.location,
+                debug    : debug
+            });
         client.stop((errors):void => {
             assert.strictEqual(errors, null);
+            stopped = true;
         });
+        setTimeout(():void => {
+            assert.strictEqual(stopped, true);
+        }, 500).ref();
     },
     shutdown
 ]);

@@ -122,15 +122,27 @@ abstract class Daemon implements IDaemon {
             });
 
             socket.addListener("end", ():void => {
+                var index:number = this._sockets.indexOf(socket);
+                if (index !== -1) {
+                    this._sockets.splice(index, 1);
+                }
                 logger.info("client disconnected");
             });
 
         });
 
         server.addListener("error", listen);
+        server.addListener("close", ():void => {
+            logger.info("server closed");
+        });
+        server.addListener("connection", (socket:net.Socket):void => {
+            this._sockets.push(socket);
+        });
         server.listen(this.getLocation(), listen);
         this._server = server;
     }
+
+    private _sockets:net.Socket[] = [];
 
     public stop(callback?:(errors:IException[]) => void):void {
         function handler(errors:IException[]):void {
@@ -139,20 +151,28 @@ abstract class Daemon implements IDaemon {
             }
         }
 
-        console.log("closing");
-        if (!this._server) {
+        setTimeout(():void => {
+
+        /*if (!this._server) {
             handler([new Exception({message : "daemon cannot be stopped"})]);
         } else if (!this._started) {
             // throw new Exception({message: "daemon cannot be stopped"});
-        } else {
+        } else {*/
             console.log("closing"); // todo: not working !!!
+
             this._server.close(():void => {
-                console.log("closed");
-                this._server  = undefined;
+                console.log("!!! CLOSED !!!");
+                /*this._server  = undefined;
                 this._started = false;
-                handler(null);
+                handler(null);*/
             });
-        }
+
+        this._sockets.forEach((socket:net.Socket):void => {
+            socket.destroy();
+        });
+
+        /*}*/
+        });
     }
 
 }
