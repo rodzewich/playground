@@ -21,8 +21,8 @@ process.addListener('uncaughtException', function (error:Error) {
     displayException(Exception.convertFromError(error));
 });
 
-var daemon:IDaemon;
-var debug:boolean = true;
+var daemon:IDaemon,
+    debug:boolean = true;
 
 function setup(callback:() => void):void {
     var location:string = path.join(__dirname, "location_" + Number(new Date()).toString(16) + ".sock");
@@ -200,7 +200,6 @@ deferred([
                 client.setItems(null, null, (errors):void => {
                     assert.notStrictEqual(errors, null);
                     assert.strictEqual(errors[0].message, "data should be a non empty object");
-                    next();
                     next();
                 });
             },
@@ -798,11 +797,91 @@ deferred([
     },
     // bin data
     (next:() => void):void => {
-        var client:IClient = new Client({
-            location : daemon.location,
-            debug    : debug
-        });
+        var test1:Buffer  = new Buffer([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+            test2:Buffer  = new Buffer([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]),
+            test3:Buffer  = new Buffer([21, 22, 23, 24, 25, 26, 27, 28, 29, 30]),
+            client:IClient = new Client({
+                location : daemon.location,
+                debug    : debug
+            });
         deferred([
+            (next:() => void):void => {
+                client.setBin("key1", test1, null, (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getBin("key1", (errors, value:Buffer):void => {
+                    assert.strictEqual(errors, null);
+                    assert.notStrictEqual(value, null);
+                    assert.strictEqual(value.equals(test1), true);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.setBin(null, test1, null, (errors):void => {
+                    assert.notStrictEqual(errors, null);
+                    assert.strictEqual(errors[0].message, "key should be a string");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getBin(null, (errors):void => {
+                    assert.notStrictEqual(errors, null);
+                    assert.strictEqual(errors[0].message, "key should be a string");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.setBins({
+                    key2: test2,
+                    key3: test3
+                }, null, (errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getBins(["key1", "key2", "key3"], (errors, result):void => {
+                    assert.strictEqual(errors, null);
+                    assert.notStrictEqual(result, null);
+                    assert.notStrictEqual(result.key1, null);
+                    assert.notStrictEqual(result.key2, null);
+                    assert.notStrictEqual(result.key3, null);
+                    assert.strictEqual(result.key1.equals(test1), true);
+                    assert.strictEqual(result.key2.equals(test2), true);
+                    assert.strictEqual(result.key3.equals(test3), true);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.setBins(null, null, (errors):void => {
+                    assert.notStrictEqual(errors, null);
+                    assert.strictEqual(errors[0].message, "data should be a non empty object");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getBins(null, (errors):void => {
+                    assert.notStrictEqual(errors, null);
+                    assert.strictEqual(errors[0].message, "keys should be a non empty strings array");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getItems(["key1", "key2", "key3"], (errors, result):void => {
+                    assert.strictEqual(errors, null);
+                    assert.notStrictEqual(result, null);
+                    assert.strictEqual(result.key1, "AQIDBAUGBwgJCg==");
+                    assert.strictEqual(result.key2, "CwwNDg8QERITFA==");
+                    assert.strictEqual(result.key3, "FRYXGBkaGxwdHg==");
+                    next();
+                });
+            },
+            ():void => {
+                next();
+            }
         ]);
     },
     // stop
@@ -811,8 +890,9 @@ deferred([
             location : daemon.location,
             debug    : debug
         });
-        deferred([
-        ]);
+        client.stop((errors):void => {
+            assert.strictEqual(errors, null);
+        });
     },
     shutdown
 ]);

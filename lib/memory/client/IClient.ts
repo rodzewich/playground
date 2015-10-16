@@ -24,8 +24,8 @@ interface IClient extends IClientBase {
     getTtls(keys:string[], callback?:(errors:IException[], response:{[index:string]:number;}|any) => void):void;
     setTtl(key:string, ttl:number, callback?:(errors:IException[]) => void):void;
     setTtls(keys:string[], ttl:number, callback?:(errors:IException[]) => void):void;
-    increment(key:string, callback?:(errors:IException[], response:string) => void, ttL?:number):void;
-    decrement(key:string, callback?:(errors:IException[], response:string) => void, ttL?:number):void;
+    increment(key:string, callback?:(errors:IException[], response:string) => void, ttl?:number):void;
+    decrement(key:string, callback?:(errors:IException[], response:string) => void, ttl?:number):void;
     removeItem(key:string, callback?:(errors:IException[]) => void):void;
     removeItems(keys:string[], callback?:(errors:IException[]) => void):void;
     hasItem(key:string, callback?:(errors:IException[], response:boolean) => void):void;

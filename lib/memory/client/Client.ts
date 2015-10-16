@@ -316,7 +316,7 @@ class Client extends BaseClient implements IClient {
                 }
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && response ? temp : null);
-            }, null, "getItems", this.getNamespace(), keys);
+            }, null, "getBins", this.getNamespace(), keys);
         }
 
     }
@@ -755,7 +755,7 @@ class Client extends BaseClient implements IClient {
 
     }
 
-    public increment(key:string, callback?:(errors:IException[], response:string) => void, ttL?:number):void {
+    public increment(key:string, callback?:(errors:IException[], response:string) => void, ttl?:number):void {
 
         function handler(errors:IException[], response:string):void {
             if (isFunction(callback)) {
@@ -772,16 +772,18 @@ class Client extends BaseClient implements IClient {
 
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})], null);
+        } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
+            handler([new Exception({message : "ttl should be a positive integer"})]);
         } else {
             this.call((errors:IException[], response:string):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? response || null : null);
-            }, null, "increment", this.getNamespace(), key);
+            }, null, "increment", this.getNamespace(), key, ttl);
         }
 
     }
 
-    public decrement(key:string, callback?:(errors:IException[], response:string) => void, ttL?:number):void {
+    public decrement(key:string, callback?:(errors:IException[], response:string) => void, ttl?:number):void {
 
         function handler(errors:IException[], response:string):void {
             if (isFunction(callback)) {
@@ -798,11 +800,13 @@ class Client extends BaseClient implements IClient {
 
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})], null);
+        } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
+            handler([new Exception({message : "ttl should be a positive integer"})]);
         } else {
             this.call((errors:IException[], response:string):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? response || null : null);
-            }, null, "decrement", this.getNamespace(), key);
+            }, null, "decrement", this.getNamespace(), key, ttl);
         }
 
     }
