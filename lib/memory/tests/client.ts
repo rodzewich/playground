@@ -561,8 +561,8 @@ deferred([
             },
             (next:() => void):void => {
                 client.setItems({
-                    key2: "test2",
-                    key3: "test3"
+                    key2 : "test2",
+                    key3 : "test3"
                 }, 1000, (errors):void => {
                     assert.strictEqual(errors, null);
                     next();
@@ -642,8 +642,8 @@ deferred([
             },
             (next:() => void):void => {
                 client.setBins({
-                    key2: "test2",
-                    key3: "test3"
+                    key2 : "test2",
+                    key3 : "test3"
                 }, 1000, (errors):void => {
                     assert.strictEqual(errors, null);
                     next();
@@ -699,8 +699,8 @@ deferred([
     // info
     (next:() => void):void => {
         var client:IClient = new Client({
-            location: daemon.location,
-            debug: debug
+            location : daemon.location,
+            debug    : debug
         });
         deferred([
             (next:() => void):void => {
