@@ -9,7 +9,7 @@ interface IInformation {
     version:string;
     execPath:string;
     execArgv:string[];
-    usage:{
+    memoryUsage:{
         rss: number;
         heapTotal: number;
         heapUsed: number;

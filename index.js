@@ -22,25 +22,6 @@ var fs                   = require("fs"),
     spawn                = require("child_process").spawn,
     charset;
 
-// todo: использовать для memory.getInfo
-console.log("uptime", process.uptime());
-console.log("platform", process.platform);
-console.log("arch", process.arch);
-console.log("pid", process.pid);
-console.log("version", process.version);
-console.log("versions", process.versions);
-console.log("config", process.config);
-console.log("execPath", process.execPath);
-console.log("execArgv", process.execArgv);
-console.log("cwd", process.cwd());
-console.log("env", process.env);
-console.log("gid", process.getgid());
-console.log("uid", process.getuid());
-console.log("release", process.release);
-console.log("usage", process.memoryUsage());
-
-return;
-
 require('source-map-support').install({
     retrieveSourceMap : function (source) {
         if (fs.existsSync(source + ".map")) {

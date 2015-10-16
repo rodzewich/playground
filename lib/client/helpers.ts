@@ -27,7 +27,9 @@ class Type {
     }
 
     public static INPUT:Type = new Type("INPUT", colors.green(">>"));
+
     public static OUTPUT:Type = new Type("OUTPUT", colors.blue("<<"));
+
     public static ERROR:Type = new Type("ERROR", colors.red("EE"));
 
 }

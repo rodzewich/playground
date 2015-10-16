@@ -9,6 +9,7 @@ import IOptions      = require("./IOptions");
 import log4js        = require("../../../logger");
 import isNumber      = require("../../isNumber");
 import isDefined     = require("../../isDefined");
+import IInformation  = require("../IInformation");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
@@ -67,6 +68,22 @@ class Daemon extends BaseDaemon implements IDaemon {
             }
             delete this._timers[namespace];
         }
+    }
+
+    public getInfo():IInformation {
+        return <IInformation>{
+            pid         : process.pid,
+            gid         : process.getgid(),
+            uid         : process.getuid(),
+            cwd         : process.cwd(),
+            arch        : process.arch,
+            uptime      : process.uptime(),
+            platform    : process.platform,
+            version     : process.version,
+            execPath    : process.execPath,
+            execArgv    : process.execArgv,
+            memoryUsage : process.memoryUsage()
+        };
     }
 
     public getItem(namespace:string, key:string):any {
@@ -284,6 +301,10 @@ class Daemon extends BaseDaemon implements IDaemon {
                     case "removeNamespace":
                         response.result = null;
                         this.removeNamespace(<string>args[0]);
+                        handler(response);
+                        break;
+                    case "getInfo":
+                        response.result = this.getInfo();
                         handler(response);
                         break;
                     case "getItem":

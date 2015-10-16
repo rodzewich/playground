@@ -12,6 +12,7 @@ import IException = require("../../exception/IException");
 import Exception = require("../../exception/Exception");
 import deferred = require("../../deferred");
 import parallel = require("../../parallel");
+import typeOf = require("../../typeOf");
 import displayException = require("../../displayException");
 
 require("../../mapping");
@@ -698,9 +699,33 @@ deferred([
     // info
     (next:() => void):void => {
         var client:IClient = new Client({
-            location: daemon.location
+            location: daemon.location,
+            debug: debug
         });
         deferred([
+            (next:() => void):void => {
+                client.getInfo((errors, info):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(info.pid, process.pid);
+                    assert.strictEqual(info.gid, process.getgid());
+                    assert.strictEqual(info.uid, process.getuid());
+                    assert.strictEqual(info.cwd, process.cwd());
+                    assert.strictEqual(info.arch, process.arch);
+                    assert.strictEqual(typeOf(info.uptime), "number");
+                    assert.strictEqual(info.platform, process.platform);
+                    assert.strictEqual(info.version, process.version);
+                    assert.strictEqual(info.execPath, process.execPath);
+                    assert.strictEqual(typeOf(info.execArgv), "array");
+                    assert.strictEqual(typeOf(info.memoryUsage), "object");
+                    assert.strictEqual(typeOf(info.memoryUsage.rss), "number");
+                    assert.strictEqual(typeOf(info.memoryUsage.heapTotal), "number");
+                    assert.strictEqual(typeOf(info.memoryUsage.heapUsed), "number");
+                    next();
+                });
+            },
+            ():void => {
+                next();
+            }
         ]);
     },
     // increment/decrement
@@ -716,6 +741,7 @@ deferred([
         var client:IClient = new Client({
             location: daemon.location
         });
+        console.log("!!!!");
         deferred([
         ]);
     },

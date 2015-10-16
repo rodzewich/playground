@@ -74,7 +74,7 @@ class Client extends BaseClient implements IClient {
         this.call((errors:IException[], response:IInformation):void => {
             handler(errors && errors.length ? errors : null,
                 !errors || !errors.length ? response || null : null);
-        }, null, "getInfo", this.getNamespace());
+        }, null, "getInfo");
 
 
     }
