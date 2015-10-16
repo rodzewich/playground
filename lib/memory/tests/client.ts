@@ -139,10 +139,37 @@ deferred([
             location : daemon.location,
             debug    : debug
         });
-        client.ping((errors):void => {
-            assert.strictEqual(errors, null);
-            next();
-        });
+        deferred([
+            (next:() => void):void => {
+                client.ping((errors):void => {
+                    assert.strictEqual(errors, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                var disconnected:boolean = false;
+                parallel([
+                    (done:() => void):void => {
+                        client.disconnect((errors):void => {
+                            assert.strictEqual(errors, null);
+                            disconnected = true;
+                            done();
+                        });
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            assert.strictEqual(disconnected, true);
+                            done();
+                        }, 1000);
+                    }
+                ], ():void => {
+                    next();
+                });
+            },
+            ():void => {
+                next();
+            }
+        ]);
     },
     // set/get items
     (next:() => void):void => {
@@ -212,14 +239,23 @@ deferred([
             },
             (next:() => void):void => {
                 var disconnected:boolean = false;
-                client.disconnect((errors):void => {
-                    assert.strictEqual(errors, null);
-                    disconnected = true;
+                parallel([
+                    (done:() => void):void => {
+                        client.disconnect((errors):void => {
+                            assert.strictEqual(errors, null);
+                            disconnected = true;
+                            done();
+                        });
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            assert.strictEqual(disconnected, true);
+                            done();
+                        }, 1000);
+                    }
+                ], ():void => {
                     next();
                 });
-                setTimeout(():void => {
-                    assert.strictEqual(disconnected, true);
-                }, 1000);
             },
             ():void => {
                 next();
@@ -303,6 +339,26 @@ deferred([
                     next();
                 });
             },
+            (next:() => void):void => {
+                var disconnected:boolean = false;
+                parallel([
+                    (done:() => void):void => {
+                        client.disconnect((errors):void => {
+                            assert.strictEqual(errors, null);
+                            disconnected = true;
+                            done();
+                        });
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            assert.strictEqual(disconnected, true);
+                            done();
+                        }, 1000);
+                    }
+                ], ():void => {
+                    next();
+                });
+            },
             ():void => {
                 next();
             }
@@ -335,6 +391,26 @@ deferred([
                 client.getLength((errors, result:number):void => {
                     assert.strictEqual(errors, null);
                     assert.strictEqual(result, 2);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                var disconnected:boolean = false;
+                parallel([
+                    (done:() => void):void => {
+                        client.disconnect((errors):void => {
+                            assert.strictEqual(errors, null);
+                            disconnected = true;
+                            done();
+                        });
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            assert.strictEqual(disconnected, true);
+                            done();
+                        }, 1000);
+                    }
+                ], ():void => {
                     next();
                 });
             },
@@ -375,6 +451,26 @@ deferred([
                 client.getKeys(null, (errors) => {
                     assert.notStrictEqual(errors, null);
                     assert.strictEqual(errors[0].getMessage(), "indexes should be a positive numbers array");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                var disconnected:boolean = false;
+                parallel([
+                    (done:() => void):void => {
+                        client.disconnect((errors):void => {
+                            assert.strictEqual(errors, null);
+                            disconnected = true;
+                            done();
+                        });
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            assert.strictEqual(disconnected, true);
+                            done();
+                        }, 1000);
+                    }
+                ], ():void => {
                     next();
                 });
             },
@@ -445,6 +541,26 @@ deferred([
                 client.getItem("key1", (errors, response:any):void => {
                     assert.strictEqual(errors, null);
                     assert.strictEqual(response, null);
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                var disconnected:boolean = false;
+                parallel([
+                    (done:() => void):void => {
+                        client.disconnect((errors):void => {
+                            assert.strictEqual(errors, null);
+                            disconnected = true;
+                            done();
+                        });
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            assert.strictEqual(disconnected, true);
+                            done();
+                        }, 1000);
+                    }
+                ], ():void => {
                     next();
                 });
             },
@@ -519,11 +635,38 @@ deferred([
                 });
             },
         ], ():void => {
-            client.getItem("inc", (errors, value):void => {
-                assert.strictEqual(errors, null);
-                assert.strictEqual(value, 3);
-                next();
-            });
+            deferred([
+                (next:() => void):void => {
+                    client.getItem("inc", (errors, value):void => {
+                        assert.strictEqual(errors, null);
+                        assert.strictEqual(value, 3);
+                        next();
+                    });
+                },
+                (next:() => void):void => {
+                    var disconnected:boolean = false;
+                    parallel([
+                        (done:() => void):void => {
+                            client.disconnect((errors):void => {
+                                assert.strictEqual(errors, null);
+                                disconnected = true;
+                                done();
+                            });
+                        },
+                        (done:() => void):void => {
+                            setTimeout(():void => {
+                                assert.strictEqual(disconnected, true);
+                                done();
+                            }, 1000);
+                        }
+                    ], ():void => {
+                        next();
+                    });
+                },
+                ():void => {
+                    next();
+                }
+            ]);
         });
     },
     // ttls
@@ -701,6 +844,26 @@ deferred([
                     next();
                 });
             },
+            (next:() => void):void => {
+                var disconnected:boolean = false;
+                parallel([
+                    (done:() => void):void => {
+                        client.disconnect((errors):void => {
+                            assert.strictEqual(errors, null);
+                            disconnected = true;
+                            done();
+                        });
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            assert.strictEqual(disconnected, true);
+                            done();
+                        }, 1000);
+                    }
+                ], ():void => {
+                    next();
+                });
+            },
             ():void => {
                 next();
             }
@@ -730,6 +893,26 @@ deferred([
                     assert.strictEqual(typeOf(info.memoryUsage.rss), "number");
                     assert.strictEqual(typeOf(info.memoryUsage.heapTotal), "number");
                     assert.strictEqual(typeOf(info.memoryUsage.heapUsed), "number");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                var disconnected:boolean = false;
+                parallel([
+                    (done:() => void):void => {
+                        client.disconnect((errors):void => {
+                            assert.strictEqual(errors, null);
+                            disconnected = true;
+                            done();
+                        });
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            assert.strictEqual(disconnected, true);
+                            done();
+                        }, 1000);
+                    }
+                ], ():void => {
                     next();
                 });
             },
@@ -801,6 +984,26 @@ deferred([
                     next();
                 });
             },
+            (next:() => void):void => {
+                var disconnected:boolean = false;
+                parallel([
+                    (done:() => void):void => {
+                        client.disconnect((errors):void => {
+                            assert.strictEqual(errors, null);
+                            disconnected = true;
+                            done();
+                        });
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            assert.strictEqual(disconnected, true);
+                            done();
+                        }, 1000);
+                    }
+                ], ():void => {
+                    next();
+                });
+            },
             ():void => {
                 next();
             }
@@ -808,9 +1011,9 @@ deferred([
     },
     // bin data
     (next:() => void):void => {
-        var test1:Buffer  = new Buffer([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
-            test2:Buffer  = new Buffer([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]),
-            test3:Buffer  = new Buffer([21, 22, 23, 24, 25, 26, 27, 28, 29, 30]),
+        var test1:Buffer = new Buffer([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]),
+            test2:Buffer = new Buffer([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]),
+            test3:Buffer = new Buffer([21, 22, 23, 24, 25, 26, 27, 28, 29, 30]),
             client:IClient = new Client({
                 location : daemon.location,
                 debug    : debug
@@ -890,6 +1093,26 @@ deferred([
                     next();
                 });
             },
+            (next:() => void):void => {
+                var disconnected:boolean = false;
+                parallel([
+                    (done:() => void):void => {
+                        client.disconnect((errors):void => {
+                            assert.strictEqual(errors, null);
+                            disconnected = true;
+                            done();
+                        });
+                    },
+                    (done:() => void):void => {
+                        setTimeout(():void => {
+                            assert.strictEqual(disconnected, true);
+                            done();
+                        }, 1000);
+                    }
+                ], ():void => {
+                    next();
+                });
+            },
             ():void => {
                 next();
             }
@@ -902,13 +1125,21 @@ deferred([
                 location : daemon.location,
                 debug    : debug
             });
-        client.stop((errors):void => {
-            assert.strictEqual(errors, null);
-            stopped = true;
+        parallel([
+            (done:() => void):void => {
+                client.stop((errors):void => {
+                    assert.strictEqual(errors, null);
+                    stopped = true;
+                });
+            },
+            (done:() => void):void => {
+                setTimeout(():void => {
+                    assert.strictEqual(stopped, true);
+                }, 500).ref();
+            }
+        ], ():void => {
+            next();
         });
-        setTimeout(():void => {
-            assert.strictEqual(stopped, true);
-        }, 500).ref();
     },
     shutdown
 ]);

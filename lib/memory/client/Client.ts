@@ -1,3 +1,5 @@
+/// <reference path="../../../types/node/node.d.ts" />
+
 import IInformation     = require("../IInformation");
 import isNull           = require("../../isNull");
 import isDefined        = require("../../isDefined");

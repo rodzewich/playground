@@ -291,9 +291,9 @@ class Client implements IClient {
                     });
                     client.addListener("close", ():void => {
                         if (debug) {
-                            helpers.displayErrorData("server closed connection");
+                            helpers.displayInputData("closed connection");
                         }
-                        logger.error("server closed connection");
+                        logger.info("closed connection");
                         this.disconnect();
                     });
                     this._connecting = false;
@@ -442,7 +442,7 @@ class Client implements IClient {
         if (isFunction(callback)) {
             this._disconnectCallbacks.push(callback);
         }
-        if (!this._connecting) {
+        if (this._connecting) {
             this._needDisconnect = true;
         } else if (!this._disconnected && !this._disconnecting) {
             this._disconnecting  = true;
