@@ -799,7 +799,8 @@ deferred([
     // bin data
     (next:() => void):void => {
         var client:IClient = new Client({
-            location: daemon.location
+            location : daemon.location,
+            debug    : debug
         });
         deferred([
         ]);
@@ -807,7 +808,8 @@ deferred([
     // stop
     (next:() => void):void => {
         var client:IClient = new Client({
-            location: daemon.location
+            location : daemon.location,
+            debug    : debug
         });
         deferred([
         ]);
