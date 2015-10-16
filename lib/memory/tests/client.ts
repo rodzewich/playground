@@ -1,18 +1,18 @@
 /// <reference path="../../../types/chai/chai.d.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
 
-import fs = require("fs");
-import path = require("path");
-import assert = require("assert");
-import Client = require("../client/Client");
-import IClient = require("../client/IClient");
-import Daemon = require("../daemon/Daemon");
-import IDaemon = require("../client/IDaemon");
+import fs         = require("fs");
+import path       = require("path");
+import assert     = require("assert");
+import Client     = require("../client/Client");
+import IClient    = require("../client/IClient");
+import Daemon     = require("../daemon/Daemon");
+import IDaemon    = require("../client/IDaemon");
 import IException = require("../../exception/IException");
-import Exception = require("../../exception/Exception");
-import deferred = require("../../deferred");
-import parallel = require("../../parallel");
-import typeOf = require("../../typeOf");
+import Exception  = require("../../exception/Exception");
+import deferred   = require("../../deferred");
+import parallel   = require("../../parallel");
+import typeOf     = require("../../typeOf");
 import displayException = require("../../displayException");
 
 require("../../mapping");
@@ -816,4 +816,3 @@ deferred([
     },
     shutdown
 ]);
-
