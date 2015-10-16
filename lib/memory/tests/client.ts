@@ -731,9 +731,66 @@ deferred([
     // increment/decrement
     (next:() => void):void => {
         var client:IClient = new Client({
-            location: daemon.location
+            location : daemon.location,
+            debug    : debug
         });
         deferred([
+            (next:() => void):void => {
+                client.increment("inc", (errors, value):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(value, "1");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.increment("inc", (errors, value):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(value, "2");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.increment("inc", (errors, value):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(value, "3");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getItem("inc", (errors, value):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(value, "3");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.decrement("dec", (errors, value):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(value, "-1");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.decrement("dec", (errors, value):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(value, "-2");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.decrement("dec", (errors, value):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(value, "-3");
+                    next();
+                });
+            },
+            (next:() => void):void => {
+                client.getItem("dec", (errors, value):void => {
+                    assert.strictEqual(errors, null);
+                    assert.strictEqual(value, "-3");
+                    next();
+                });
+            }
         ]);
     },
     // bin data
@@ -741,7 +798,6 @@ deferred([
         var client:IClient = new Client({
             location: daemon.location
         });
-        console.log("!!!!");
         deferred([
         ]);
     },

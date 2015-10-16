@@ -10,9 +10,9 @@ interface IInformation {
     execPath:string;
     execArgv:string[];
     memoryUsage:{
-        rss: number;
-        heapTotal: number;
-        heapUsed: number;
+        rss:number;
+        heapTotal:number;
+        heapUsed:number;
     };
 }
 
