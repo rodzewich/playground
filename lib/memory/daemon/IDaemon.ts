@@ -13,8 +13,8 @@ interface IDaemon extends IBaseDaemon {
     getBins(namespace:string, keys:string[]):{[index:string]:Buffer}|any;
     setItem(namespace:string, key:string, value:any, ttl:number):void;
     setItems(namespace:string, data:any, ttl:number):void;
-    setBin(namespace:string, key:string, value:Buffer, ttl:number):void;
-    setBins(namespace:string, data:{[index:string]:Buffer}|any, ttl:number):void;
+    setBin(namespace:string, key:string, value:string, ttl:number):void;
+    setBins(namespace:string, data:{[index:string]:string}|any, ttl:number):void;
     removeItem(namespace:string, key:string):void;
     removeItems(namespace:string, keys:string[]):void;
     hasItem(namespace:string, key:string):boolean;
@@ -22,8 +22,8 @@ interface IDaemon extends IBaseDaemon {
     getKey(namespace:string, index:number):string;
     getKeys(namespace:string, indexes:number[]):string[];
     getLength(namespace:string):number;
-    increment(namespace:string, key:string, ttl:number);
-    decrement(namespace:string, key:string, ttl:number);
+    increment(namespace:string, key:string, ttl:number):void;
+    decrement(namespace:string, key:string, ttl:number):void;
     lock(namespace:string, key:string, callback?:(errors:IException[]) => void):void;
     unlock(namespace:string, key:string):void;
 }

@@ -775,7 +775,7 @@ class Client extends BaseClient implements IClient {
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})], null);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
-            handler([new Exception({message : "ttl should be a positive integer"})]);
+            handler([new Exception({message : "ttl should be a positive integer"})], null);
         } else {
             this.call((errors:IException[], response:string):void => {
                 handler(errors && errors.length ? errors : null,
@@ -803,7 +803,7 @@ class Client extends BaseClient implements IClient {
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})], null);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
-            handler([new Exception({message : "ttl should be a positive integer"})]);
+            handler([new Exception({message : "ttl should be a positive integer"})], null);
         } else {
             this.call((errors:IException[], response:string):void => {
                 handler(errors && errors.length ? errors : null,

@@ -183,6 +183,28 @@ abstract class Client implements IClient {
         return this._disconnected;
     }
 
+    public get connecting():boolean {
+        return this.isConnecting();
+    }
+
+    public set connecting(value:boolean) {
+    }
+
+    public isConnecting():boolean {
+        return this._connecting;
+    }
+
+    public get disconnecting():boolean {
+        return this.isDisconnected();
+    }
+
+    public set disconnecting(value:boolean) {
+    }
+
+    public isDisconnecting():boolean {
+        return this._disconnecting;
+    }
+
     protected call(callback?:(errors:IException[], response:any) => void, timeout?:number, ...args:any[]):void {
         var request:string,
             timer:NodeJS.Timer,

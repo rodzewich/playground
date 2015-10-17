@@ -8,7 +8,6 @@ import IDaemon       = require("./IDaemon");
 import IOptions      = require("./IOptions");
 import log4js        = require("../../../logger");
 import isNumber      = require("../../isNumber");
-import isDefined     = require("../../isDefined");
 import IInformation  = require("../IInformation");
 import IObject       = require("../exception/IObject");
 import IIncrementlyBigIntegerHelper = require("../../helpers/IIncrementlyBigIntegerHelper");
@@ -150,13 +149,13 @@ class Daemon extends BaseDaemon implements IDaemon {
         }
     }
 
-    public setBin(namespace:string, key:string, value:string, ttl:number):void {
+    public setBin(namespace:string, key:string, value:string|Buffer, ttl:number):void {
         if (!isDefined(this._memory[namespace])) {
             this._memory[namespace] = {};
         }
         this._removeTimeout(namespace, key);
         this._setupTimeout(namespace, key, ttl);
-        this._memory[namespace][key] = new Buffer(value, "base64");
+        this._memory[namespace][key] = new Buffer(String(value), "base64");
     }
 
     public setBins(namespace:string, data:{[index:string]:string}|any, ttl:number):void {
