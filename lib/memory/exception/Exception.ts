@@ -1,6 +1,6 @@
 import ExceptionBase = require("../../exception/Exception");
-import IException = require("./IException");
-import IObject = require("./IObject");
+import IException    = require("./IException");
+import IObject       = require("./IObject");
 
 class Exception extends ExceptionBase implements IException {
 
