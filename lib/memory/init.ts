@@ -4,7 +4,7 @@
 import cp                = require("child_process");
 import path              = require("path");
 import log4js            = require("log4js");
-import WrapperException       = require("../WrapperException");
+import WrapperException  = require("../WrapperException");
 var logger:log4js.Logger = log4js.getLogger("client");
 
 function init(location:string, callback:(error?:Error) => void):void {

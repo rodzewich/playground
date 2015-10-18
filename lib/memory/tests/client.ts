@@ -1,4 +1,3 @@
-/// <reference path="../../../types/chai/chai.d.ts" />
 /// <reference path="../../../types/node/node.d.ts" />
 
 import fs         = require("fs");
