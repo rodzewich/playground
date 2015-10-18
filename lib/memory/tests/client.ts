@@ -22,17 +22,31 @@ process.addListener('uncaughtException', function (error:Error) {
 });
 
 var daemon:IDaemon,
-    debug:boolean = true;
+    location:string = path.join(__dirname, "location_" + Number(new Date()).toString(16) + ".sock"),
+    debug:boolean = false;
 
 function setup(callback:() => void):void {
-    var location:string = path.join(__dirname, "location_" + Number(new Date()).toString(16) + ".sock");
     daemon = new Daemon({
         location: location
     });
-    daemon.start((errors:IException[]):void => {
-        assert.strictEqual(errors, null);
-        callback();
-    });
+    deferred([
+        (next:() => void):void => {
+            daemon.start((errors:IException[]):void => {
+                assert.strictEqual(errors, null);
+                next();
+            });
+        },
+        (next:() => void):void => {
+            fs.stat(location, (error:NodeJS.ErrnoException, stats:net.Stats):void => {
+                assert.strictEqual(error, null);
+                assert.strictEqual(stats.isSocket(), true);
+                next();
+            });
+        },
+        ():void => {
+            callback();
+        }
+    ]);
 }
 
 function shutdown(callback:() => void):void {
@@ -44,7 +58,7 @@ function shutdown(callback:() => void):void {
             });
         },
         (next:() => void):void => {
-            fs.stat(daemon.location, (error: NodeJS.ErrnoException):void => {
+            fs.stat(location, (error: NodeJS.ErrnoException):void => {
                 assert.strictEqual(error.code, "ENOENT");
                 next();
             });
@@ -136,7 +150,7 @@ deferred([
     // ping
     (next:() => void):void => {
         var client:IClient = new Client({
-            location : daemon.location,
+            location : location,
             debug    : debug
         });
         deferred([
@@ -174,7 +188,7 @@ deferred([
     // set/get items
     (next:() => void):void => {
         var client:IClient = new Client({
-            location : daemon.location,
+            location : location,
             debug    : debug
         });
         deferred([
@@ -265,7 +279,7 @@ deferred([
     // has/remove items
     (next:() => void):void => {
         var client:IClient = new Client({
-            location : daemon.location,
+            location : location,
             debug    : debug
         });
         deferred([
@@ -367,7 +381,7 @@ deferred([
     // length
     (next:() => void):void => {
         var client:IClient = new Client({
-            location : daemon.location,
+            location : location,
             debug    : debug
         });
         deferred([
@@ -422,7 +436,7 @@ deferred([
     // keys
     (next:() => void):void => {
         var client:IClient = new Client({
-            location : daemon.location,
+            location : location,
             debug    : debug
         });
         deferred([
@@ -482,7 +496,7 @@ deferred([
     // namespaces
     (next:() => void):void => {
         var client:IClient = new Client({
-            location  : daemon.location,
+            location  : location,
             namespace : "custom",
             debug     : debug
         });
@@ -573,7 +587,7 @@ deferred([
     (next:() => void):void => {
         var current:string,
             client:IClient = new Client({
-                location : daemon.location,
+                location : location,
                 debug    : debug
             });
         parallel([
@@ -672,7 +686,7 @@ deferred([
     // ttls
     (next:() => void):void => {
         var client:IClient = new Client({
-            location : daemon.location,
+            location : location,
             debug    : debug
         });
         deferred([
@@ -872,7 +886,7 @@ deferred([
     // info
     (next:() => void):void => {
         var client:IClient = new Client({
-            location : daemon.location,
+            location : location,
             debug    : debug
         });
         deferred([
@@ -924,7 +938,7 @@ deferred([
     // increment/decrement
     (next:() => void):void => {
         var client:IClient = new Client({
-            location : daemon.location,
+            location : location,
             debug    : debug
         });
         deferred([
@@ -1015,7 +1029,7 @@ deferred([
             test2:Buffer = new Buffer([11, 12, 13, 14, 15, 16, 17, 18, 19, 20]),
             test3:Buffer = new Buffer([21, 22, 23, 24, 25, 26, 27, 28, 29, 30]),
             client:IClient = new Client({
-                location : daemon.location,
+                location : location,
                 debug    : debug
             });
         deferred([
@@ -1122,7 +1136,7 @@ deferred([
     (next:() => void):void => {
         var stopped:boolean = false,
             client:IClient  = new Client({
-                location : daemon.location,
+                location : location,
                 debug    : debug
             });
         parallel([

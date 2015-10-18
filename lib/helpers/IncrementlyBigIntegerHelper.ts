@@ -53,8 +53,6 @@ class IncrementlyBigIntegerHelper implements IIncrementlyBigIntegerHelper {
             }
         }
 
-        console.log("this.getValue()", this.getValue());
-
         return this.getValue();
     }
 
