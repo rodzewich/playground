@@ -36,7 +36,7 @@ function init(location:string, callback:(error?:Error) => void):void {
                 try {
                     result = JSON.parse(json) || {started: false, error: {message: "Unknown error"}};
                 } catch (err) {
-                    logger.warn("Worker send error content", response.toString("utf8"));
+                    logger.warn("worker sent error content", response.toString("utf8"));
                     process.stderr.write(response);
                     result = {started: false, error: err};
                 }
