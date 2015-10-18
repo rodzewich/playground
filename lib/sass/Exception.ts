@@ -1,6 +1,6 @@
-import BaseException = require("../compiler/Exception");
+import ExceptionBase = require("../compiler/Exception");
 
-class Exception extends BaseException {
+class Exception extends ExceptionBase {
 
     public filename:string;
 

@@ -1,11 +1,11 @@
-import IManager = require("./IManager");
-import IOptions = require("./IOptions");
-import BaseManager = require("../../css/manager/Manager");
-import IClient = require("../client/IClient");
-import Client = require("../client/Client");
-import typeOf = require("../../typeOf");
+import IManager    = require("./IManager");
+import IOptions    = require("./IOptions");
+import ManagerBase = require("../../css/manager/Manager");
+import IClient     = require("../client/IClient");
+import Client      = require("../client/Client");
+import typeOf      = require("../../typeOf");
 
-class Manager extends BaseManager {
+class Manager extends ManagerBase {
 
     constructor(options:IOptions) {
         super(options);

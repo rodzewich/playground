@@ -109,7 +109,7 @@ import IGlobalVariables = require("../helpers/IGlobalVariables");
 import ModifyVariables = require("../helpers/ModifyVariables");
 import IModifyVariables = require("../helpers/IModifyVariables");
 import isDefined = require("../../isDefined");
-import BaseCompiler = require("../../css/compiler/Compiler");
+import CompilerBase = require("../../css/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
 import less = require("less");
@@ -149,7 +149,7 @@ import CssWringPlugin = require("../plugins/postprocessors/csswring/Plugin");
 import ICssFlipPlugin = require("../plugins/postprocessors/cssFlip/IPlugin");
 import CssFlipPlugin = require("../plugins/postprocessors/cssFlip/Plugin");
 
-class Compiler extends BaseCompiler implements ICompiler {
+class Compiler extends CompilerBase implements ICompiler {
 
     private _bootstrapPlugin:IBootstrapPlugin;
     protected createBootstrapPlugin():IBootstrapPlugin {

@@ -3,7 +3,7 @@
 import typeOf = require("../../typeOf");
 import isDefined = require("../../isDefined");
 import IOptions = require("./IOptions");
-import BaseClient = require("../../compiler/client/Client");
+import ClientBase = require("../../compiler/client/Client");
 import IResponse = require("./IResponse");
 import IRequest = require("./IRequest");
 import IIncludeDirectoriesHelper = require("../helpers/IIncludeDirectoriesHelper");
@@ -17,7 +17,7 @@ import IThrowErrors = require("../helpers/IThrowErrors");
 import UsedPostProcessing = require("../helpers/UsedPostProcessing");
 import IUsedPostProcessing = require("../helpers/IUsedPostProcessing");
 
-class Client extends BaseClient {
+class Client extends ClientBase {
 
     private _includeDirectoriesInstance:IIncludeDirectoriesHelper;
 

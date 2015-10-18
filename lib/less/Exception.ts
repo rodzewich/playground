@@ -1,4 +1,4 @@
-import BaseException = require("../Exception");
+import ExceptionBase = require("../Exception");
 import CompilerException = require("../compiler/Exception");
 
 

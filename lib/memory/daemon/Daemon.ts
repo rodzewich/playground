@@ -1,7 +1,7 @@
 import ExceptionBase = require("../../exception/Exception");
 import Exception     = require("../exception/Exception");
 import IException    = require("../exception/IException");
-import BaseDaemon    = require("../../daemon/Daemon");
+import DaemonBase    = require("../../daemon/Daemon");
 import isFunction    = require("../../isFunction");
 import isDefined     = require("../../isDefined");
 import IDaemon       = require("./IDaemon");
@@ -15,7 +15,7 @@ import IncrementlyBigIntegerHelper  = require("../../helpers/IncrementlyBigInteg
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
-class Daemon extends BaseDaemon implements IDaemon {
+class Daemon extends DaemonBase implements IDaemon {
 
     private _memory:any = {};
 

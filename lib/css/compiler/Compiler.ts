@@ -6,7 +6,7 @@
 // todo: уметь устанавливать плагины
 // todo: уметь управлять браузерами Autoprefixer'а
 
-import BaseCompiler = require("../../compiler/compiler/Compiler");
+import CompilerBase = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
 import typeOf = require("../../typeOf");
@@ -17,7 +17,7 @@ import IMemory = require("../../memory/client/IClient");
 import IResponse = require("../client/IResponse");
 import path = require("path");
 import fs = require("fs");
-import BaseException = require("../../Exception");
+import ExceptionBase = require("../../Exception");
 import LessException = require("../Exception");
 import IIncludeDirectoriesHelper = require("../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../helpers/IncludeDirectoriesHelper");
@@ -32,7 +32,7 @@ import IUsedPostProcessing = require("../helpers/IUsedPostProcessing");
 import ISourceMap = require("../../helpers/ISourceMap");
 
 
-class Compiler extends BaseCompiler implements ICompiler {
+class Compiler extends CompilerBase implements ICompiler {
 
     private _memory:IMemory;
 
@@ -268,7 +268,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                                 mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
                                                 next();
                                             } else {
-                                                if (error && BaseException.getCode(error) !== "ENOENT") {
+                                                if (error && ExceptionBase.getCode(error) !== "ENOENT") {
                                                     errors.push(error);
                                                 }
                                                 callback();

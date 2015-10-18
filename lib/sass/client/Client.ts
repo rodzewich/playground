@@ -1,14 +1,14 @@
 /// <reference path="../../../types/node/node.d.ts" />
 
-import typeOf = require("../../typeOf");
-import IOptions = require("./IOptions");
-import IClient = require("./IClient");
-import BaseClient = require("../../css/client/Client");
-import IResponse = require("./IResponse");
-import IRequest = require("./IRequest");
-import path = require("path");
+import typeOf     = require("../../typeOf");
+import IOptions   = require("./IOptions");
+import IClient    = require("./IClient");
+import ClientBase = require("../../css/client/Client");
+import IResponse  = require("./IResponse");
+import IRequest   = require("./IRequest");
+import path       = require("path");
 
-class Client extends BaseClient {
+class Client extends ClientBase {
 
     constructor(options:IOptions) {
         super(options);

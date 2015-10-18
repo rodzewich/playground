@@ -3,11 +3,11 @@
 import isFunction = require("../../isFunction");
 import IOptions = require("./IOptions");
 import IClient = require("./IClient");
-import BaseClient = require("../../css/client/Client");
+import ClientBase = require("../../css/client/Client");
 import IResponse = require("./IResponse");
 import path = require("path");
 
-class Client extends BaseClient implements IClient {
+class Client extends ClientBase implements IClient {
 
     constructor(options:IOptions) {
         super(options);

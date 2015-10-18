@@ -14,7 +14,7 @@ import CssErrorsHelper = require("../helpers/CssErrorsHelper");
 import ICssErrorsHelper = require("../helpers/ICssErrorsHelper");
 import CacheHelper = require("../helpers/CacheHelper");
 import ICacheHelper = require("../helpers/ICacheHelper");
-import BaseClient = require("../../client/Client");
+import ClientBase = require("../../client/Client");
 import IOptions = require("./IOptions");
 import Exception = require("../exception/Exception");
 import IClient = require("./IClient");
@@ -26,7 +26,7 @@ import log4js = require("log4js");
 require("../../../logger");
 var logger:log4js.Logger = log4js.getLogger("worker");
 
-class Client extends BaseClient implements IClient {
+class Client extends ClientBase implements IClient {
 
     private _cacheHelper:ICacheHelper;
 

@@ -1,4 +1,4 @@
-import BaseDaemon = require("../../daemon/Daemon");
+import DaemonBase = require("../../daemon/Daemon");
 import IOptions = require("./IOptions");
 import IDaemon = require("./IDaemon");
 import IResponse = require("../client/IResponse");
@@ -8,7 +8,7 @@ import isDefined = require("../../isDefined");
 import Exception = require("../../exception/Exception");
 import IMemory = require("../../memory/client/IClient");
 
-abstract class Daemon extends BaseDaemon implements IDaemon {
+abstract class Daemon extends DaemonBase implements IDaemon {
 
     constructor(options:IOptions) {
         super(options);

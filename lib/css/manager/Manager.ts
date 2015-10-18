@@ -1,6 +1,6 @@
 import IManager = require("./IManager");
 import IOptions = require("./IOptions");
-import BaseManager = require("../../compiler/manager/Manager");
+import ManagerBase = require("../../compiler/manager/Manager");
 import IClient = require("../client/IClient");
 import Client = require("../client/Client");
 import IClientOptions = require("../client/IOptions");
@@ -18,7 +18,7 @@ import UsedPostProcessing = require("../helpers/UsedPostProcessing");
 import IUsedPostProcessing = require("../helpers/IUsedPostProcessing");
 import IResponse = require("./IResponse");
 
-class Manager extends BaseManager {
+class Manager extends ManagerBase {
 
     private _includeDirectoriesInstance:IIncludeDirectoriesHelper;
 

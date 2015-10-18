@@ -1,4 +1,4 @@
-import BaseException = require("../compiler/Exception");
+import ExceptionBase = require("../compiler/Exception");
 import CompilerException = require("./Exception");
 
 class Exception extends CompilerException {
@@ -31,7 +31,7 @@ class Exception extends CompilerException {
         } else {
             this.message = "";
         }
-        BaseException.captureStackTrace(this, Exception);
+        ExceptionBase.captureStackTrace(this, Exception);
     }
 
     public getFilename():string {

@@ -1,7 +1,7 @@
 import ExceptionBase = require("../../Exception");
 import ExceptionModule = require("../Exception");
 
-class Exception extends BaseException {
+class Exception extends ExceptionBase {
 
     constructor(message?:string) {
         super(message);

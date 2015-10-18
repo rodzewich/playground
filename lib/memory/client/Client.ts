@@ -10,7 +10,7 @@ import isNumber         = require("../../isNumber");
 import isFunction       = require("../../isFunction");
 import IClient          = require("./IClient");
 import IOptions         = require("./IOptions");
-import BaseClient       = require("../../client/Client");
+import ClientBase       = require("../../client/Client");
 import Exception        = require("../exception/Exception");
 import IException       = require("../exception/IException");
 import ExceptionBase    = require("../../exception/Exception");
@@ -20,7 +20,7 @@ import log4js           = require("../../../logger");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
-class Client extends BaseClient implements IClient {
+class Client extends ClientBase implements IClient {
 
     private _namespaceHelper:INamespaceHelper;
 

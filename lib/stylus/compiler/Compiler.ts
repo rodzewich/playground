@@ -9,13 +9,13 @@
 // todo использовать https://github.com/rossPatton/stylint
 // todo использовать http://nibstyl.us/#installation
 
-import BaseCompiler = require("../../css/compiler/Compiler");
+import CompilerBase = require("../../css/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
 import stylus = require("stylus");
 import path = require("path");
 
-class Compiler extends BaseCompiler implements ICompiler {
+class Compiler extends CompilerBase implements ICompiler {
 
     constructor(options:IOptions) {
         super(options);

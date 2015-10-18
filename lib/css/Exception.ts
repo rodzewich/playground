@@ -1,10 +1,10 @@
-import BaseException = require("../compiler/Exception");
+import ExceptionBase = require("../compiler/Exception");
 
-class Exception extends BaseException {
+class Exception extends ExceptionBase {
 
     constructor(message?:string) {
         super(message);
-        BaseException.captureStackTrace(this, Exception);
+        ExceptionBase.captureStackTrace(this, Exception);
     }
 
 }

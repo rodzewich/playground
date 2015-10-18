@@ -1,4 +1,4 @@
-import BaseDaemon = require("../../compiler/daemon/Daemon");
+import DaemonBase = require("../../compiler/daemon/Daemon");
 import IOptions = require("./IOptions");
 import IDaemon = require("./IDaemon");
 import IRequest = require("../client/IRequest");
@@ -10,7 +10,7 @@ import typeOf = require("../../typeOf");
 import isDefined = require("../../isDefined");
 import IMemory = require("../../memory/client/IClient");
 
-class Daemon extends BaseDaemon implements IDaemon {
+class Daemon extends DaemonBase implements IDaemon {
 
     private _memory:IMemory;
 

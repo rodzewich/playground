@@ -8,23 +8,23 @@
 // todo: уметь управлять браузерами Autoprefixer'а
 // todo: подключить плагины https://www.npmjs.com/search?q=node-sass
 
-import BaseCompiler = require("../../css/compiler/Compiler");
-import IOptions = require("./IOptions");
-import ICompiler = require("./ICompiler");
-import typeOf = require("../../typeOf");
-import deferred = require("../../deferred");
-import parallel = require("../../parallel");
-import IMemory = require("../../memory/client/IClient");
-import IResponse = require("../client/IResponse");
-import path = require("path");
-import fs = require("fs");
-import BaseException = require("../../Exception");
+import CompilerBase  = require("../../css/compiler/Compiler");
+import IOptions      = require("./IOptions");
+import ICompiler     = require("./ICompiler");
+import typeOf        = require("../../typeOf");
+import deferred      = require("../../deferred");
+import parallel      = require("../../parallel");
+import IMemory       = require("../../memory/client/IClient");
+import IResponse     = require("../client/IResponse");
+import path          = require("path");
+import fs            = require("fs");
+import ExceptionBase = require("../../Exception");
 import LessException = require("../Exception");
+import sass          = require("node-sass");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
-import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
-import sass = require("node-sass");
+import IncludeDirectoriesHelper  = require("../../helpers/IncludeDirectoriesHelper");
 
-class Compiler extends BaseCompiler implements ICompiler {
+class Compiler extends CompilerBase implements ICompiler {
 
     constructor(options: IOptions) {
         super(options);
@@ -121,7 +121,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
                                 next();
                             } else {
-                                if (error && BaseException.getCode(error) !== "ENOENT") {
+                                if (error && ExceptionBase.getCode(error) !== "ENOENT") {
                                     errors.push(error);
                                 }
                                 callback();
@@ -135,7 +135,7 @@ class Compiler extends BaseCompiler implements ICompiler {
                                 mtime = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
                                 next();
                             } else {
-                                if (error && BaseException.getCode(error) !== "ENOENT") {
+                                if (error && ExceptionBase.getCode(error) !== "ENOENT") {
                                     errors.push(error);
                                 }
                                 callback();
