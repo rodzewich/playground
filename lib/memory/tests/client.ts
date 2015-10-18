@@ -160,7 +160,7 @@ deferred([
                         setTimeout(():void => {
                             assert.strictEqual(disconnected, true);
                             done();
-                        }, 1000);
+                        }, 1000).ref();
                     }
                 ], ():void => {
                     next();
@@ -251,7 +251,7 @@ deferred([
                         setTimeout(():void => {
                             assert.strictEqual(disconnected, true);
                             done();
-                        }, 1000);
+                        }, 1000).ref();
                     }
                 ], ():void => {
                     next();
@@ -353,7 +353,7 @@ deferred([
                         setTimeout(():void => {
                             assert.strictEqual(disconnected, true);
                             done();
-                        }, 1000);
+                        }, 1000).ref();
                     }
                 ], ():void => {
                     next();
@@ -408,7 +408,7 @@ deferred([
                         setTimeout(():void => {
                             assert.strictEqual(disconnected, true);
                             done();
-                        }, 1000);
+                        }, 1000).ref();
                     }
                 ], ():void => {
                     next();
@@ -468,7 +468,7 @@ deferred([
                         setTimeout(():void => {
                             assert.strictEqual(disconnected, true);
                             done();
-                        }, 1000);
+                        }, 1000).ref();
                     }
                 ], ():void => {
                     next();
@@ -558,7 +558,7 @@ deferred([
                         setTimeout(():void => {
                             assert.strictEqual(disconnected, true);
                             done();
-                        }, 1000);
+                        }, 1000).ref();
                     }
                 ], ():void => {
                     next();
@@ -657,7 +657,7 @@ deferred([
                             setTimeout(():void => {
                                 assert.strictEqual(disconnected, true);
                                 done();
-                            }, 1000);
+                            }, 1000).ref();
                         }
                     ], ():void => {
                         next();
@@ -697,7 +697,7 @@ deferred([
                                 assert.strictEqual(response, true);
                                 done();
                             });
-                        }, 500);
+                        }, 500).ref();
                     },
                     (done:() => void):void => {
                         setTimeout(():void => {
@@ -706,7 +706,7 @@ deferred([
                                 assert.strictEqual(response, false);
                                 done();
                             });
-                        }, 1000);
+                        }, 1000).ref();
                     },
                 ], ():void => {
                     next();
@@ -730,7 +730,7 @@ deferred([
                                 assert.strictEqual(response, true);
                                 done();
                             });
-                        }, 500);
+                        }, 500).ref();
                     },
                     (done:() => void):void => {
                         setTimeout(():void => {
@@ -739,7 +739,7 @@ deferred([
                                 assert.strictEqual(response, true);
                                 done();
                             });
-                        }, 500);
+                        }, 500).ref();
                     },
                     (done:() => void):void => {
                         setTimeout(():void => {
@@ -748,7 +748,7 @@ deferred([
                                 assert.strictEqual(response, false);
                                 done();
                             });
-                        }, 1000);
+                        }, 1000).ref();
                     },
                     (done:() => void):void => {
                         setTimeout(():void => {
@@ -757,7 +757,7 @@ deferred([
                                 assert.strictEqual(response, false);
                                 done();
                             });
-                        }, 1000);
+                        }, 1000).ref();
                     }
                 ], ():void => {
                     next();
@@ -778,7 +778,7 @@ deferred([
                                 assert.strictEqual(response, true);
                                 done();
                             });
-                        }, 500);
+                        }, 500).ref();
                     },
                     (done:() => void):void => {
                         setTimeout(():void => {
@@ -787,7 +787,7 @@ deferred([
                                 assert.strictEqual(response, false);
                                 done();
                             });
-                        }, 1000);
+                        }, 1000).ref();
                     },
                 ], ():void => {
                     next();
@@ -811,7 +811,7 @@ deferred([
                                 assert.strictEqual(response, true);
                                 done();
                             });
-                        }, 500);
+                        }, 500).ref();
                     },
                     (done:() => void):void => {
                         setTimeout(():void => {
@@ -820,7 +820,7 @@ deferred([
                                 assert.strictEqual(response, true);
                                 done();
                             });
-                        }, 500);
+                        }, 500).ref();
                     },
                     (done:() => void):void => {
                         setTimeout(():void => {
@@ -829,7 +829,7 @@ deferred([
                                 assert.strictEqual(response, false);
                                 done();
                             });
-                        }, 1000);
+                        }, 1000).ref();
                     },
                     (done:() => void):void => {
                         setTimeout(():void => {
@@ -838,7 +838,7 @@ deferred([
                                 assert.strictEqual(response, false);
                                 done();
                             });
-                        }, 1000);
+                        }, 1000).ref();
                     }
                 ], ():void => {
                     next();
@@ -858,7 +858,7 @@ deferred([
                         setTimeout(():void => {
                             assert.strictEqual(disconnected, true);
                             done();
-                        }, 1000);
+                        }, 1000).ref();
                     }
                 ], ():void => {
                     next();
@@ -998,7 +998,7 @@ deferred([
                         setTimeout(():void => {
                             assert.strictEqual(disconnected, true);
                             done();
-                        }, 1000);
+                        }, 1000).ref();
                     }
                 ], ():void => {
                     next();
@@ -1107,7 +1107,7 @@ deferred([
                         setTimeout(():void => {
                             assert.strictEqual(disconnected, true);
                             done();
-                        }, 1000);
+                        }, 1000).ref();
                     }
                 ], ():void => {
                     next();
@@ -1130,11 +1130,13 @@ deferred([
                 client.stop((errors):void => {
                     assert.strictEqual(errors, null);
                     stopped = true;
+                    done();
                 });
             },
             (done:() => void):void => {
                 setTimeout(():void => {
                     assert.strictEqual(stopped, true);
+                    done();
                 }, 500).ref();
             }
         ], ():void => {

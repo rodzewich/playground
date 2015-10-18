@@ -16,15 +16,21 @@ var logger:log4js.Logger = log4js.getLogger("daemon");
 
 abstract class Daemon implements IDaemon {
 
-    protected _server:net.Server;
+    private _server:net.Server;
 
-    protected _starting:boolean = false;
+    private _starting:boolean = false;
 
-    protected _stopping:boolean = false;
+    private _stopping:boolean = false;
 
-    protected _started:boolean = false;
+    private _started:boolean = false;
 
-    protected _stopped:boolean = true;
+    private _stopped:boolean = true;
+
+    private _needStart:boolean = false;
+
+    private _needStop:boolean = false;
+
+    private _sockets:net.Socket[] = [];
 
     private _meLocationHelper:IMeLocationHelper;
 
@@ -59,15 +65,59 @@ abstract class Daemon implements IDaemon {
         this.getMeLocationHelper().setLocation(value);
     }
 
+    public get starting():boolean {
+        return this.isStarting();
+    }
+
+    public set starting(value:boolean) {
+    }
+
+    public isStarting():boolean {
+        return this._starting;
+    }
+
+    public get started():boolean {
+        return this.isStarted();
+    }
+
+    public set started(value:boolean) {
+    }
+
+    public isStarted() {
+        return this._started;
+    }
+
+    public get stopping():boolean {
+        return this.isStopping();
+    }
+
+    public set stopping(value:boolean) {
+    }
+
+    public isStopping():boolean {
+        return this._stopping;
+    }
+
+    public get stopped():boolean {
+        return this.isStopped();
+    }
+
+    public set stopped(value:boolean) {
+    }
+
+    public isStopped():boolean {
+        return this._stopped;
+    }
+
     protected handler(request:any, callback:(response:any) => void):void {
         if (!request) {
             setTimeout(():void => {
                 callback({});
-            }, 0)
+            }, 0).ref();
         } else {
             setTimeout(():void => {
                 callback({id: String(request.id)});
-            }, 0)
+            }, 0).ref();
         }
     }
 
@@ -142,8 +192,6 @@ abstract class Daemon implements IDaemon {
         this._server = server;
     }
 
-    private _sockets:net.Socket[] = [];
-
     public stop(callback?:(errors:IException[]) => void):void {
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -167,12 +215,12 @@ abstract class Daemon implements IDaemon {
                 handler(null);*/
             });
 
-        this._sockets.forEach((socket:net.Socket):void => {
-            socket.destroy();
-        });
+            while (this._sockets.length) {
+                this._sockets.shift().destroy();
+            }
 
         /*}*/
-        });
+        }).ref();
     }
 
 }

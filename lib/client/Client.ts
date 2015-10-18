@@ -215,7 +215,7 @@ abstract class Client implements IClient {
             if (isFunction(callback) && !alreadyCalled) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             alreadyCalled = true;
             clearTimeout(timer);
@@ -265,7 +265,7 @@ abstract class Client implements IClient {
                                     requestId : id
                                 }
                             })], null);
-                        }, timeout ? temp.getValue() : this.getTimeout());
+                        }, timeout ? temp.getValue() : this.getTimeout()).ref();
                     }
                 } else {
                     logger.warn("connection is not ready");
@@ -285,7 +285,7 @@ abstract class Client implements IClient {
                         (callback:(errors:IException[]) => void):void => {
                         setTimeout(():void => {
                             callback(errors);
-                        }, 0);
+                        }, 0).ref();
                     };
 
                     while (this._connectCallbacks.length) {
@@ -450,7 +450,7 @@ abstract class Client implements IClient {
                         function call(callback:(errors:IException[]) => void):void {
                             setTimeout(():void => {
                                 callback(errors);
-                            }, 0);
+                            }, 0).ref();
                         };
 
                     while (this._disconnectCallbacks.length) {
@@ -478,7 +478,7 @@ abstract class Client implements IClient {
                 }
                 logger.info("successful disconnected from: " + this.getLocation());
                 disconnected(null);
-            }, 0);
+            }, 0).ref();
         } else if (this._disconnected && !this._connecting) {
             disconnected(null);
         }
