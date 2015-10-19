@@ -6,6 +6,7 @@ import IDaemon = require("./IDaemon");
 import IOptions = require("./IOptions");
 import net = require("net");
 import log4js      = require("log4js");
+import isDefined = require("../isDefined");
 import Exception = require("../exception/Exception");
 import IException = require("../exception/IException");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
@@ -50,7 +51,9 @@ abstract class Daemon implements IDaemon {
     }
 
     constructor(options:IOptions) {
-        this.setLocation(options.location);
+        if (options && isDefined(options.location)) {
+            this.setLocation(options.location);
+        }
     }
 
     public get location():string {

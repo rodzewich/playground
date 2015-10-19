@@ -2,46 +2,40 @@
 
 import assert = require("assert");
 import Exception = require("../../exception/Exception");
-import displayException = require("../../displayException");
 import deferred = require("../../deferred");
 import Daemon = require("../daemon/Daemon");
 import IDaemon = require("../daemon/IDaemon");
 
-require("../../mapping");
+function run(debug:boolean, callback:() => void):void {
+    deferred([
+        (next:() => void):void => {
+            var daemon:IDaemon = new Daemon();
+            deferred([
+                (next:() => void):void => {
 
-process.addListener('uncaughtException', function (error:Error) {
-    displayException(Exception.convertFromError(error));
-});
+                },
+                ():void => {
+                    next();
+                }
+            ]);
+        },
+        (next:() => void):void => {
 
-deferred([
-    (next:() => void):void => {
-        var daemon:IDaemon = new Daemon();
-        deferred([
-            (next:() => void):void => {
+        },
+        (next:() => void):void => {
 
-            },
-            ():void => {
-                next();
-            }
-        ]);
-    },
-    (next:() => void):void => {
+        },
+        (next:() => void):void => {
 
-    },
-    (next:() => void):void => {
+        },
+        (next:() => void):void => {
 
-    },
-    (next:() => void):void => {
+        },
+        (next:() => void):void => {
 
-    },
-    (next:() => void):void => {
+        },
+        callback
+    ]);
+}
 
-    },
-    (next:() => void):void => {
-
-    },
-    (next:() => void):void => {
-
-    },
-]);
-
+export = run;
