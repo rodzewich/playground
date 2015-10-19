@@ -30,7 +30,7 @@ class NamespaceHelper implements INamespaceHelper {
 
     public setNamespace(namespace:string[]):void {
         if (!isArray(namespace) || !namespace.length) {
-            throw new Exception({message: "namespace should be not empty string array"});
+            throw new Exception({message: "namespace should be a non empty strings array"});
         }
         namespace.forEach((item:string):void => {
             if (!isString(item) || !/^[a-z][a-z0-9]$/i.test()) {
