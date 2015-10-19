@@ -40,7 +40,7 @@ class Daemon extends DaemonBase implements IDaemon {
             }
             this._timers[namespace][key] = setTimeout(():void => {
                 this.removeItem(namespace, key);
-            }, ttl);
+            }, ttl).ref();
         }
     }
 
@@ -275,7 +275,7 @@ class Daemon extends DaemonBase implements IDaemon {
                 this._locks[namespace][key] = true;
                 setTimeout(():void => {
                     callback(null);
-                }, 0);
+                }, 0).ref();
             }
             if (!(<((error:Exception) => void)[]>this._queues[namespace][key]).length) {
                 delete this._queues[namespace][key];
@@ -289,7 +289,7 @@ class Daemon extends DaemonBase implements IDaemon {
             if (isFunction(callback)) {
                 setTimeout((): void => {
                     callback(response);
-                }, 0);
+                }, 0).ref();
             }
         }
 

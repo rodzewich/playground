@@ -264,7 +264,7 @@ abstract class Client implements IClient {
                                 data : {
                                     requestId : id
                                 }
-                            })], null);
+                            })], null).ref();
                         }, timeout ? temp.getValue() : this.getTimeout()).ref();
                     }
                 } else {

@@ -923,7 +923,7 @@ deferred([
                         setTimeout(():void => {
                             assert.strictEqual(disconnected, true);
                             done();
-                        }, 1000);
+                        }, 1000).ref();
                     }
                 ], ():void => {
                     next();

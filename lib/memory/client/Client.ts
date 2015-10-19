@@ -64,7 +64,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -87,7 +87,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -109,7 +109,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -135,7 +135,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -160,7 +160,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -181,7 +181,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -202,7 +202,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -228,7 +228,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -256,7 +256,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -286,7 +286,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -329,7 +329,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -356,7 +356,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -385,7 +385,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -420,7 +420,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -457,7 +457,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -483,7 +483,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -511,7 +511,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -539,7 +539,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -569,7 +569,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -594,7 +594,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -621,7 +621,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -647,7 +647,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -675,7 +675,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -701,7 +701,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -741,7 +741,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -763,7 +763,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -791,7 +791,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -819,7 +819,7 @@ class Client extends ClientBase implements IClient {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, unlock);
-                }, 0);
+                }, 0).ref();
             }
             if (errors) {
                 errors.forEach((error:IException):void => {
@@ -835,7 +835,7 @@ class Client extends ClientBase implements IClient {
                         if (isFunction(callback)) {
                             setTimeout(():void => {
                                 callback(errors);
-                            }, 0);
+                            }, 0).ref();
                         }
                         if (errors) {
                             errors.forEach((error:IException):void => {

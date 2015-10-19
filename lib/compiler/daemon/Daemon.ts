@@ -46,7 +46,7 @@ abstract class Daemon extends DaemonBase implements IDaemon {
                     }];
                     setTimeout(():void => {
                         callback(response);
-                    });
+                    }).ref();
                     break;
             }
         });
