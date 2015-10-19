@@ -1,6 +1,6 @@
-import IBaseOptions = require("../../css/client/IOptions");
+import IOptionsBase = require("../../css/client/IOptions");
 
-interface IOptions extends IBaseOptions {
+interface IOptions extends IOptionsBase {
 }
 
 export = IOptions;

@@ -1,6 +1,6 @@
-import IBaseOptions = require("../../client/IOptions");
+import IOptionsBase = require("../../client/IOptions");
 
-interface IOptions extends IBaseOptions {
+interface IOptions extends IOptionsBase {
     namespace?:string;
 }
 

@@ -1,6 +1,6 @@
-import IBaseRequest = require("../../css/client/IRequest");
+import IRequestBase = require("../../css/client/IRequest");
 
-interface IRequest extends IBaseRequest {
+interface IRequest extends IRequestBase {
 }
 
 export = IRequest;

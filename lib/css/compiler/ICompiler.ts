@@ -1,7 +1,7 @@
-import IBaseCompiler = require("../../compiler/compiler/ICompiler");
+import ICompilerBase = require("../../compiler/compiler/ICompiler");
 import IMemory = require("../../memory/client/IClient");
 
-interface ICompiler extends IBaseCompiler {
+interface ICompiler extends ICompilerBase {
     setMemory(value:IMemory):void;
     getMemory():IMemory;
     isBrandSpecificLogic():boolean;

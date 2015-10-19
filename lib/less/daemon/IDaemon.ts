@@ -1,6 +1,6 @@
-import IBaseDaemon = require("../../css/daemon/IDaemon");
+import IDaemonBase = require("../../css/daemon/IDaemon");
 
-interface IDaemon extends IBaseDaemon {
+interface IDaemon extends IDaemonBase {
 }
 
 export = IDaemon;
