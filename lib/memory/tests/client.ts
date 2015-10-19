@@ -15,7 +15,7 @@ import typeOf     = require("../../typeOf");
 
 function run(debug:boolean, callback:() => void):void {
     var daemon:IDaemon,
-        location:string = path.join(__dirname, "memory.sock");
+        location:string = path.join(__dirname, "client.sock");
 
     function setup(callback:() => void):void {
         daemon = new Daemon({
