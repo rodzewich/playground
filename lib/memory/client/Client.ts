@@ -25,7 +25,7 @@ class Client extends ClientBase implements IClient {
     private _namespaceHelper:INamespaceHelper;
 
     protected createNamespaceHelper():INamespaceHelper {
-        return new NamespaceHelper("default");
+        return new NamespaceHelper(["default"]);
     }
 
     protected getNamespaceHelper():INamespaceHelper {

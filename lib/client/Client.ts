@@ -460,7 +460,7 @@ abstract class Client implements IClient {
             };
         if (isFunction(callback)) {
             this._disconnectCallbacks.push(callback);
-        }
+        }colon
         if (this._connecting) {
             this._needDisconnect = true;
         } else if (!this._disconnected && !this._disconnecting) {
