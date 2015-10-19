@@ -1,6 +1,9 @@
+import isArray          = require("../isArray");
+import isString         = require("../isString");
+import isDefined        = require("../isDefined");
+import Separator        = require("./Separator");
+import Exception        = require("../exception/Exception");
 import INamespaceHelper = require("./INamespaceHelper");
-import Separator = require("./Separator");
-import isDefined = require("../isDefined");
 
 class NamespaceHelper implements INamespaceHelper {
 
@@ -27,11 +30,11 @@ class NamespaceHelper implements INamespaceHelper {
 
     public setNamespace(namespace:string[]):void {
         if (!isArray(namespace) || !namespace.length) {
-            throw new Exception({message: "bla bla bla"});
+            throw new Exception({message: "namespace should be not empty string array"});
         }
         namespace.forEach((item:string):void => {
             if (!isString(item) || !/^[a-z][a-z0-9]$/i.test()) {
-                throw new Exception({message: "bla bla bla"});
+                throw new Exception({message: "namespace is invalid"});
             }
         });
         this._namespace = namespace;
@@ -43,7 +46,7 @@ class NamespaceHelper implements INamespaceHelper {
 
     public setSeparator(separator:Separator):void {
         if (!(separator instanceof Separator)) {
-            throw new Exception({message: "bla bla bla"});
+            throw new Exception({message: "separator is invalid"});
         }
         this._separator = separator;
     }
