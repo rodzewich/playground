@@ -4,6 +4,10 @@ import log4js     = require("../../../logger");
 import Separator  = require("../../helpers/Separator");
 import NamespaceHelper  = require("../../helpers/NamespaceHelper");
 import INamespaceHelper = require("../../helpers/INamespaceHelper");
+import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
+import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
+import SourcesDirectoryHelper = require("../helpers/SourcesDirectoryHelper");
+import ISourcesDirectoryHelper = require("../helpers/ISourcesDirectoryHelper");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
@@ -16,6 +20,10 @@ class Client extends ClientBase implements IClient {
     private _binaryNamespaceHelper:INamespaceHelper;
 
     private _gzipNamespaceHelper:INamespaceHelper;
+
+    private _includeDirectoriesHelper:IIncludeDirectoriesHelper;
+
+    private _sourcesDirectoryHelper:ISourcesDirectoryHelper;
 
     protected createNamespaceHelper():INamespaceHelper {
         return new NamespaceHelper(["default"]);
@@ -61,6 +69,49 @@ class Client extends ClientBase implements IClient {
         return this._gzipNamespaceHelper;
     }
 
+    protected createIncludeDirectoriesHelper():IIncludeDirectoriesHelper {
+        return new IncludeDirectoriesHelper();
+    }
+
+    protected getIncludeDirectoriesHelper():IIncludeDirectoriesHelper {
+        if (!this._includeDirectoriesHelper) {
+            this._includeDirectoriesHelper = this.createIncludeDirectoriesHelper();
+        }
+        return this._includeDirectoriesHelper;
+    }
+
+    protected createSourcesDirectoryHelper():ISourcesDirectoryHelper {
+        return new SourcesDirectoryHelper();
+    }
+
+    protected getSourcesDirectoryHelper():ISourcesDirectoryHelper {
+        if (!this._sourcesDirectoryHelper) {
+            this._sourcesDirectoryHelper = this.createSourcesDirectoryHelper();
+        }
+        return this._sourcesDirectoryHelper;
+    }
+
+    constructor(options) {
+        super(options);
+        if (options && isDefined(options.namespace)) {
+            this.setNamespace(options.namespace);
+        }
+        if (options && isDefined(options.sourceDirectory)) {
+            this.setSourcesDirectory(options.sourceDirectory);
+        }
+        if (options && isDefined(options.includeDirectories)) {
+            this.setIncludeDirectories(options.includeDirectories);
+        }
+    }
+
+    public get namespace():string {
+        return this.getNamespace();
+    }
+
+    public set namespace(namespace:string) {
+        this.setNamespace(namespace);
+    }
+
     public setNamespace(namespace:string):void {
         this.getNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT));
         this.getMetadataNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["metadata"]));
@@ -72,16 +123,69 @@ class Client extends ClientBase implements IClient {
         return this.getNamespaceHelper().getValue();
     }
 
+    public get metadataNamespace():string {
+        return this.getMetadataNamespace();
+    }
+
+    public set metadataNamespace(namespace) {
+    }
+
     public getMetadataNamespace():string {
         this.getMetadataNamespaceHelper().getValue();
+    }
+
+    public get binaryNamespace():string {
+        return this.getBinaryNamespace();
+    }
+
+    public set binaryNamespace(namespace) {
     }
 
     public getBinaryNamespace():string {
         this.getBinaryNamespaceHelper().getValue();
     }
 
+    public get gzipNamespace():string {
+        return this.getGzipNamespace();
+    }
+
+    public set gzipNamespace(namespace) {
+    }
+
     public getGzipNamespace():string {
         this.getGzipNamespaceHelper().getValue();
+    }
+
+    public get includeDirectories():string[] {
+        return this.getIncludeDirectories();
+    }
+
+    public set includeDirectories(directories:string[]) {
+        this.setIncludeDirectories(directories);
+    }
+
+    public getIncludeDirectories():string[] {
+        return this.getIncludeDirectoriesHelper().getDirectories();
+    }
+
+    public setIncludeDirectories(directories:string[]):void {
+        this.getIncludeDirectoriesHelper().setDirectories(directories);
+    }
+
+    public get sourceDirectory():string {
+        return this.getSourcesDirectory();
+    }
+
+    public set sourceDirectory(directory) {
+        this.setSourcesDirectory(directory);
+    }
+
+    public getSourcesDirectory():string {
+        return this.getSourcesDirectoryHelper().getLocation();
+    }
+
+    public setSourcesDirectory(directory:string):void {
+        this.getSourcesDirectoryHelper().setLocation(directory);
     }
 
     public getContent(filename:string, callback?:(errors:IException[], response:string) => void):void {
