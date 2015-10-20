@@ -938,21 +938,21 @@ function run(debug:boolean, callback:() => void):void {
             });
             deferred([
                 (next:() => void):void => {
-                    client.increment("inc", (errors, value):void => {
+                    client.increment("inc", null, (errors, value):void => {
                         assert.strictEqual(errors, null);
                         assert.strictEqual(value, "1");
                         next();
                     });
                 },
                 (next:() => void):void => {
-                    client.increment("inc", (errors, value):void => {
+                    client.increment("inc", null, (errors, value):void => {
                         assert.strictEqual(errors, null);
                         assert.strictEqual(value, "2");
                         next();
                     });
                 },
                 (next:() => void):void => {
-                    client.increment("inc", (errors, value):void => {
+                    client.increment("inc", null, (errors, value):void => {
                         assert.strictEqual(errors, null);
                         assert.strictEqual(value, "3");
                         next();
@@ -966,21 +966,21 @@ function run(debug:boolean, callback:() => void):void {
                     });
                 },
                 (next:() => void):void => {
-                    client.decrement("dec", (errors, value):void => {
+                    client.decrement("dec", null, (errors, value):void => {
                         assert.strictEqual(errors, null);
                         assert.strictEqual(value, "-1");
                         next();
                     });
                 },
                 (next:() => void):void => {
-                    client.decrement("dec", (errors, value):void => {
+                    client.decrement("dec", null, (errors, value):void => {
                         assert.strictEqual(errors, null);
                         assert.strictEqual(value, "-2");
                         next();
                     });
                 },
                 (next:() => void):void => {
-                    client.decrement("dec", (errors, value):void => {
+                    client.decrement("dec", null, (errors, value):void => {
                         assert.strictEqual(errors, null);
                         assert.strictEqual(value, "-3");
                         next();

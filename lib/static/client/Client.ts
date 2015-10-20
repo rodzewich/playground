@@ -61,24 +61,15 @@ class Client extends ClientBase implements IClient {
         return this._gzipNamespaceHelper;
     }
 
-    public setNamespace(namespace:string, separator:Separator = Separator.DOT):void {
-        var metadata:string[],
-            binary:string[],
-            gzip:string[];
-        this.getNamespaceHelper().setNamespace(namespace, );
-        metadata = this.getNamespace();
-        binary = this.getNamespace();
-        gzip = this.getNamespace();
-        metadata.push("metadata");
-        binary.push("binary");
-        gzip.push("gzip");
-        this.getMetadataNamespaceHelper().setNamespace(metadata);
-        this.getBinaryNamespaceHelper().setNamespace(binary);
-        this.getGzipNamespaceHelper().setNamespace(gzip);
+    public setNamespace(namespace:string):void {
+        this.getNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT));
+        this.getMetadataNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["metadata"]));
+        this.getBinaryNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["binary"]));
+        this.getGzipNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["gzip"]));
     }
 
-    public getNamespace():string[] {
-        return this.getNamespaceHelper().getNamespace();
+    public getNamespace():string {
+        return this.getNamespaceHelper().getValue();
     }
 
     public getMetadataNamespace():string {
@@ -91,6 +82,10 @@ class Client extends ClientBase implements IClient {
 
     public getGzipNamespace():string {
         this.getGzipNamespaceHelper().getValue();
+    }
+
+    public getContent(filename:string):void {
+
     }
 
 }

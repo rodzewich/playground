@@ -4,6 +4,7 @@ interface INamespaceHelper {
     getValue():string;
     getNamespace():string[];
     setNamespace(namespace:string[]):void;
+    addToNamespace(namespace:string[]):void;
     getSeparator():Separator;
     setSeparator(separator:Separator):void;
 }

@@ -47,8 +47,8 @@ class Client extends ClientBase implements IClient {
         return this.getNamespaceHelper().getValue();
     }
 
-    public setNamespace(namespace:string, separator:Separator = Separator.DOT):void {
-        this.getNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, separator).getNamespace());
+    public setNamespace(namespace:string):void {
+        this.getNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).getNamespace());
     }
 
     public get namespace():string {
@@ -197,7 +197,7 @@ class Client extends ClientBase implements IClient {
 
     }
 
-    public getItem(key:string, callback?:(errors:IException[], response:any) => void):void {
+    public getItem(key:string, callback?:(errors:IException[], response:any) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:any):void {
             if (isFunction(callback)) {
@@ -214,16 +214,18 @@ class Client extends ClientBase implements IClient {
 
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:any):void => {
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && isDefined(response) ? response : null);
-            }, null, "getItem", this.getNamespace(), key);
+            }, null, "getItem", namespace.getValue(), key);
         }
 
     }
 
-    public getItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:any;}|any) => void):void {
+    public getItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:any;}|any) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:{[index:string]:any;}|any):void {
             if (isFunction(callback)) {
@@ -242,16 +244,18 @@ class Client extends ClientBase implements IClient {
                 return previous && isString(element);
             }, true)) {
             handler([new Exception({message: "keys should be a non empty strings array"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:{[index:string]:any;}|any):void => {
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && response ? response : null);
-            }, null, "getItems", this.getNamespace(), keys);
+            }, null, "getItems", namespace.getValue(), keys);
         }
 
     }
 
-    public getBin(key:string, callback?:(errors:IException[], response:Buffer) => void):void {
+    public getBin(key:string, callback?:(errors:IException[], response:Buffer) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:any):void {
             if (isFunction(callback)) {
@@ -268,6 +272,8 @@ class Client extends ClientBase implements IClient {
 
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:Buffer):void => {
                 try {
@@ -276,12 +282,12 @@ class Client extends ClientBase implements IClient {
                 } catch (err) {
                     handler([ExceptionBase.convertFromError(err)], null);
                 }
-            }, null, "getBin", this.getNamespace(), key);
+            }, null, "getBin", namespace.getValue(), key);
         }
 
     }
 
-    public getBins(keys:string[], callback?:(errors:IException[], response:{[index:string]:Buffer;}|any) => void):void {
+    public getBins(keys:string[], callback?:(errors:IException[], response:{[index:string]:Buffer;}|any) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:{[index:string]:any;}|any):void {
             if (isFunction(callback)) {
@@ -300,6 +306,8 @@ class Client extends ClientBase implements IClient {
                 return previous && isString(element);
             }, true)) {
             handler([new Exception({message: "keys should be a non empty strings array"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:{[index:string]:Buffer;}|any):void => {
                 var temp:{[index:string]:Buffer;} = null,
@@ -319,12 +327,12 @@ class Client extends ClientBase implements IClient {
                 }
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && response ? temp : null);
-            }, null, "getBins", this.getNamespace(), keys);
+            }, null, "getBins", namespace.getValue(), keys);
         }
 
     }
 
-    public setItem(key:string, value:any, ttl:number, callback?:(errors:IException[]) => void):void {
+    public setItem(key:string, value:any, ttl:number, callback?:(errors:IException[]) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -343,15 +351,17 @@ class Client extends ClientBase implements IClient {
             handler([new Exception({message : "key should be a string"})]);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
             handler([new Exception({message : "ttl should be a positive integer"})]);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})]);
         } else {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, null, "setItem", this.getNamespace(), key, value, ttl ? Math.floor(ttl) : null);
+            }, null, "setItem", namespace.getValue(), key, value, ttl ? Math.floor(ttl) : null);
         }
 
     }
 
-    public setItems(data:{[index:string]:any;}|any, ttl:number, callback?:(errors:IException[]) => void):void {
+    public setItems(data:{[index:string]:any;}|any, ttl:number, callback?:(errors:IException[]) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -370,15 +380,17 @@ class Client extends ClientBase implements IClient {
             handler([new Exception({message : "data should be a non empty object"})]);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
             handler([new Exception({message : "ttl should be a positive integer"})]);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})]);
         } else {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, null, "setItems", this.getNamespace(), data, ttl ? Math.floor(ttl) : null);
+            }, null, "setItems", namespace.getValue(), data, ttl ? Math.floor(ttl) : null);
         }
 
     }
 
-    public setBin(key:string, value:any, ttl:number, callback?:(errors:IException[]) => void):void {
+    public setBin(key:string, value:any, ttl:number, callback?:(errors:IException[]) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         var temp:string;
 
@@ -399,6 +411,8 @@ class Client extends ClientBase implements IClient {
             handler([new Exception({message : "key should be a string"})]);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
             handler([new Exception({message : "ttl should be a positive integer"})]);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})]);
         } else {
             if (value instanceof Buffer) {
                 temp = value.toString("base64");
@@ -407,12 +421,12 @@ class Client extends ClientBase implements IClient {
             }
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, null, "setBin", this.getNamespace(), key, temp, ttl ? Math.floor(ttl) : null);
+            }, null, "setBin", namespace.getValue(), key, temp, ttl ? Math.floor(ttl) : null);
         }
 
     }
 
-    public setBins(data:{[index:string]:any;}|any, ttl:number, callback?:(errors:IException[]) => void):void {
+    public setBins(data:{[index:string]:any;}|any, ttl:number, callback?:(errors:IException[]) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         var temp:{[index:string]:string} = {},
             property:string;
@@ -434,6 +448,8 @@ class Client extends ClientBase implements IClient {
             handler([new Exception({message : "data should be a non empty object"})]);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
             handler([new Exception({message : "ttl should be a positive integer"})]);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})]);
         } else {
             for (property in data) {
                 if (!data.hasOwnProperty(property)) {
@@ -447,12 +463,12 @@ class Client extends ClientBase implements IClient {
             }
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, null, "setBins", this.getNamespace(), temp, ttl ? Math.floor(ttl) : null);
+            }, null, "setBins", namespace.getValue(), temp, ttl ? Math.floor(ttl) : null);
         }
 
     }
 
-    public getTtl(key:string, callback?:(errors:IException[], response:number) => void):void {
+    public getTtl(key:string, callback?:(errors:IException[], response:number) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:number):void {
             if (isFunction(callback)) {
@@ -469,16 +485,18 @@ class Client extends ClientBase implements IClient {
 
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:any):void => {
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && isDefined(response) ? response : null);
-            }, null, "getTtl", this.getNamespace(), key);
+            }, null, "getTtl", namespace.getValue(), key);
         }
 
     }
 
-    public getTtls(keys:string[], callback?:(errors:IException[], response:{[index:string]:number;}|any) => void):void {
+    public getTtls(keys:string[], callback?:(errors:IException[], response:{[index:string]:number;}|any) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:{[index:string]:number;}|any):void {
             if (isFunction(callback)) {
@@ -497,16 +515,18 @@ class Client extends ClientBase implements IClient {
                 return previous && isString(element);
             }, true)) {
             handler([new Exception({message: "keys should be a non empty strings array"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:{[index:string]:number;}|any):void => {
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && isDefined(response) ? response : null);
-            }, null, "getTtls", this.getNamespace(), keys);
+            }, null, "getTtls", namespace.getValue(), keys);
         }
 
     }
 
-    public setTtl(key:string, ttl:number, callback?:(errors:IException[], response:number) => void):void {
+    public setTtl(key:string, ttl:number, callback?:(errors:IException[], response:number) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:number):void {
             if (isFunction(callback)) {
@@ -525,16 +545,18 @@ class Client extends ClientBase implements IClient {
             handler([new Exception({message : "key should be a string"})], null);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
             handler([new Exception({message : "ttl should be a positive integer"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:any):void => {
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && isDefined(response) ? response : null);
-            }, null, "setTtl", this.getNamespace(), key, ttl);
+            }, null, "setTtl", namespace.getValue(), key, ttl);
         }
 
     }
 
-    public setTtls(keys:string[], ttl:number, callback?:(errors:IException[], response:{[index:string]:number;}|any) => void):void {
+    public setTtls(keys:string[], ttl:number, callback?:(errors:IException[], response:{[index:string]:number;}|any) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:{[index:string]:number;}|any):void {
             if (isFunction(callback)) {
@@ -555,16 +577,18 @@ class Client extends ClientBase implements IClient {
             handler([new Exception({message: "keys should be a non empty strings array"})], null);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
             handler([new Exception({message : "ttl should be a positive integer"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:{[index:string]:number;}|any):void => {
                 handler(errors && errors.length ? errors : null,
                     (!errors || !errors.length) && isDefined(response) ? response : null);
-            }, null, "setTtls", this.getNamespace(), keys, ttl);
+            }, null, "setTtls", namespace.getValue(), keys, ttl);
         }
 
     }
 
-    public removeItem(key:string, callback?:(errors:IException[]) => void):void {
+    public removeItem(key:string, callback?:(errors:IException[]) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -581,15 +605,17 @@ class Client extends ClientBase implements IClient {
 
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})]);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})]);
         } else {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, null, "removeItem", this.getNamespace(), key);
+            }, null, "removeItem", namespace.getValue(), key);
         }
 
     }
 
-    public removeItems(keys:string[], callback?:(errors:IException[]) => void) {
+    public removeItems(keys:string[], callback?:(errors:IException[]) => void, namespace:INamespaceHelper = this.getNamespaceHelper()) {
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -608,15 +634,17 @@ class Client extends ClientBase implements IClient {
                 return previous && isString(element);
             }, true)) {
             handler([new Exception({message: "keys should be a non empty strings array"})]);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})]);
         } else {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, null, "removeItems", this.getNamespace(), keys);
+            }, null, "removeItems", namespace.getValue(), keys);
         }
 
     }
 
-    public hasItem(key:string, callback?:(errors:IException[], response:boolean) => void):void {
+    public hasItem(key:string, callback?:(errors:IException[], response:boolean) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:boolean):void {
             if (isFunction(callback)) {
@@ -633,16 +661,18 @@ class Client extends ClientBase implements IClient {
 
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:boolean):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? !!response : null);
-            }, null, "hasItem", this.getNamespace(), key);
+            }, null, "hasItem", namespace.getValue(), key);
         }
 
     }
 
-    public hasItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:boolean;}|any) => void):void {
+    public hasItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:boolean;}|any) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:{[index:string]:boolean;}|any):void {
             if (isFunction(callback)) {
@@ -661,16 +691,18 @@ class Client extends ClientBase implements IClient {
                 return previous && isString(element);
             }, true)) {
             handler([new Exception({message: "keys should be a non empty strings array"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:{[index:string]:boolean;}|any):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? response || null : null);
-            }, null, "hasItems", this.getNamespace(), keys);
+            }, null, "hasItems", namespace.getValue(), keys);
         }
 
     }
 
-    public getKey(index:number, callback?:(errors:IException[], response:string) => void):void {
+    public getKey(index:number, callback?:(errors:IException[], response:string) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:string):void {
             if (isFunction(callback)) {
@@ -687,16 +719,18 @@ class Client extends ClientBase implements IClient {
 
         if (!isNumber(index) || isNaN(index) || index < 0) {
             handler([new Exception({message : "index should be a positive number"})], null);
-        } else  {
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
+        } else {
             this.call((errors:IException[], response:string):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? String(response || "") || null : null);
-            }, null, "getKey", this.getNamespace(), index);
+            }, null, "getKey", namespace.getValue(), index);
         }
 
     }
 
-    public getKeys(indexes:number[], callback?:(errors:IException[], response:string[]) => void):void {
+    public getKeys(indexes:number[], callback?:(errors:IException[], response:string[]) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:string[]):void {
             if (isFunction(callback)) {
@@ -715,6 +749,8 @@ class Client extends ClientBase implements IClient {
                 return previous && isNumber(element) && element >= 0;
             }, true)) {
             handler([new Exception({message : "indexes should be a positive numbers array"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:string[]):void => {
                 var errs:IException[] = null,
@@ -732,11 +768,11 @@ class Client extends ClientBase implements IClient {
                     }
                 }
                 handler(errs, result);
-            }, null, "getKeys", this.getNamespace(), indexes);
+            }, null, "getKeys", namespace.getValue(), indexes);
         }
     }
 
-    public getLength(callback?:(errors:IException[], response:number) => void):void {
+    public getLength(callback?:(errors:IException[], response:number) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:number):void {
             if (isFunction(callback)) {
@@ -751,14 +787,18 @@ class Client extends ClientBase implements IClient {
             }
         }
 
+        if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
+        }
+
         this.call((errors:IException[], response:number):void => {
             handler(errors && errors.length ? errors : null,
                 !errors || !errors.length ? Math.max(0, parseInt(String(response), 10) || 0) : null);
-        }, null, "getLength", this.getNamespace());
+        }, null, "getLength", namespace.getValue());
 
     }
 
-    public increment(key:string, callback?:(errors:IException[], response:string) => void, ttl?:number):void {
+    public increment(key:string, ttl:number, callback?:(errors:IException[], response:string) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:string):void {
             if (isFunction(callback)) {
@@ -777,16 +817,18 @@ class Client extends ClientBase implements IClient {
             handler([new Exception({message : "key should be a string"})], null);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
             handler([new Exception({message : "ttl should be a positive integer"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:string):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? response || null : null);
-            }, null, "increment", this.getNamespace(), key, ttl);
+            }, null, "increment", namespace.getValue(), key, ttl);
         }
 
     }
 
-    public decrement(key:string, callback?:(errors:IException[], response:string) => void, ttl?:number):void {
+    public decrement(key:string, ttl:number, callback?:(errors:IException[], response:string) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[], response:string):void {
             if (isFunction(callback)) {
@@ -805,16 +847,18 @@ class Client extends ClientBase implements IClient {
             handler([new Exception({message : "key should be a string"})], null);
         } else if (isDefined(ttl) && !isNull(ttl) && (!isNumber(ttl) || isNaN(ttl) || ttl < 0)) {
             handler([new Exception({message : "ttl should be a positive integer"})], null);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})], null);
         } else {
             this.call((errors:IException[], response:string):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? response || null : null);
-            }, null, "decrement", this.getNamespace(), key, ttl);
+            }, null, "decrement", namespace.getValue(), key, ttl);
         }
 
     }
 
-    public lock(key:string, callback?:(errors:IException[], unlock:(callback?:(errors:IException[]) => void) => void) => void):void {
+    public lock(key:string, callback?:(errors:IException[], unlock:(callback?:(errors:IException[]) => void) => void) => void, namespace:INamespaceHelper = this.getNamespaceHelper()):void {
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -853,10 +897,12 @@ class Client extends ClientBase implements IClient {
 
         if (!isString(key)) {
             handler([new Exception({message : "key should be a string"})]);
+        } else if (!(namespace instanceof NamespaceHelper)) {
+            handler([new Exception({message : "namespace should be a instance of NamespaceHelper"})]);
         } else {
             this.call((errors:IException[]):void => {
                 handler(errors && errors.length ? errors : null);
-            }, -1, "lock", this.getNamespace(), key);
+            }, -1, "lock", namespace.getValue(), key);
         }
 
     }

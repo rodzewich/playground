@@ -264,8 +264,9 @@ abstract class Client implements IClient {
                                 data : {
                                     requestId : id
                                 }
-                            })], null).ref();
-                        }, timeout ? temp.getValue() : this.getTimeout()).ref();
+                            })], null);
+                        }, timeout ? temp.getValue() : this.getTimeout());
+                        timer.ref();
                     }
                 } else {
                     logger.warn("connection is not ready");

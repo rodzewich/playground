@@ -40,6 +40,20 @@ class NamespaceHelper implements INamespaceHelper {
         this._namespace = namespace;
     }
 
+    public addToNamespace(namespace:string[]):void {
+        if (!isArray(namespace) || !namespace.length) {
+            throw new Exception({message: "namespace should be a non empty strings array"});
+        }
+        namespace.forEach((item:string):void => {
+            if (!isString(item) || !/^[a-z][a-z0-9]*$/i.test(item)) {
+                throw new Exception({message: "namespace is invalid"});
+            }
+        });
+        namespace.forEach((item:string):void => {
+            this._namespace.push(item);
+        });
+    }
+
     public getSeparator():Separator {
         return this._separator;
     }
