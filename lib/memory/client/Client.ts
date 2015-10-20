@@ -11,6 +11,7 @@ import isFunction       = require("../../isFunction");
 import IClient          = require("./IClient");
 import IOptions         = require("./IOptions");
 import ClientBase       = require("../../client/Client");
+import Separator        = require("../../helpers/Separator");
 import Exception        = require("../exception/Exception");
 import IException       = require("../exception/IException");
 import ExceptionBase    = require("../../exception/Exception");
@@ -46,8 +47,8 @@ class Client extends ClientBase implements IClient {
         return this.getNamespaceHelper().getValue();
     }
 
-    public setNamespace(namespace:string):void {
-        this.getNamespaceHelper().setValue(namespace);
+    public setNamespace(namespace:string, separator:Separator = Separator.DOT):void {
+        this.getNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, separator).getNamespace());
     }
 
     public get namespace():string {

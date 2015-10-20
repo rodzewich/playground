@@ -33,7 +33,7 @@ class NamespaceHelper implements INamespaceHelper {
             throw new Exception({message: "namespace should be a non empty strings array"});
         }
         namespace.forEach((item:string):void => {
-            if (!isString(item) || !/^[a-z][a-z0-9]$/i.test()) {
+            if (!isString(item) || !/^[a-z][a-z0-9]*$/i.test(item)) {
                 throw new Exception({message: "namespace is invalid"});
             }
         });
@@ -49,6 +49,10 @@ class NamespaceHelper implements INamespaceHelper {
             throw new Exception({message: "separator is invalid"});
         }
         this._separator = separator;
+    }
+
+    public static parse(namespace:string, separator:Separator = Separator.DOT):NamespaceHelper {
+        return new NamespaceHelper(String(namespace).split(separator.getValue()), separator);
     }
 
 }

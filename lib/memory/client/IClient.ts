@@ -3,11 +3,12 @@
 import IInformation = require("../IInformation");
 import IClientBase  = require("../../client/IClient");
 import IException   = require("../exception/IException");
+import Separator    = require("../../helpers/Separator");
 
 interface IClient extends IClientBase {
     namespace:string;
     getNamespace():string;
-    setNamespace(namespace:string):void;
+    setNamespace(namespace:string, separator?:Separator):void;
     ping(callback?:(errors:IException[]) => void):void;
     stop(callback?:(errors:IException[]) => void):void;
     getInfo(callback?:(errors:IException[], response:IInformation) => void):void;

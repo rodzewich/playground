@@ -28,3 +28,5 @@ class Separator {
     public static ARROW:Separator = new Separator("ARROW", "->");
 
 }
+
+export = Separator;
