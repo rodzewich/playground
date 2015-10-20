@@ -84,7 +84,7 @@ class Client extends ClientBase implements IClient {
         this.getGzipNamespaceHelper().getValue();
     }
 
-    public getContent(filename:string):void {
+    public getContent(filename:string, callback?:(errors:IException[], response:string) => void):void {
 
     }
 
