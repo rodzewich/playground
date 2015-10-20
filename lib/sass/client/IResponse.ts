@@ -1,6 +1,6 @@
-import IBaseResponse = require("../../css/client/IResponse");
+import IResponseBase = require("../../css/client/IResponse");
 
-interface IResponse extends IBaseResponse {
+interface IResponse extends IResponseBase {
 }
 
 export = IResponse;

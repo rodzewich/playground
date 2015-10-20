@@ -1,6 +1,6 @@
-import IBaseOptions = require("../../daemon/IOptions");
+import IOptionsBase = require("../../daemon/IOptions");
 
-interface IOptions extends IBaseOptions {
+interface IOptions extends IOptionsBase {
 }
 
 export = IOptions;

@@ -1,6 +1,6 @@
-import IBaseRequest = require("../../compiler/client/IRequest");
+import IRequestBase = require("../../compiler/client/IRequest");
 
-interface IRequest extends IBaseRequest {
+interface IRequest extends IRequestBase {
     includeDirectories:string[];
     brandSpecificLogic:boolean;
     supportLanguages:boolean;

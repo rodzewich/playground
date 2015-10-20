@@ -264,7 +264,7 @@ abstract class Client implements IClient {
                                 data : {
                                     requestId : id
                                 }
-                            })], null);
+                            })], null).ref();
                         }, timeout ? temp.getValue() : this.getTimeout()).ref();
                     }
                 } else {
@@ -281,12 +281,11 @@ abstract class Client implements IClient {
             debug:boolean = this.isDebug(),
             connected:(errors:IException[]) => void =
                 (errors:IException[]):void => {
-                    var call:(callback:(errors:IException[]) => void) => void =
-                        (callback:(errors:IException[]) => void):void => {
+                    function call(callback:(errors:IException[]) => void):void {
                         setTimeout(():void => {
                             callback(errors);
                         }, 0).ref();
-                    };
+                    }
 
                     while (this._connectCallbacks.length) {
                         call(this._connectCallbacks.shift());
@@ -326,7 +325,7 @@ abstract class Client implements IClient {
                         if (debug) {
                             helpers.displayErrorData("can not connect to: " + this.getLocation());
                         }
-                        logger.warn("can not connect to: " + this.getLocation());
+                        logger.error(Exception.convertFromError(error).getStack());
                         connected([Exception.convertFromError(error, {
                             code    : error.code,
                             errno   : error.errno,
@@ -444,26 +443,24 @@ abstract class Client implements IClient {
 
     public disconnect(callback?:(errors:IException[]) => void):void {
         var debug:boolean = this.isDebug(),
-            disconnected:(errors:IException[]) => void =
-                (errors:IException[]):void => {
-                    var call:(callback:(errors:IException[]) => void) => void =
-                        function call(callback:(errors:IException[]) => void):void {
-                            setTimeout(():void => {
-                                callback(errors);
-                            }, 0).ref();
-                        };
+            disconnected:(errors:IException[]) => void = (errors:IException[]):void => {
+                function call(callback:(errors:IException[]) => void):void {
+                    setTimeout(():void => {
+                        callback(errors);
+                    }, 0).ref();
+                }
 
-                    while (this._disconnectCallbacks.length) {
-                        call(this._disconnectCallbacks.shift());
-                    }
+                while (this._disconnectCallbacks.length) {
+                    call(this._disconnectCallbacks.shift());
+                }
 
-                    if (this._needConnect) {
-                        this.connect();
-                    }
-                };
+                if (this._needConnect) {
+                    this.connect();
+                }
+            };
         if (isFunction(callback)) {
             this._disconnectCallbacks.push(callback);
-        }
+        }colon
         if (this._connecting) {
             this._needDisconnect = true;
         } else if (!this._disconnected && !this._disconnecting) {
@@ -471,12 +468,15 @@ abstract class Client implements IClient {
             this._needDisconnect = false;
             this._client.removeAllListeners("data");
             this._client.destroy();
-            this._client = null;
             setTimeout(():void => {
                 if (debug) {
                     helpers.displayInputData("successful disconnected from: " + this.getLocation());
                 }
                 logger.info("successful disconnected from: " + this.getLocation());
+                this._client        = null;
+                this._connected     = false;
+                this._disconnected  = true;
+                this._disconnecting = false;
                 disconnected(null);
             }, 0).ref();
         } else if (this._disconnected && !this._connecting) {

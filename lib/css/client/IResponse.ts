@@ -1,6 +1,6 @@
-import IBaseResponse = require("../../compiler/client/IResponse");
+import IResponseBase = require("../../compiler/client/IResponse");
 
-interface IResponse extends IBaseResponse {
+interface IResponse extends IResponseBase {
     source:string;
     result:string;
     deps:string[];

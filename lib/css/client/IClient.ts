@@ -1,7 +1,7 @@
-import IBaseClient = require("../../compiler/client/IClient");
+import IClientBase = require("../../compiler/client/IClient");
 import IResponse = require("./IResponse");
 
-interface IClient extends IBaseClient {
+interface IClient extends IClientBase {
     compile(filename:string, callback?:(errors:Error[], result:IResponse) => void): void;
     isBrandSpecificLogic():boolean;
     getIsBrandSpecificLogic():boolean;

@@ -1,7 +1,7 @@
-import IBaseManager = require("../../compiler/manager/IManager");
+import IManagerBase = require("../../compiler/manager/IManager");
 import IResponse = require("./IResponse");
 
-interface IManager extends IBaseManager {
+interface IManager extends IManagerBase {
     compile(filename:string, callback?:(errors:Error[], result:IResponse) => void): void;
     isBrandSpecificLogic():boolean;
     getIsBrandSpecificLogic():boolean;

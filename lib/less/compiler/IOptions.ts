@@ -1,6 +1,6 @@
-import IBaseOptions = require("../../css/compiler/IOptions");
+import IOptionsBase = require("../../css/compiler/IOptions");
 
-interface IOptions extends IBaseOptions {
+interface IOptions extends IOptionsBase {
     pluginBootstrapUsed?:boolean;
     pluginCardinalUsed?:boolean;
     pluginFlexboxgridUsed?:boolean;

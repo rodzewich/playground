@@ -1,6 +1,6 @@
-import IBaseManager = require("../../css/manager/IManager");
+import IManagerBase = require("../../css/manager/IManager");
 
-interface IManager extends IBaseManager {
+interface IManager extends IManagerBase {
 }
 
 export = IManager;

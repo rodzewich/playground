@@ -1,7 +1,7 @@
-import IBaseOptions = require("../../compiler/compiler/IOptions");
+import IOptionsBase = require("../../compiler/compiler/IOptions");
 import IMemory = require("../../memory/client/IClient");
 
-interface IOptions extends IBaseOptions {
+interface IOptions extends IOptionsBase {
     includeDirectories?:string[];
     brandSpecificLogic?:boolean;
     supportLanguages?:boolean;

@@ -85,7 +85,7 @@ class Manager extends Client implements IManager {
             (client:IClient, callback:(client:IClient) => void):void => {
                 setTimeout(():void => {
                     callback(client);
-                }, 0);
+                }, 0).ref();
             };
         if (this._clients.indexOf(client) !== -1 &&
             this._pool.indexOf(client) === -1) {
@@ -147,7 +147,7 @@ class Manager extends Client implements IManager {
                 if (typeof callback === "function") {
                     callback(null);
                 }
-            }, 0);
+            }, 0).ref();
         } else if (this._connecting) {
             if (typeof callback === "function") {
                 this._connectionQueue.push(callback);
@@ -168,7 +168,7 @@ class Manager extends Client implements IManager {
                             } else {
                                 element(errors);
                             }
-                        }, 0);
+                        }, 0).ref();
                     };
                 this._connecting = false;
                 if (!errors.length) {
@@ -200,7 +200,7 @@ class Manager extends Client implements IManager {
                 if (typeof callback === "function") {
                     callback(null);
                 }
-            }, 0);
+            }, 0).ref();
         }
     }
 

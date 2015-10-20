@@ -1,6 +1,6 @@
-import IBaseCompiler = require("../../css/compiler/ICompiler");
+import ICompilerBase = require("../../css/compiler/ICompiler");
 
-interface ICompiler extends IBaseCompiler {
+interface ICompiler extends ICompilerBase {
 }
 
 export = ICompiler;

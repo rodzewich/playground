@@ -1,8 +1,8 @@
 /// <reference path="../IOptions.ts" />
 
-import IBaseOptions = require("../IOptions");
+import IOptionsBase = require("../IOptions");
 
-interface IOptions extends IBaseOptions {
+interface IOptions extends IOptionsBase {
     port?: number;
     protocol?: string;
     variables?: any;
