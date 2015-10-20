@@ -13,6 +13,16 @@ import deferred   = require("../../deferred");
 import parallel   = require("../../parallel");
 import typeOf     = require("../../typeOf");
 
+// todo: проверять обращение к другим namespace
+// todo: проверять содержание локов в том же объекте
+// todo: проверять очередь connect/disconnect
+// todo: проверять свойства connected/connecting
+// todo: проверять свойства disconnected/disconnecting
+// todo: проверять методы isConnected/isConnecting
+// todo: проверять методы isDisconnected/isDisconnecting
+// todo: проверять timeout/getTimeout
+// todo: проверять debug/isDebug
+
 function run(debug:boolean, callback:() => void):void {
     var daemon:IDaemon,
         location:string = path.join(__dirname, "client.sock");
@@ -140,8 +150,6 @@ function run(debug:boolean, callback:() => void):void {
             assert.strictEqual(client.getNamespace(), "default");
             next();
         },
-        // todo: test timeout
-        // todo: test debug
         // ping
         (next:() => void):void => {
             var client:IClient = new Client({
