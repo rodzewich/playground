@@ -127,7 +127,7 @@ class Client extends ClientBase implements IClient {
         return this.getMetadataNamespace();
     }
 
-    public set metadataNamespace(namespace) {
+    public set metadataNamespace(namespace:string) {
     }
 
     public getMetadataNamespace():string {
@@ -138,7 +138,7 @@ class Client extends ClientBase implements IClient {
         return this.getBinaryNamespace();
     }
 
-    public set binaryNamespace(namespace) {
+    public set binaryNamespace(namespace:string) {
     }
 
     public getBinaryNamespace():string {
@@ -149,7 +149,7 @@ class Client extends ClientBase implements IClient {
         return this.getGzipNamespace();
     }
 
-    public set gzipNamespace(namespace) {
+    public set gzipNamespace(namespace:string) {
     }
 
     public getGzipNamespace():string {
@@ -186,6 +186,62 @@ class Client extends ClientBase implements IClient {
 
     public setSourcesDirectory(directory:string):void {
         this.getSourcesDirectoryHelper().setLocation(directory);
+    }
+
+    public isUseIndex():boolean {
+
+    }
+
+    public getIsUseIndex():boolean {
+
+    }
+
+    public setIsUseIndex(value:boolean):void {
+
+    }
+
+    public getIndexExtensions():string[] {
+
+    }
+
+    public setIndexExtensions(extensions:string[]):void {
+
+    }
+
+    public isUseGzip():boolean {
+
+    }
+
+    public getIsUseGzip():boolean {
+
+    }
+
+    public setIsUseGzip(value:boolean):void {
+
+    }
+
+    public getGzipMinLength():number {
+
+    }
+
+    public setGzipMinLength(length:number):void {
+
+    }
+
+    public getGzipExtensions():string[] {
+
+    }
+
+    public setGzipExtensions(extensions:string[]):void {
+
+    }
+
+    public getGzipCompressionLevel():number {
+
+    }
+
+    public setGzipCompressionLevel(level:number):void {
+
     }
 
     public getContent(filename:string, callback?:(errors:IException[], response:string) => void):void {

@@ -1,10 +1,5 @@
 import IClientBase  = require("../../client/IClient");
 
-// todo: use index
-// todo: use index extensions
-// todo: use gzip
-// todo: use gzip parameters
-
 interface IClient extends IClientBase {
     namespace:string;
     metadataNamespace:string;
@@ -12,6 +7,12 @@ interface IClient extends IClientBase {
     gzipNamespace:string;
     sourceDirectory:string;
     includeDirectories:string[];
+    useIndex:boolean;
+    indexExtensions:string[];
+    useGzip:boolean;
+    gzipMinLength:number;
+    gzipExtensions:string[];
+    gzipCompressionLevel:number;
     getNamespace():string;
     setNamespace(namespace:string):void;
     getMetadataNamespace():string;
@@ -21,6 +22,20 @@ interface IClient extends IClientBase {
     setIncludeDirectories(directories:string[]):void;
     getSourcesDirectory():string;
     setSourcesDirectory(directory:string):void;
+    isUseIndex():boolean;
+    getIsUseIndex():boolean;
+    setIsUseIndex(value:boolean):void;
+    getIndexExtensions():string[];
+    setIndexExtensions(extensions:string[]):void;
+    isUseGzip():boolean;
+    getIsUseGzip():boolean;
+    setIsUseGzip(value:boolean):void;
+    getGzipMinLength():number;
+    setGzipMinLength(length:number):void;
+    getGzipExtensions():string[];
+    setGzipExtensions(extensions:string[]):void;
+    getGzipCompressionLevel():number;
+    setGzipCompressionLevel(level:number):void;
     getContent(filename:string, callback?:(errors:IException[], response:string) => void):void;
 }
 
