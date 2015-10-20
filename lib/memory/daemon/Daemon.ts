@@ -10,8 +10,8 @@ import log4js        = require("../../../logger");
 import isNumber      = require("../../isNumber");
 import IInformation  = require("../IInformation");
 import IObject       = require("../exception/IObject");
-import IIncrementlyBigIntegerHelper = require("../../helpers/IIncrementlyBigIntegerHelper");
-import IncrementlyBigIntegerHelper  = require("../../helpers/IncrementlyBigIntegerHelper");
+import IIncrementableBigIntegerHelper = require("../../helpers/IIncrementableBigIntegerHelper");
+import IncrementableBigIntegerHelper  = require("../../helpers/IncrementableBigIntegerHelper");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
@@ -93,8 +93,8 @@ class Daemon extends DaemonBase implements IDaemon {
             isDefined(this._memory[namespace][key])) {
             if (this._memory[namespace][key] instanceof Buffer) {
                 return (<Buffer>this._memory[namespace][key]).toString("base64");
-            } else if (this._memory[namespace][key] instanceof IncrementlyBigIntegerHelper) {
-                return (<IIncrementlyBigIntegerHelper>this._memory[namespace][key]).getValue();
+            } else if (this._memory[namespace][key] instanceof IncrementableBigIntegerHelper) {
+                return (<IIncrementableBigIntegerHelper>this._memory[namespace][key]).getValue();
             }
             return this._memory[namespace][key];
         }
@@ -227,23 +227,23 @@ class Daemon extends DaemonBase implements IDaemon {
     public increment(namespace:string, key:string, ttl:number) {
         if (!isDefined(this._memory[namespace]) ||
             !isDefined(this._memory[namespace][key]) ||
-            !(this._memory[namespace][key] instanceof IncrementlyBigIntegerHelper)) {
-            this._memory[namespace][key] = new IncrementlyBigIntegerHelper();
+            !(this._memory[namespace][key] instanceof IncrementableBigIntegerHelper)) {
+            this._memory[namespace][key] = new IncrementableBigIntegerHelper();
         }
         this._removeTimeout(namespace, key);
         this._setupTimeout(namespace, key, ttl);
-        return (<IIncrementlyBigIntegerHelper>this._memory[namespace][key]).increment();
+        return (<IIncrementableBigIntegerHelper>this._memory[namespace][key]).increment();
     }
 
     public decrement(namespace:string, key:string, ttl:number) {
         if (!isDefined(this._memory[namespace]) ||
             !isDefined(this._memory[namespace][key]) ||
-            !(this._memory[namespace][key] instanceof IncrementlyBigIntegerHelper)) {
-            this._memory[namespace][key] = new IncrementlyBigIntegerHelper();
+            !(this._memory[namespace][key] instanceof IncrementableBigIntegerHelper)) {
+            this._memory[namespace][key] = new IncrementableBigIntegerHelper();
         }
         this._removeTimeout(namespace, key);
         this._setupTimeout(namespace, key, ttl);
-        return (<IIncrementlyBigIntegerHelper>this._memory[namespace][key]).decrement();
+        return (<IIncrementableBigIntegerHelper>this._memory[namespace][key]).decrement();
     }
 
     public lock(namespace:string, key:string, callback?:(errors:Exception[]) => void):void {

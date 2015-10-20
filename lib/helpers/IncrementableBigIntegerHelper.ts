@@ -1,6 +1,6 @@
-import IIncrementlyBigIntegerHelper = require("./IIncrementlyBigIntegerHelper");
+import IIncrementableBigIntegerHelper = require("./IIncrementableBigIntegerHelper");
 
-class IncrementlyBigIntegerHelper implements IIncrementlyBigIntegerHelper {
+class IncrementableBigIntegerHelper implements IIncrementableBigIntegerHelper {
 
     private _value:number[] = [0];
 
@@ -83,4 +83,4 @@ class IncrementlyBigIntegerHelper implements IIncrementlyBigIntegerHelper {
 
 }
 
-export = IncrementlyBigIntegerHelper;
+export = IncrementableBigIntegerHelper;
