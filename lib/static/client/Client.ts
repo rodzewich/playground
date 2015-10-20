@@ -1,6 +1,7 @@
 import IClient    = require("./IClient");
 import ClientBase = require("../../client/Client");
 import log4js     = require("../../../logger");
+import Separator  = require("../../helpers/Separator");
 import NamespaceHelper  = require("../../helpers/NamespaceHelper");
 import INamespaceHelper = require("../../helpers/INamespaceHelper");
 
@@ -60,11 +61,11 @@ class Client extends ClientBase implements IClient {
         return this._gzipNamespaceHelper;
     }
 
-    public setNamespace(namespace:string[]):void {
+    public setNamespace(namespace:string, separator:Separator = Separator.DOT):void {
         var metadata:string[],
             binary:string[],
             gzip:string[];
-        this.getNamespaceHelper().setNamespace(namespace);
+        this.getNamespaceHelper().setNamespace(namespace, );
         metadata = this.getNamespace();
         binary = this.getNamespace();
         gzip = this.getNamespace();
