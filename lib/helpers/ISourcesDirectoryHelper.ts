@@ -1,4 +1,4 @@
-import IResourceLocation = require("../../helpers/IResourceLocation");
+import IResourceLocation = require("./IResourceLocation");
 
 interface ISourcesDirectoryHelper extends IResourceLocation {
 }

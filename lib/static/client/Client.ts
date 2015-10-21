@@ -8,8 +8,8 @@ import NamespaceHelper  = require("../../helpers/NamespaceHelper");
 import INamespaceHelper = require("../../helpers/INamespaceHelper");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
-import SourcesDirectoryHelper = require("../helpers/SourcesDirectoryHelper");
-import ISourcesDirectoryHelper = require("../helpers/ISourcesDirectoryHelper");
+import SourcesDirectoryHelper = require("../../helpers/SourcesDirectoryHelper");
+import ISourcesDirectoryHelper = require("../../helpers/ISourcesDirectoryHelper");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
