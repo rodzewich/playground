@@ -2,6 +2,8 @@ import IClient    = require("./IClient");
 import ClientBase = require("../../client/Client");
 import log4js     = require("../../../logger");
 import Separator  = require("../../helpers/Separator");
+import IResponse = require("../IResponse");
+import IOptions = require("./IOptions");
 import NamespaceHelper  = require("../../helpers/NamespaceHelper");
 import INamespaceHelper = require("../../helpers/INamespaceHelper");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
@@ -91,7 +93,7 @@ class Client extends ClientBase implements IClient {
         return this._sourcesDirectoryHelper;
     }
 
-    constructor(options) {
+    constructor(options?:IOptions) {
         super(options);
         if (options && isDefined(options.namespace)) {
             this.setNamespace(options.namespace);
@@ -101,6 +103,24 @@ class Client extends ClientBase implements IClient {
         }
         if (options && isDefined(options.includeDirectories)) {
             this.setIncludeDirectories(options.includeDirectories);
+        }
+        if (options && isDefined(options.useIndex)) {
+            this.setIsUseIndex(options.useIndex);
+        }
+        if (options && isDefined(options.indexExtensions)) {
+            this.setIndexExtensions(options.indexExtensions);
+        }
+        if (options && isDefined(options.useGzip)) {
+            this.setIsUseGzip(options.useGzip);
+        }
+        if (options && isDefined(options.gzipMinLength)) {
+            this.setGzipMinLength(options.gzipMinLength);
+        }
+        if (options && isDefined(options.gzipExtensions)) {
+            this.setGzipExtensions(options.gzipExtensions);
+        }
+        if (options && isDefined(options.gzipCompressionLevel)) {
+            this.setGzipCompressionLevel(options.gzipCompressionLevel);
         }
     }
 
@@ -262,9 +282,9 @@ class Client extends ClientBase implements IClient {
         if (!isString(filename) || !filename) {
             handler([new Exception({message : "filename should be a non empty string"})], null);
         } else {
-            this.call((errors:IException[], response:boolean):void => {
+            this.call((errors:IException[], response:IResponse):void => {
                 handler(errors && errors.length ? errors : null,
-                    !errors || !errors.length ? !!response : null);
+                    !errors || !errors.length ? response : null);
             }, null, filename, {
                 namespace            : this.getNamespace(),
                 metadataNamespace    : this.getMetadataNamespace(),

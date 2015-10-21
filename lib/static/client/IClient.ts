@@ -1,4 +1,5 @@
-import IClientBase  = require("../../client/IClient");
+import IClientBase = require("../../client/IClient");
+import IResponse   = require("../IResponse");
 
 interface IClient extends IClientBase {
     namespace:string;
@@ -36,7 +37,7 @@ interface IClient extends IClientBase {
     setGzipExtensions(extensions:string[]):void;
     getGzipCompressionLevel():number;
     setGzipCompressionLevel(level:number):void;
-    getContent(filename:string, callback?:(errors:IException[], response:string) => void):void;
+    getContent(filename:string, callback?:(errors:IException[], response:IResponse) => void):void;
 }
 
 export = IClient;
