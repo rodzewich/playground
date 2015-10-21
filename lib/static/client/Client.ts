@@ -246,6 +246,40 @@ class Client extends ClientBase implements IClient {
 
     public getContent(filename:string, callback?:(errors:IException[], response:string) => void):void {
 
+        function handler(errors:IException[], response:boolean):void {
+            if (isFunction(callback)) {
+                setTimeout(():void => {
+                    callback(errors, response);
+                }, 0).ref();
+            }
+            if (errors) {
+                errors.forEach((error:IException):void => {
+                    logger.error(error.getStack());
+                });
+            }
+        }
+
+        if (!isString(filename) || !filename) {
+            handler([new Exception({message : "filename should be a non empty string"})], null);
+        } else {
+            this.call((errors:IException[], response:boolean):void => {
+                handler(errors && errors.length ? errors : null,
+                    !errors || !errors.length ? !!response : null);
+            }, null, filename, {
+                namespace            : this.getNamespace(),
+                metadataNamespace    : this.getMetadataNamespace(),
+                binaryNamespace      : this.getBinaryNamespace(),
+                gzipNamespace        : this.getGzipNamespace(),
+                sourceDirectory      : this.getSourcesDirectory(),
+                includeDirectories   : this.getIncludeDirectories(),
+                useIndex             : this.isUseIndex(),
+                indexExtensions      : this.getIndexExtensions(),
+                useGzip              : this.isUseGzip(),
+                gzipMinLength        : this.getGzipMinLength(),
+                gzipExtensions       : this.getGzipExtensions(),
+                gzipCompressionLevel : this.getGzipCompressionLevel()
+            });
+        }
     }
 
 }

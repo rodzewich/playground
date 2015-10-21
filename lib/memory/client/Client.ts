@@ -106,6 +106,8 @@ class Client extends ClientBase implements IClient {
 
     public hasNamespace(namespace:string, callback?:(errors:IException[], response:boolean) => void):void {
 
+        var realNamespace:string;
+
         function handler(errors:IException[], response:boolean):void {
             if (isFunction(callback)) {
                 setTimeout(():void => {
@@ -122,15 +124,24 @@ class Client extends ClientBase implements IClient {
         if (!isString(namespace)) {
             handler([new Exception({message : "namespace should be a string"})], null);
         } else {
-            this.call((errors:IException[], response:boolean):void => {
-                handler(errors && errors.length ? errors : null,
-                    !errors || !errors.length ? !!response : null);
-            }, null, "hasNamespace", namespace);
+            try {
+                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+            } catch (error) {
+                handler([ExceptionBase.convertFromError(error)], null);
+            }
+            if (isDefined(realNamespace)) {
+                this.call((errors:IException[], response:boolean):void => {
+                    handler(errors && errors.length ? errors : null,
+                        !errors || !errors.length ? !!response : null);
+                }, null, "hasNamespace", realNamespace);
+            }
         }
 
     }
 
     public removeNamespace(namespace:string, callback?:(errors:IException[]) => void):void {
+
+        var realNamespace:string;
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -148,9 +159,16 @@ class Client extends ClientBase implements IClient {
         if (!isString(namespace)) {
             handler([new Exception({message : "namespace should be a string"})]);
         } else {
-            this.call((errors:IException[]):void => {
-                handler(errors && errors.length ? errors : null);
-            }, null, "removeNamespace", namespace);
+            try {
+                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+            } catch (error) {
+                handler([ExceptionBase.convertFromError(error)]);
+            }
+            if (isDefined(realNamespace)) {
+                this.call((errors:IException[]):void => {
+                    handler(errors && errors.length ? errors : null);
+                }, null, "removeNamespace", realNamespace);
+            }
         }
 
     }

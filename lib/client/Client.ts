@@ -1,31 +1,31 @@
 /// <reference path="../../types/node/node.d.ts" />
 
-import IClient = require("./IClient");
-import IOptions = require("./IOptions");
-import fs = require("fs");
-import net = require("net");
-import colors = require("colors");
-import helpers = require("./helpers");
-import log4js   = require("../../logger");
-import deferred = require("../deferred");
-import Exception = require("../exception/Exception");
-import IException = require("../exception/IException");
+import IClient           = require("./IClient");
+import IOptions          = require("./IOptions");
+import fs                = require("fs");
+import net               = require("net");
+import colors            = require("colors");
+import helpers           = require("./helpers");
+import log4js            = require("../../logger");
+import deferred          = require("../deferred");
+import Exception         = require("../exception/Exception");
+import IException        = require("../exception/IException");
 import IExceptionOptions = require("../exception/IOptions");
-import isDefined = require("../isDefined");
-import isFunction = require("../isFunction");
-import isArray = require("../isArray");
-import MeLocationHelper = require("../helpers/MeLocationHelper");
+import isDefined         = require("../isDefined");
+import isFunction        = require("../isFunction");
+import isArray           = require("../isArray");
+import DebugHelper       = require("../helpers/DebugHelper");
+import IDebugHelper      = require("../helpers/IDebugHelper");
+import TimeoutHelper     = require("../helpers/TimeoutHelper");
+import ITimeoutHelper    = require("../helpers/ITimeoutHelper");
+import MeLocationHelper  = require("../helpers/MeLocationHelper");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
-import HandlersRegistrationHelper = require("../helpers/HandlersRegistrationHelper");
+import HandlersRegistrationHelper  = require("../helpers/HandlersRegistrationHelper");
 import IHandlersRegistrationHelper = require("../helpers/IHandlersRegistrationHelper");
-import TimeoutHelper = require("../helpers/TimeoutHelper");
-import ITimeoutHelper = require("../helpers/ITimeoutHelper");
-import DebugHelper = require("../helpers/DebugHelper");
-import IDebugHelper = require("../helpers/IDebugHelper");
 
 var logger:log4js.Logger = log4js.getLogger("client");
 
-abstract class Client implements IClient {
+class Client implements IClient {
 
     private _client:net.Socket = null;
 
@@ -166,6 +166,7 @@ abstract class Client implements IClient {
     }
 
     public set connected(value:boolean) {
+        throw new Exception({message: "property \"connected\" readonly"});
     }
 
     public isConnected():boolean {
@@ -177,6 +178,7 @@ abstract class Client implements IClient {
     }
 
     public set disconnected(value:boolean) {
+        throw new Exception({message: "property \"disconnected\" readonly"});
     }
 
     public isDisconnected():boolean {
@@ -188,6 +190,7 @@ abstract class Client implements IClient {
     }
 
     public set connecting(value:boolean) {
+        throw new Exception({message: "property \"connecting\" readonly"});
     }
 
     public isConnecting():boolean {
@@ -199,6 +202,7 @@ abstract class Client implements IClient {
     }
 
     public set disconnecting(value:boolean) {
+        throw new Exception({message: "property \"disconnecting\" readonly"});
     }
 
     public isDisconnecting():boolean {

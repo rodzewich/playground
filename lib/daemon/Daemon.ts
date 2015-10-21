@@ -1,21 +1,21 @@
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../../types/log4js/log4js.d.ts" />
 
+import net        = require("net");
+import log4js     = require("log4js");
 import isFunction = require("../isFunction");
-import IDaemon = require("./IDaemon");
-import IOptions = require("./IOptions");
-import net = require("net");
-import log4js      = require("log4js");
-import isDefined = require("../isDefined");
-import Exception = require("../exception/Exception");
+import isDefined  = require("../isDefined");
+import IDaemon    = require("./IDaemon");
+import IOptions   = require("./IOptions");
+import Exception  = require("../exception/Exception");
 import IException = require("../exception/IException");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
-import MeLocationHelper = require("../helpers/MeLocationHelper");
+import MeLocationHelper  = require("../helpers/MeLocationHelper");
 
 require("../../logger");
 var logger:log4js.Logger = log4js.getLogger("daemon");
 
-abstract class Daemon implements IDaemon {
+class Daemon implements IDaemon {
 
     private _daemon:net.Server = null;
 
@@ -77,6 +77,7 @@ abstract class Daemon implements IDaemon {
     }
 
     public set starting(value:boolean) {
+        throw new Exception({message: "property \"starting\" readonly"});
     }
 
     public isStarting():boolean {
@@ -88,6 +89,7 @@ abstract class Daemon implements IDaemon {
     }
 
     public set started(value:boolean) {
+        throw new Exception({message: "property \"started\" readonly"});
     }
 
     public isStarted() {
@@ -99,6 +101,7 @@ abstract class Daemon implements IDaemon {
     }
 
     public set stopping(value:boolean) {
+        throw new Exception({message: "property \"stopping\" readonly"});
     }
 
     public isStopping():boolean {
@@ -110,6 +113,7 @@ abstract class Daemon implements IDaemon {
     }
 
     public set stopped(value:boolean) {
+        throw new Exception({message: "property \"stopped\" readonly"});
     }
 
     public isStopped():boolean {
