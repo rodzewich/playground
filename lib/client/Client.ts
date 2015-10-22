@@ -141,24 +141,27 @@ class Client implements IClient {
         return this.getDebugHelper().getIsDebug();
     }
 
-    public setIsDebug(value:boolean):void {
+    public setIsDebug(value:boolean):IClient {
         this.getDebugHelper().setIsDebug(value);
+        return this;
     }
 
     public getLocation():string {
         return this.getMeLocationHelper().getLocation();
     }
 
-    public setLocation(location:string):void {
+    public setLocation(location:string):IClient {
         this.getMeLocationHelper().setLocation(location);
+        return this;
     }
 
     public getTimeout():number {
         return this.getTimeoutHelper().getValue();
     }
 
-    public setTimeout(timeout:number):void {
+    public setTimeout(timeout:number):IClient {
         this.getTimeoutHelper().setValue(timeout);
+        return this;
     }
 
     public get connected():boolean {

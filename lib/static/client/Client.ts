@@ -231,11 +231,12 @@ class Client extends ClientBase implements IClient {
         this.setNamespace(namespace);
     }
 
-    public setNamespace(namespace:string):void {
+    public setNamespace(namespace:string):IClient {
         this.getNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).getNamespace());
         this.getMetadataNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["metadata"]).getNamespace());
         this.getBinaryNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["binary"]).getNamespace());
         this.getGzipNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["gzip"]).getNamespace());
+        return this;
     }
 
     public getNamespace():string {
@@ -287,8 +288,9 @@ class Client extends ClientBase implements IClient {
         return this.getIncludeDirectoriesHelper().getDirectories();
     }
 
-    public setIncludeDirectories(directories:string[]):void {
+    public setIncludeDirectories(directories:string[]):IClient {
         this.getIncludeDirectoriesHelper().setDirectories(directories);
+        return this;
     }
 
     public get sourceDirectory():string {
@@ -303,8 +305,9 @@ class Client extends ClientBase implements IClient {
         return this.getSourcesDirectoryHelper().getLocation();
     }
 
-    public setSourcesDirectory(directory:string):void {
+    public setSourcesDirectory(directory:string):IClient {
         this.getSourcesDirectoryHelper().setLocation(directory);
+        return this;
     }
 
     public get useIndex():boolean {
@@ -323,8 +326,9 @@ class Client extends ClientBase implements IClient {
         return this.getUseIndexHelper().getIsUsed();
     }
 
-    public setIsUseIndex(value:boolean):void {
+    public setIsUseIndex(value:boolean):IClient {
         this.getUseIndexHelper().setIsUsed(value);
+        return this;
     }
 
     public get indexExtensions():string[] {
@@ -339,8 +343,9 @@ class Client extends ClientBase implements IClient {
         return this.getIndexExtensionsHelper().getExtensions();
     }
 
-    public setIndexExtensions(extensions:string[]):void {
+    public setIndexExtensions(extensions:string[]):IClient {
         this.getIndexExtensionsHelper().setExtensions(extensions);
+        return this;
     }
 
     public get useGzip():boolean {
@@ -359,8 +364,9 @@ class Client extends ClientBase implements IClient {
         return this.getUseGzipHelper().getIsUsed();
     }
 
-    public setIsUseGzip(value:boolean):void {
+    public setIsUseGzip(value:boolean):IClient {
         this.getUseGzipHelper().setIsUsed(value);
+        return this;
     }
 
     public get gzipMinLength():number {
@@ -375,8 +381,9 @@ class Client extends ClientBase implements IClient {
         return this.getGzipMinLengthHelper().getLength();
     }
 
-    public setGzipMinLength(length:number):void {
+    public setGzipMinLength(length:number):IClient {
         this.getGzipMinLengthHelper().setLength(length);
+        return this;
     }
 
     public get gzipExtensions():string[] {
@@ -387,8 +394,9 @@ class Client extends ClientBase implements IClient {
         this.setGzipExtensions(extensions);
     }
 
-    public setGzipExtensions(extensions:string[]):void {
+    public setGzipExtensions(extensions:string[]):IClient {
         this.getGzipExtensionsHelper().setExtensions(extensions);
+        return this;
     }
 
     public get gzipCompressionLevel():number {
@@ -403,11 +411,22 @@ class Client extends ClientBase implements IClient {
         return this.getGzipCompressionLevelHelper().getLevel();
     }
 
-    public setGzipCompressionLevel(level:number):void {
+    public setGzipCompressionLevel(level:number):IClient {
         this.getGzipCompressionLevelHelper().setLevel(level);
+        return this;
     }
 
-    public getContent(filename:string, callback?:(errors:IException[], response:IResponse) => void):void {
+    public ping(callback?:(errors:IException[]) => void):IClient {
+        // todo: implement it
+        return this;
+    }
+
+    public stop(callback?:(errors:IException[]) => void):IClient {
+        // todo: implement it
+        return this;
+    }
+
+    public getContent(filename:string, callback?:(errors:IException[], response:IResponse) => void):IClient {
 
         function handler(errors:IException[], response:IResponse):void {
             if (isFunction(callback)) {
@@ -443,6 +462,8 @@ class Client extends ClientBase implements IClient {
                 gzipCompressionLevel : this.getGzipCompressionLevel()
             });
         }
+
+        return this;
     }
 
 }
