@@ -3,7 +3,6 @@
 import IInformation = require("../IInformation");
 import IClientBase  = require("../../client/IClient");
 import IException   = require("../exception/IException");
-import IDeferred    = require("../deferred/IDeferred");
 
 interface IClient extends IClientBase {
     namespace:string;
@@ -12,7 +11,6 @@ interface IClient extends IClientBase {
     setLocation(location:string):IClient;
     setTimeout(timeout:number):IClient;
     setIsDebug(value:boolean):IClient;
-    getDeferred():IDeferred;
     ping(callback?:(errors:IException[]) => void):void;
     stop(callback?:(errors:IException[]) => void):void;
     getInfo(callback?:(errors:IException[], response:IInformation) => void):void;
