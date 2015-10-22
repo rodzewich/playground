@@ -2,14 +2,22 @@ import IClient    = require("./IClient");
 import ClientBase = require("../../client/Client");
 import log4js     = require("../../../logger");
 import Separator  = require("../../helpers/Separator");
-import IResponse = require("../IResponse");
-import IOptions = require("./IOptions");
+import IResponse  = require("../IResponse");
+import IOptions   = require("./IOptions");
+import UseIndexHelper   = require("../../helpers/UseIndexHelper");
+import IUseIndexHelper  = require("../../helpers/IUseIndexHelper");
+import UseGzipHelper    = require("../../helpers/UseGzipHelper");
+import IUseGzipHelper   = require("../../helpers/IUseGzipHelper");
 import NamespaceHelper  = require("../../helpers/NamespaceHelper");
 import INamespaceHelper = require("../../helpers/INamespaceHelper");
+import GzipCompressionLevelHelper  = require("../../helpers/GzipCompressionLevelHelper");
+import IGzipCompressionLevelHelper = require("../../helpers/IGzipCompressionLevelHelper");
 import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
-import IncludeDirectoriesHelper = require("../../helpers/IncludeDirectoriesHelper");
-import SourcesDirectoryHelper = require("../../helpers/SourcesDirectoryHelper");
-import ISourcesDirectoryHelper = require("../../helpers/ISourcesDirectoryHelper");
+import IncludeDirectoriesHelper  = require("../../helpers/IncludeDirectoriesHelper");
+import SourcesDirectoryHelper    = require("../../helpers/SourcesDirectoryHelper");
+import ISourcesDirectoryHelper   = require("../../helpers/ISourcesDirectoryHelper");
+import IndexExtensionsHelpers    = require("../../helpers/IndexExtensionsHelpers");
+import IIndexExtensionsHelpers   = require("../../helpers/IIndexExtensionsHelpers");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
@@ -26,6 +34,58 @@ class Client extends ClientBase implements IClient {
     private _includeDirectoriesHelper:IIncludeDirectoriesHelper;
 
     private _sourcesDirectoryHelper:ISourcesDirectoryHelper;
+
+    private _useIndexHelper:IUseIndexHelper;
+
+    private _indexExtensionsHelpers:IIndexExtensionsHelpers;
+
+    private _useGzipHelper:IUseGzipHelper;
+
+    private _gzipCompressionLevelHelper:IGzipCompressionLevelHelper;
+
+    protected createGzipCompressionLevelHelper():IGzipCompressionLevelHelper {
+        return new GzipCompressionLevelHelper();
+    }
+
+    protected getGzipCompressionLevelHelper():IGzipCompressionLevelHelper {
+        if (!this._gzipCompressionLevelHelper) {
+            this._gzipCompressionLevelHelper = this.createGzipCompressionLevelHelper();
+        }
+        return this._gzipCompressionLevelHelper;
+    }
+
+    protected createUseGzipHelper():IUseGzipHelper {
+        return new UseGzipHelper();
+    }
+
+    protected getUseGzipHelper():IUseGzipHelper {
+        if (!this._useGzipHelper) {
+            this._useGzipHelper = this.createUseGzipHelper();
+        }
+        return this._useGzipHelper;
+    }
+
+    protected createIndexExtensionsHelpers():IIndexExtensionsHelpers {
+        return new IndexExtensionsHelpers();
+    }
+
+    protected getIndexExtensionsHelpers():IIndexExtensionsHelpers {
+        if (!this._indexExtensionsHelpers) {
+            this._indexExtensionsHelpers = this.createIndexExtensionsHelpers();
+        }
+        return this._indexExtensionsHelpers;
+    }
+
+    protected createUseIndexHelper():IUseIndexHelper {
+        return new UseIndexHelper();
+    }
+
+    protected getUseIndexHelper():IUseIndexHelper {
+        if (!this._useIndexHelper) {
+            this._useIndexHelper = this.createUseIndexHelper();
+        }
+        return this._useIndexHelper;
+    }
 
     protected createNamespaceHelper():INamespaceHelper {
         return new NamespaceHelper(["default"]);
@@ -209,41 +269,47 @@ class Client extends ClientBase implements IClient {
     }
 
     public isUseIndex():boolean {
-
+        return this.getUseIndexHelper().isUsed();
     }
 
     public getIsUseIndex():boolean {
-
+        return this.getUseIndexHelper().getIsUsed();
     }
 
     public setIsUseIndex(value:boolean):void {
-
+        this.getUseIndexHelper().setIsUsed(value);
     }
 
     public getIndexExtensions():string[] {
-
+        this.getIndexExtensionsHelpers().getExtensions();
     }
 
     public setIndexExtensions(extensions:string[]):void {
-
+        this.getIndexExtensionsHelpers().setExtensions(extensions);
     }
 
     public isUseGzip():boolean {
-
+        this.getUseGzipHelper().isUsed();
     }
 
     public getIsUseGzip():boolean {
-
+        this.getUseGzipHelper().getIsUsed();
     }
 
     public setIsUseGzip(value:boolean):void {
-
+        this.getUseGzipHelper().setIsUsed(value);
     }
 
+    /**
+     * Получить минимальную длину ответа, который будет сжиматься методом gzip.
+     */
     public getGzipMinLength():number {
 
     }
 
+    /**
+     * Устанавить минимальную длину ответа, который будет сжиматься методом gzip.
+     */
     public setGzipMinLength(length:number):void {
 
     }
@@ -256,12 +322,18 @@ class Client extends ClientBase implements IClient {
 
     }
 
+    /**
+     * Получить степень сжатия ответа методом gzip. Допустимые значения находятся в диапазоне от 1 до 9.
+     */
     public getGzipCompressionLevel():number {
-
+        return this.getGzipCompressionLevelHelper().getLevel();
     }
 
+    /**
+     * Устанавить степень сжатия ответа методом gzip. Допустимые значения находятся в диапазоне от 1 до 9.
+     */
     public setGzipCompressionLevel(level:number):void {
-
+        this.getGzipCompressionLevelHelper().setLevel(level);
     }
 
     public getContent(filename:string, callback?:(errors:IException[], response:string) => void):void {
