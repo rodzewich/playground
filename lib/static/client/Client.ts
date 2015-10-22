@@ -5,6 +5,10 @@ import Separator  = require("../../helpers/Separator");
 import IResponse  = require("../IResponse");
 import IOptions   = require("./IOptions");
 import isDefined  = require("../../isDefined");
+import isString   = require("../../isDefined");
+import isFunction = require("../../isFunction");
+import IException = require("../exception/IException");
+import Exception  = require("../exception/Exception");
 import UseIndexHelper   = require("../helpers/UseIndexHelper");
 import IUseIndexHelper  = require("../helpers/IUseIndexHelper");
 import UseGzipHelper    = require("../helpers/UseGzipHelper");
@@ -246,7 +250,7 @@ class Client extends ClientBase implements IClient {
     }
 
     public getMetadataNamespace():string {
-        this.getMetadataNamespaceHelper().getValue();
+        return this.getMetadataNamespaceHelper().getValue();
     }
 
     public get binaryNamespace():string {
@@ -257,7 +261,7 @@ class Client extends ClientBase implements IClient {
     }
 
     public getBinaryNamespace():string {
-        this.getBinaryNamespaceHelper().getValue();
+        return this.getBinaryNamespaceHelper().getValue();
     }
 
     public get gzipNamespace():string {
@@ -268,7 +272,7 @@ class Client extends ClientBase implements IClient {
     }
 
     public getGzipNamespace():string {
-        this.getGzipNamespaceHelper().getValue();
+        return this.getGzipNamespaceHelper().getValue();
     }
 
     public get includeDirectories():string[] {
@@ -332,7 +336,7 @@ class Client extends ClientBase implements IClient {
     }
 
     public getIndexExtensions():string[] {
-        this.getIndexExtensionsHelper().getExtensions();
+        return this.getIndexExtensionsHelper().getExtensions();
     }
 
     public setIndexExtensions(extensions:string[]):void {
@@ -348,11 +352,11 @@ class Client extends ClientBase implements IClient {
     }
 
     public isUseGzip():boolean {
-        this.getUseGzipHelper().isUsed();
+        return this.getUseGzipHelper().isUsed();
     }
 
     public getIsUseGzip():boolean {
-        this.getUseGzipHelper().getIsUsed();
+        return this.getUseGzipHelper().getIsUsed();
     }
 
     public setIsUseGzip(value:boolean):void {
@@ -405,7 +409,7 @@ class Client extends ClientBase implements IClient {
 
     public getContent(filename:string, callback?:(errors:IException[], response:IResponse) => void):void {
 
-        function handler(errors:IException[], response:boolean):void {
+        function handler(errors:IException[], response:IResponse):void {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);

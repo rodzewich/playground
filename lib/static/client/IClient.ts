@@ -1,5 +1,6 @@
 import IClientBase = require("../../client/IClient");
 import IResponse   = require("../IResponse");
+import IException  = require("../exception/IException");
 
 interface IClient extends IClientBase {
     namespace:string;
