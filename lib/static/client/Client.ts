@@ -12,12 +12,14 @@ import NamespaceHelper  = require("../../helpers/NamespaceHelper");
 import INamespaceHelper = require("../../helpers/INamespaceHelper");
 import GzipCompressionLevelHelper  = require("../../helpers/GzipCompressionLevelHelper");
 import IGzipCompressionLevelHelper = require("../../helpers/IGzipCompressionLevelHelper");
-import IIncludeDirectoriesHelper = require("../../helpers/IIncludeDirectoriesHelper");
-import IncludeDirectoriesHelper  = require("../../helpers/IncludeDirectoriesHelper");
-import SourcesDirectoryHelper    = require("../../helpers/SourcesDirectoryHelper");
-import ISourcesDirectoryHelper   = require("../../helpers/ISourcesDirectoryHelper");
-import IndexExtensionsHelpers    = require("../../helpers/IndexExtensionsHelpers");
-import IIndexExtensionsHelpers   = require("../../helpers/IIndexExtensionsHelpers");
+import IIncludeDirectoriesHelper   = require("../../helpers/IIncludeDirectoriesHelper");
+import IncludeDirectoriesHelper    = require("../../helpers/IncludeDirectoriesHelper");
+import SourcesDirectoryHelper      = require("../../helpers/SourcesDirectoryHelper");
+import ISourcesDirectoryHelper     = require("../../helpers/ISourcesDirectoryHelper");
+import IndexExtensionsHelper       = require("../../helpers/IndexExtensionsHelper");
+import IIndexExtensionsHelper      = require("../../helpers/IIndexExtensionsHelper");
+import GzipExtensionsHelper        = require("../../helpers/GzipExtensionsHelper");
+import IGzipExtensionsHelper       = require("../../helpers/IGzipExtensionsHelper");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
@@ -37,11 +39,28 @@ class Client extends ClientBase implements IClient {
 
     private _useIndexHelper:IUseIndexHelper;
 
-    private _indexExtensionsHelpers:IIndexExtensionsHelpers;
+    private _indexExtensionsHelper:IIndexExtensionsHelper;
 
     private _useGzipHelper:IUseGzipHelper;
 
     private _gzipCompressionLevelHelper:IGzipCompressionLevelHelper;
+
+    private _gzipExtensionsHelper:IGzipExtensionsHelper;
+
+    protected createGzipExtensionsHelper():IGzipExtensionsHelper {
+        return new GzipExtensionsHelper();
+    }
+
+    protected getGzipExtensionsHelper():IGzipExtensionsHelper {
+        if (!this._gzipExtensionsHelper) {
+            this._gzipExtensionsHelper = this.createGzipExtensionsHelper();
+        }
+        return this._gzipExtensionsHelper;
+    }
+
+    public getGzipExtensions():string[] {
+        return this.getGzipExtensionsHelper().getExtensions();
+    }
 
     protected createGzipCompressionLevelHelper():IGzipCompressionLevelHelper {
         return new GzipCompressionLevelHelper();
@@ -65,15 +84,15 @@ class Client extends ClientBase implements IClient {
         return this._useGzipHelper;
     }
 
-    protected createIndexExtensionsHelpers():IIndexExtensionsHelpers {
-        return new IndexExtensionsHelpers();
+    protected createIndexExtensionsHelper():IIndexExtensionsHelper {
+        return new IndexExtensionsHelper();
     }
 
-    protected getIndexExtensionsHelpers():IIndexExtensionsHelpers {
-        if (!this._indexExtensionsHelpers) {
-            this._indexExtensionsHelpers = this.createIndexExtensionsHelpers();
+    protected getIndexExtensionsHelper():IIndexExtensionsHelper {
+        if (!this._indexExtensionsHelper) {
+            this._indexExtensionsHelper = this.createIndexExtensionsHelper();
         }
-        return this._indexExtensionsHelpers;
+        return this._indexExtensionsHelper;
     }
 
     protected createUseIndexHelper():IUseIndexHelper {
@@ -281,11 +300,11 @@ class Client extends ClientBase implements IClient {
     }
 
     public getIndexExtensions():string[] {
-        this.getIndexExtensionsHelpers().getExtensions();
+        this.getIndexExtensionsHelper().getExtensions();
     }
 
     public setIndexExtensions(extensions:string[]):void {
-        this.getIndexExtensionsHelpers().setExtensions(extensions);
+        this.getIndexExtensionsHelper().setExtensions(extensions);
     }
 
     public isUseGzip():boolean {
@@ -314,12 +333,8 @@ class Client extends ClientBase implements IClient {
 
     }
 
-    public getGzipExtensions():string[] {
-
-    }
-
     public setGzipExtensions(extensions:string[]):void {
-
+        this.getGzipExtensionsHelper().setExtensions(extensions);
     }
 
     /**

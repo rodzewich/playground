@@ -1,6 +1,6 @@
-interface IIndexExtensionsHelpers {
+interface IGzipExtensionsHelpers {
     getExtensions():string[];
     setExtensions(extensions:string[]):void;
 }
 
-export = IIndexExtensionsHelpers
+export = IGzipExtensionsHelpers

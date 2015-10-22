@@ -3,9 +3,9 @@ import isArray   = require("../isArray");
 import isString  = require("../isString");
 import isDefined = require("../isDefined");
 import Exception = require("../exception/Exception");
-import IIndexExtensionsHelpers = require("./IndexExtensionsHelpers");
+import IIndexExtensionsHelper = require("./IIndexExtensionsHelper");
 
-class IndexExtensionsHelpers implements IIndexExtensionsHelpers {
+class IndexExtensionsHelper implements IIndexExtensionsHelper {
 
     private _extensions:string[] = null;
 
@@ -39,4 +39,4 @@ class IndexExtensionsHelpers implements IIndexExtensionsHelpers {
 
 }
 
-export = IndexExtensionsHelpers;
+export = IndexExtensionsHelper;
