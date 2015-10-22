@@ -1152,11 +1152,6 @@ class Client extends ClientBase implements IClient {
         return new Client(options);
     }
 
-    public static getInstance(options?:IOptions):IClient {
-        // todo: implement it
-        //Object.keys(options || {}).sort().reduce(():void)
-    }
-
 }
 
 export = Client;
