@@ -1,7 +1,7 @@
-interface IUseIndexHelper {
+interface IUseAbstractHelper {
     setIsUsed(value:any):void;
     getIsUsed():boolean;
     isUsed():boolean;
 }
 
-export = IUseIndexHelper;
+export = IUseAbstractHelper;

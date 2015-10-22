@@ -5,14 +5,14 @@ import Separator  = require("../../helpers/Separator");
 import IResponse  = require("../IResponse");
 import IOptions   = require("./IOptions");
 import isDefined  = require("../../isDefined");
-import UseIndexHelper   = require("../../helpers/UseIndexHelper");
-import IUseIndexHelper  = require("../../helpers/IUseIndexHelper");
-import UseGzipHelper    = require("../../helpers/UseGzipHelper");
-import IUseGzipHelper   = require("../../helpers/IUseGzipHelper");
+import UseIndexHelper   = require("../helpers/UseIndexHelper");
+import IUseIndexHelper  = require("../helpers/IUseIndexHelper");
+import UseGzipHelper    = require("../helpers/UseGzipHelper");
+import IUseGzipHelper   = require("../helpers/IUseGzipHelper");
 import NamespaceHelper  = require("../../helpers/NamespaceHelper");
 import INamespaceHelper = require("../../helpers/INamespaceHelper");
-import GzipCompressionLevelHelper  = require("../../helpers/GzipCompressionLevelHelper");
-import IGzipCompressionLevelHelper = require("../../helpers/IGzipCompressionLevelHelper");
+import GzipCompressionLevelHelper  = require("../helpers/GzipCompressionLevelHelper");
+import IGzipCompressionLevelHelper = require("../helpers/IGzipCompressionLevelHelper");
 import IIncludeDirectoriesHelper   = require("../../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper    = require("../../helpers/IncludeDirectoriesHelper");
 import SourcesDirectoryHelper      = require("../../helpers/SourcesDirectoryHelper");
@@ -228,10 +228,10 @@ class Client extends ClientBase implements IClient {
     }
 
     public setNamespace(namespace:string):void {
-        this.getNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT));
-        this.getMetadataNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["metadata"]));
-        this.getBinaryNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["binary"]));
-        this.getGzipNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["gzip"]));
+        this.getNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).getNamespace());
+        this.getMetadataNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["metadata"]).getNamespace());
+        this.getBinaryNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["binary"]).getNamespace());
+        this.getGzipNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["gzip"]).getNamespace());
     }
 
     public getNamespace():string {
@@ -303,6 +303,14 @@ class Client extends ClientBase implements IClient {
         this.getSourcesDirectoryHelper().setLocation(directory);
     }
 
+    public get useIndex():boolean {
+        return this.getIsUseIndex();
+    }
+
+    public set useIndex(value:boolean) {
+        this.setIsUseIndex(value);
+    }
+
     public isUseIndex():boolean {
         return this.getUseIndexHelper().isUsed();
     }
@@ -315,12 +323,28 @@ class Client extends ClientBase implements IClient {
         this.getUseIndexHelper().setIsUsed(value);
     }
 
+    public get indexExtensions():string[] {
+        return this.getIndexExtensions();
+    }
+
+    public set indexExtensions(extensions:string[]) {
+        this.setIndexExtensions(extensions);
+    }
+
     public getIndexExtensions():string[] {
         this.getIndexExtensionsHelper().getExtensions();
     }
 
     public setIndexExtensions(extensions:string[]):void {
         this.getIndexExtensionsHelper().setExtensions(extensions);
+    }
+
+    public get useGzip():boolean {
+        return this.getIsUseGzip();
+    }
+
+    public set useGzip(value:boolean) {
+        this.setIsUseGzip(value);
     }
 
     public isUseGzip():boolean {
@@ -335,6 +359,14 @@ class Client extends ClientBase implements IClient {
         this.getUseGzipHelper().setIsUsed(value);
     }
 
+    public get gzipMinLength():number {
+        return this.getGzipMinLength();
+    }
+
+    public set gzipMinLength(length:number) {
+        this.setGzipMinLength(length);
+    }
+
     public getGzipMinLength():number {
         return this.getGzipMinLengthHelper().getLength();
     }
@@ -343,8 +375,24 @@ class Client extends ClientBase implements IClient {
         this.getGzipMinLengthHelper().setLength(length);
     }
 
+    public get gzipExtensions():string[] {
+        return this.getGzipExtensions();
+    }
+
+    public set gzipExtensions(extensions:string[]) {
+        this.setGzipExtensions(extensions);
+    }
+
     public setGzipExtensions(extensions:string[]):void {
         this.getGzipExtensionsHelper().setExtensions(extensions);
+    }
+
+    public get gzipCompressionLevel():number {
+        return this.getGzipCompressionLevel();
+    }
+
+    public set gzipCompressionLevel(level:number) {
+        this.setGzipCompressionLevel(level);
     }
 
     public getGzipCompressionLevel():number {
@@ -355,7 +403,7 @@ class Client extends ClientBase implements IClient {
         this.getGzipCompressionLevelHelper().setLevel(level);
     }
 
-    public getContent(filename:string, callback?:(errors:IException[], response:string) => void):void {
+    public getContent(filename:string, callback?:(errors:IException[], response:IResponse) => void):void {
 
         function handler(errors:IException[], response:boolean):void {
             if (isFunction(callback)) {

@@ -1,5 +1,6 @@
 import isDefined = require("../isDefined");
 import isArray   = require("../isArray");
+import isString  = require("../isString");
 import Exception = require("../exception/Exception");
 import IIncludeDirectoriesHelper = require("./IIncludeDirectoriesHelper");
 
@@ -7,7 +8,7 @@ class IncludeDirectoriesHelper implements IIncludeDirectoriesHelper {
 
     private _directories:string[] = [];
 
-    constructor(directories?:string) {
+    constructor(directories?:string[]) {
         if (isDefined(directories)) {
             this.setDirectories(directories);
         }

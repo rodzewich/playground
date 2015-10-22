@@ -3,10 +3,10 @@ import Separator = require("./Separator");
 interface INamespaceHelper {
     getValue():string;
     getNamespace():string[];
-    setNamespace(namespace:string[]):void;
-    addToNamespace(namespace:string[]):void;
+    setNamespace(namespace:string[]):INamespaceHelper;
+    addToNamespace(namespace:string[]):INamespaceHelper;
     getSeparator():Separator;
-    setSeparator(separator:Separator):void;
+    setSeparator(separator:Separator):INamespaceHelper;
 }
 
 export = INamespaceHelper;

@@ -9,7 +9,7 @@ class UsedExtensionsHelper implements IUsedExtensionsHelper {
 
     private _extensions:string[] = null;
 
-    constructor(extensions:string[]) {
+    constructor(extensions?:string[]) {
         if (isDefined(extensions)) {
             this.setExtensions(extensions);
         }

@@ -28,7 +28,7 @@ class NamespaceHelper implements INamespaceHelper {
         return this._namespace.slice(0);
     }
 
-    public setNamespace(namespace:string[]):void {
+    public setNamespace(namespace:string[]):INamespaceHelper {
         if (!isArray(namespace) || !namespace.length) {
             throw new Exception({message: "namespace should be a non empty strings array"});
         }
@@ -38,9 +38,10 @@ class NamespaceHelper implements INamespaceHelper {
             }
         });
         this._namespace = namespace;
+        return this;
     }
 
-    public addToNamespace(namespace:string[]):void {
+    public addToNamespace(namespace:string[]):INamespaceHelper {
         if (!isArray(namespace) || !namespace.length) {
             throw new Exception({message: "namespace should be a non empty strings array"});
         }
@@ -52,17 +53,19 @@ class NamespaceHelper implements INamespaceHelper {
         namespace.forEach((item:string):void => {
             this._namespace.push(item);
         });
+        return this;
     }
 
     public getSeparator():Separator {
         return this._separator;
     }
 
-    public setSeparator(separator:Separator):void {
+    public setSeparator(separator:Separator):INamespaceHelper {
         if (!(separator instanceof Separator)) {
             throw new Exception({message: "separator is invalid"});
         }
         this._separator = separator;
+        return this;
     }
 
     public static parse(namespace:string, separator:Separator = Separator.DOT):NamespaceHelper {
