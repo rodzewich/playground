@@ -15,12 +15,12 @@ interface IClient {
     isConnecting():boolean;
     isDisconnecting():boolean;
     getLocation():string;
-    setLocation(location:string):IClient;
+    setLocation(location:string):void;
     getTimeout():number;
-    setTimeout(timeout:number):IClient;
+    setTimeout(timeout:number):void;
     isDebug():boolean;
     getIsDebug():boolean;
-    setIsDebug(value:boolean):IClient;
+    setIsDebug(value:boolean):void;
 }
 
 export = IClient;

@@ -47,24 +47,8 @@ class Client extends ClientBase implements IClient {
         return this.getNamespaceHelper().getValue();
     }
 
-    public setNamespace(namespace:string):IClient {
+    public setNamespace(namespace:string):void {
         this.getNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).getNamespace());
-        return this;
-    }
-
-    public setLocation(location:string):IClient {
-        super.setLocation(location);
-        return this;
-    }
-
-    public setTimeout(timeout:number):IClient {
-        super.setTimeout(timeout);
-        return this;
-    }
-
-    public setIsDebug(value:boolean):IClient {
-        super.setIsDebug(value);
-        return this;
     }
 
     public get namespace():string {
@@ -75,7 +59,7 @@ class Client extends ClientBase implements IClient {
         this.setNamespace(namespace);
     }
 
-    public getInfo(callback?:(errors:IException[], response:IInformation) => void):IClient {
+    public getInfo(callback?:(errors:IException[], response:IInformation) => void):void {
 
         function handler(errors:IException[], response:IInformation):void {
             if (isFunction(callback)) {
@@ -96,11 +80,9 @@ class Client extends ClientBase implements IClient {
         }, null, "getInfo");
 
 
-        return this;
-
     }
 
-    public getNamespaces(callback?:(errors:IException[], response:string[]) => void):IClient {
+    public getNamespaces(callback?:(errors:IException[], response:string[]) => void):void {
 
         function handler(errors:IException[], response:string[]):void {
             if (isFunction(callback)) {
@@ -120,11 +102,9 @@ class Client extends ClientBase implements IClient {
                 !errors || !errors.length ? response || null : null);
         }, null, "getNamespaces");
 
-        return this;
-
     }
 
-    public hasNamespace(namespace:string, callback?:(errors:IException[], response:boolean) => void):IClient {
+    public hasNamespace(namespace:string, callback?:(errors:IException[], response:boolean) => void):void {
 
         var realNamespace:string;
 
@@ -157,11 +137,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public removeNamespace(namespace:string, callback?:(errors:IException[]) => void):IClient {
+    public removeNamespace(namespace:string, callback?:(errors:IException[]) => void):void {
 
         var realNamespace:string;
 
@@ -193,11 +171,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public ping(callback?:(errors:IException[]) => void):IClient {
+    public ping(callback?:(errors:IException[]) => void):void {
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -216,11 +192,9 @@ class Client extends ClientBase implements IClient {
             handler(errors && errors.length ? errors : null);
         }, null, "ping");
 
-        return this;
-
     }
 
-    public stop(callback?:(errors:IException[]) => void):IClient {
+    public stop(callback?:(errors:IException[]) => void):void {
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -239,11 +213,9 @@ class Client extends ClientBase implements IClient {
             handler(errors && errors.length ? errors : null);
         }, null, "stop");
 
-        return this;
-
     }
 
-    public getItem(key:string, callback?:(errors:IException[], response:any) => void, namespace:string = this.getNamespace()):IClient {
+    public getItem(key:string, callback?:(errors:IException[], response:any) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -276,11 +248,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public getItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:any;}|any) => void, namespace:string = this.getNamespace()):IClient {
+    public getItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:any;}|any) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -315,11 +285,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public getBin(key:string, callback?:(errors:IException[], response:Buffer) => void, namespace:string = this.getNamespace()):IClient {
+    public getBin(key:string, callback?:(errors:IException[], response:Buffer) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -356,11 +324,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public getBins(keys:string[], callback?:(errors:IException[], response:{[index:string]:Buffer;}|any) => void, namespace:string = this.getNamespace()):IClient {
+    public getBins(keys:string[], callback?:(errors:IException[], response:{[index:string]:Buffer;}|any) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -410,11 +376,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public setItem(key:string, value:any, ttl:number, callback?:(errors:IException[]) => void, namespace:string = this.getNamespace()):IClient {
+    public setItem(key:string, value:any, ttl:number, callback?:(errors:IException[]) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -448,11 +412,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public setItems(data:{[index:string]:any;}|any, ttl:number, callback?:(errors:IException[]) => void, namespace:string = this.getNamespace()):IClient {
+    public setItems(data:{[index:string]:any;}|any, ttl:number, callback?:(errors:IException[]) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -486,11 +448,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public setBin(key:string, value:any, ttl:number, callback?:(errors:IException[]) => void, namespace:string = this.getNamespace()):IClient {
+    public setBin(key:string, value:any, ttl:number, callback?:(errors:IException[]) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string,
             temp:string;
@@ -530,11 +490,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public setBins(data:{[index:string]:any;}|any, ttl:number, callback?:(errors:IException[]) => void, namespace:string = this.getNamespace()):IClient {
+    public setBins(data:{[index:string]:any;}|any, ttl:number, callback?:(errors:IException[]) => void, namespace:string = this.getNamespace()):void {
 
         var temp:{[index:string]:string} = {},
             realNamespace:string,
@@ -580,11 +538,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public getTtl(key:string, callback?:(errors:IException[], response:number) => void, namespace:string = this.getNamespace()):IClient {
+    public getTtl(key:string, callback?:(errors:IException[], response:number) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -617,11 +573,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public getTtls(keys:string[], callback?:(errors:IException[], response:{[index:string]:number;}|any) => void, namespace:string = this.getNamespace()):IClient {
+    public getTtls(keys:string[], callback?:(errors:IException[], response:{[index:string]:number;}|any) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -656,11 +610,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public setTtl(key:string, ttl:number, callback?:(errors:IException[], response:number) => void, namespace:string = this.getNamespace()):IClient {
+    public setTtl(key:string, ttl:number, callback?:(errors:IException[], response:number) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -695,11 +647,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public setTtls(keys:string[], ttl:number, callback?:(errors:IException[], response:{[index:string]:number;}|any) => void, namespace:string = this.getNamespace()):IClient {
+    public setTtls(keys:string[], ttl:number, callback?:(errors:IException[], response:{[index:string]:number;}|any) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -736,11 +686,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public removeItem(key:string, callback?:(errors:IException[]) => void, namespace:string = this.getNamespace()):IClient {
+    public removeItem(key:string, callback?:(errors:IException[]) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -772,11 +720,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public removeItems(keys:string[], callback?:(errors:IException[]) => void, namespace:string = this.getNamespace()):IClient {
+    public removeItems(keys:string[], callback?:(errors:IException[]) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -810,11 +756,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public hasItem(key:string, callback?:(errors:IException[], response:boolean) => void, namespace:string = this.getNamespace()):IClient {
+    public hasItem(key:string, callback?:(errors:IException[], response:boolean) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -847,11 +791,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public hasItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:boolean;}|any) => void, namespace:string = this.getNamespace()):IClient {
+    public hasItems(keys:string[], callback?:(errors:IException[], response:{[index:string]:boolean;}|any) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -886,11 +828,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public getKey(index:number, callback?:(errors:IException[], response:string) => void, namespace:string = this.getNamespace()):IClient {
+    public getKey(index:number, callback?:(errors:IException[], response:string) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -923,11 +863,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public getKeys(indexes:number[], callback?:(errors:IException[], response:string[]) => void, namespace:string = this.getNamespace()):IClient {
+    public getKeys(indexes:number[], callback?:(errors:IException[], response:string[]) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -975,11 +913,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public getLength(callback?:(errors:IException[], response:number) => void, namespace:string = this.getNamespace()):IClient {
+    public getLength(callback?:(errors:IException[], response:number) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -1009,11 +945,9 @@ class Client extends ClientBase implements IClient {
             }, null, "getLength", realNamespace);
         }
 
-        return this;
-
     }
 
-    public increment(key:string, ttl:number, callback?:(errors:IException[], response:string) => void, namespace:string = this.getNamespace()):IClient {
+    public increment(key:string, ttl:number, callback?:(errors:IException[], response:string) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -1048,11 +982,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public decrement(key:string, ttl:number, callback?:(errors:IException[], response:string) => void, namespace:string = this.getNamespace()):IClient {
+    public decrement(key:string, ttl:number, callback?:(errors:IException[], response:string) => void, namespace:string = this.getNamespace()):void {
 
         var realNamespace:string;
 
@@ -1087,11 +1019,9 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        return this;
-
     }
 
-    public lock(key:string, callback?:(errors:IException[], unlock:(callback?:(errors:IException[]) => void) => void) => void, namespace:string = this.getNamespace()):IClient {
+    public lock(key:string, callback?:(errors:IException[], unlock:(callback?:(errors:IException[]) => void) => void) => void, namespace:string = this.getNamespace()):void {
 
         function handler(errors:IException[]):void {
             if (isFunction(callback)) {
@@ -1143,8 +1073,6 @@ class Client extends ClientBase implements IClient {
                 }, -1, "lock", realNamespace, key);
             }
         }
-
-        return this;
 
     }
 

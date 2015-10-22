@@ -7,10 +7,7 @@ import IException   = require("../exception/IException");
 interface IClient extends IClientBase {
     namespace:string;
     getNamespace():string;
-    setNamespace(namespace:string):IClient;
-    setLocation(location:string):IClient;
-    setTimeout(timeout:number):IClient;
-    setIsDebug(value:boolean):IClient;
+    setNamespace(namespace:string):void;
     ping(callback?:(errors:IException[]) => void):void;
     stop(callback?:(errors:IException[]) => void):void;
     getInfo(callback?:(errors:IException[], response:IInformation) => void):void;
