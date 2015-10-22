@@ -1,0 +1,4 @@
+interface IDeferred {
+}
+
+export = IDeferred;
