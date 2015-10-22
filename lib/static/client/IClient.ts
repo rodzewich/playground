@@ -38,6 +38,8 @@ interface IClient extends IClientBase {
     setGzipExtensions(extensions:string[]):void;
     getGzipCompressionLevel():number;
     setGzipCompressionLevel(level:number):void;
+    ping(callback?:(errors:IException[]) => void):void;
+    stop(callback?:(errors:IException[]) => void):void;
     getContent(filename:string, callback?:(errors:IException[], response:IResponse) => void):void;
 }
 
