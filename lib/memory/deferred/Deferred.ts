@@ -1,3 +1,7 @@
+import isObject  = require("../../isObject");
+import IOptions  = require("../client/IOptions");
+import IClient   = require("../client/IClient");
+import Client    = require("../client/Client");
 import IDeferred = require("./IDeferred");
 
 class Deferred implements IDeferred {
