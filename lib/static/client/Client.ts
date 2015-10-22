@@ -4,6 +4,7 @@ import log4js     = require("../../../logger");
 import Separator  = require("../../helpers/Separator");
 import IResponse  = require("../IResponse");
 import IOptions   = require("./IOptions");
+import isDefined  = require("../../isDefined");
 import UseIndexHelper   = require("../../helpers/UseIndexHelper");
 import IUseIndexHelper  = require("../../helpers/IUseIndexHelper");
 import UseGzipHelper    = require("../../helpers/UseGzipHelper");
@@ -16,10 +17,12 @@ import IIncludeDirectoriesHelper   = require("../../helpers/IIncludeDirectoriesH
 import IncludeDirectoriesHelper    = require("../../helpers/IncludeDirectoriesHelper");
 import SourcesDirectoryHelper      = require("../../helpers/SourcesDirectoryHelper");
 import ISourcesDirectoryHelper     = require("../../helpers/ISourcesDirectoryHelper");
-import IndexExtensionsHelper       = require("../../helpers/IndexExtensionsHelper");
-import IIndexExtensionsHelper      = require("../../helpers/IIndexExtensionsHelper");
-import GzipExtensionsHelper        = require("../../helpers/GzipExtensionsHelper");
-import IGzipExtensionsHelper       = require("../../helpers/IGzipExtensionsHelper");
+import IndexExtensionsHelper       = require("../helpers/IndexExtensionsHelper");
+import IIndexExtensionsHelper      = require("../helpers/IIndexExtensionsHelper");
+import GzipExtensionsHelper        = require("../helpers/GzipExtensionsHelper");
+import IGzipExtensionsHelper       = require("../helpers/IGzipExtensionsHelper");
+import GzipMinLengthHelper         = require("../helpers/GzipMinLengthHelper");
+import IGzipMinLengthHelper        = require("../helpers/IGzipMinLengthHelper");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
@@ -46,6 +49,19 @@ class Client extends ClientBase implements IClient {
     private _gzipCompressionLevelHelper:IGzipCompressionLevelHelper;
 
     private _gzipExtensionsHelper:IGzipExtensionsHelper;
+
+    private _gzipMinLengthHelper:IGzipMinLengthHelper;
+
+    protected createGzipMinLengthHelper():IGzipMinLengthHelper {
+        return new GzipMinLengthHelper();
+    }
+
+    protected getGzipMinLengthHelper():IGzipMinLengthHelper {
+        if (!this._gzipMinLengthHelper) {
+            this._gzipMinLengthHelper = this.createGzipMinLengthHelper();
+        }
+        return this._gzipMinLengthHelper;
+    }
 
     protected createGzipExtensionsHelper():IGzipExtensionsHelper {
         return new GzipExtensionsHelper();
@@ -319,34 +335,22 @@ class Client extends ClientBase implements IClient {
         this.getUseGzipHelper().setIsUsed(value);
     }
 
-    /**
-     * Получить минимальную длину ответа, который будет сжиматься методом gzip.
-     */
     public getGzipMinLength():number {
-
+        return this.getGzipMinLengthHelper().getLength();
     }
 
-    /**
-     * Устанавить минимальную длину ответа, который будет сжиматься методом gzip.
-     */
     public setGzipMinLength(length:number):void {
-
+        this.getGzipMinLengthHelper().setLength(length);
     }
 
     public setGzipExtensions(extensions:string[]):void {
         this.getGzipExtensionsHelper().setExtensions(extensions);
     }
 
-    /**
-     * Получить степень сжатия ответа методом gzip. Допустимые значения находятся в диапазоне от 1 до 9.
-     */
     public getGzipCompressionLevel():number {
         return this.getGzipCompressionLevelHelper().getLevel();
     }
 
-    /**
-     * Устанавить степень сжатия ответа методом gzip. Допустимые значения находятся в диапазоне от 1 до 9.
-     */
     public setGzipCompressionLevel(level:number):void {
         this.getGzipCompressionLevelHelper().setLevel(level);
     }
