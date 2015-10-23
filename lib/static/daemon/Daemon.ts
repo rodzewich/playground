@@ -1,12 +1,32 @@
 import DaemonBase = require("../../daemon/Daemon");
 import IDaemon    = require("./IDaemon");
+import IOptions   = require("./IOptions");
+import IRequest   = require("../IRequest");
+import IResponse  = require("../IResponse");
 import log4js     = require("../../../logger");
+import Exception  = require("../exception/Exception");
+import IException = require("../exception/IException");
+import IObject    = require("../exception/IObject");
+import isFunction = require("../../isFunction");
+import ExceptionBase = require("../../exception/Exception");
 
 var logger:log4js.Logger = log4js.getLogger("static");
 
 class Daemon extends DaemonBase implements IDaemon {
 
-    public getContent(filename:string):void {
+    constructor(options:IOptions) {
+        super(options);
+    }
+
+    public getContent(filename:string, options:IRequest, callback?:(errors:Exception[], result:IResponse) => void):void {
+
+        function handler(errors:Exception[], result:IResponse):void {
+            if (isFunction(callback)) {
+                callback(errors, result);
+            }
+        }
+
+
 
     }
 

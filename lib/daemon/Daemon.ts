@@ -267,7 +267,7 @@ class Daemon implements IDaemon {
                 while (this._sockets.length) {
                     this._sockets.shift().destroy();
                 }
-            }).ref();
+            }, 0).ref();
         } else if (this._stopped && !this._starting) {
             stopped(null);
         }
