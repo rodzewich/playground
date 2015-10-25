@@ -13,7 +13,7 @@ require("./lib/mapping");
 var argv:any = optimist
     .usage("Usage: tests [--debug] --test ./path/to/test.js")
     .boolean("l").alias("d", "debug").describe("d", "Debug sign")
-    .demand("t").alias("t", "test").describe("m", "Path to test")
+    .alias("t", "test").describe("t", "Path to test")
     .argv;
 
 process.addListener('uncaughtException', function (error:Error) {

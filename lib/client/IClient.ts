@@ -8,8 +8,8 @@ interface IClient {
     disconnected:boolean;
     disconnecting:boolean;
     debug:boolean;
-    connect(callback?:(errors:IException[]) => void): void;
-    disconnect(callback?:(errors:IException[]) => void): void;
+    connect(callback?:(errors:IException[]) => void):void;
+    disconnect(callback?:(errors:IException[]) => void):void;
     isConnected():boolean;
     isDisconnected():boolean;
     isConnecting():boolean;

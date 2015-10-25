@@ -9,6 +9,8 @@ import IDaemon    = require("./IDaemon");
 import IOptions   = require("./IOptions");
 import Exception  = require("../exception/Exception");
 import IException = require("../exception/IException");
+import DebugHelper       = require("../helpers/DebugHelper");
+import IDebugHelper      = require("../helpers/IDebugHelper");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
 import MeLocationHelper  = require("../helpers/MeLocationHelper");
 
@@ -39,6 +41,19 @@ class Daemon implements IDaemon {
 
     private _meLocationHelper:IMeLocationHelper;
 
+    private _debugHelper:IDebugHelper;
+
+    protected createDebugHelper():IDebugHelper {
+        return new DebugHelper();
+    }
+
+    protected getDebugHelper():IDebugHelper {
+        if (!this._debugHelper) {
+            this._debugHelper = this.createDebugHelper();
+        }
+        return this._debugHelper;
+    }
+
     protected createMeLocationHelper():IMeLocationHelper {
         return new MeLocationHelper();
     }
@@ -54,6 +69,29 @@ class Daemon implements IDaemon {
         if (options && isDefined(options.location)) {
             this.setLocation(options.location);
         }
+        if (options && isDefined(options.debug)) {
+            this.setIsDebug(options.debug);
+        }
+    }
+
+    public get debug():boolean {
+        return this.getIsDebug();
+    }
+
+    public set debug(value:boolean) {
+        this.setIsDebug(value);
+    }
+
+    public isDebug():boolean {
+        return this.getDebugHelper().isDebug();
+    }
+
+    public getIsDebug():boolean {
+        return this.getDebugHelper().getIsDebug();
+    }
+
+    public setIsDebug(value:boolean):void {
+        this.getDebugHelper().setIsDebug(value);
     }
 
     public get location():string {
@@ -77,7 +115,7 @@ class Daemon implements IDaemon {
     }
 
     public set starting(value:boolean) {
-        throw new Exception({message: "property \"starting\" readonly"});
+        throw new Exception({message: "property \"starting\" is readonly"});
     }
 
     public isStarting():boolean {
@@ -89,7 +127,7 @@ class Daemon implements IDaemon {
     }
 
     public set started(value:boolean) {
-        throw new Exception({message: "property \"started\" readonly"});
+        throw new Exception({message: "property \"started\" is readonly"});
     }
 
     public isStarted() {
@@ -101,7 +139,7 @@ class Daemon implements IDaemon {
     }
 
     public set stopping(value:boolean) {
-        throw new Exception({message: "property \"stopping\" readonly"});
+        throw new Exception({message: "property \"stopping\" is readonly"});
     }
 
     public isStopping():boolean {
@@ -113,7 +151,7 @@ class Daemon implements IDaemon {
     }
 
     public set stopped(value:boolean) {
-        throw new Exception({message: "property \"stopped\" readonly"});
+        throw new Exception({message: "property \"stopped\" is readonly"});
     }
 
     public isStopped():boolean {

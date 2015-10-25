@@ -47,6 +47,12 @@ class Client implements IClient {
 
     private _handlersRegistration:IHandlersRegistrationHelper;
 
+    private _meLocationHelper:IMeLocationHelper;
+
+    private _debugHelper:IDebugHelper;
+
+    private _timeoutHelper:ITimeoutHelper;
+
     protected createHandlersRegistrationHelper():IHandlersRegistrationHelper {
         return new HandlersRegistrationHelper();
     }
@@ -57,8 +63,6 @@ class Client implements IClient {
         }
         return this._handlersRegistration;
     }
-
-    private _meLocationHelper:IMeLocationHelper;
 
     protected createMeLocationHelper():IMeLocationHelper {
         return new MeLocationHelper();
@@ -71,8 +75,6 @@ class Client implements IClient {
         return this._meLocationHelper;
     }
 
-    private _debugHelper:IDebugHelper;
-
     protected createDebugHelper():IDebugHelper {
         return new DebugHelper();
     }
@@ -83,8 +85,6 @@ class Client implements IClient {
         }
         return this._debugHelper;
     }
-
-    private _timeoutHelper:ITimeoutHelper;
 
     protected createTimeoutHelper():ITimeoutHelper {
         return new TimeoutHelper();
@@ -166,7 +166,7 @@ class Client implements IClient {
     }
 
     public set connected(value:boolean) {
-        throw new Exception({message: "property \"connected\" readonly"});
+        throw new Exception({message: "property \"connected\" is readonly"});
     }
 
     public isConnected():boolean {
@@ -178,7 +178,7 @@ class Client implements IClient {
     }
 
     public set disconnected(value:boolean) {
-        throw new Exception({message: "property \"disconnected\" readonly"});
+        throw new Exception({message: "property \"disconnected\" is readonly"});
     }
 
     public isDisconnected():boolean {
@@ -190,7 +190,7 @@ class Client implements IClient {
     }
 
     public set connecting(value:boolean) {
-        throw new Exception({message: "property \"connecting\" readonly"});
+        throw new Exception({message: "property \"connecting\" is readonly"});
     }
 
     public isConnecting():boolean {
@@ -202,7 +202,7 @@ class Client implements IClient {
     }
 
     public set disconnecting(value:boolean) {
-        throw new Exception({message: "property \"disconnecting\" readonly"});
+        throw new Exception({message: "property \"disconnecting\" is readonly"});
     }
 
     public isDisconnecting():boolean {

@@ -3,6 +3,9 @@ import IDaemon    = require("./IDaemon");
 import IOptions   = require("./IOptions");
 import IResponse  = require("../IResponse");
 import log4js     = require("../../../logger");
+import deferred   = require("../../deferred");
+import IMemory    = require("../../memory/client/IClient");
+import Memory     = require("../../memory/client/Client");
 import Exception  = require("../exception/Exception");
 import IException = require("../exception/IException");
 import IObject    = require("../exception/IObject");
@@ -41,6 +44,8 @@ class Daemon extends DaemonBase implements IDaemon {
 
     private _gzipNamespaceHelper:INamespaceHelper;
 
+    private _lockNamespaceHelper:INamespaceHelper;
+
     private _includeDirectoriesHelper:IIncludeDirectoriesHelper;
 
     private _sourcesDirectoryHelper:ISourcesDirectoryHelper;
@@ -56,6 +61,8 @@ class Daemon extends DaemonBase implements IDaemon {
     private _gzipExtensionsHelper:IGzipExtensionsHelper;
 
     private _gzipMinLengthHelper:IGzipMinLengthHelper;
+
+    private _memory:{[index:string]:IMemory};
 
     protected createGzipMinLengthHelper():IGzipMinLengthHelper {
         return new GzipMinLengthHelper();
@@ -171,6 +178,17 @@ class Daemon extends DaemonBase implements IDaemon {
         return this._gzipNamespaceHelper;
     }
 
+    protected createLockNamespaceHelper():INamespaceHelper {
+        return new NamespaceHelper(["default", "lock"]);
+    }
+
+    protected getLockNamespaceHelper():INamespaceHelper {
+        if (!this._lockNamespaceHelper) {
+            this._lockNamespaceHelper = this.createLockNamespaceHelper();
+        }
+        return this._lockNamespaceHelper;
+    }
+
     protected createIncludeDirectoriesHelper():IIncludeDirectoriesHelper {
         return new IncludeDirectoriesHelper();
     }
@@ -237,6 +255,7 @@ class Daemon extends DaemonBase implements IDaemon {
         this.getMetadataNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["metadata"]).getNamespace());
         this.getBinaryNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["binary"]).getNamespace());
         this.getGzipNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["gzip"]).getNamespace());
+        this.getLockNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["lock"]).getNamespace());
     }
 
     public getNamespace():string {
@@ -248,6 +267,7 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public set metadataNamespace(namespace:string) {
+        throw new Exception({message: "property \"metadataNamespace\" is readonly"});
     }
 
     public getMetadataNamespace():string {
@@ -259,6 +279,7 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public set binaryNamespace(namespace:string) {
+        throw new Exception({message: "property \"binaryNamespace\" is readonly"});
     }
 
     public getBinaryNamespace():string {
@@ -270,10 +291,23 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public set gzipNamespace(namespace:string) {
+        throw new Exception({message: "property \"gzipNamespace\" is readonly"});
     }
 
     public getGzipNamespace():string {
         return this.getGzipNamespaceHelper().getValue();
+    }
+
+    public get lockNamespace():string {
+        return this.getGzipNamespace();
+    }
+
+    public set lockNamespace(namespace:string) {
+        throw new Exception({message: "property \"lockNamespace\" is readonly"});
+    }
+
+    public getLockNamespace():string {
+        return this.getLockNamespaceHelper().getValue();
     }
 
     public get includeDirectories():string[] {
@@ -408,7 +442,134 @@ class Daemon extends DaemonBase implements IDaemon {
         this.getGzipCompressionLevelHelper().setLevel(level);
     }
 
+    protected createMemory():IMemory {
+        return new Memory({
+            namespace : this.getNamespace(),
+            location  : this.getMemoryLocation(),
+            timeout   : this.getMemoryTimeout(),
+            debug     : this.isDebug()
+        });
+    }
+
+    public get memory():IMemory {
+        return this.getMemory();
+    }
+
+    public set memory(memory:IMemory) {
+        throw new Exception({message: "property \"memory\" is readonly"});
+    }
+
+    public getMemory():IMemory {
+        var memoryLocation:string = this.getMemoryLocation();
+        if (!this._memory[memoryLocation]) {
+            this._memory[memoryLocation] = this.createMemory();
+        }
+        return this._memory[memoryLocation];
+    }
+
+    protected createMetadataMemory():IMemory {
+        return new Memory({
+            namespace : this.getNamespace(),
+            location  : this.getMetadataMemoryLocation(),
+            timeout   : this.getMetadataMemoryTimeout(),
+            debug     : this.isDebug()
+        });
+    }
+
+    public get metadataMemory():IMemory {
+        return this.getMetadataMemory();
+    }
+
+    public set metadataMemory(memory:IMemory) {
+        throw new Exception({message: "property \"metadataMemory\" is readonly"});
+    }
+
+    public getMetadataMemory():IMemory {
+        var metadataMemoryLocation:string = this.getMetadataMemoryLocation();
+        if (!this._memory[metadataMemoryLocation]) {
+            this._memory[metadataMemoryLocation] = this.createMetadataMemory();
+        }
+        return this._memory[metadataMemoryLocation];
+    }
+
+    protected createBinaryMemory():IMemory {
+        return new Memory({
+            namespace : this.getNamespace(),
+            location  : this.getBinaryMemoryLocation(),
+            timeout   : this.getBinaryMemoryTimeout(),
+            debug     : this.isDebug()
+        });
+    }
+
+    public get binaryMemory():IMemory {
+        return this.getBinaryMemory();
+    }
+
+    public set binaryMemory(memory:IMemory) {
+        throw new Exception({message: "property \"binaryMemory\" is readonly"});
+    }
+
+    public getBinaryMemory():IMemory {
+        var binaryMemoryLocation:string = this.getBinaryMemoryLocation();
+        if (!this._memory[binaryMemoryLocation]) {
+            this._memory[binaryMemoryLocation] = this.createBinaryMemory();
+        }
+        return this._memory[binaryMemoryLocation];
+    }
+
+    protected createGzipMemory():IMemory {
+        return new Memory({
+            namespace : this.getNamespace(),
+            location  : this.getGzipMemoryLocation(),
+            timeout   : this.getGzipMemoryTimeout(),
+            debug     : this.isDebug()
+        });
+    }
+
+    public get gzipMemory():IMemory {
+        return this.getBinaryMemory();
+    }
+
+    public set gzipMemory(memory:IMemory) {
+        throw new Exception({message: "property \"gzipMemory\" is readonly"});
+    }
+
+    public getGzipMemory():IMemory {
+        var gzipMemoryLocation:string = this.getGzipMemoryLocation();
+        if (!this._memory[gzipMemoryLocation]) {
+            this._memory[gzipMemoryLocation] = this.createGzipMemory();
+        }
+        return this._memory[gzipMemoryLocation];
+    }
+
+    protected createLockMemory():IMemory {
+        return new Memory({
+            namespace : this.getNamespace(),
+            location  : this.getLockMemoryLocation(),
+            timeout   : this.getLockMemoryTimeout(),
+            debug     : this.isDebug()
+        });
+    }
+
+    public get lockMemory():IMemory {
+        return this.getBinaryMemory();
+    }
+
+    public set lockMemory(memory:IMemory) {
+        throw new Exception({message: "property \"lockMemory\" is readonly"});
+    }
+
+    public getLockMemory():IMemory {
+        var lockMemoryLocation:string = this.getLockMemoryLocation();
+        if (!this._memory[lockMemoryLocation]) {
+            this._memory[lockMemoryLocation] = this.createLockMemory();
+        }
+        return this._memory[lockMemoryLocation];
+    }
+
     public getContent(filename:string, callback?:(errors:Exception[], result:IResponse) => void):void {
+
+        var temp:string = String(filename);
 
         function handler(errors:Exception[], result:IResponse):void {
             if (isFunction(callback)) {
@@ -416,7 +577,43 @@ class Daemon extends DaemonBase implements IDaemon {
             }
         }
 
+
+
         deferred([
+
+            (next:() => void):void => {
+                var memory = new Memory();
+                memory.getItem(temp, () => {
+
+                });
+            },
+
+            (next:() => void):void => {},
+
+            (next:() => void):void => {},
+
+            (next:() => void):void => {},
+
+            (next:() => void):void => {},
+
+            (next:() => void):void => {},
+
+            (next:() => void):void => {},
+
+            (next:() => void):void => {},
+
+            (next:() => void):void => {},
+
+            (next:() => void):void => {},
+
+            (next:() => void):void => {},
+
+            (next:() => void):void => {},
+
+            (next:() => void):void => {},
+
+            (next:() => void):void => {},
+
 
         ]);
 

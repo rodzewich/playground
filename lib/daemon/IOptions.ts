@@ -1,5 +1,6 @@
 interface IOptions {
-    location: string;
+    location?: string;
+    debug?:boolean;
 }
 
 export = IOptions;

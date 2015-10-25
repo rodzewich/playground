@@ -1,11 +1,14 @@
 import IDaemonBase = require("../../daemon/IDaemon");
+import IException  = require("../exception/IException");
 import IResponse   = require("../IResponse");
+import IMemory     = require("../../memory/client/IClient");
 
 interface IDaemon extends IDaemonBase {
     namespace:string;
     metadataNamespace:string;
     binaryNamespace:string;
     gzipNamespace:string;
+    lockNamespace:string;
     sourceDirectory:string;
     includeDirectories:string[];
     useIndex:boolean;
@@ -14,11 +17,21 @@ interface IDaemon extends IDaemonBase {
     gzipMinLength:number;
     gzipExtensions:string[];
     gzipCompressionLevel:number;
+    memory:IMemory;
+    metadataMemory:IMemory;
+    binaryMemory:IMemory;
+    gzipMemory:IMemory;
+    lockMemory:IMemory;
     getNamespace():string;
     setNamespace(namespace:string):void;
     getMetadataNamespace():string;
+    setMetadataNamespace(namespace:string):void;
     getBinaryNamespace():string;
+    setBinaryNamespace(namespace:string):void;
     getGzipNamespace():string;
+    setGzipNamespace(namespace:string):void;
+    getLockNamespace():string;
+    setLockNamespace(namespace:string):void;
     getIncludeDirectories():string[];
     setIncludeDirectories(directories:string[]):void;
     getSourcesDirectory():string;
@@ -37,7 +50,12 @@ interface IDaemon extends IDaemonBase {
     setGzipExtensions(extensions:string[]):void;
     getGzipCompressionLevel():number;
     setGzipCompressionLevel(level:number):void;
-    getContent(filename:string, callback?:(errors:Exception[], result:IResponse) => void):void;
+    getMemory():IMemory;
+    getMetadataMemory():IMemory;
+    getBinaryMemory():IMemory;
+    getGzipMemory():IMemory;
+    getLockMemory():IMemory;
+    getContent(filename:string, callback?:(errors:IException[], result:IResponse) => void):void;
 }
 
 export = IDaemon;
