@@ -22,6 +22,12 @@ interface IDaemon extends IDaemonBase {
     binaryMemory:IMemory;
     gzipMemory:IMemory;
     lockMemory:IMemory;
+    memoryLocation:string;
+    memoryTimeout:number;
+    getMemoryTimeout():number;
+    setMemoryTimeout(timeout:number):void;
+    getMemoryLocation():string;
+    setMemoryLocation(location:string):void;
     getNamespace():string;
     setNamespace(namespace:string):void;
     getMetadataNamespace():string;

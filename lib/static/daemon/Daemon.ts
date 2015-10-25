@@ -242,6 +242,40 @@ class Daemon extends DaemonBase implements IDaemon {
         }
     }
 
+    public get memoryLocation():string {
+        return this.getMemoryLocation();
+    }
+
+    public set memoryLocation(location:string) {
+        this.setSourcesDirectory(location);
+    }
+
+    public getMemoryLocation():string {
+        // todo: implement it
+        return null;
+    }
+
+    public setMemoryLocation(location:string):void {
+        // todo: implement it
+    }
+
+    public get memoryTimeout():number {
+        return this.getMemoryTimeout();
+    }
+
+    public set memoryTimeout(timeout:number) {
+        this.setMemoryTimeout(timeout);
+    }
+
+    public getMemoryTimeout():number {
+        // todo: implement it
+        return null;
+    }
+
+    public setMemoryTimeout(timeout:number):void {
+        // todo: implement it
+    }
+
     public get namespace():string {
         return this.getNamespace();
     }
