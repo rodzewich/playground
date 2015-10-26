@@ -1,0 +1,4 @@
+{
+  "MEMORY_SOCKET_LOCATION":"temp/memory.sock",
+  "STATIC_MEMORY_METADATA_LOCATION":"temp/memory.sock"
+}
