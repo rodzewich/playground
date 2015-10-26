@@ -242,6 +242,75 @@ class Daemon extends DaemonBase implements IDaemon {
         }
     }
 
+    public get metadataMemoryLocation():string {
+        return this.getMetadataMemoryLocation();
+    }
+
+    public set metadataMemoryLocation(location:string) {
+        this.setMetadataMemoryLocation(location);
+    }
+
+    public setMetadataMemoryLocation(location:string):void {
+        // todo: implement it
+    }
+
+    public getMetadataMemoryLocation():string {
+        // todo: implement it
+        return null;
+    }
+
+    public get binaryMemoryLocation():string {
+        return this.getBinaryMemoryLocation();
+    }
+
+    public set binaryMemoryLocation(location:string) {
+        this.setBinaryMemoryLocation(location);
+    }
+
+    public setBinaryMemoryLocation(location:string):void {
+        // todo: implement it
+    }
+
+    public getBinaryMemoryLocation():string {
+        // todo: implement it
+        return null;
+    }
+
+    public get gzipMemoryLocation():string {
+        return this.getGzipMemoryLocation();
+    }
+
+    public set gzipMemoryLocation(location:string) {
+        this.setGzipMemoryLocation(location);
+    }
+
+    public setGzipMemoryLocation(location:string):void {
+        // todo: implement it
+    }
+
+    public getGzipMemoryLocation():string {
+        // todo: implement it
+        return null;
+    }
+
+    public get lockMemoryLocation():string {
+        return this.getLockMemoryLocation();
+    }
+
+    public set lockMemoryLocation(location:string) {
+        this.setLockMemoryLocation(location);
+    }
+
+    public setLockMemoryLocation(location:string):void {
+        // todo: implement it
+    }
+
+    public getLockMemoryLocation():string {
+        // todo: implement it
+        return null;
+    }
+
+
     public get memoryLocation():string {
         return this.getMemoryLocation();
     }
@@ -301,7 +370,12 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public set metadataNamespace(namespace:string) {
-        throw new Exception({message: "property \"metadataNamespace\" is readonly"});
+        this.setMetadataNamespace(namespace);
+    }
+
+    public setMetadataNamespace(namespace:string):void {
+        // todo: implement it
+        return null;
     }
 
     public getMetadataNamespace():string {
@@ -313,7 +387,12 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public set binaryNamespace(namespace:string) {
-        throw new Exception({message: "property \"binaryNamespace\" is readonly"});
+        this.setBinaryNamespace(namespace);
+    }
+
+    public setBinaryNamespace(namespace:string):void {
+        // todo: implement it
+        return null;
     }
 
     public getBinaryNamespace():string {
@@ -325,7 +404,12 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public set gzipNamespace(namespace:string) {
-        throw new Exception({message: "property \"gzipNamespace\" is readonly"});
+        this.setGzipNamespace(namespace);
+    }
+
+    public setGzipNamespace(namespace:string):void {
+        // todo: implement it
+        return null;
     }
 
     public getGzipNamespace():string {
@@ -337,7 +421,12 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public set lockNamespace(namespace:string) {
-        throw new Exception({message: "property \"lockNamespace\" is readonly"});
+        this.setLockNamespace(namespace);
+    }
+
+    public setLockNamespace(namespace:string):void {
+        // todo: implement it
+        return null;
     }
 
     public getLockNamespace():string {
