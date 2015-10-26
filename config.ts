@@ -1,6 +1,9 @@
 /// <reference path="./types/node/node.d.ts" />
 
 import path             = require("path");
+import IConfig          = require("./lib/IConfig");
+import isString         = require("./lib/isString");
+import isDefined        = require("./lib/isDefined");
 import Separator        = require("./lib/helpers/Separator");
 import NamespaceHelper  = require("./lib/helpers/NamespaceHelper");
 import INamespaceHelper = require("./lib/helpers/INamespaceHelper");
@@ -26,10 +29,22 @@ export const DEFAULT_STATIC_BINARY_MEMORY_NAMESPACE:string = NamespaceHelper.par
 export const DEFAULT_STATIC_GZIP_MEMORY_NAMESPACE:string = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_NAMESPACE_SEPARATOR).addToNamespace(["gzip"]);
 export const DEFAULT_STATIC_LOCK_MEMORY_NAMESPACE:string = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_NAMESPACE_SEPARATOR).addToNamespace(["lock"]);
 
-var config:any = require(PROJECT_CONFIG_LOCATION);
+var config:IConfig;
+
+export function getConfig():any {
+    if (!isDefined(config)) {
+        try {
+            config = <IConfig>require(PROJECT_CONFIG_LOCATION);
+        } catch (error:Error) {
+            config = null;
+        }
+    }
+    return config;
+}
 
 export function getTemporaryDirectory():string {
-    var directory:string = DEFAULT_TEMPORARY_DIRECTORY;
+    var config:any = getConfig(),
+        directory:string = DEFAULT_TEMPORARY_DIRECTORY;
     if (config && isString(config.TEMPORARY_DIRECTORY)) {
         directory = config.TEMPORARY_DIRECTORY;
     }
@@ -40,7 +55,8 @@ export function getTemporaryDirectory():string {
 }
 
 export function getPublicDirectory():string {
-    var directory:string = DEFAULT_PUBLIC_DIRECTORY;
+    var config:any = getConfig(),
+        directory:string = DEFAULT_PUBLIC_DIRECTORY;
     if (config && isString(config.PUBLIC_DIRECTORY)) {
         directory = config.PUBLIC_DIRECTORY;
     }
