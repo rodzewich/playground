@@ -25,3 +25,27 @@ export const DEFAULT_STATIC_METADATA_MEMORY_NAMESPACE:string = NamespaceHelper.p
 export const DEFAULT_STATIC_BINARY_MEMORY_NAMESPACE:string = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_NAMESPACE_SEPARATOR).addToNamespace(["binary"]);
 export const DEFAULT_STATIC_GZIP_MEMORY_NAMESPACE:string = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_NAMESPACE_SEPARATOR).addToNamespace(["gzip"]);
 export const DEFAULT_STATIC_LOCK_MEMORY_NAMESPACE:string = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_NAMESPACE_SEPARATOR).addToNamespace(["lock"]);
+
+var config:any = require(PROJECT_CONFIG_LOCATION);
+
+export function getTemporaryDirectory():string {
+    var directory:string = DEFAULT_TEMPORARY_DIRECTORY;
+    if (config && isString(config.TEMPORARY_DIRECTORY)) {
+        directory = config.TEMPORARY_DIRECTORY;
+    }
+    if (!path.isAbsolute(directory)) {
+        directory = path.join(PROJECT_DIRECTORY, directory);
+    }
+    return path.resolve(directory);
+}
+
+export function getPublicDirectory():string {
+    var directory:string = DEFAULT_PUBLIC_DIRECTORY;
+    if (config && isString(config.PUBLIC_DIRECTORY)) {
+        directory = config.PUBLIC_DIRECTORY;
+    }
+    if (!path.isAbsolute(directory)) {
+        directory = path.join(PROJECT_DIRECTORY, directory);
+    }
+    return path.resolve(directory);
+}
