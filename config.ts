@@ -7,6 +7,7 @@ import INamespaceHelper = require("./lib/helpers/INamespaceHelper");
 
 export const SERVER_DIRECTORY:string = __dirname;
 export const PROJECT_DIRECTORY:string = process.cwd();
+export const PROJECT_CONFIG_LOCATION:string = path.join(PROJECT_DIRECTORY, "config.json");
 export const DEFAULT_TEMPORARY_DIRECTORY:string = path.join(PROJECT_DIRECTORY, "temp");
 export const DEFAULT_PUBLIC_DIRECTORY:string = path.join(PROJECT_DIRECTORY, "public");
 export const DEFAULT_MEMORY_SOCKET_LOCATION:string = path.join(DEFAULT_TEMPORARY_DIRECTORY, "memory.sock");
