@@ -26,6 +26,11 @@ import path       = require("path");
 import isArray    = require("../isArray");
 import config     = require("../../config");
 
+const MEMORY_SOCKET_LOCATION:string   = path.relative(config.PROJECT_DIRECTORY, config.DEFAULT_MEMORY_SOCKET_LOCATION);
+const MEMORY_METADATA_LOCATION:string = path.relative(config.PROJECT_DIRECTORY, config.DEFAULT_STATIC_MEMORY_METADATA_LOCATION);
+const MEMORY_BINARY_LOCATION:string   = path.relative(config.PROJECT_DIRECTORY, config.DEFAULT_STATIC_MEMORY_BINARY_LOCATION);
+const MEMORY_GZIP_LOCATION:string     = path.relative(config.PROJECT_DIRECTORY, config.DEFAULT_STATIC_MEMORY_GZIP_LOCATION);
+
 require("../mapping");
 var logger:log4js.Logger = log4js.getLogger("memory");
 var argv:any = optimist
@@ -33,13 +38,13 @@ var argv:any = optimist
 
     // memory locations
     .alias("m", "memory")
-    .default("m", path.relative(config.PROJECT_DIRECTORY, config.DEFAULT_MEMORY_SOCKET_LOCATION))
+    .default("m", MEMORY_SOCKET_LOCATION)
     .describe("m", "Memory socket location")
-    .default("metadataMemory", path.relative(config.PROJECT_DIRECTORY, config.DEFAULT_STATIC_MEMORY_METADATA_LOCATION))
+    .default("metadataMemory", MEMORY_METADATA_LOCATION)
     .describe("metadataMemory", "Memory socket location for metadata")
-    .default("binaryMemory", path.relative(config.PROJECT_DIRECTORY, config.DEFAULT_STATIC_MEMORY_BINARY_LOCATION))
+    .default("binaryMemory", MEMORY_BINARY_LOCATION)
     .describe("binaryMemory", "Memory socket location for binary data")
-    .default("gzipMemory", path.relative(config.PROJECT_DIRECTORY, config.DEFAULT_STATIC_MEMORY_GZIP_LOCATION))
+    .default("gzipMemory", MEMORY_GZIP_LOCATION)
     .describe("gzipMemory", "Memory socket location for gzip data")
     .default("lockMemory", path.relative(config.PROJECT_DIRECTORY, config.DEFAULT_STATIC_MEMORY_LOCK_LOCATION))
     .describe("lockMemory", "Memory socket location for locks")
