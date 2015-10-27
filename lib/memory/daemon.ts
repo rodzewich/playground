@@ -1,7 +1,11 @@
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../../types/optimist/optimist.d.ts" />
 
-var messageSent = false;
+var messageSent:boolean = false,
+    logger:log4js.Logger,
+    daemon:IDaemon,
+    argv:any;
+
 process.title = "Memory daemon";
 process.addListener('uncaughtException', function (error:Error) {
     if (!messageSent) {
@@ -24,13 +28,17 @@ import log4js     = require("../../logger");
 import optimist   = require("optimist");
 
 require("../mapping");
-var logger:log4js.Logger = log4js.getLogger("memory");
-var argv:any = optimist
-    .usage("Usage: memory -l [location]")
-    .demand("l").alias("l", "location").describe("l", "Daemon socket location")
-    .argv;
-var daemon:IDaemon = new Daemon({
-    location : argv.location
+
+logger = log4js.getLogger("memory");
+argv = optimist.usage("Usage: memory [location]").argv;
+
+if (!argv._ || !argv._.length) {
+    optimist.showHelp();
+    process.exit();
+}
+
+daemon = new Daemon({
+    location : <string>argv._.shift()
 });
 
 daemon.start((errors:IException[]):void => {

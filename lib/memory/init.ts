@@ -1,15 +1,21 @@
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../../types/log4js/log4js.d.ts" />
 
-import cp                = require("child_process");
-import path              = require("path");
-import log4js            = require("log4js");
-import WrapperException  = require("../WrapperException");
+import cp        = require("child_process");
+import path      = require("path");
+import log4js    = require("log4js");
+import Exception = require("../exception/Exception");
 var logger:log4js.Logger = log4js.getLogger("client");
+
+interface IOptions {
+    location:string;
+    binary:string;
+    cwd:string;
+}
 
 function init(location:string, callback:(error?:Error) => void):void {
     var daemon:string = path.join(__dirname, "daemon.js"),
-        command:cp.ChildProcess = cp.spawn(process.execPath, [daemon, "--location", location]),
+        command:cp.ChildProcess = cp.spawn(process.execPath, [daemon, location]),
         response:Buffer = new Buffer(0),
         echo:(stream:NodeJS.WritableStream, data:Buffer) => void = (stream:NodeJS.WritableStream, data:Buffer):void => {
             stream.write(data);
@@ -42,7 +48,7 @@ function init(location:string, callback:(error?:Error) => void):void {
                 }
                 response = response.slice((new Buffer(json, "utf8")).length + 1);
                 if (!result.started) {
-                    error = new WrapperException(result.error);
+                    error = Exception.convertFromError(result.error);
                     logger.fatal("Something went wrong", error);
                     callback(error);
                 } else {

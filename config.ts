@@ -7,20 +7,23 @@ import isDefined        = require("./lib/isDefined");
 import Separator        = require("./lib/helpers/Separator");
 import NamespaceHelper  = require("./lib/helpers/NamespaceHelper");
 import INamespaceHelper = require("./lib/helpers/INamespaceHelper");
+import getobject        = require('getobject');
 
 module config {
     var config:IConfig;
 
     export const SYSTEM_DIRECTORY:string = __dirname;
     export const BINARY_DIRECTORY:string = path.join(SYSTEM_DIRECTORY, "bin");
+    export const SYSTEM_ENVIRONMENT:string = "/usr/bin/env";
 
     export const PROJECT_DIRECTORY:string = process.cwd();
     export const PROJECT_CONFIG:string    = path.join(PROJECT_DIRECTORY, "config.json");
 
-    export const DEFAULT_PROJECT_NAMESPACE_SEPARATOR:Separator    = Separator.DOT;
     export const DEFAULT_PROJECT_TEMPORARY_DIRECTORY:string       = path.join(PROJECT_DIRECTORY, "temp");
-    export const DEFAULT_PROJECT_PUBLIC_DIRECTORY:string          = path.join(PROJECT_DIRECTORY, "public");
     export const DEFAULT_PROJECT_MEMORY_SOCKET:string             = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "memory.sock");
+
+    export const DEFAULT_PROJECT_NAMESPACE_SEPARATOR:Separator    = Separator.DOT;
+    export const DEFAULT_PROJECT_PUBLIC_DIRECTORY:string          = path.join(PROJECT_DIRECTORY, "public");
     export const DEFAULT_PROJECT_CSS_SOCKET:string                = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "css.sock");
     export const DEFAULT_PROJECT_LESS_SOCKET:string               = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "less.sock");
     export const DEFAULT_PROJECT_SASS_SOCKET:string               = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "sass.sock");
@@ -44,6 +47,26 @@ module config {
             }
         }
         return config;
+    }
+
+    export function getEnvironment():string {
+        var environment:string = getobject.get(getConfig(), "ENVIRONMENT");
+        if (isDefined(environment)) {
+            return String(environment);
+        }
+        return SYSTEM_ENVIRONMENT;
+    }
+
+    export function getMemorySocket():string {
+        var filename:string = DEFAULT_PROJECT_MEMORY_SOCKET,
+            socket:string = getobject.get(getConfig(), "MEMORY_SOCKET");
+        if (isDefined(socket)) {
+            filename = socket;
+        }
+        if (!path.isAbsolute(filename)) {
+            filename = path.join(PROJECT_DIRECTORY, filename);
+        }
+        return path.resolve(filename);
     }
 
     export function getTemporaryDirectory():string {
