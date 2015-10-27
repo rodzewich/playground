@@ -10,7 +10,8 @@ import INamespaceHelper = require("./lib/helpers/INamespaceHelper");
 
 module config {
     var config:IConfig;
-    export const SERVER_DIRECTORY:string = __dirname;
+    export const SYSTEM_DIRECTORY:string = __dirname;
+    export const BINARY_DIRECTORY:string = path.join(SYSTEM_DIRECTORY, "bin");
     export const PROJECT_DIRECTORY:string = process.cwd();
     export const PROJECT_CONFIG_LOCATION:string = path.join(PROJECT_DIRECTORY, "config.json");
     export const DEFAULT_TEMPORARY_DIRECTORY:string = path.join(PROJECT_DIRECTORY, "temp");
