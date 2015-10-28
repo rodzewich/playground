@@ -1,25 +1,36 @@
 import fs = require("fs");
 import cp = require("child_process");
+import mkdir = require("./lib/mkdir");
 import config = require("./config");
 import deferred = require("./lib/deferred");
 import memoryInit = require("./lib/memory/init");
-import Exception = require("./lib/exception/Exception");
 import displayException = require("./lib/displayException");
 
 deferred([
+
+    // adjust logs directory
     (next:() => void):void => {
-        var temporaryDirectory:string = config.getTemporaryDirectory();
+        mkdir(config.getLogsDirectory(), (error?:IException):void => {
+            if (error) {
+                displayException(error);
+            } else {
+                next();
+            }
+        })
+    },
+
+    // adjust temporary directory
+    (next:() => void):void => {
         deferred([
             (next:() => void):void => {
-                var rm:cp.ChildProcess = cp.spawn("/usr/bin/env", ["rm", "-rf", temporaryDirectory], {});
-                rm.on('close', function () {
+                cp.spawn(config.getEnvironment(), ["rm", "-rf", config.getTemporaryDirectory()], {}).on('close', ():void => {
                     next();
                 });
             },
             (next:() => void):void => {
-                fs.mkdir(temporaryDirectory, function (error?:NodeJS.ErrnoException) {
+                mkdir(config.getTemporaryDirectory(), (error?:IException):void => {
                     if (error) {
-                        displayException(Exception.convertFromError(error));
+                        displayException(error);
                     } else {
                         next();
                     }
@@ -30,14 +41,16 @@ deferred([
             }
         ]);
     },
+
+    // init memory daemon
     (next:() => void):void => {
         memoryInit({
             location : config.getMemorySocket(),
             binary   : config.BINARY_DIRECTORY,
             cwd      : config.PROJECT_DIRECTORY
-        }, (errors?:Exception[]):void => {
+        }, (errors?:IException[]):void => {
             if (errors && errors.length) {
-                errors.forEach((error:Exception):void => {
+                errors.forEach((error:IException):void => {
                     displayException(error);
                 });
             } else {
@@ -45,6 +58,8 @@ deferred([
             }
         });
     },
+
+    // init static daemon
     (next:() => void):void => {
 
     },

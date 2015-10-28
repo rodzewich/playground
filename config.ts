@@ -11,6 +11,7 @@ import getobject        = require('getobject');
 
 module config {
     var config:IConfig;
+    var cache:IConfig;
 
     export const SYSTEM_DIRECTORY:string = __dirname;
     export const BINARY_DIRECTORY:string = path.join(SYSTEM_DIRECTORY, "bin");
@@ -19,6 +20,7 @@ module config {
     export const PROJECT_DIRECTORY:string = process.cwd();
     export const PROJECT_CONFIG:string    = path.join(PROJECT_DIRECTORY, "config.json");
 
+    export const DEFAULT_PROJECT_LOGS_DIRECTORY:string       = path.join(PROJECT_DIRECTORY, "logs");
     export const DEFAULT_PROJECT_TEMPORARY_DIRECTORY:string       = path.join(PROJECT_DIRECTORY, "temp");
     export const DEFAULT_PROJECT_MEMORY_SOCKET:string             = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "memory.sock");
 
@@ -50,30 +52,46 @@ module config {
     }
 
     export function getEnvironment():string {
-        var environment:string = getobject.get(getConfig(), "ENVIRONMENT");
-        if (isDefined(environment)) {
-            return String(environment);
+        var environment:string;
+        if (!isDefined(cache.ENVIRONMENT)) {
+            environment = getobject.get(getConfig(), "ENVIRONMENT");
+            cache.ENVIRONMENT = SYSTEM_ENVIRONMENT;
+            if (isDefined(environment)) {
+                cache.ENVIRONMENT = String(environment);
+            }
         }
-        return SYSTEM_ENVIRONMENT;
+        return cache.ENVIRONMENT;
     }
 
     export function getMemorySocket():string {
-        var filename:string = DEFAULT_PROJECT_MEMORY_SOCKET,
-            socket:string = getobject.get(getConfig(), "MEMORY_SOCKET");
-        if (isDefined(socket)) {
-            filename = socket;
+        var socket:string = DEFAULT_PROJECT_MEMORY_SOCKET,
+            temp:string = getobject.get(getConfig(), "MEMORY_SOCKET");
+        if (isDefined(temp)) {
+            socket = temp;
         }
-        if (!path.isAbsolute(filename)) {
-            filename = path.join(PROJECT_DIRECTORY, filename);
+        if (!path.isAbsolute(socket)) {
+            socket = path.join(PROJECT_DIRECTORY, socket);
         }
-        return path.resolve(filename);
+        return path.resolve(socket);
+    }
+
+    export function getLogsDirectory():string {
+        var directory:string = DEFAULT_PROJECT_LOGS_DIRECTORY,
+            temp:string = getobject.get(getConfig(), "LOGS_DIRECTORY");
+        if (isDefined(temp)) {
+            directory = temp;
+        }
+        if (!path.isAbsolute(directory)) {
+            directory = path.join(PROJECT_DIRECTORY, directory);
+        }
+        return path.resolve(directory);
     }
 
     export function getTemporaryDirectory():string {
-        var config:any = getConfig(),
-            directory:string = DEFAULT_PROJECT_TEMPORARY_DIRECTORY;
-        if (config && isString(config.TEMPORARY_DIRECTORY)) {
-            directory = config.TEMPORARY_DIRECTORY;
+        var directory:string = DEFAULT_PROJECT_TEMPORARY_DIRECTORY,
+            temp:string = getobject.get(getConfig(), "TEMPORARY_DIRECTORY");
+        if (isDefined(temp)) {
+            directory = temp;
         }
         if (!path.isAbsolute(directory)) {
             directory = path.join(PROJECT_DIRECTORY, directory);
