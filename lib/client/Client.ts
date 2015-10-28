@@ -5,7 +5,7 @@ import IOptions          = require("./IOptions");
 import fs                = require("fs");
 import net               = require("net");
 import colors            = require("colors");
-import helpers           = require("./helpers");
+import display           = require("../helpers/display");
 import log4js            = require("../../logger");
 import deferred          = require("../deferred");
 import Exception         = require("../exception/Exception");
@@ -226,7 +226,7 @@ class Client implements IClient {
             if (errors && errors.length) {
                 errors.forEach((error:IException):void => {
                     if (debug) {
-                        helpers.displayErrorData(error.getStack());
+                        display.error(error.getStack());
                     }
                     logger.error(error.getStack());
                 });
@@ -255,7 +255,7 @@ class Client implements IClient {
                     this._client.write(request);
                     this._client.write(new Buffer([0x0a]));
                     if (debug) {
-                        helpers.displayInputData(request);
+                        display.input(request);
                     }
                     if (timeout !== -1) {
                         temp = this.createTimeoutHelper();
@@ -311,13 +311,13 @@ class Client implements IClient {
                             syscall : error.syscall
                         });
                         if (debug) {
-                            helpers.displayErrorData(exception.getStack())
+                            display.error(exception.getStack())
                         }
                         logger.error(exception.getStack());
                     });
                     client.addListener("close", ():void => {
                         if (debug) {
-                            helpers.displayInputData("closed connection");
+                            display.input("closed connection");
                         }
                         logger.info("closed connection");
                         this.disconnect();
@@ -328,7 +328,7 @@ class Client implements IClient {
                         this._connected    = false;
                         this._disconnected = true;
                         if (debug) {
-                            helpers.displayErrorData("can not connect to: " + this.getLocation());
+                            display.error("can not connect to: " + this.getLocation());
                         }
                         logger.error(Exception.convertFromError(error).getStack());
                         connected([Exception.convertFromError(error, {
@@ -342,7 +342,7 @@ class Client implements IClient {
                         this._connected    = true;
                         this._disconnected = false;
                         if (debug) {
-                            helpers.displayInputData("successful connected to: " + this.getLocation());
+                            display.input("successful connected to: " + this.getLocation());
                         }
                         logger.info("successful connected to: " + this.getLocation());
                         connected(null);
@@ -396,7 +396,7 @@ class Client implements IClient {
                             callback:(errors:IException[], response?:any) => void;
 
                         if (debug) {
-                            helpers.displayOutputData(buffer.toString("utf8"))
+                            display.output(buffer.toString("utf8"))
                         }
 
                         function options():any {
@@ -412,7 +412,7 @@ class Client implements IClient {
                                 return (<IExceptionOptions[]>cache.errors).map((error:IExceptionOptions):IException => {
                                     var exception:IException = new Exception(error);
                                     if (debug) {
-                                        helpers.displayErrorData(exception.getStack());
+                                        display.error(exception.getStack());
                                     }
                                     logger.error(exception.getStack());
                                     return exception;
@@ -475,7 +475,7 @@ class Client implements IClient {
             this._client.destroy();
             setTimeout(():void => {
                 if (debug) {
-                    helpers.displayInputData("successful disconnected from: " + this.getLocation());
+                    display.input("successful disconnected from: " + this.getLocation());
                 }
                 logger.info("successful disconnected from: " + this.getLocation());
                 this._client        = null;

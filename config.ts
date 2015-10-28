@@ -11,8 +11,9 @@ import getobject        = require('getobject');
 
 module config {
     var config:IConfig;
-    var cache:IConfig;
+    var cache:IConfig = <IConfig>{};
 
+    export const DEBUG:boolean = true;
     export const SYSTEM_DIRECTORY:string = __dirname;
     export const BINARY_DIRECTORY:string = path.join(SYSTEM_DIRECTORY, "bin");
     export const SYSTEM_ENVIRONMENT:string = "/usr/bin/env";
@@ -20,7 +21,7 @@ module config {
     export const PROJECT_DIRECTORY:string = process.cwd();
     export const PROJECT_CONFIG:string    = path.join(PROJECT_DIRECTORY, "config.json");
 
-    export const DEFAULT_PROJECT_LOGS_DIRECTORY:string       = path.join(PROJECT_DIRECTORY, "logs");
+    export const DEFAULT_PROJECT_LOGS_DIRECTORY:string            = path.join(PROJECT_DIRECTORY, "logs");
     export const DEFAULT_PROJECT_TEMPORARY_DIRECTORY:string       = path.join(PROJECT_DIRECTORY, "temp");
     export const DEFAULT_PROJECT_MEMORY_SOCKET:string             = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "memory.sock");
 

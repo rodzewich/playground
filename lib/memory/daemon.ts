@@ -9,10 +9,14 @@ var messageSent:boolean = false,
 process.title = "Memory daemon";
 process.addListener('uncaughtException', function (error:Error) {
     if (!messageSent) {
-        process.stderr.write(JSON.stringify({
-                started : false,
-                errors  : [Exception.convertFromError(error).toObject()]
-            }) + "\n");
+        if (argv.json) {
+            process.stderr.write(JSON.stringify({
+                    started : false,
+                    errors  : [Exception.convertFromError(error).toObject()]
+                }) + "\n");
+        } else {
+            displayException(Exception.convertFromError(error));
+        }
         messageSent = true;
     }
     if (logger) {
@@ -20,19 +24,25 @@ process.addListener('uncaughtException', function (error:Error) {
     }
 });
 
-import Exception  = require("../exception/Exception");
-import IException = require("../exception/IException");
-import IDaemon    = require("./daemon/IDaemon");
-import Daemon     = require("./daemon/Daemon");
-import log4js     = require("../../logger");
-import optimist   = require("optimist");
+import displayException = require("../displayException");
+import Exception        = require("../exception/Exception");
+import IException       = require("../exception/IException");
+import IObject          = require("../exception/IObject");
+import IDaemon          = require("./daemon/IDaemon");
+import Daemon           = require("./daemon/Daemon");
+import log4js           = require("../../logger");
+import optimist         = require("optimist");
 
 require("../mapping");
 
 logger = log4js.getLogger("memory");
-argv = optimist.usage("Usage: memory [location]").argv;
+argv = optimist
+    .usage("Usage: memory [location]")
+    .boolean("j").alias("j", "json").describe("j", "Response as json")
+    .boolean("h").alias("h", "help").describe("h", "Show this help")
+    .argv;
 
-if (!argv._ || !argv._.length) {
+if (argv.help || !argv._ || !argv._.length) {
     optimist.showHelp();
     process.exit();
 }
@@ -46,12 +56,18 @@ daemon.start((errors:IException[]):void => {
         length:number;
     if (errors && errors.length) {
         if (!messageSent) {
-            process.stderr.write(JSON.stringify({
-                    started : false,
-                    errors  : errors.map((error:IException):any => {
-                        return error.toObject();
-                    })
-                }) + "\n");
+            if (argv.json) {
+                process.stderr.write(JSON.stringify({
+                        started : false,
+                        errors  : errors.map((error:IException):IObject => {
+                            return error.toObject();
+                        })
+                    }) + "\n");
+            } else {
+                errors.forEach((error:IException):void => {
+                    displayException(error);
+                });
+            }
             messageSent = true;
         }
         length = errors.length;
@@ -60,10 +76,14 @@ daemon.start((errors:IException[]):void => {
         }
     } else {
         if (!messageSent) {
-            process.stderr.write(JSON.stringify({
-                    started : true
-                }) + "\n");
-            messageSent = true;
+            if (argv.json) {
+                process.stderr.write(JSON.stringify({
+                        started : true
+                    }) + "\n");
+                messageSent = true;
+            } else {
+                console.log("Memory daemon started");
+            }
         }
         logger.info("Memory daemon started");
     }

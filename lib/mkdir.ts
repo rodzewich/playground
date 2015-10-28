@@ -7,10 +7,11 @@ import isFunction = require("./isFunction");
 import Exception  = require("./exception/Exception");
 import IException = require("./exception/IException");
 
-function mkdir(directory:string, callback?:(error:IException) => void):void {
-    function handler(error:IException) {
+function mkdir(directory:string, callback?:(errors:IException[]) => void):void {
+
+    function handler(errors:IException[]) {
         if (isFunction(callback)) {
-            callback(error);
+            callback(errors);
         }
     }
 
@@ -22,19 +23,19 @@ function mkdir(directory:string, callback?:(error:IException) => void):void {
                 } else if (error.code === "ENOENT") {
                     next();
                 } else {
-                    handler(Exception.convertFromError(error), {
+                    handler([Exception.convertFromError(error, {
                         code    : error.code,
                         errno   : error.errno,
                         path    : error.path,
                         syscall : error.syscall
-                    });
+                    })]);
                 }
             });
         },
         (next:() => void):void => {
-            mkdir(path.dirname(directory), (error:IException):void => {
+            mkdir(path.dirname(directory), (errors:IException[]):void => {
                 if (error) {
-                    handler(error);
+                    handler(errors);
                 } else {
                     next();
                 }
@@ -43,12 +44,12 @@ function mkdir(directory:string, callback?:(error:IException) => void):void {
         ():void => {
             fs.mkdir(directory, (error:NodeJS.ErrnoException):void => {
                 if (error) {
-                    handler(Exception.convertFromError(error), {
+                    handler([Exception.convertFromError(error, {
                         code    : error.code,
                         errno   : error.errno,
                         path    : error.path,
                         syscall : error.syscall
-                    });
+                    })]);
                 } else {
                     handler(null);
                 }

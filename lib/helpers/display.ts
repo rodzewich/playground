@@ -34,7 +34,7 @@ class Type {
 
 }
 
-function displayData(content:string, type:Type):void {
+function display(content:string, type:Type):void {
     var columns = process.stdout.columns || 80;
     String(content).split("\n").forEach(function (line:string) {
         var temp:string;
@@ -48,14 +48,14 @@ function displayData(content:string, type:Type):void {
     });
 }
 
-export function displayInputData(content:string):void {
-    return displayData(content, Type.INPUT);
+export function input(content:string):void {
+    return display(content, Type.INPUT);
 }
 
-export function displayOutputData(content:string):void {
-    return displayData(content, Type.OUTPUT);
+export function output(content:string):void {
+    return display(content, Type.OUTPUT);
 }
 
-export function displayErrorData(content:string):void {
-    return displayData(content, Type.ERROR);
+export function error(content:string):void {
+    return display(content, Type.ERROR);
 }
