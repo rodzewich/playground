@@ -24,6 +24,7 @@ module config {
     export const DEFAULT_PROJECT_LOGS_DIRECTORY:string            = path.join(PROJECT_DIRECTORY, "logs");
     export const DEFAULT_PROJECT_TEMPORARY_DIRECTORY:string       = path.join(PROJECT_DIRECTORY, "temp");
     export const DEFAULT_PROJECT_MEMORY_SOCKET:string             = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "memory.sock");
+    export const DEFAULT_PROJECT_STATIC_SOCKET:string             = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "static.sock");
 
     export const DEFAULT_PROJECT_NAMESPACE_SEPARATOR:Separator    = Separator.DOT;
     export const DEFAULT_PROJECT_PUBLIC_DIRECTORY:string          = path.join(PROJECT_DIRECTORY, "public");
@@ -67,6 +68,18 @@ module config {
     export function getMemorySocket():string {
         var socket:string = DEFAULT_PROJECT_MEMORY_SOCKET,
             temp:string = getobject.get(getConfig(), "MEMORY_SOCKET");
+        if (isDefined(temp)) {
+            socket = temp;
+        }
+        if (!path.isAbsolute(socket)) {
+            socket = path.join(PROJECT_DIRECTORY, socket);
+        }
+        return path.resolve(socket);
+    }
+
+    export function getStaticSocket():string {
+        var socket:string = DEFAULT_PROJECT_STATIC_SOCKET,
+            temp:string = getobject.get(getConfig(), "STATIC_SOCKET");
         if (isDefined(temp)) {
             socket = temp;
         }

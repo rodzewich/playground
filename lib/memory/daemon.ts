@@ -25,30 +25,35 @@ process.addListener('uncaughtException', function (error:Error) {
 });
 
 import displayException = require("../displayException");
+import isArray          = require("../isArray");
 import Exception        = require("../exception/Exception");
 import IException       = require("../exception/IException");
 import IObject          = require("../exception/IObject");
 import IDaemon          = require("./daemon/IDaemon");
 import Daemon           = require("./daemon/Daemon");
 import log4js           = require("../../logger");
+import path             = require("path");
 import optimist         = require("optimist");
+import config           = require("../../config");
 
 require("../mapping");
 
 logger = log4js.getLogger("memory");
 argv = optimist
-    .usage("Usage: memory [location]")
+    .usage("Usage: memory [options] [location]")
     .boolean("j").alias("j", "json").describe("j", "Response as json")
+    .boolean("d").alias("d", "debug").describe("d", "Debug mod")
     .boolean("h").alias("h", "help").describe("h", "Show this help")
     .argv;
 
-if (argv.help || !argv._ || !argv._.length) {
+if (isArray(argv._) && (<Array>argv._).length === 0 || argv.help) {
     optimist.showHelp();
     process.exit();
 }
 
 daemon = new Daemon({
-    location : <string>argv._.shift()
+    location : getLocation(),
+    debug    : isDebug()
 });
 
 daemon.start((errors:IException[]):void => {
@@ -56,7 +61,7 @@ daemon.start((errors:IException[]):void => {
         length:number;
     if (errors && errors.length) {
         if (!messageSent) {
-            if (argv.json) {
+            if (!!argv.json) {
                 process.stderr.write(JSON.stringify({
                         started : false,
                         errors  : errors.map((error:IException):IObject => {
@@ -76,7 +81,7 @@ daemon.start((errors:IException[]):void => {
         }
     } else {
         if (!messageSent) {
-            if (argv.json) {
+            if (!!argv.json) {
                 process.stderr.write(JSON.stringify({
                         started : true
                     }) + "\n");
@@ -88,3 +93,15 @@ daemon.start((errors:IException[]):void => {
         logger.info("Memory daemon started");
     }
 });
+
+function getLocation():string {
+    var location:string = argv._.shift();
+    if (!path.isAbsolute(location)) {
+        location = path.join(process.cwd(), location);
+    }
+    return path.resolve(location);
+}
+
+function isDebug():boolean {
+    return config.DEBUG && !!argv.debug;
+}

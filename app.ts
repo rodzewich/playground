@@ -109,9 +109,13 @@ deferred([
     // init static daemon
     (next:() => void):void => {
         if (config.DEBUG) {
-            process.stdout.write("Init memory daemon");
+            process.stdout.write("Init static daemon");
         }
         staticInit({
+            //debug    : config.DEBUG,
+            location : config.getStaticSocket(),
+            binary   : config.BINARY_DIRECTORY,
+            cwd      : config.PROJECT_DIRECTORY
         }, (errors?:IException[]):void => {
             if (errors && errors.length) {
                 if (config.DEBUG) {

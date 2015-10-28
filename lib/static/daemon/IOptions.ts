@@ -1,7 +1,7 @@
 import IOptionsBase = require("../../daemon/IOptions");
 
 interface IOptions extends IOptionsBase {
-    namespace?:string;
+    memoryNamespace?:string;
     sourceDirectory?:string;
     includeDirectories?:string[];
     useIndex?:boolean;

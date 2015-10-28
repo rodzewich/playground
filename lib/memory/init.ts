@@ -9,7 +9,7 @@ import IException = require("../exception/IException");
 import isFunction = require("../isFunction");
 import isArray    = require("../isArray");
 import display    = require("../helpers/display");
-import IObject = require("../exception/IObject");
+import IObject    = require("../exception/IObject");
 
 var logger:log4js.Logger = log4js.getLogger("client");
 
