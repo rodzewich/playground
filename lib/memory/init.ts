@@ -22,7 +22,7 @@ interface IOptions {
 
 function init(options:IOptions, callback:(errors?:IException[]) => void):void {
     var filename:string = path.join(options.binary, "memory"),
-        command:cp.ChildProcess = cp.spawn(process.execPath, [filename, options.location], {cwd : options.cwd}),
+        command:cp.ChildProcess = cp.spawn(process.execPath, [filename, "--json", options.location], {cwd : options.cwd}),
         debug:boolean = !!options.debug,
         content:Buffer = new Buffer(0);
 
