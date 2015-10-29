@@ -12,6 +12,8 @@ import staticInit = require("./lib/static/init");
 import display    = require("./lib/displayException");
 import colors     = require("colors");
 import http       = require("http");
+import url        = require("url");
+import path       = require("path");
 import displayException = require("./lib/displayException");
 require("./lib/mapping");
 
@@ -157,6 +159,36 @@ deferred([
         }
 
         var server:http.Server = http.createServer(function (request, response) {
+
+            var options:url.Url = url.parse(request.url, true) || {},
+                method:string   = (request.method || "GET").toUpperCase(),
+                query:any       = options.query || {},
+                pathname        = options.pathname || "/",
+                directory,
+                extension,
+                filename;
+
+            deferred([
+                (next:() => void):void => {
+                    var resolved:string = path.resolve(directory);
+                    if (method === "GET" && directory !== resolved) {
+                        response.writeHead(302, {
+                            Location : resolved
+                        });
+                        response.end();
+                    } else {
+                        directory = path.dirname(resolved);
+                        extension = path.extname(resolved).toLowerCase();
+                        filename  = path.basename(resolved, extension);
+                        next();
+                    }
+                },
+                ():void => {
+
+                }
+            ]);
+
+
         });
 
         server.addListener("error", handler);
