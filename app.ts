@@ -11,6 +11,7 @@ import memoryInit = require("./lib/memory/init");
 import staticInit = require("./lib/static/init");
 import display    = require("./lib/displayException");
 import colors     = require("colors");
+import http       = require("http");
 import displayException = require("./lib/displayException");
 require("./lib/mapping");
 
@@ -134,13 +135,33 @@ deferred([
         });
     },
 
-    (next:() => void):void => {
+    ():void => {
+        if (config.DEBUG) {
+            process.stdout.write("Start http daemon");
+        }
 
-    },
-    (next:() => void):void => {
+        function handler(error:NodeJS.ErrnoException):void {
+            if (error) {
+                if (config.DEBUG) {
+                    process.stdout.write("\n");
+                }
+                display(Exception.convertFromError(error));
+                server.close();
+            } else {
+                if (config.DEBUG) {
+                    ok();
+                }
+            }
+            server.removeListener("error", handler);
 
-    },
-    (next:() => void):void => {
+        }
+
+        var server:http.Server = http.createServer(function (request, response) {
+        });
+
+        server.addListener("error", handler);
+        server.listen(config.getPort(), config.getHostname(), handler);
 
     }
+
 ]);

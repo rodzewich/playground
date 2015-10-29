@@ -20,6 +20,9 @@ module config {
     export const PROJECT_DIRECTORY:string = process.cwd();
     export const PROJECT_CONFIG:string    = path.join(PROJECT_DIRECTORY, "config.json");
 
+    export const DEFAULT_PROJECT_HOSTNAME:string  = "localhost";
+    export const DEFAULT_PROJECT_PORT:number      = 80;
+
     export const DEFAULT_PROJECT_LOGS_DIRECTORY:string            = path.join(PROJECT_DIRECTORY, "logs");
     export const DEFAULT_PROJECT_TEMPORARY_DIRECTORY:string       = path.join(PROJECT_DIRECTORY, "temp");
     export const DEFAULT_PROJECT_MEMORY_SOCKET:string             = "memory.sock";
@@ -50,6 +53,22 @@ module config {
             }
         }
         return config;
+    }
+
+    export function getHostname():string {
+        var configValue:string;
+        if (!isDefined(cache.hostname)) {
+            configValue = getobject.get(getConfig(), "hostname");
+            cache.hostname = DEFAULT_PROJECT_HOSTNAME;
+            if (configValue && isString(configValue)) {
+                cache.hostname = configValue;
+            }
+        }
+        return cache.hostname;
+    }
+
+    export function getPort():number {
+        return 3001;
     }
 
     export function getTemporaryDirectory():string {
