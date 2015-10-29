@@ -226,47 +226,47 @@ function getLockMemory():string {
 }
 
 function getNamespace():string {
-    return null;
+    return "static";
 }
 
 function getMetadataNamespace():string {
-    return null;
+    return "static.namespace";
 }
 
 function getBinaryNamespace():string {
-    return null;
+    return "static.binary";
 }
 
 function getGzipNamespace():string {
-    return null;
+    return "static.gzip";
 }
 
 function getLockNamespace():string {
-    return null;
+    return "static.lock";
 }
 
 function getTimeout():number {
-    return null;
+    return 300;
 }
 
 function getMetadataTimeout():number {
-    return null;
+    return 300;
 }
 
 function getBinaryTimeout():number {
-    return null;
+    return 300;
 }
 
 function getGzipTimeout():number {
-    return null;
+    return 300;
 }
 
 function getLockTimeout():number {
-    return null;
+    return 300;
 }
 
 function getSourceDirectory():string {
-    return null;
+    return config.getPublicDirectory();
 }
 
 function getIncludeDirectories():string[] {
@@ -274,7 +274,7 @@ function getIncludeDirectories():string[] {
 }
 
 function isUseIndex():boolean {
-    return null;
+    return false;
 }
 
 function getIndexExtensions():string[] {
@@ -282,7 +282,7 @@ function getIndexExtensions():string[] {
 }
 
 function isUseGzip():boolean {
-    return null;
+    return false;
 }
 
 function getGzipExtensions():string[] {

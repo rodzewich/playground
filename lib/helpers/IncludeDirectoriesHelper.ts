@@ -1,4 +1,5 @@
 import isDefined = require("../isDefined");
+import isNull    = require("../isNull");
 import isArray   = require("../isArray");
 import isString  = require("../isString");
 import Exception = require("../exception/Exception");
@@ -19,15 +20,20 @@ class IncludeDirectoriesHelper implements IIncludeDirectoriesHelper {
     }
 
     public setDirectories(directories:string[]):void {
-        if (!isArray(directories)) {
+        if (isNull(directories)) {
+            this._directories.splice(0, this._directories.length);
+        } else if (!isArray(directories)) {
             throw new Exception({message: "directories should be a non empty strings array"});
+        } else {
+            this._directories.splice(0, this._directories.length);
+            directories.forEach((directory:string):void => {
+                if (!isString(directory) || !directory) {
+                    this._directories.splice(0, this._directories.length);
+                    throw new Exception({message: "directories should be a non empty strings array"});
+                }
+                this._directories.push(directory);
+            });
         }
-        directories.forEach((directory:string):void => {
-            if (!isString(directory) || !directory) {
-                throw new Exception({message: "directories should be a non empty strings array"});
-            }
-        });
-        this._directories = directories.slice(0);
     }
 
 }
