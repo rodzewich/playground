@@ -34,7 +34,7 @@ function mkdir(directory:string, callback?:(errors:IException[]) => void):void {
         },
         (next:() => void):void => {
             mkdir(path.dirname(directory), (errors:IException[]):void => {
-                if (error) {
+                if (errors && errors.length) {
                     handler(errors);
                 } else {
                     next();

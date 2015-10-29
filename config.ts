@@ -37,16 +37,16 @@ module config {
     export const DEFAULT_STATIC_MEMORY_GZIP:string                = DEFAULT_PROJECT_MEMORY_SOCKET;
     export const DEFAULT_STATIC_MEMORY_LOCK:string                = DEFAULT_PROJECT_MEMORY_SOCKET;
     export const DEFAULT_STATIC_MEMORY_NAMESPACE:INamespaceHelper = new NamespaceHelper(["static"], DEFAULT_PROJECT_NAMESPACE_SEPARATOR);
-    export const DEFAULT_STATIC_METADATA_MEMORY_NAMESPACE:string  = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["metadata"]);
-    export const DEFAULT_STATIC_BINARY_MEMORY_NAMESPACE:string    = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["binary"]);
-    export const DEFAULT_STATIC_GZIP_MEMORY_NAMESPACE:string      = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["gzip"]);
-    export const DEFAULT_STATIC_LOCK_MEMORY_NAMESPACE:string      = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["lock"]);
+    export const DEFAULT_STATIC_METADATA_MEMORY_NAMESPACE:INamespaceHelper  = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["metadata"]);
+    export const DEFAULT_STATIC_BINARY_MEMORY_NAMESPACE:INamespaceHelper    = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["binary"]);
+    export const DEFAULT_STATIC_GZIP_MEMORY_NAMESPACE:INamespaceHelper      = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["gzip"]);
+    export const DEFAULT_STATIC_LOCK_MEMORY_NAMESPACE:INamespaceHelper      = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["lock"]);
 
     export function getConfig():any {
         if (!isDefined(config)) {
             try {
                 config = <IConfig>require(PROJECT_CONFIG);
-            } catch (error:Error) {
+            } catch (error) {
                 config = null;
             }
         }

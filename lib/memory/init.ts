@@ -45,7 +45,7 @@ function init(options:IOptions, callback:(errors?:IException[]) => void):void {
     function parse(buffer:Buffer):any {
         try {
             return JSON.parse(buffer.toString("utf8"));
-        } catch (error:Error) {
+        } catch (error) {
             return null;
         }
     }

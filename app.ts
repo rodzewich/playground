@@ -6,6 +6,7 @@ import mkdir      = require("./lib/mkdir");
 import config     = require("./config");
 import deferred   = require("./lib/deferred");
 import Exception  = require("./lib/exception/Exception");
+import IException  = require("./lib/exception/IException");
 import memoryInit = require("./lib/memory/init");
 import staticInit = require("./lib/static/init");
 import display    = require("./lib/displayException");
@@ -85,7 +86,7 @@ deferred([
             process.stdout.write("Init memory daemon");
         }
         memoryInit({
-            //debug    : config.DEBUG,
+            debug    : false, //config.DEBUG,
             location : config.getMemorySocket(),
             binary   : config.BINARY_DIRECTORY,
             cwd      : config.PROJECT_DIRECTORY
@@ -112,7 +113,7 @@ deferred([
             process.stdout.write("Init static daemon");
         }
         staticInit({
-            //debug    : config.DEBUG,
+            debug    : false, //config.DEBUG,
             location : config.getStaticSocket(),
             binary   : config.BINARY_DIRECTORY,
             cwd      : config.PROJECT_DIRECTORY
