@@ -20,11 +20,11 @@ class IncludeDirectoriesHelper implements IIncludeDirectoriesHelper {
 
     public setDirectories(directories:string[]):void {
         if (!isArray(directories)) {
-            throw new Exception({message: "bla bla bla"});
+            throw new Exception({message: "directories should be a non empty strings array"});
         }
         directories.forEach((directory:string):void => {
             if (!isString(directory) || !directory) {
-                throw new Exception({message: "bla bla bla"});
+                throw new Exception({message: "directories should be a non empty strings array"});
             }
         });
         this._directories = directories.slice(0);

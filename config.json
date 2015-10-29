@@ -1,4 +1,13 @@
 {
-  "MEMORY_SOCKET_LOCATION":"temp/memory.sock",
-  "STATIC_MEMORY_METADATA_LOCATION":"temp/memory.sock"
+  "public": "public",
+  "logs": {
+    "directory": "logs",
+    "memory": "memory.log",
+    "static": "static.log"
+  },
+  "temporary": {
+    "directory": "temp",
+    "memory": "memory.sock",
+    "static": "static.sock"
+  }
 }
