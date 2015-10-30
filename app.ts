@@ -6,7 +6,7 @@ import mkdir      = require("./lib/mkdir");
 import config     = require("./config");
 import deferred   = require("./lib/deferred");
 import Exception  = require("./lib/exception/Exception");
-import IException  = require("./lib/exception/IException");
+import IException = require("./lib/exception/IException");
 import memoryInit = require("./lib/memory/init");
 import staticInit = require("./lib/static/init");
 import display    = require("./lib/displayException");
@@ -14,7 +14,23 @@ import colors     = require("colors");
 import http       = require("http");
 import url        = require("url");
 import path       = require("path");
+import error404   = require("./errors/404");
+import error500   = require("./errors/500");
 import displayException = require("./lib/displayException");
+import IStaticClient    = require("./lib/static/client/IClient");
+import StaticClient     = require("./lib/static/client/Client");
+import IStaticException = require("./lib/static/exception/IException");
+import IStaticResponse  = require("./lib/static/IResponse");
+
+/*var memoryInstance:IMemory = new Memory({
+
+});*/
+var staticInstance:IStaticClient = new StaticClient({
+    location : config.getStaticSocket(),
+    /*timeout  : 123,
+    debug    : true*/
+});
+
 require("./lib/mapping");
 
 function ok():void {
@@ -91,7 +107,7 @@ deferred([
         memoryInit({
             debug    : false, //config.DEBUG,
             location : config.getMemorySocket(),
-            binary   : config.BINARY_DIRECTORY,
+            binary   : config.SERVER_BINARY,
             cwd      : config.PROJECT_DIRECTORY
         }, (errors?:IException[]):void => {
             if (errors && errors.length) {
@@ -118,7 +134,7 @@ deferred([
         staticInit({
             debug    : false, //config.DEBUG,
             location : config.getStaticSocket(),
-            binary   : config.BINARY_DIRECTORY,
+            binary   : config.SERVER_BINARY,
             cwd      : config.PROJECT_DIRECTORY
         }, (errors?:IException[]):void => {
             if (errors && errors.length) {
@@ -160,21 +176,24 @@ deferred([
 
         var server:http.Server = http.createServer(function (request, response) {
 
-            var options:url.Url = url.parse(request.url, true) || {},
+            var options:url.Url = url.parse(request.url),
                 method:string   = (request.method || "GET").toUpperCase(),
-                query:any       = options.query || {},
-                pathname        = options.pathname || "/",
-                directory,
-                extension,
-                filename;
+                query:string    = <string>options.query || "",
+                pathname:string = options.pathname || "/",
+                directory:string,
+                extension:string,
+                filename:string;
+
+            response.setHeader("Server", [config.getServerName(), config.getServerVersion()].join("/"));
 
             deferred([
+
+                // redirect
                 (next:() => void):void => {
-                    var resolved:string = path.resolve(directory);
-                    if (method === "GET" && directory !== resolved) {
-                        response.writeHead(302, {
-                            Location : resolved
-                        });
+                    var resolved:string = path.resolve(pathname);
+                    if (method === "GET" && pathname !== resolved) {
+                        response.writeHead(301);
+                        response.setHeader("Location", resolved + (query ? "?" + query : query));
                         response.end();
                     } else {
                         directory = path.dirname(resolved);
@@ -183,8 +202,48 @@ deferred([
                         next();
                     }
                 },
-                ():void => {
 
+                (next:() => void):void => {
+                    var headers:any = request.headers || {},
+                        gzipAllowed:boolean = String(headers["accept-encoding"]).split(", ").indexOf("gzip") !== -1;
+                    staticInstance.getContent(pathname, (errors:IStaticException[], result:IStaticResponse):void => {
+                        var modified:number = Date.parse(request.headers["if-modified-since"]),
+                            date:number = result && result.date ? 1000 * result.date : 0;
+                        if (errors && errors.length) {
+                            response.setHeader("Content-Type", "text/html; charset=utf-8");
+                            response.writeHead(500);
+                            response.end(error500({
+                                serverName    : config.getServerName(),
+                                serverVersion : config.getServerVersion()
+                            }, errors));
+                        } else if (modified && modified === date) {
+                            response.writeHead(304);
+                            response.end();
+                        } else if (result && result.zipContent && gzipAllowed) {
+                            response.writeHead(200);
+                            response.setHeader("Content-Type", result.type);
+                            response.setHeader("Last-Modified", new Date(result.date * 1000)).toUTCString();
+                            response.setHeader("Content-Encoding", "gzip");
+                            response.end(result.zipContent);
+                        } else if (result && result.content) {
+                            response.writeHead(200);
+                            response.setHeader("Content-Type", result.type);
+                            response.setHeader("Last-Modified", new Date(result.date * 1000)).toUTCString();
+                            response.end(result.content);
+                        } else {
+                            next();
+                        }
+                    });
+                },
+
+                // 404 page
+                ():void => {
+                    response.writeHead(404);
+                    response.setHeader("Content-Type", "text/html; charset=utf-8");
+                    response.end(error404({
+                        serverName    : config.getServerName(),
+                        serverVersion : config.getServerVersion()
+                    }));
                 }
             ]);
 

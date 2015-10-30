@@ -1,21 +1,24 @@
 /// <reference path="./types/node/node.d.ts" />
 
 import path             = require("path");
+import isNumber         = require("./lib/isNumber");
 import isString         = require("./lib/isString");
 import isDefined        = require("./lib/isDefined");
 import Separator        = require("./lib/helpers/Separator");
 import NamespaceHelper  = require("./lib/helpers/NamespaceHelper");
 import INamespaceHelper = require("./lib/helpers/INamespaceHelper");
-import getobject        = require('getobject');
+import getobject        = require("getobject");
 
 module config {
     var config:any,
         cache:any = {};
 
-    export const DEBUG:boolean = true;
-    export const SYSTEM_DIRECTORY:string = __dirname;
-    export const BINARY_DIRECTORY:string = path.join(SYSTEM_DIRECTORY, "bin");
-    export const SYSTEM_ENVIRONMENT:string = "/usr/bin/env";
+    export const DEBUG:boolean             = true;
+    export const SERVER_DIRECTORY:string   = __dirname;
+    export const SERVER_BINARY:string      = path.join(SERVER_DIRECTORY, "bin");
+    export const SERVER_ENVIRONMENT:string = "/usr/bin/env";
+    export const SERVER_NAME:string        = "test";
+    export const SERVER_VERSION:string     = "0.0.1";
 
     export const PROJECT_DIRECTORY:string = process.cwd();
     export const PROJECT_CONFIG:string    = path.join(PROJECT_DIRECTORY, "config.json");
@@ -55,6 +58,14 @@ module config {
         return config;
     }
 
+    export function getServerName():string {
+        return SERVER_NAME;
+    }
+
+    export function getServerVersion():string {
+        return SERVER_VERSION;
+    }
+
     export function getHostname():string {
         var configValue:string;
         if (!isDefined(cache.hostname)) {
@@ -68,7 +79,15 @@ module config {
     }
 
     export function getPort():number {
-        return 3001;
+        var configValue:number;
+        if (!isDefined(cache.port)) {
+            configValue = <number>getobject.get(getConfig(), "port");
+            cache.port = DEFAULT_PROJECT_PORT;
+            if (configValue && isNumber(configValue)) {
+                cache.port = configValue;
+            }
+        }
+        return cache.port;
     }
 
     export function getTemporaryDirectory():string {
@@ -148,11 +167,11 @@ module config {
     }
 
     export function getMemoryLog():string {
-
+        return null;
     }
 
     export function getStaticLog():string {
-
+        return null;
     }
 
     export function getPublicDirectory():string {
@@ -178,7 +197,7 @@ module config {
         var environment:string;
         if (!isDefined(cache.ENVIRONMENT)) {
             environment = getobject.get(getConfig(), "ENVIRONMENT");
-            cache.ENVIRONMENT = SYSTEM_ENVIRONMENT;
+            cache.ENVIRONMENT = SERVER_ENVIRONMENT;
             if (isDefined(environment)) {
                 cache.ENVIRONMENT = String(environment);
             }

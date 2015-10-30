@@ -1,4 +1,6 @@
 {
+  "hostname": "localhost",
+  "port": 3001,
   "public": "public",
   "logs": {
     "directory": "logs",

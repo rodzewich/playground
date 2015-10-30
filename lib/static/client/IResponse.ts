@@ -3,10 +3,11 @@
 interface IResponse {
     filename:string;
     content:Buffer;
+    type:string;
     length:number;
     zipContent:Buffer;
     zipLength:number;
-    mtime:number;
+    date:number;
 }
 
 export = IResponse;
