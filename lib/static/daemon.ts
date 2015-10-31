@@ -157,7 +157,7 @@ function getLocation():string {
     if (!path.isAbsolute(location)) {
         location = path.join(process.cwd(), location);
     }
-    return path.resolve(location);
+    return path.normalize(location);
 }
 
 function isDebug():boolean {
@@ -173,7 +173,7 @@ function getMemory():string {
         if (!path.isAbsolute(cache.memory)) {
             cache.memory = path.join(process.cwd(), cache.memory);
         }
-        cache.memory = path.resolve(cache.memory);
+        cache.memory = path.normalize(cache.memory);
     }
     return <string>cache.memory;
 }
@@ -187,7 +187,7 @@ function getMetadataMemory():string {
         if (!path.isAbsolute(cache.metadataMemory)) {
             cache.metadataMemory = path.join(process.cwd(), cache.metadataMemory);
         }
-        cache.metadataMemory = path.resolve(cache.metadataMemory);
+        cache.metadataMemory = path.normalize(cache.metadataMemory);
     }
     return <string>cache.metadataMemory;
 }
@@ -201,7 +201,7 @@ function getBinaryMemory():string {
         if (!path.isAbsolute(cache.binaryMemory)) {
             cache.binaryMemory = path.join(process.cwd(), cache.binaryMemory);
         }
-        cache.binaryMemory = path.resolve(cache.binaryMemory);
+        cache.binaryMemory = path.normalize(cache.binaryMemory);
     }
     return <string>cache.metadataMemory;
 }
@@ -215,7 +215,7 @@ function getGzipMemory():string {
         if (!path.isAbsolute(cache.gzipMemory)) {
             cache.gzipMemory = path.join(process.cwd(), cache.gzipMemory);
         }
-        cache.gzipMemory = path.resolve(cache.gzipMemory);
+        cache.gzipMemory = path.normalize(cache.gzipMemory);
     }
     return <string>cache.gzipMemory;
 }
@@ -229,7 +229,7 @@ function getLockMemory():string {
         if (!path.isAbsolute(cache.lockMemory)) {
             cache.lockMemory = path.join(process.cwd(), cache.lockMemory);
         }
-        cache.lockMemory = path.resolve(cache.lockMemory);
+        cache.lockMemory = path.normalize(cache.lockMemory);
     }
     return <string>cache.lockMemory;
 }

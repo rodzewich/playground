@@ -101,7 +101,7 @@ module config {
             if (!path.isAbsolute(cache.temporaryDirectory)) {
                 cache.temporaryDirectory = path.join(PROJECT_DIRECTORY, cache.temporaryDirectory);
             }
-            cache.temporaryDirectory = path.resolve(cache.temporaryDirectory);
+            cache.temporaryDirectory = path.normalize(cache.temporaryDirectory);
             if (path.relative(PROJECT_DIRECTORY, cache.temporaryDirectory).slice(0, 2) === "..") {
                 cache.temporaryDirectory = DEFAULT_PROJECT_TEMPORARY_DIRECTORY;
             }
@@ -120,7 +120,7 @@ module config {
             if (!path.isAbsolute(cache.memorySocket)) {
                 cache.memorySocket = path.join(getTemporaryDirectory(), cache.memorySocket);
             }
-            cache.memorySocket = path.resolve(cache.memorySocket);
+            cache.memorySocket = path.normalize(cache.memorySocket);
             if (path.relative(getTemporaryDirectory(), cache.memorySocket).slice(0, 2) === "..") {
                 cache.memorySocket = path.join(getTemporaryDirectory(), DEFAULT_PROJECT_MEMORY_SOCKET);
             }
@@ -139,7 +139,7 @@ module config {
             if (!path.isAbsolute(cache.staticSocket)) {
                 cache.staticSocket = path.join(getTemporaryDirectory(), cache.staticSocket);
             }
-            cache.staticSocket = path.resolve(cache.staticSocket);
+            cache.staticSocket = path.normalize(cache.staticSocket);
             if (path.relative(getTemporaryDirectory(), cache.staticSocket).slice(0, 2) === "..") {
                 cache.staticSocket = path.join(getTemporaryDirectory(), DEFAULT_PROJECT_MEMORY_SOCKET);
             }
@@ -158,7 +158,7 @@ module config {
             if (!path.isAbsolute(cache.logsDirectory)) {
                 cache.logsDirectory = path.join(PROJECT_DIRECTORY, cache.logsDirectory);
             }
-            cache.logsDirectory = path.resolve(cache.logsDirectory);
+            cache.logsDirectory = path.normalize(cache.logsDirectory);
             if (path.relative(PROJECT_DIRECTORY, cache.logsDirectory).slice(0, 2) === "..") {
                 cache.logsDirectory = DEFAULT_PROJECT_LOGS_DIRECTORY;
             }
@@ -185,7 +185,7 @@ module config {
             if (!path.isAbsolute(cache.publicDirectory)) {
                 cache.publicDirectory = path.join(PROJECT_DIRECTORY, cache.publicDirectory);
             }
-            cache.publicDirectory = path.resolve(cache.publicDirectory);
+            cache.publicDirectory = path.normalize(cache.publicDirectory);
             if (path.relative(PROJECT_DIRECTORY, cache.publicDirectory).slice(0, 2) === "..") {
                 cache.publicDirectory = DEFAULT_PROJECT_PUBLIC_DIRECTORY;
             }

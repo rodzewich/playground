@@ -1,7 +1,9 @@
+/// <reference path="./types/node/node.d.ts" />
 /// <reference path="./types/glob/glob.d.ts" />
 /// <reference path="./types/optimist/optimist.d.ts" />
 
 import glob       = require("glob");
+import path       = require("path");
 import optimist   = require("optimist");
 import isTrue     = require("./lib/isTrue");
 import isFunction = require("./lib/isFunction");
@@ -25,7 +27,7 @@ var test:Function;
 
 if (argv.test) {
     test = require(argv.test);
-    console.log("Test:", argv.test);
+    console.log("Test:", path.join(path.dirname(argv.test), path.basename(argv.test, path.extname(argv.test))));
     if (!isFunction(test)) {
         displayException(new Exception({message: "Test should be export run function"}))
     } else {
@@ -36,7 +38,7 @@ if (argv.test) {
         var actions:((next:() => void) => void)[] = [];
         files.forEach((file:string):void => {
             actions.push((next:() => void):void => {
-                console.log("Test:", file);
+                console.log("Test:", path.join(path.dirname(file), path.basename(file, path.extname(file))));
                 require(file)(isTrue(argv.debug), ():void => {
                     next();
                 });

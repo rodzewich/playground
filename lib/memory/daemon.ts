@@ -99,7 +99,7 @@ function getLocation():string {
     if (!path.isAbsolute(location)) {
         location = path.join(process.cwd(), location);
     }
-    return path.resolve(location);
+    return path.normalize(location);
 }
 
 function isDebug():boolean {

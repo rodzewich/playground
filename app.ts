@@ -190,7 +190,7 @@ deferred([
 
                 // redirect
                 (next:() => void):void => {
-                    var resolved:string = path.resolve(pathname);
+                    var resolved:string = path.normalize(pathname);
                     if (method === "GET" && pathname !== resolved) {
                         response.writeHead(301);
                         response.setHeader("Location", resolved + (query ? "?" + query : query));

@@ -29,7 +29,7 @@ class ResourceLocation implements IResourceLocation {
         } else if (!path.isAbsolute(location)) {
             throw new Exception({message: "location should be a absolute path"});
         } else {
-            this._location = path.resolve(location);
+            this._location = path.normalize(location);
         }
     }
 
