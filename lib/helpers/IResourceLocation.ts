@@ -1,6 +1,6 @@
 interface IResourceLocation {
     getLocation():string;
-    setLocation(value:string):void
+    setLocation(location:string):void
 }
 
 export = IResourceLocation;

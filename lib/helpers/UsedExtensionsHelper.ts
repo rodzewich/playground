@@ -7,7 +7,7 @@ import IUsedExtensionsHelper = require("./IUsedExtensionsHelper");
 
 class UsedExtensionsHelper implements IUsedExtensionsHelper {
 
-    private _extensions:string[] = null;
+    protected _extensions:string[] = [];
 
     constructor(extensions?:string[]) {
         if (isDefined(extensions)) {
@@ -15,24 +15,25 @@ class UsedExtensionsHelper implements IUsedExtensionsHelper {
         }
     }
 
+    public clear():void {
+        this._extensions.splice(0, this._extensions.length);
+    }
+
     public getExtensions():string[] {
-        if (isNull(this._extensions)) {
-            return null;
-        }
         return this._extensions.slice(0);
     }
 
     public setExtensions(extensions:string[]):void {
-        if (isNull(extensions)) {
-            this._extensions = null;
-        } else if (isArray(extensions)) {
-            this._extensions = extensions.map((extension:string):string => {
+        this.clear();
+        if (isArray(extensions)) {
+            extensions.forEach((extension:string):void => {
                 if (!isString(extension) || !/^[a-z][a-z0-9]*$/i.test(extension)) {
+                    this.clear();
                     throw new Exception({message: "extensions should be a non empty strings array"});
                 }
-                return extension.toLowerCase();
+                this._extensions.push(extension.toLowerCase());
             });
-        } else if (isDefined(extensions)) {
+        } else if (!isNull(extensions)) {
             throw new Exception({message: "extensions should be a non empty strings array"});
         }
     }

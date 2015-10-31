@@ -39,37 +39,46 @@ var cache:any = {},
     argv:any = optimist
         .usage("Usage: static [options] [location]")
 
-        .alias("m", "memory").describe("m", "Memory socket location")
+        .alias("m", "memory")
+        .describe("m", "Memory socket location")
         .describe("metadataMemory", "Memory socket location for metadata")
         .describe("binaryMemory", "Memory socket location for binary data")
         .describe("gzipMemory", "Memory socket location for gzip data")
         .describe("lockMemory", "Memory socket location for locks\n")
 
-        .alias("n", "namespace").describe("n", "Memory namespace")
+        .alias("n", "namespace")
+        .describe("n", "Memory namespace")
         .describe("metadataNamespace", "Namespace for metadata cache")
         .describe("binaryNamespace", "Namespace for binary data")
         .describe("gzipNamespace", "Namespace for gzip data")
         .describe("lockNamespace", "Namespace for locks\n")
 
-        .alias("t", "timeout").describe("t", "Memory timeout")
+        .alias("t", "timeout")
+        .describe("t", "Memory timeout")
         .describe("metadataTimeout", "Timeout for metadata cache")
         .describe("binaryTimeout", "Timeout for binary data")
         .describe("gzipTimeout", "Timeout for gzip data")
         .describe("lockTimeout", "Timeout for locks\n")
 
-        .alias("s", "sourceDirectory").describe("s", "Source directory")
-        .alias("i", "includeDirectories").describe("i", "Include directories\n")
+        .alias("s", "sourceDirectory")
+        .describe("s", "Source directory")
+        .alias("i", "includeDirectories")
+        .describe("i", "Include directories\n")
 
-        .boolean("useIndex").describe("useIndex", "index")
+        .boolean("useIndex")
+        .describe("useIndex", "index")
         .describe("indexExtensions", "extensions\n")
 
         .boolean("useGzip").describe("useGzip", "index")
         .describe("gzipExtensions", "sdf")
         .describe("gzipCompressionLevel", "sdf\n")
 
-        .boolean("j").alias("j", "json").describe("j", "Response as json")
-        .boolean("d").alias("d", "debug").describe("d", "Debug mod")
-        .boolean("h").alias("h", "help").describe("h", "Show this help")
+        .boolean("j").alias("j", "json")
+        .describe("j", "Response as json")
+        .boolean("d").alias("d", "debug")
+        .describe("d", "Debug mod")
+        .boolean("h").alias("h", "help")
+        .describe("h", "Show this help")
 
         .argv;
 
