@@ -17,11 +17,6 @@ interface IDaemon extends IDaemonBase {
     gzipMinLength:number;
     gzipExtensions:string[];
     gzipCompressionLevel:number;
-    memory:IMemory;
-    metadataMemory:IMemory;
-    binaryMemory:IMemory;
-    gzipMemory:IMemory;
-    lockMemory:IMemory;
     memoryLocation:string;
     metadataLocation:string;
     binaryLocation:string;
@@ -80,11 +75,6 @@ interface IDaemon extends IDaemonBase {
     setGzipExtensions(extensions:string[]):void;
     getGzipCompressionLevel():number;
     setGzipCompressionLevel(level:number):void;
-    getMemory():IMemory;
-    getMetadataMemory():IMemory;
-    getBinaryMemory():IMemory;
-    getGzipMemory():IMemory;
-    getLockMemory():IMemory;
     getContent(filename:string, callback?:(errors:IException[], result:IResponse) => void):void;
 }
 
