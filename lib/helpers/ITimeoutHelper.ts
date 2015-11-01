@@ -1,6 +1,6 @@
 interface ITimeoutHelper {
-    getValue():number;
-    setValue(value:number):void;
+    getTimeout():number;
+    setTimeout(timeout:number):void;
 }
 
 export = ITimeoutHelper;

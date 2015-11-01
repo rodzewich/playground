@@ -154,11 +154,11 @@ class Client implements IClient {
     }
 
     public getTimeout():number {
-        return this.getTimeoutHelper().getValue();
+        return this.getTimeoutHelper().getTimeout();
     }
 
     public setTimeout(timeout:number):void {
-        this.getTimeoutHelper().setValue(timeout);
+        this.getTimeoutHelper().setTimeout(timeout);
     }
 
     public get connected():boolean {
@@ -260,7 +260,7 @@ class Client implements IClient {
                     if (timeout !== -1) {
                         temp = this.createTimeoutHelper();
                         if (timeout) {
-                            temp.setValue(timeout);
+                            temp.setTimeout(timeout);
                         }
                         timer = setTimeout(():void => {
                             handler([new Exception({
@@ -269,7 +269,7 @@ class Client implements IClient {
                                     requestId : id
                                 }
                             })], null);
-                        }, timeout ? temp.getValue() : this.getTimeout());
+                        }, timeout ? temp.getTimeout() : this.getTimeout());
                         timer.ref();
                     }
                 } else {

@@ -31,6 +31,16 @@ import GzipExtensionsHelper        = require("../helpers/GzipExtensionsHelper");
 import IGzipExtensionsHelper       = require("../helpers/IGzipExtensionsHelper");
 import GzipMinLengthHelper         = require("../helpers/GzipMinLengthHelper");
 import IGzipMinLengthHelper        = require("../helpers/IGzipMinLengthHelper");
+import IMemoryTimeoutHelper        = require("../helpers/IMemoryTimeoutHelper");
+import MemoryTimeoutHelper         = require("../helpers/MemoryTimeoutHelper");
+import IMetadataTimeoutHelper      = require("../helpers/IMetadataTimeoutHelper");
+import MetadataTimeoutHelper       = require("../helpers/MetadataTimeoutHelper");
+import IBinaryTimeoutHelper        = require("../helpers/IBinaryTimeoutHelper");
+import BinaryTimeoutHelper         = require("../helpers/BinaryTimeoutHelper");
+import IGzipTimeoutHelper          = require("../helpers/IGzipTimeoutHelper");
+import GzipTimeoutHelper           = require("../helpers/GzipTimeoutHelper");
+import ILockTimeoutHelper          = require("../helpers/ILockTimeoutHelper");
+import LockTimeoutHelper           = require("../helpers/LockTimeoutHelper");
 
 var logger:log4js.Logger = log4js.getLogger("static");
 
@@ -386,13 +396,25 @@ class Daemon extends DaemonBase implements IDaemon {
         this.setMemoryTimeout(timeout);
     }
 
+    private _memoryTimeoutHelper:IMemoryTimeoutHelper;
+
+    protected createMemoryTimeoutHelper():IMemoryTimeoutHelper {
+        return new MemoryTimeoutHelper();
+    }
+
+    protected getMemoryTimeoutHelper():IMemoryTimeoutHelper {
+        if (!this._memoryTimeoutHelper) {
+            this._memoryTimeoutHelper = this.createMemoryTimeoutHelper();
+        }
+        return this._memoryTimeoutHelper;
+    }
+
     public getMemoryTimeout():number {
-        // todo: implement it
-        return null;
+        return this.getMemoryTimeoutHelper().getTimeout();
     }
 
     public setMemoryTimeout(timeout:number):void {
-        // todo: implement it
+        this.getMemoryTimeoutHelper().setTimeout(timeout);
     }
 
     public get metadataTimeout():number {
@@ -403,13 +425,25 @@ class Daemon extends DaemonBase implements IDaemon {
         this.setMetadataTimeout(timeout);
     }
 
+    private _metadataTimeoutHelper:IMetadataTimeoutHelper;
+
+    protected createMetadataTimeoutHelper():IMetadataTimeoutHelper {
+        return new MetadataTimeoutHelper();
+    }
+
+    protected getMetadataTimeoutHelper():IMetadataTimeoutHelper {
+        if (!this._metadataTimeoutHelper) {
+            this._metadataTimeoutHelper = this.createMetadataTimeoutHelper();
+        }
+        return this._metadataTimeoutHelper;
+    }
+
     public getMetadataTimeout():number {
-        // todo: implement it
-        return null;
+        return this.getMetadataTimeoutHelper().getTimeout();
     }
 
     public setMetadataTimeout(timeout:number):void {
-        // todo: implement it
+        this.getMetadataTimeoutHelper().setTimeout(timeout);
     }
 
     public get memoryNamespace():string {
@@ -424,13 +458,25 @@ class Daemon extends DaemonBase implements IDaemon {
         this.setBinaryTimeout(timeout);
     }
 
+    private _binaryTimeoutHelper:IBinaryTimeoutHelper;
+
+    protected createBinaryTimeoutHelper():IBinaryTimeoutHelper {
+        return new BinaryTimeoutHelper();
+    }
+
+    protected getBinaryTimeoutHelper():IBinaryTimeoutHelper {
+        if (!this._binaryTimeoutHelper) {
+            this._binaryTimeoutHelper = this.createBinaryTimeoutHelper();
+        }
+        return this._binaryTimeoutHelper;
+    }
+
     public getBinaryTimeout():number {
-        // todo: implement it
-        return null;
+        return this.getBinaryTimeoutHelper().getTimeout();
     }
 
     public setBinaryTimeout(timeout:number) {
-        // todo: implement it
+        this.getBinaryTimeoutHelper().setTimeout(timeout);
     }
 
     public get gzipTimeout():number {
@@ -441,13 +487,25 @@ class Daemon extends DaemonBase implements IDaemon {
         this.setGzipTimeout(timeout);
     }
 
+    private _gzipTimeoutHelper:IGzipTimeoutHelper;
+
+    protected createGzipTimeoutHelper():IGzipTimeoutHelper {
+        return new GzipTimeoutHelper();
+    }
+
+    protected getGzipTimeoutHelper():IGzipTimeoutHelper {
+        if (!this._gzipTimeoutHelper) {
+            this._gzipTimeoutHelper = this.createGzipTimeoutHelper();
+        }
+        return this._gzipTimeoutHelper;
+    }
+
     public getGzipTimeout():number {
-        // todo: implement it
-        return null;
+        return this.getGzipTimeoutHelper().getTimeout();
     }
 
     public setGzipTimeout(timeout:number):void {
-        // todo: implement it
+        this.getGzipTimeoutHelper().setTimeout(timeout);
     }
 
     public set memoryNamespace(namespace:string) {
@@ -462,13 +520,25 @@ class Daemon extends DaemonBase implements IDaemon {
         this.setLockTimeout(timeout);
     }
 
+    private _lockTimeoutHelper:ILockTimeoutHelper;
+
+    protected createLockTimeoutHelper():ILockTimeoutHelper {
+        return new LockTimeoutHelper();
+    }
+
+    protected getLockTimeoutHelper():ILockTimeoutHelper {
+        if (!this._lockTimeoutHelper) {
+            this._lockTimeoutHelper = this.createLockTimeoutHelper();
+        }
+        return this._lockTimeoutHelper;
+    }
+
     public getLockTimeout():number {
-        // todo: implement it
-        return null;
+        return this.getLockTimeoutHelper().getTimeout();
     }
 
     public setLockTimeout(timeout:number):void {
-        // todo: implement it
+        this.getLockTimeoutHelper().setTimeout(timeout);
     }
 
     public setMemoryNamespace(namespace:string):void {

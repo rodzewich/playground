@@ -3,26 +3,26 @@ import ITimeoutHelper = require("./ITimeoutHelper");
 
 class TimeoutHelper implements ITimeoutHelper {
 
-    private _value:number;
+    private _value:number = this.DEFAULT;
 
-    protected MINIMUM:number = 50;
-
-    protected DEFAULT:number = 300;
-
-    constructor(value?:number) {
-        this._value = this.DEFAULT;
-        if (isDefined(value)) {
-            this.setValue(value);
+    constructor(timeout?:number) {
+        this._value = TimeoutHelper.DEFAULT;
+        if (isDefined(timeout)) {
+            this.setTimeout(timeout);
         }
     }
 
-    public getValue():number {
+    public getTimeout():number {
         return this._value;
     }
 
-    public setValue(value:number):void {
-        this._value = Math.max(this.MINIMUM, parseInt(String(value), 10) || 0);
+    public setTimeout(timeout:number):void {
+        this._value = Math.max(TimeoutHelper.MINIMUM, parseInt(String(timeout), 10) || 0);
     }
+
+    public static MINIMUM:number = 50;
+
+    public static DEFAULT:number = 300;
 
 }
 

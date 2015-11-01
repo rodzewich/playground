@@ -14,10 +14,16 @@ import displayException = require("./lib/displayException");
 require("./lib/mapping");
 
 var argv:any = optimist
-    .usage("Usage: tests [--debug] --test ./path/to/test.js")
+    .usage("Usage: tests [--debug] [--test ./path/to/test]")
+    .alias("t", "test").describe("t", "Path to test\n")
     .boolean("l").alias("d", "debug").describe("d", "Debug sign")
-    .alias("t", "test").describe("t", "Path to test")
+    .boolean("h").alias("h", "help").describe("h", "Show this help")
     .argv;
+
+if (argv.help) {
+    optimist.showHelp();
+    process.exit(0);
+}
 
 process.addListener('uncaughtException', function (error:Error) {
     displayException(Exception.convertFromError(error));

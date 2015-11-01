@@ -195,13 +195,52 @@ function run(debug:boolean, callback:() => void):void {
                 binaryLocation       : null,
                 gzipLocation         : null,
                 lockLocation         : null,
-                memoryTimeout        : 50,
-                metadataTimeout      : 50,
-                binaryTimeout        : 50,
-                gzipTimeout          : 50,
-                lockTimeout          : 50
+                memoryTimeout        : 300,
+                metadataTimeout      : 300,
+                binaryTimeout        : 300,
+                gzipTimeout          : 300,
+                lockTimeout          : 300
             });
 
+            checkDaemonConstructor({
+                debug                : true,
+                location             : "/test/path.sock",
+                memoryNamespace      : "other",
+                includeDirectories   : ["/index/dir1", "/index/dir2"],
+                useIndex             : true,
+                indexExtensions      : ["xhtm", "xhtml"],
+                useGzip              : true,
+                gzipMinLength        : 40,
+                gzipExtensions       : ["jpeg", "jpg", "png"],
+                gzipCompressionLevel : 6,
+                memoryLocation       : "/path/memory.sock",
+                memoryTimeout        : 400,
+            }, {
+                debug                : true,
+                location             : "/test/path.sock",
+                memoryNamespace      : "other",
+                metadataNamespace    : "other.metadata",
+                binaryNamespace      : "other.binary",
+                gzipNamespace        : "other.gzip",
+                lockNamespace        : "other.lock",
+                includeDirectories   : ["/index/dir1", "/index/dir2"],
+                useIndex             : true,
+                indexExtensions      : ["xhtm", "xhtml"],
+                useGzip              : true,
+                gzipMinLength        : 40,
+                gzipExtensions       : ["jpeg", "jpg", "png"],
+                gzipCompressionLevel : 6,
+                memoryLocation       : "/path/memory.sock",
+                metadataLocation     : "/path/memory.sock",
+                binaryLocation       : "/path/memory.sock",
+                gzipLocation         : "/path/memory.sock",
+                lockLocation         : "/path/memory.sock",
+                memoryTimeout        : 400,
+                metadataTimeout      : 400,
+                binaryTimeout        : 400,
+                gzipTimeout          : 400,
+                lockTimeout          : 400
+            });
 
         },
 
