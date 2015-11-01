@@ -82,6 +82,16 @@ class Daemon extends DaemonBase implements IDaemon {
 
     private _lockMemory:IMemory;
 
+    private _memoryTimeoutHelper:IMemoryTimeoutHelper;
+
+    private _metadataTimeoutHelper:IMetadataTimeoutHelper;
+
+    private _binaryTimeoutHelper:IBinaryTimeoutHelper;
+
+    private _gzipTimeoutHelper:IGzipTimeoutHelper;
+
+    private _lockTimeoutHelper:ILockTimeoutHelper;
+
     protected createGzipMinLengthHelper():IGzipMinLengthHelper {
         return new GzipMinLengthHelper();
     }
@@ -396,8 +406,6 @@ class Daemon extends DaemonBase implements IDaemon {
         this.setMemoryTimeout(timeout);
     }
 
-    private _memoryTimeoutHelper:IMemoryTimeoutHelper;
-
     protected createMemoryTimeoutHelper():IMemoryTimeoutHelper {
         return new MemoryTimeoutHelper();
     }
@@ -424,8 +432,6 @@ class Daemon extends DaemonBase implements IDaemon {
     public set metadataTimeout(timeout:number) {
         this.setMetadataTimeout(timeout);
     }
-
-    private _metadataTimeoutHelper:IMetadataTimeoutHelper;
 
     protected createMetadataTimeoutHelper():IMetadataTimeoutHelper {
         return new MetadataTimeoutHelper();
@@ -458,8 +464,6 @@ class Daemon extends DaemonBase implements IDaemon {
         this.setBinaryTimeout(timeout);
     }
 
-    private _binaryTimeoutHelper:IBinaryTimeoutHelper;
-
     protected createBinaryTimeoutHelper():IBinaryTimeoutHelper {
         return new BinaryTimeoutHelper();
     }
@@ -486,8 +490,6 @@ class Daemon extends DaemonBase implements IDaemon {
     public set gzipTimeout(timeout:number) {
         this.setGzipTimeout(timeout);
     }
-
-    private _gzipTimeoutHelper:IGzipTimeoutHelper;
 
     protected createGzipTimeoutHelper():IGzipTimeoutHelper {
         return new GzipTimeoutHelper();
@@ -519,8 +521,6 @@ class Daemon extends DaemonBase implements IDaemon {
     public set lockTimeout(timeout:number) {
         this.setLockTimeout(timeout);
     }
-
-    private _lockTimeoutHelper:ILockTimeoutHelper;
 
     protected createLockTimeoutHelper():ILockTimeoutHelper {
         return new LockTimeoutHelper();
