@@ -36,16 +36,6 @@ var logger:log4js.Logger = log4js.getLogger("static");
 
 class Daemon extends DaemonBase implements IDaemon {
 
-    private _namespaceHelper:INamespaceHelper;
-
-    private _metadataNamespaceHelper:INamespaceHelper;
-
-    private _binaryNamespaceHelper:INamespaceHelper;
-
-    private _gzipNamespaceHelper:INamespaceHelper;
-
-    private _lockNamespaceHelper:INamespaceHelper;
-
     private _includeDirectoriesHelper:IIncludeDirectoriesHelper;
 
     private _sourcesDirectoryHelper:ISourcesDirectoryHelper;
@@ -142,61 +132,6 @@ class Daemon extends DaemonBase implements IDaemon {
         return this._useIndexHelper;
     }
 
-    protected createNamespaceHelper():INamespaceHelper {
-        return new NamespaceHelper(["static"]);
-    }
-
-    protected getNamespaceHelper():INamespaceHelper {
-        if (!this._namespaceHelper) {
-            this._namespaceHelper = this.createNamespaceHelper();
-        }
-        return this._namespaceHelper;
-    }
-
-    protected createMetadataNamespaceHelper():INamespaceHelper {
-        return new NamespaceHelper(["static", "metadata"]);
-    }
-
-    protected getMetadataNamespaceHelper():INamespaceHelper {
-        if (!this._metadataNamespaceHelper) {
-            this._metadataNamespaceHelper = this.createMetadataNamespaceHelper();
-        }
-        return this._metadataNamespaceHelper;
-    }
-
-    protected createBinaryNamespaceHelper():INamespaceHelper {
-        return new NamespaceHelper(["static", "binary"]);
-    }
-
-    protected getBinaryNamespaceHelper():INamespaceHelper {
-        if (!this._binaryNamespaceHelper) {
-            this._binaryNamespaceHelper = this.createBinaryNamespaceHelper();
-        }
-        return this._binaryNamespaceHelper;
-    }
-
-    protected createGzipNamespaceHelper():INamespaceHelper {
-        return new NamespaceHelper(["static", "gzip"]);
-    }
-
-    protected getGzipNamespaceHelper():INamespaceHelper {
-        if (!this._gzipNamespaceHelper) {
-            this._gzipNamespaceHelper = this.createGzipNamespaceHelper();
-        }
-        return this._gzipNamespaceHelper;
-    }
-
-    protected createLockNamespaceHelper():INamespaceHelper {
-        return new NamespaceHelper(["static", "lock"]);
-    }
-
-    protected getLockNamespaceHelper():INamespaceHelper {
-        if (!this._lockNamespaceHelper) {
-            this._lockNamespaceHelper = this.createLockNamespaceHelper();
-        }
-        return this._lockNamespaceHelper;
-    }
-
     protected createIncludeDirectoriesHelper():IIncludeDirectoriesHelper {
         return new IncludeDirectoriesHelper();
     }
@@ -275,6 +210,9 @@ class Daemon extends DaemonBase implements IDaemon {
         if (options && isDefined(options.lockLocation)) {
             this.setLockLocation(options.lockLocation);
         }
+        if (options && isDefined(options.memoryTimeout)) {
+            this.setMemoryTimeout(options.memoryTimeout);
+        }
         if (options && isDefined(options.metadataTimeout)) {
             this.setMetadataTimeout(options.metadataTimeout);
         }
@@ -286,9 +224,6 @@ class Daemon extends DaemonBase implements IDaemon {
         }
         if (options && isDefined(options.lockTimeout)) {
             this.setLockTimeout(options.lockTimeout);
-        }
-        if (options && isDefined(options.memoryTimeout)) {
-            this.setMemoryTimeout(options.memoryTimeout);
         }
     }
 
@@ -369,7 +304,20 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public setMemoryLocation(location:string):void {
+        var oldLocation:string = this.getMemory().getLocation()
         this.getMemory().setLocation(location);
+        if (oldLocation === this.getMetadataMemory().getLocation()) {
+            this.getMetadataMemory().setLocation(location);
+        }
+        if (oldLocation === this.getBinaryMemory().getLocation()) {
+            this.getBinaryMemory().setLocation(location);
+        }
+        if (oldLocation === this.getGzipMemory().getLocation()) {
+            this.getGzipMemory().setLocation(location);
+        }
+        if (oldLocation === this.getLockMemory().getLocation()) {
+            this.getLockMemory().setLocation(location);
+        }
     }
 
     public get memoryTimeout():number {
@@ -385,7 +333,20 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public setMemoryTimeout(timeout:number):void {
+        var oldTimeout:number = this.getMemory().getTimeout();
         this.getMemory().setTimeout(timeout);
+        if (oldTimeout === this.getMetadataMemory().getTimeout()) {
+            this.getMetadataMemory().setTimeout(timeout);
+        }
+        if (oldTimeout === this.getBinaryMemory().getTimeout()) {
+            this.getBinaryMemory().setTimeout(timeout);
+        }
+        if (oldTimeout === this.getGzipMemory().getTimeout()) {
+            this.getGzipMemory().setTimeout(timeout);
+        }
+        if (oldTimeout === this.getLockMemory().getTimeout()) {
+            this.getLockMemory().setTimeout(timeout);
+        }
     }
 
     public get metadataTimeout():number {
@@ -461,15 +422,20 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public setMemoryNamespace(namespace:string):void {
-        this.getNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).getNamespace());
-        this.getMetadataNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["metadata"]).getNamespace());
-        this.getBinaryNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["binary"]).getNamespace());
-        this.getGzipNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["gzip"]).getNamespace());
-        this.getLockNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).addToNamespace(["lock"]).getNamespace());
+        // todo: re-implement it
+        var oldNamespace:string = this.getMemory().getNamespace();
+        this.getMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).getNamespace());
+        if (true) {
+
+        }
+        this.getMetadataMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["metadata"]).getValue());
+        this.getBinaryMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["binary"]).getValue());
+        this.getGzipMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["gzip"]).getValue());
+        this.getLockMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["lock"]).getValue());
     }
 
     public getMemoryNamespace():string {
-        return this.getNamespaceHelper().getValue();
+        return this.getMemory().getNamespace();
     }
 
     public get metadataNamespace():string {
@@ -481,12 +447,11 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public setMetadataNamespace(namespace:string):void {
-        // todo: implement it
-        return null;
+        this.getMetadataMemory().setNamespace(namespace);
     }
 
     public getMetadataNamespace():string {
-        return this.getMetadataNamespaceHelper().getValue();
+        return this.getMetadataMemory().getNamespace();
     }
 
     public get binaryNamespace():string {
@@ -498,12 +463,11 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public setBinaryNamespace(namespace:string):void {
-        // todo: implement it
-        return null;
+        this.getBinaryMemory().setNamespace(namespace);
     }
 
     public getBinaryNamespace():string {
-        return this.getBinaryNamespaceHelper().getValue();
+        return this.getBinaryMemory().getNamespace();
     }
 
     public get gzipNamespace():string {
@@ -515,12 +479,11 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public setGzipNamespace(namespace:string):void {
-        // todo: implement it
-        return null;
+        this.getGzipMemory().setNamespace(namespace);
     }
 
     public getGzipNamespace():string {
-        return this.getGzipNamespaceHelper().getValue();
+        return this.getGzipMemory().getNamespace();
     }
 
     public get lockNamespace():string {
@@ -532,12 +495,11 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public setLockNamespace(namespace:string):void {
-        // todo: implement it
-        return null;
+        this.getLockMemory().setNamespace(namespace);
     }
 
     public getLockNamespace():string {
-        return this.getLockNamespaceHelper().getValue();
+        return this.getLockMemory().getNamespace();
     }
 
     public get includeDirectories():string[] {
@@ -672,10 +634,6 @@ class Daemon extends DaemonBase implements IDaemon {
         this.getGzipCompressionLevelHelper().setLevel(level);
     }
 
-    protected createMemory():IMemory {
-        return new Memory();
-    }
-
     public get memory():IMemory {
         return this.getMemory();
     }
@@ -684,15 +642,17 @@ class Daemon extends DaemonBase implements IDaemon {
         throw new Exception({message: "property \"memory\" is readonly"});
     }
 
-    public getMemory():IMemory {
+    protected createMemory():IMemory {
+        return new Memory({
+            namespace : Daemon.DEFAULT_NAMESPACE.getValue()
+        });
+    }
+
+    protected getMemory():IMemory {
         if (!this._memory) {
             this._memory = this.createMemory();
         }
         return this._memory;
-    }
-
-    protected createMetadataMemory():IMemory {
-        return new Memory();
     }
 
     public get metadataMemory():IMemory {
@@ -703,15 +663,17 @@ class Daemon extends DaemonBase implements IDaemon {
         throw new Exception({message: "property \"metadataMemory\" is readonly"});
     }
 
-    public getMetadataMemory():IMemory {
+    protected createMetadataMemory():IMemory {
+        return new Memory({
+            namespace : Daemon.DEFAULT_METADATA_NAMESPACE.getValue()
+        });
+    }
+
+    protected getMetadataMemory():IMemory {
         if (!this._metadataMemory) {
             this._metadataMemory = this.createMetadataMemory();
         }
         return this._metadataMemory;
-    }
-
-    protected createBinaryMemory():IMemory {
-        return new Memory();
     }
 
     public get binaryMemory():IMemory {
@@ -722,15 +684,17 @@ class Daemon extends DaemonBase implements IDaemon {
         throw new Exception({message: "property \"binaryMemory\" is readonly"});
     }
 
-    public getBinaryMemory():IMemory {
+    protected createBinaryMemory():IMemory {
+        return new Memory({
+            namespace : Daemon.DEFAULT_BINARY_NAMESPACE.getValue()
+        });
+    }
+
+    protected getBinaryMemory():IMemory {
         if (!this._binaryMemory) {
             this._binaryMemory = this.createBinaryMemory();
         }
         return this._binaryMemory;
-    }
-
-    protected createGzipMemory():IMemory {
-        return new Memory();
     }
 
     public get gzipMemory():IMemory {
@@ -741,15 +705,17 @@ class Daemon extends DaemonBase implements IDaemon {
         throw new Exception({message: "property \"gzipMemory\" is readonly"});
     }
 
-    public getGzipMemory():IMemory {
+    protected createGzipMemory():IMemory {
+        return new Memory({
+            namespace : Daemon.DEFAULT_GZIP_NAMESPACE.getValue()
+        });
+    }
+
+    protected getGzipMemory():IMemory {
         if (!this._gzipMemory) {
             this._gzipMemory = this.createGzipMemory();
         }
         return this._gzipMemory;
-    }
-
-    protected createLockMemory():IMemory {
-        return new Memory();
     }
 
     public get lockMemory():IMemory {
@@ -760,7 +726,13 @@ class Daemon extends DaemonBase implements IDaemon {
         throw new Exception({message: "property \"lockMemory\" is readonly"});
     }
 
-    public getLockMemory():IMemory {
+    protected createLockMemory():IMemory {
+        return new Memory({
+            namespace : Daemon.DEFAULT_LOCK_NAMESPACE.getValue()
+        });
+    }
+
+    protected getLockMemory():IMemory {
         if (!this._lockMemory) {
             this._lockMemory = this.createLockMemory();
         }
@@ -876,6 +848,18 @@ class Daemon extends DaemonBase implements IDaemon {
 
         });
     }
+
+    public static DEFAULT_SEPARATOR:Separator = Separator.DOT;
+
+    public static DEFAULT_NAMESPACE:INamespaceHelper = new NamespaceHelper(["static"], Daemon.DEFAULT_SEPARATOR);
+
+    public static DEFAULT_METADATA_NAMESPACE:INamespaceHelper = NamespaceHelper.parse(Daemon.DEFAULT_NAMESPACE.getValue(), Daemon.DEFAULT_SEPARATOR).addToNamespace(["metadata"]);
+
+    public static DEFAULT_BINARY_NAMESPACE:INamespaceHelper = NamespaceHelper.parse(Daemon.DEFAULT_NAMESPACE.getValue(), Daemon.DEFAULT_SEPARATOR).addToNamespace(["binary"]);
+
+    public static DEFAULT_GZIP_NAMESPACE:INamespaceHelper = NamespaceHelper.parse(Daemon.DEFAULT_NAMESPACE.getValue(), Daemon.DEFAULT_SEPARATOR).addToNamespace(["gzip"]);
+
+    public static DEFAULT_LOCK_NAMESPACE:INamespaceHelper = NamespaceHelper.parse(Daemon.DEFAULT_NAMESPACE.getValue(), Daemon.DEFAULT_SEPARATOR).addToNamespace(["lock"]);
 
 }
 
