@@ -6,7 +6,7 @@ interface IOptions extends IOptionsBase {
     binaryNamespace:string;
     gzipNamespace:string;
     lockNamespace:string;
-    sourceDirectory:string;
+    sourcesDirectory:string;
     includeDirectories:string[];
     useIndex:boolean;
     indexExtensions:string[];

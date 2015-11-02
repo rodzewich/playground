@@ -171,8 +171,8 @@ class Daemon extends DaemonBase implements IDaemon {
         if (options && isDefined(options.lockNamespace)) {
             this.setLockNamespace(options.lockNamespace);
         }
-        if (options && isDefined(options.sourceDirectory)) {
-            this.setSourcesDirectory(options.sourceDirectory);
+        if (options && isDefined(options.sourcesDirectory)) {
+            this.setSourcesDirectory(options.sourcesDirectory);
         }
         if (options && isDefined(options.includeDirectories)) {
             this.setIncludeDirectories(options.includeDirectories);
@@ -422,18 +422,24 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public setMemoryNamespace(namespace:string):void {
-        // todo: re-implement it
-        var oldMemoryNamespace:string = this.getMemoryNamespace();
-        var oldMetadataNamespace:string = this;
-
+        var memoryNamespace:string   = this.getMemoryNamespace(),
+            metadataNamespace:string = NamespaceHelper.parse(memoryNamespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["metadata"]).getValue(),
+            binaryNamespace:string   = NamespaceHelper.parse(memoryNamespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["binary"]).getValue(),
+            gzipNamespace:string     = NamespaceHelper.parse(memoryNamespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["gzip"]).getValue(),
+            lockNamespace:string     = NamespaceHelper.parse(memoryNamespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["lock"]).getValue();
         this.getMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).getNamespace());
-        if (true) {
-
+        if (metadataNamespace === this.getMetadataNamespace()) {
+            this.setMetadataNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["metadata"]).getValue());
         }
-        this.getMetadataMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["metadata"]).getValue());
-        this.getBinaryMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["binary"]).getValue());
-        this.getGzipMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["gzip"]).getValue());
-        this.getLockMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["lock"]).getValue());
+        if (binaryNamespace === this.getBinaryNamespace()) {
+            this.setBinaryNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["binary"]).getValue());
+        }
+        if (gzipNamespace === this.getGzipNamespace()) {
+            this.setGzipNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["gzip"]).getValue());
+        }
+        if (lockNamespace === this.getLockNamespace()) {
+            this.setLockNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["lock"]).getValue());
+        }
     }
 
     public getMemoryNamespace():string {
@@ -520,11 +526,11 @@ class Daemon extends DaemonBase implements IDaemon {
         this.getIncludeDirectoriesHelper().setDirectories(directories);
     }
 
-    public get sourceDirectory():string {
+    public get sourcesDirectory():string {
         return this.getSourcesDirectory();
     }
 
-    public set sourceDirectory(directory) {
+    public set sourcesDirectory(directory) {
         this.setSourcesDirectory(directory);
     }
 

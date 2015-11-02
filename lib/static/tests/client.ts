@@ -102,8 +102,24 @@ function run(debug:boolean, callback:() => void):void {
                 assert.strictEqual("array", typeOf(destination.includeDirectories));
                 assert.strictEqual("array", typeOf(instance.getIncludeDirectories()));
                 assert.strictEqual("array", typeOf(instance.includeDirectories));
-                assert.strictEqual(destination.includeDirectories.join(","), instance.getIncludeDirectories().join(","));
-                assert.strictEqual(destination.includeDirectories.join(","), instance.includeDirectories.join(","));
+                destination.includeDirectories.forEach((directory:string, index:number):void => {
+                    assert.strictEqual(directory, instance.getIncludeDirectories()[index]);
+                    assert.strictEqual(directory, instance.includeDirectories[index]);
+                    assert.strictEqual(path.isAbsolute(instance.getIncludeDirectories()[index]), true);
+                    assert.strictEqual(path.isAbsolute(instance.includeDirectories[index]), true);
+                    assert.strictEqual(instance.getIncludeDirectories()[index], path.normalize(instance.getIncludeDirectories()[index]));
+                    assert.strictEqual(instance.includeDirectories[index], path.normalize(instance.includeDirectories[index]));
+                });
+                assert.strictEqual(destination.sourcesDirectory, instance.getSourcesDirectory());
+                assert.strictEqual(destination.sourcesDirectory, instance.sourcesDirectory);
+                if (instance.getSourcesDirectory()) {
+                    assert.strictEqual(path.isAbsolute(instance.getSourcesDirectory()), true);
+                    assert.strictEqual(instance.getSourcesDirectory(), path.normalize(instance.getSourcesDirectory()));
+                }
+                if (instance.sourcesDirectory) {
+                    assert.strictEqual(path.isAbsolute(instance.sourcesDirectory), true);
+                    assert.strictEqual(instance.sourcesDirectory, path.normalize(instance.sourcesDirectory));
+                }
                 assert.strictEqual(destination.useIndex, instance.getIsUseIndex());
                 assert.strictEqual(destination.useIndex, instance.isUseIndex());
                 assert.strictEqual(destination.useIndex, instance.useIndex);
@@ -163,6 +179,7 @@ function run(debug:boolean, callback:() => void):void {
                 binaryNamespace      : "static.binary",
                 gzipNamespace        : "static.gzip",
                 lockNamespace        : "static.lock",
+                sourcesDirectory     : null,
                 includeDirectories   : [],
                 useIndex             : false,
                 indexExtensions      : ["htm", "html"],
@@ -203,6 +220,7 @@ function run(debug:boolean, callback:() => void):void {
                 binaryNamespace      : "other.binary",
                 gzipNamespace        : "other.gzip",
                 lockNamespace        : "other.lock",
+                sourcesDirectory     : null,
                 includeDirectories   : ["/index/dir1", "/index/dir2"],
                 useIndex             : true,
                 indexExtensions      : ["xhtm", "xhtml"],
@@ -220,6 +238,60 @@ function run(debug:boolean, callback:() => void):void {
                 binaryTimeout        : 400,
                 gzipTimeout          : 400,
                 lockTimeout          : 400
+            });
+
+            checkDaemonConstructor({
+                debug                : true,
+                location             : "/test/path.sock",
+                memoryNamespace      : "other",
+                metadataNamespace    : "other1.metadata",
+                binaryNamespace      : "other2.binary",
+                gzipNamespace        : "other3.gzip",
+                lockNamespace        : "other4.lock",
+                sourcesDirectory     : "/source/directory",
+                includeDirectories   : ["/index/dir1", "/index/dir2"],
+                useIndex             : true,
+                indexExtensions      : ["xhtm", "xhtml"],
+                useGzip              : true,
+                gzipMinLength        : 40,
+                gzipExtensions       : ["jpeg", "jpg", "png"],
+                gzipCompressionLevel : 6,
+                memoryLocation       : "/path/to/memory1.sock",
+                metadataLocation     : "/path/to/memory2.sock",
+                binaryLocation       : "/path/to/memory3.sock",
+                gzipLocation         : "/path/to/memory4.sock",
+                lockLocation         : "/path/to/memory5.sock",
+                memoryTimeout        : 400,
+                metadataTimeout      : 500,
+                binaryTimeout        : 600,
+                gzipTimeout          : 700,
+                lockTimeout          : 800
+            }, {
+                debug                : true,
+                location             : "/test/path.sock",
+                memoryNamespace      : "other",
+                metadataNamespace    : "other1.metadata",
+                binaryNamespace      : "other2.binary",
+                gzipNamespace        : "other3.gzip",
+                lockNamespace        : "other4.lock",
+                sourcesDirectory     : "/source/directory",
+                includeDirectories   : ["/index/dir1", "/index/dir2"],
+                useIndex             : true,
+                indexExtensions      : ["xhtm", "xhtml"],
+                useGzip              : true,
+                gzipMinLength        : 40,
+                gzipExtensions       : ["jpeg", "jpg", "png"],
+                gzipCompressionLevel : 6,
+                memoryLocation       : "/path/to/memory1.sock",
+                metadataLocation     : "/path/to/memory2.sock",
+                binaryLocation       : "/path/to/memory3.sock",
+                gzipLocation         : "/path/to/memory4.sock",
+                lockLocation         : "/path/to/memory5.sock",
+                memoryTimeout        : 400,
+                metadataTimeout      : 500,
+                binaryTimeout        : 600,
+                gzipTimeout          : 700,
+                lockTimeout          : 800
             });
 
         },
