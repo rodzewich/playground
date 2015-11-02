@@ -423,7 +423,9 @@ class Daemon extends DaemonBase implements IDaemon {
 
     public setMemoryNamespace(namespace:string):void {
         // todo: re-implement it
-        var oldNamespace:string = this.getMemory().getNamespace();
+        var oldMemoryNamespace:string = this.getMemoryNamespace();
+        var oldMetadataNamespace:string = this;
+
         this.getMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).getNamespace());
         if (true) {
 
@@ -634,14 +636,6 @@ class Daemon extends DaemonBase implements IDaemon {
         this.getGzipCompressionLevelHelper().setLevel(level);
     }
 
-    public get memory():IMemory {
-        return this.getMemory();
-    }
-
-    public set memory(memory:IMemory) {
-        throw new Exception({message: "property \"memory\" is readonly"});
-    }
-
     protected createMemory():IMemory {
         return new Memory({
             namespace : Daemon.DEFAULT_NAMESPACE.getValue()
@@ -653,14 +647,6 @@ class Daemon extends DaemonBase implements IDaemon {
             this._memory = this.createMemory();
         }
         return this._memory;
-    }
-
-    public get metadataMemory():IMemory {
-        return this.getMetadataMemory();
-    }
-
-    public set metadataMemory(memory:IMemory) {
-        throw new Exception({message: "property \"metadataMemory\" is readonly"});
     }
 
     protected createMetadataMemory():IMemory {
@@ -676,14 +662,6 @@ class Daemon extends DaemonBase implements IDaemon {
         return this._metadataMemory;
     }
 
-    public get binaryMemory():IMemory {
-        return this.getBinaryMemory();
-    }
-
-    public set binaryMemory(memory:IMemory) {
-        throw new Exception({message: "property \"binaryMemory\" is readonly"});
-    }
-
     protected createBinaryMemory():IMemory {
         return new Memory({
             namespace : Daemon.DEFAULT_BINARY_NAMESPACE.getValue()
@@ -697,14 +675,6 @@ class Daemon extends DaemonBase implements IDaemon {
         return this._binaryMemory;
     }
 
-    public get gzipMemory():IMemory {
-        return this.getBinaryMemory();
-    }
-
-    public set gzipMemory(memory:IMemory) {
-        throw new Exception({message: "property \"gzipMemory\" is readonly"});
-    }
-
     protected createGzipMemory():IMemory {
         return new Memory({
             namespace : Daemon.DEFAULT_GZIP_NAMESPACE.getValue()
@@ -716,14 +686,6 @@ class Daemon extends DaemonBase implements IDaemon {
             this._gzipMemory = this.createGzipMemory();
         }
         return this._gzipMemory;
-    }
-
-    public get lockMemory():IMemory {
-        return this.getBinaryMemory();
-    }
-
-    public set lockMemory(memory:IMemory) {
-        throw new Exception({message: "property \"lockMemory\" is readonly"});
     }
 
     protected createLockMemory():IMemory {

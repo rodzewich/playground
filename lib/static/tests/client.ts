@@ -134,44 +134,24 @@ function run(debug:boolean, callback:() => void):void {
                 assert.strictEqual(destination.gzipCompressionLevel, instance.gzipCompressionLevel);
                 assert.strictEqual(destination.memoryLocation, instance.getMemoryLocation());
                 assert.strictEqual(destination.memoryLocation, instance.memoryLocation);
-                assert.strictEqual(destination.memoryLocation, instance.getMemory().getLocation());
-                assert.strictEqual(destination.memoryLocation, instance.memory.getLocation());
                 assert.strictEqual(destination.metadataLocation, instance.getMetadataLocation());
                 assert.strictEqual(destination.metadataLocation, instance.metadataLocation);
-                assert.strictEqual(destination.metadataLocation, instance.getMetadataMemory().getLocation());
-                assert.strictEqual(destination.metadataLocation, instance.metadataMemory.getLocation());
                 assert.strictEqual(destination.binaryLocation, instance.getBinaryLocation());
                 assert.strictEqual(destination.binaryLocation, instance.binaryLocation);
-                assert.strictEqual(destination.binaryLocation, instance.getBinaryMemory().getLocation());
-                assert.strictEqual(destination.binaryLocation, instance.binaryMemory.getLocation());
                 assert.strictEqual(destination.gzipLocation, instance.getGzipLocation());
                 assert.strictEqual(destination.gzipLocation, instance.gzipLocation);
-                assert.strictEqual(destination.gzipLocation, instance.getGzipMemory().getLocation());
-                assert.strictEqual(destination.gzipLocation, instance.gzipMemory.getLocation());
                 assert.strictEqual(destination.lockLocation, instance.getLockLocation());
                 assert.strictEqual(destination.lockLocation, instance.lockLocation);
-                assert.strictEqual(destination.lockLocation, instance.getLockMemory().getLocation());
-                assert.strictEqual(destination.lockLocation, instance.lockMemory.getLocation());
                 assert.strictEqual(destination.memoryTimeout, instance.getMemoryTimeout());
                 assert.strictEqual(destination.memoryTimeout, instance.memoryTimeout);
-                assert.strictEqual(destination.memoryTimeout, instance.getMemory().getTimeout());
-                assert.strictEqual(destination.memoryTimeout, instance.memory.getTimeout());
                 assert.strictEqual(destination.metadataTimeout, instance.getMetadataTimeout());
                 assert.strictEqual(destination.metadataTimeout, instance.metadataTimeout);
-                assert.strictEqual(destination.metadataTimeout, instance.getMetadataMemory().getTimeout());
-                assert.strictEqual(destination.metadataTimeout, instance.metadataMemory.getTimeout());
                 assert.strictEqual(destination.binaryTimeout, instance.getBinaryTimeout());
                 assert.strictEqual(destination.binaryTimeout, instance.binaryTimeout);
-                assert.strictEqual(destination.binaryTimeout, instance.getBinaryMemory().getTimeout());
-                assert.strictEqual(destination.binaryTimeout, instance.binaryMemory.getTimeout());
                 assert.strictEqual(destination.gzipTimeout, instance.getGzipTimeout());
                 assert.strictEqual(destination.gzipTimeout, instance.gzipTimeout);
-                assert.strictEqual(destination.gzipTimeout, instance.getGzipMemory().getTimeout());
-                assert.strictEqual(destination.gzipTimeout, instance.gzipMemory.getTimeout());
                 assert.strictEqual(destination.lockTimeout, instance.getLockTimeout());
                 assert.strictEqual(destination.lockTimeout, instance.lockTimeout);
-                assert.strictEqual(destination.lockTimeout, instance.getLockMemory().getTimeout());
-                assert.strictEqual(destination.lockTimeout, instance.lockMemory.getTimeout());
             }
 
             checkDaemonConstructor({
