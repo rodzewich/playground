@@ -294,6 +294,8 @@ function run(debug:boolean, callback:() => void):void {
                 lockTimeout          : 800
             });
 
+            next();
+
         },
 
         shutdown
