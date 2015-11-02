@@ -5,6 +5,7 @@ import IOptions          = require("./IOptions");
 import fs                = require("fs");
 import net               = require("net");
 import colors            = require("colors");
+import isNull            = require("../isNull");
 import display           = require("../helpers/display");
 import log4js            = require("../../logger");
 import deferred          = require("../deferred");
@@ -22,7 +23,6 @@ import MeLocationHelper  = require("../helpers/MeLocationHelper");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
 import HandlersRegistrationHelper  = require("../helpers/HandlersRegistrationHelper");
 import IHandlersRegistrationHelper = require("../helpers/IHandlersRegistrationHelper");
-import isNull = require("../isNull");
 
 var logger:log4js.Logger = log4js.getLogger("client");
 
