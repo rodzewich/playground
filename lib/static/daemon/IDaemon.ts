@@ -75,7 +75,7 @@ interface IDaemon extends IDaemonBase {
     setGzipExtensions(extensions:string[]):void;
     getGzipCompressionLevel():number;
     setGzipCompressionLevel(level:number):void;
-    getContent(filename:string, callback?:(errors:IException[], result:IResponse) => void):void;
+    getContent(filename:string, cacheOnly:boolean, callback?:(errors:IException[], result:IResponse) => void):void;
 }
 
 export = IDaemon;

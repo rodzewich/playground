@@ -3,7 +3,7 @@ import ITimeoutHelper = require("./ITimeoutHelper");
 
 class TimeoutHelper implements ITimeoutHelper {
 
-    private _value:number = this.DEFAULT;
+    private _value:number = TimeoutHelper.DEFAULT;
 
     constructor(timeout?:number) {
         this._value = TimeoutHelper.DEFAULT;

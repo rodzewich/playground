@@ -1,3 +1,5 @@
+/// <reference path="../../../types/node/node.d.ts" />
+
 import ExceptionBase = require("../../exception/Exception");
 import Exception     = require("../exception/Exception");
 import IException    = require("../exception/IException");
@@ -40,7 +42,8 @@ class Daemon extends DaemonBase implements IDaemon {
             }
             this._timers[namespace][key] = setTimeout(():void => {
                 this.removeItem(namespace, key);
-            }, ttl).ref();
+            }, ttl);
+            this._timers[namespace][key].ref();
         }
     }
 

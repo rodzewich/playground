@@ -4,10 +4,13 @@ import IOptions   = require("./IOptions");
 import IResponse  = require("../client/IResponse");
 import log4js     = require("../../../logger");
 import deferred   = require("../../deferred");
+import parallel   = require("../../parallel");
 import IMemory    = require("../../memory/client/IClient");
 import Memory     = require("../../memory/client/Client");
 import Exception  = require("../exception/Exception");
 import IException = require("../exception/IException");
+import IMemoryException = require("../../memory/exception/IException");
+import IExceptionBase = require("../../exception/IException");
 import IObject    = require("../exception/IObject");
 import isDefined  = require("../../isDefined");
 import isFunction = require("../../isFunction");
@@ -31,6 +34,7 @@ import GzipExtensionsHelper        = require("../helpers/GzipExtensionsHelper");
 import IGzipExtensionsHelper       = require("../helpers/IGzipExtensionsHelper");
 import GzipMinLengthHelper         = require("../helpers/GzipMinLengthHelper");
 import IGzipMinLengthHelper        = require("../helpers/IGzipMinLengthHelper");
+import path = require("path");
 
 var logger:log4js.Logger = log4js.getLogger("static");
 
@@ -427,7 +431,7 @@ class Daemon extends DaemonBase implements IDaemon {
             binaryNamespace:string   = NamespaceHelper.parse(memoryNamespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["binary"]).getValue(),
             gzipNamespace:string     = NamespaceHelper.parse(memoryNamespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["gzip"]).getValue(),
             lockNamespace:string     = NamespaceHelper.parse(memoryNamespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["lock"]).getValue();
-        this.getMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).getNamespace());
+        this.getMemory().setNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).getValue());
         if (metadataNamespace === this.getMetadataNamespace()) {
             this.setMetadataNamespace(NamespaceHelper.parse(namespace, Daemon.DEFAULT_SEPARATOR).addToNamespace(["metadata"]).getValue());
         }
@@ -707,9 +711,9 @@ class Daemon extends DaemonBase implements IDaemon {
         return this._lockMemory;
     }
 
-    public getContent(filename:string, callback?:(errors:Exception[], result:IResponse) => void):void {
+    public getContent(filename:string, cacheOnly:boolean, callback?:(errors:Exception[], result:IResponse) => void):void {
 
-        var temp:string = String(filename);
+        var resolve:string = path.relative(path.sep, path.normalize(path.resolve(path.sep, String(filename))));
 
         function handler(errors:Exception[], result:IResponse):void {
             if (isFunction(callback)) {
@@ -717,43 +721,82 @@ class Daemon extends DaemonBase implements IDaemon {
             }
         }
 
-
-
         deferred([
 
             (next:() => void):void => {
-                var memory = new Memory();
-                memory.getItem(temp, () => {
-
-                });
+                var response:IResponse = {
+                    filename   : null,
+                    content    : null,
+                    type       : null,
+                    length     : null,
+                    zipContent : null,
+                    zipLength  : null,
+                    date       : null
+                };
+                if (isTrue(cacheOnly)) {
+                    deferred([
+                        (next:() => void):void => {
+                            this.getMetadataMemory().getItem(resolve, (errors:IMemoryException[], result:any):void => {
+                                if (errors.length) {
+                                    handler(errors, null);
+                                } else if (result) {
+                                    response.filename = resolve;
+                                    response.type     = "text/plain"; // todo: fix it
+                                    response.date     = result.date;
+                                    next();
+                                } else {
+                                    handler(null, null);
+                                }
+                            });
+                        },
+                        (next:() => void):void => {
+                            var errors:IExceptionBase[] = [];
+                            parallel([
+                                (done:() => void):void => {
+                                    this.getBinaryMemory().getBin(resolve, (errs:IMemoryException[], buffer:Buffer):void => {
+                                        if (errs && errs.length) {
+                                            errs.forEach((error:IMemoryException):void => {
+                                                errors.push(error);
+                                            });
+                                        } else if (buffer) {
+                                            response.content = buffer;
+                                            response.length = buffer.length;
+                                        }
+                                        done();
+                                    });
+                                },
+                                (done:() => void):void => {
+                                    this.getGzipMemory().getBin(resolve, (errs:IMemoryException[], buffer:Buffer):void => {
+                                        if (errs && errs.length) {
+                                            errs.forEach((error:IMemoryException):void => {
+                                                errors.push(error);
+                                            });
+                                        } else if (buffer) {
+                                            response.zipContent = buffer;
+                                            response.zipLength = buffer.length;
+                                        }
+                                        done();
+                                    });
+                                }
+                            ], ():void => {
+                                if (errors.length) {
+                                    handler(errors, null);
+                                } else {
+                                    next();
+                                }
+                            });
+                        },
+                        ():void => {
+                            handler(null, response);
+                        }
+                    ]);
+                } else {
+                    next();
+                }
             },
+            (next:() => void):void => {
 
-            (next:() => void):void => {},
-
-            (next:() => void):void => {},
-
-            (next:() => void):void => {},
-
-            (next:() => void):void => {},
-
-            (next:() => void):void => {},
-
-            (next:() => void):void => {},
-
-            (next:() => void):void => {},
-
-            (next:() => void):void => {},
-
-            (next:() => void):void => {},
-
-            (next:() => void):void => {},
-
-            (next:() => void):void => {},
-
-            (next:() => void):void => {},
-
-            (next:() => void):void => {},
-
+            }
 
         ]);
 
@@ -788,7 +831,7 @@ class Daemon extends DaemonBase implements IDaemon {
                         this.stop();
                         break;
                     case "getContent":
-                        this.getContent(<string>args[0], (errors:Exception[], result:IResponse):void => {
+                        this.getContent(<string>args[0], <string>args[1], (errors:Exception[], result:IResponse):void => {
                             response.result = result;
                             if (errors && errors.length) {
                                 response.errors = errors.map((error:Exception):IObject => {

@@ -20,7 +20,7 @@ import displayException = require("./lib/displayException");
 import IStaticClient    = require("./lib/static/client/IClient");
 import StaticClient     = require("./lib/static/client/Client");
 import IStaticException = require("./lib/static/exception/IException");
-import IStaticResponse  = require("./lib/static/IResponse");
+import IStaticResponse  = require("./lib/static/client/IResponse");
 
 /*var memoryInstance:IMemory = new Memory({
 
@@ -222,13 +222,13 @@ deferred([
                         } else if (result && result.zipContent && gzipAllowed) {
                             response.writeHead(200);
                             response.setHeader("Content-Type", result.type);
-                            response.setHeader("Last-Modified", new Date(result.date * 1000)).toUTCString();
+                            response.setHeader("Last-Modified", new Date(result.date * 1000).toUTCString());
                             response.setHeader("Content-Encoding", "gzip");
                             response.end(result.zipContent);
                         } else if (result && result.content) {
                             response.writeHead(200);
                             response.setHeader("Content-Type", result.type);
-                            response.setHeader("Last-Modified", new Date(result.date * 1000)).toUTCString();
+                            response.setHeader("Last-Modified", new Date(result.date * 1000).toUTCString());
                             response.end(result.content);
                         } else {
                             next();

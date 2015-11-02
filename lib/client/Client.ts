@@ -22,6 +22,7 @@ import MeLocationHelper  = require("../helpers/MeLocationHelper");
 import IMeLocationHelper = require("../helpers/IMeLocationHelper");
 import HandlersRegistrationHelper  = require("../helpers/HandlersRegistrationHelper");
 import IHandlersRegistrationHelper = require("../helpers/IHandlersRegistrationHelper");
+import isNull = require("../isNull");
 
 var logger:log4js.Logger = log4js.getLogger("client");
 
@@ -358,6 +359,13 @@ class Client implements IClient {
             this._connecting = true;
             this._needConnect = false;
             deferred([
+                (next:() => void):void => {
+                    if (isNull(this.getLocation())) {
+                        connected([new Exception({message: "location is not defined"})]);
+                    } else {
+                        next();
+                    }
+                },
                 (next:() => void):void => {
                     fs.stat(this.getLocation(), (error:NodeJS.ErrnoException, stats:fs.Stats):void => {
                         if (error && error.code !== "ENOENT") {

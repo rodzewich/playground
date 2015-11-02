@@ -2,14 +2,50 @@ import IClient    = require("./IClient");
 import ClientBase = require("../../client/Client");
 import log4js     = require("../../../logger");
 import IResponse  = require("./IResponse");
+import IOptions   = require("./IOptions");
 import isString   = require("../../isString");
 import isFunction = require("../../isFunction");
 import IException = require("../exception/IException");
 import Exception  = require("../exception/Exception");
+import CacheOnlyHelper  = require("../helpers/CacheOnlyHelper");
+import ICacheOnlyHelper = require("../helpers/ICacheOnlyHelper");
+import isDefined        = require("../../isDefined");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
 class Client extends ClientBase implements IClient {
+
+    private _cacheOnlyHelper:ICacheOnlyHelper;
+
+    protected createCacheOnlyHelper():ICacheOnlyHelper {
+        return new CacheOnlyHelper();
+    }
+
+    protected getCacheOnlyHelper():ICacheOnlyHelper {
+        if (!this._cacheOnlyHelper) {
+            this._cacheOnlyHelper = this.createCacheOnlyHelper();
+        }
+        return this._cacheOnlyHelper;
+    }
+
+    constructor(options?:IOptions) {
+        super(options);
+        if (options && isDefined(options.cacheOnly)) {
+            this.setIsCacheOnly(options.cacheOnly);
+        }
+    }
+
+    public isCacheOnly():boolean {
+        return this.getCacheOnlyHelper().isUsed();
+    }
+
+    public getIsCacheOnly():boolean {
+        return this.getCacheOnlyHelper().getIsUsed();
+    }
+
+    public setIsCacheOnly(value:boolean):void {
+        this.getCacheOnlyHelper().setIsUsed(value);
+    }
 
     public ping(callback?:(errors:IException[]) => void):void {
 
@@ -74,7 +110,7 @@ class Client extends ClientBase implements IClient {
             this.call((errors:IException[], response:IResponse):void => {
                 handler(errors && errors.length ? errors : null,
                     !errors || !errors.length ? response : null);
-            }, null, filename);
+            }, null, "getContent", filename, this.isCacheOnly());
         }
 
     }

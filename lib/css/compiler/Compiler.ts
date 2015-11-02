@@ -569,7 +569,7 @@ class Compiler extends CompilerBase implements ICompiler {
                                     errors.push(new Error("bla bla bla"));
                                     return null;
                                 }
-                                return path.join("/", this.getWebRootDirectory(), relative);
+                                return path.join(path.sep, this.getWebRootDirectory(), relative);
                             });
                             if (!errors.length) {
                                 next();

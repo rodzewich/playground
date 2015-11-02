@@ -43,7 +43,7 @@ class Compiler extends CompilerBase implements ICompiler {
             if (!error) {
                 if (compiler.sourcemap && compiler.sourcemap.sources) {
                     compiler.sourcemap.sources = compiler.sourcemap.sources.map((filename: string): string => {
-                        return path.join("/", filename);
+                        return path.join(path.sep, filename);
                     })
                 }
                 callback(null, {

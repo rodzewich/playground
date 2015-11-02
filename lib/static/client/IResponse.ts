@@ -1,4 +1,4 @@
-/// <reference path="../../types/node/node.d.ts" />
+/// <reference path="../../../types/node/node.d.ts" />
 
 interface IResponse {
     filename:string;
