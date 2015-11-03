@@ -14,6 +14,7 @@ import IExceptionBase = require("../../exception/IException");
 import IObject    = require("../exception/IObject");
 import isDefined  = require("../../isDefined");
 import isFunction = require("../../isFunction");
+import isTrue     = require("../../isTrue");
 import Separator  = require("../../helpers/Separator");
 import ExceptionBase = require("../../exception/Exception");
 import UseIndexHelper   = require("../helpers/UseIndexHelper");
@@ -797,7 +798,6 @@ class Daemon extends DaemonBase implements IDaemon {
             (next:() => void):void => {
 
             }
-
         ]);
 
     }
