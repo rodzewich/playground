@@ -9,7 +9,7 @@ import IMemory    = require("../../memory/client/IClient");
 import Memory     = require("../../memory/client/Client");
 import Exception  = require("../exception/Exception");
 import IException = require("../exception/IException");
-import IMemoryException = require("../../memory/exception/IException");
+import IExceptionMemory = require("../../memory/exception/IException");
 import IExceptionBase = require("../../exception/IException");
 import IObject    = require("../exception/IObject");
 import isDefined  = require("../../isDefined");
@@ -41,6 +41,8 @@ import path = require("path");
 var logger:log4js.Logger = log4js.getLogger("static");
 
 class Daemon extends DaemonBase implements IDaemon {
+
+    private _queue:{[index:string]:((errors:IException[], result:IResponse) => void)[]} = {};
 
     private _includeDirectoriesHelper:IIncludeDirectoriesHelper;
 
@@ -715,12 +717,30 @@ class Daemon extends DaemonBase implements IDaemon {
 
     public getContent(filename:string, cacheOnly:boolean, callback?:(errors:IException[], result:IResponse) => void):void {
 
-        var resolve:string = path.relative(path.sep, path.normalize(path.resolve(path.sep, String(filename)))),
-            memoryUnlock:(callback?:(errors:IMemoryException[]) => void) => void;
+        var fullpath:string,
+            resolve:string = path.relative(path.sep, path.normalize(path.resolve(path.sep, String(filename)))),
+            memoryUnlock:(callback?:(errors:IExceptionMemory[]) => void) => void;
 
-        function handler(errors:IException[], result:IResponse):void {
-            if (isFunction(callback)) {
-                callback(errors, result);
+        function handler(errs:IException[], result:IResponse):void {
+            var errors:IException[] = [];
+            if (errs && errs.length) {
+                errors = errs.slice(0);
+            }
+            if (isFunction(memoryUnlock)) {
+                memoryUnlock((errs:IExceptionMemory[]):void => {
+                    if (errs && errs.length) {
+                        errs.forEach((error:IExceptionMemory):void => {
+                            errors.push(error);
+                        });
+                    }
+                    if (isFunction(callback)) {
+                        callback(errors && errors.length ? errors : null,
+                            errors && errors.length ? null : result || null);
+                    }
+                });
+            } else if (isFunction(callback)) {
+                callback(errors && errors.length ? errors : null,
+                    errors && errors.length ? null : result || null);
             }
         }
 
@@ -740,7 +760,7 @@ class Daemon extends DaemonBase implements IDaemon {
                 if (isTrue(cacheOnly)) {
                     deferred([
                         (next:() => void):void => {
-                            this.getMetadataMemory().getItem(resolve, (errors:IMemoryException[], result:any):void => {
+                            this.getMetadataMemory().getItem(resolve, (errors:IExceptionMemory[], result:any):void => {
                                 if (errors.length) {
                                     handler(errors, null);
                                 } else if (result) {
@@ -758,9 +778,9 @@ class Daemon extends DaemonBase implements IDaemon {
                             var errors:IExceptionBase[] = [];
                             parallel([
                                 (done:() => void):void => {
-                                    this.getBinaryMemory().getBin(resolve, (errs:IMemoryException[], buffer:Buffer):void => {
+                                    this.getBinaryMemory().getBin(resolve, (errs:IExceptionMemory[], buffer:Buffer):void => {
                                         if (errs && errs.length) {
-                                            errs.forEach((error:IMemoryException):void => {
+                                            errs.forEach((error:IExceptionMemory):void => {
                                                 errors.push(error);
                                             });
                                         } else if (buffer) {
@@ -771,9 +791,9 @@ class Daemon extends DaemonBase implements IDaemon {
                                     });
                                 },
                                 (done:() => void):void => {
-                                    this.getGzipMemory().getBin(resolve, (errs:IMemoryException[], buffer:Buffer):void => {
+                                    this.getGzipMemory().getBin(resolve, (errs:IExceptionMemory[], buffer:Buffer):void => {
                                         if (errs && errs.length) {
-                                            errs.forEach((error:IMemoryException):void => {
+                                            errs.forEach((error:IExceptionMemory):void => {
                                                 errors.push(error);
                                             });
                                         } else if (buffer) {
@@ -805,7 +825,7 @@ class Daemon extends DaemonBase implements IDaemon {
                 }
             },
             (next:() => void):void => {
-                this.getLockMemory().lock(resolve, (errors:IMemoryException[], unlock:(callback?:(errors:IMemoryException[]) => void) => void):void => {
+                this.getLockMemory().lock(resolve, (errors:IExceptionMemory[], unlock:(callback?:(errors:IExceptionMemory[]) => void) => void):void => {
                     if (errors && errors.length) {
                         handler(errors, null);
                     } else {
@@ -814,16 +834,68 @@ class Daemon extends DaemonBase implements IDaemon {
                     }
                 });
             },
-            (next:() => void):void => {
-                fs.stat(path.resolve(this.getSourcesDirectory(), resolve), (error:NodeJS.ErrnoException, stats:fs.Stats):void => {
-
+            (done:() => void):void => {
+                var actions:((next:() => void) => void)[],
+                    directories:string[] = [
+                        this.getSourcesDirectory()
+                    ];
+                this.getIncludeDirectories().forEach((directory:string):void => {
+                    if (directories.indexOf(directory) === -1) {
+                        directories.push(directory);
+                    }
                 });
+                actions = directories.map((directory:string):((next:() => void) => void) => {
+                    // todo: find index files
+                    return (next:() => void) => {
+                        fullpath = path.resolve(directory, resolve);
+                        fs.stat(fullpath, (error:NodeJS.ErrnoException, stats:fs.Stats):void => {
+                            if (error && error.code !== "ENOENT") {
+                                handler([ExceptionBase.convertFromError(error, {
+                                    code    : error.code,
+                                    errno   : error.errno,
+                                    path    : error.path,
+                                    syscall : error.syscall
+                                })], null);
+                            } else if (!error && stats.isFile()) {
+                                done();
+                            } else {
+                                next();
+                            }
+                        });
+                    };
+                });
+                actions.push(() => {
+                    var errors:IExceptionBase[] = [];
+
+                    function removeItem(memory:IMemory):((done:() => void) => void) {
+                        return (done:() => void):void => {
+                            memory.removeItem(resolve, (errs:IExceptionMemory[]):void => {
+                                if (errs && errs.length) {
+                                    errs.forEach((error:IExceptionMemory):void => {
+                                        errors.push(error);
+                                    });
+                                }
+                                done();
+                            });
+                        };
+                    }
+
+                    parallel([
+                        removeItem(this.getMetadataMemory()),
+                        removeItem(this.getBinaryMemory()),
+                        removeItem(this.getGzipMemory())
+                    ], ():void => {
+                        handler(errors.length ? errors : null, null);
+                    });
+                });
+                deferred(actions);
+            },
+            (done:() => void):void => {
+
             }
         ]);
 
     }
-
-    private _queue:{[index:string]:((errors:IException[], result:IResponse) => void)} = {};
 
     protected handler(request:any, callback:(response:any) => void):void {
 
