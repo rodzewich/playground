@@ -1,6 +1,6 @@
 import IDaemonBase = require("../../daemon/IDaemon");
 import IException  = require("../exception/IException");
-import IResponse   = require("../IResponse");
+import IResponse   = require("../client/IResponse");
 import IMemory     = require("../../memory/client/IClient");
 
 interface IDaemon extends IDaemonBase {

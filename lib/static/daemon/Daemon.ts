@@ -15,6 +15,7 @@ import IObject    = require("../exception/IObject");
 import isDefined  = require("../../isDefined");
 import isFunction = require("../../isFunction");
 import isTrue     = require("../../isTrue");
+import fs = require("fs");
 import Separator  = require("../../helpers/Separator");
 import ExceptionBase = require("../../exception/Exception");
 import UseIndexHelper   = require("../helpers/UseIndexHelper");
@@ -712,12 +713,12 @@ class Daemon extends DaemonBase implements IDaemon {
         return this._lockMemory;
     }
 
-    public getContent(filename:string, cacheOnly:boolean, callback?:(errors:Exception[], result:IResponse) => void):void {
+    public getContent(filename:string, cacheOnly:boolean, callback?:(errors:IException[], result:IResponse) => void):void {
 
         var resolve:string = path.relative(path.sep, path.normalize(path.resolve(path.sep, String(filename)))),
-            memoryUnlock:(callback?:(errors:IMemoryException[]) => void;
+            memoryUnlock:(callback?:(errors:IMemoryException[]) => void) => void;
 
-        function handler(errors:Exception[], result:IResponse):void {
+        function handler(errors:IException[], result:IResponse):void {
             if (isFunction(callback)) {
                 callback(errors, result);
             }
@@ -753,7 +754,7 @@ class Daemon extends DaemonBase implements IDaemon {
                                 }
                             });
                         },
-                        (next:() => void):void => {
+                        ():void => {
                             var errors:IExceptionBase[] = [];
                             parallel([
                                 (done:() => void):void => {
@@ -793,6 +794,17 @@ class Daemon extends DaemonBase implements IDaemon {
                 }
             },
             (next:() => void):void => {
+                var exists:boolean = true;
+                if (!isDefined(this._queue[resolve])) {
+                    this._queue[resolve] = [];
+                    exists = false;
+                }
+                this._queue[resolve].push(handler);
+                if (!exists) {
+                    next();
+                }
+            },
+            (next:() => void):void => {
                 this.getLockMemory().lock(resolve, (errors:IMemoryException[], unlock:(callback?:(errors:IMemoryException[]) => void) => void):void => {
                     if (errors && errors.length) {
                         handler(errors, null);
@@ -810,6 +822,8 @@ class Daemon extends DaemonBase implements IDaemon {
         ]);
 
     }
+
+    private _queue:{[index:string]:((errors:IException[], result:IResponse) => void)} = {};
 
     protected handler(request:any, callback:(response:any) => void):void {
 
@@ -840,7 +854,7 @@ class Daemon extends DaemonBase implements IDaemon {
                         this.stop();
                         break;
                     case "getContent":
-                        this.getContent(<string>args[0], <string>args[1], (errors:Exception[], result:IResponse):void => {
+                        this.getContent(<string>args[0], <boolean>args[1], (errors:Exception[], result:IResponse):void => {
                             response.result = result;
                             if (errors && errors.length) {
                                 response.errors = errors.map((error:Exception):IObject => {
