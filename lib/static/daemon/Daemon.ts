@@ -309,7 +309,7 @@ class Daemon extends DaemonBase implements IDaemon {
     }
 
     public setMemoryLocation(location:string):void {
-        var oldLocation:string = this.getMemory().getLocation()
+        var oldLocation:string = this.getMemory().getLocation();
         this.getMemory().setLocation(location);
         if (oldLocation === this.getMetadataMemory().getLocation()) {
             this.getMetadataMemory().setLocation(location);
@@ -714,7 +714,8 @@ class Daemon extends DaemonBase implements IDaemon {
 
     public getContent(filename:string, cacheOnly:boolean, callback?:(errors:Exception[], result:IResponse) => void):void {
 
-        var resolve:string = path.relative(path.sep, path.normalize(path.resolve(path.sep, String(filename))));
+        var resolve:string = path.relative(path.sep, path.normalize(path.resolve(path.sep, String(filename)))),
+            memoryUnlock:(callback?:(errors:IMemoryException[]) => void;
 
         function handler(errors:Exception[], result:IResponse):void {
             if (isFunction(callback)) {
@@ -725,15 +726,16 @@ class Daemon extends DaemonBase implements IDaemon {
         deferred([
 
             (next:() => void):void => {
-                var response:IResponse = {
-                    filename   : null,
-                    content    : null,
-                    type       : null,
-                    length     : null,
-                    zipContent : null,
-                    zipLength  : null,
-                    date       : null
-                };
+                var exists = false,
+                    response:IResponse = {
+                        filename   : null,
+                        content    : null,
+                        type       : null,
+                        length     : null,
+                        zipContent : null,
+                        zipLength  : null,
+                        date       : null
+                    };
                 if (isTrue(cacheOnly)) {
                     deferred([
                         (next:() => void):void => {
@@ -744,6 +746,7 @@ class Daemon extends DaemonBase implements IDaemon {
                                     response.filename = resolve;
                                     response.type     = "text/plain"; // todo: fix it
                                     response.date     = result.date;
+                                    exists = true;
                                     next();
                                 } else {
                                     handler(null, null);
@@ -780,15 +783,9 @@ class Daemon extends DaemonBase implements IDaemon {
                                     });
                                 }
                             ], ():void => {
-                                if (errors.length) {
-                                    handler(errors, null);
-                                } else {
-                                    next();
-                                }
+                                handler(errors.length ? errors : null,
+                                    exists && !errors.length ? response : null);
                             });
-                        },
-                        ():void => {
-                            handler(null, response);
                         }
                     ]);
                 } else {
@@ -796,7 +793,19 @@ class Daemon extends DaemonBase implements IDaemon {
                 }
             },
             (next:() => void):void => {
+                this.getLockMemory().lock(resolve, (errors:IMemoryException[], unlock:(callback?:(errors:IMemoryException[]) => void) => void):void => {
+                    if (errors && errors.length) {
+                        handler(errors, null);
+                    } else {
+                        memoryUnlock = unlock;
+                        next();
+                    }
+                });
+            },
+            (next:() => void):void => {
+                fs.stat(path.resolve(this.getSourcesDirectory(), resolve), (error:NodeJS.ErrnoException, stats:fs.Stats):void => {
 
+                });
             }
         ]);
 
