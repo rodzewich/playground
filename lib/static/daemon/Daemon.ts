@@ -717,9 +717,17 @@ class Daemon extends DaemonBase implements IDaemon {
 
     public getContent(filename:string, cacheOnly:boolean, callback?:(errors:IException[], result:IResponse) => void):void {
 
-        var fullpath:string,
-            resolve:string = path.relative(path.sep, path.normalize(path.resolve(path.sep, String(filename)))),
-            memoryUnlock:(callback?:(errors:IExceptionMemory[]) => void) => void;
+        var resolve:string,
+            memoryUnlock:(callback?:(errors:IExceptionMemory[]) => void) => void,
+            response:IResponse = {
+                filename   : path.relative(path.sep, path.normalize(path.resolve(path.sep, String(filename)))),
+                content    : null,
+                type       : null,
+                length     : null,
+                zipContent : null,
+                zipLength  : null,
+                date       : null
+            };
 
         function handler(errs:IException[], result:IResponse):void {
             var errors:IException[] = [];
@@ -747,26 +755,16 @@ class Daemon extends DaemonBase implements IDaemon {
         deferred([
 
             (next:() => void):void => {
-                var exists = false,
-                    response:IResponse = {
-                        filename   : null,
-                        content    : null,
-                        type       : null,
-                        length     : null,
-                        zipContent : null,
-                        zipLength  : null,
-                        date       : null
-                    };
+                var exists = false;
                 if (isTrue(cacheOnly)) {
                     deferred([
                         (next:() => void):void => {
-                            this.getMetadataMemory().getItem(resolve, (errors:IExceptionMemory[], result:any):void => {
+                            this.getMetadataMemory().getItem(response.filename, (errors:IExceptionMemory[], result:any):void => {
                                 if (errors.length) {
                                     handler(errors, null);
                                 } else if (result) {
-                                    response.filename = resolve;
-                                    response.type     = "text/plain"; // todo: fix it
-                                    response.date     = result.date;
+                                    response.type = "text/plain"; // todo: fix it
+                                    response.date = result.date;
                                     exists = true;
                                     next();
                                 } else {
@@ -778,7 +776,7 @@ class Daemon extends DaemonBase implements IDaemon {
                             var errors:IExceptionBase[] = [];
                             parallel([
                                 (done:() => void):void => {
-                                    this.getBinaryMemory().getBin(resolve, (errs:IExceptionMemory[], buffer:Buffer):void => {
+                                    this.getBinaryMemory().getBin(response.filename, (errs:IExceptionMemory[], buffer:Buffer):void => {
                                         if (errs && errs.length) {
                                             errs.forEach((error:IExceptionMemory):void => {
                                                 errors.push(error);
@@ -791,7 +789,7 @@ class Daemon extends DaemonBase implements IDaemon {
                                     });
                                 },
                                 (done:() => void):void => {
-                                    this.getGzipMemory().getBin(resolve, (errs:IExceptionMemory[], buffer:Buffer):void => {
+                                    this.getGzipMemory().getBin(response.filename, (errs:IExceptionMemory[], buffer:Buffer):void => {
                                         if (errs && errs.length) {
                                             errs.forEach((error:IExceptionMemory):void => {
                                                 errors.push(error);
@@ -815,17 +813,17 @@ class Daemon extends DaemonBase implements IDaemon {
             },
             (next:() => void):void => {
                 var exists:boolean = true;
-                if (!isDefined(this._queue[resolve])) {
-                    this._queue[resolve] = [];
+                if (!isDefined(this._queue[response.filename])) {
+                    this._queue[response.filename] = [];
                     exists = false;
                 }
-                this._queue[resolve].push(handler);
+                this._queue[response.filename].push(handler);
                 if (!exists) {
                     next();
                 }
             },
             (next:() => void):void => {
-                this.getLockMemory().lock(resolve, (errors:IExceptionMemory[], unlock:(callback?:(errors:IExceptionMemory[]) => void) => void):void => {
+                this.getLockMemory().lock(response.filename, (errors:IExceptionMemory[], unlock:(callback?:(errors:IExceptionMemory[]) => void) => void):void => {
                     if (errors && errors.length) {
                         handler(errors, null);
                     } else {
@@ -847,8 +845,8 @@ class Daemon extends DaemonBase implements IDaemon {
                 actions = directories.map((directory:string):((next:() => void) => void) => {
                     // todo: find index files
                     return (next:() => void) => {
-                        fullpath = path.resolve(directory, resolve);
-                        fs.stat(fullpath, (error:NodeJS.ErrnoException, stats:fs.Stats):void => {
+                        resolve = path.resolve(directory, response.filename);
+                        fs.stat(resolve, (error:NodeJS.ErrnoException, stats:fs.Stats):void => {
                             if (error && error.code !== "ENOENT") {
                                 handler([ExceptionBase.convertFromError(error, {
                                     code    : error.code,
@@ -869,7 +867,7 @@ class Daemon extends DaemonBase implements IDaemon {
 
                     function removeItem(memory:IMemory):((done:() => void) => void) {
                         return (done:() => void):void => {
-                            memory.removeItem(resolve, (errs:IExceptionMemory[]):void => {
+                            memory.removeItem(response.filename, (errs:IExceptionMemory[]):void => {
                                 if (errs && errs.length) {
                                     errs.forEach((error:IExceptionMemory):void => {
                                         errors.push(error);
@@ -891,7 +889,9 @@ class Daemon extends DaemonBase implements IDaemon {
                 deferred(actions);
             },
             (done:() => void):void => {
+                fs.readFile(resolve, (err:NodeJS.ErrnoException, data:Buffer):void => {
 
+                });
             }
         ]);
 
