@@ -1,7 +1,7 @@
 import DaemonBase = require("../../daemon/Daemon");
 import IDaemon    = require("./IDaemon");
 import IOptions   = require("./IOptions");
-import IResponse  = require("../client/IResponse");
+import IResponse  = require("./IResponse");
 import log4js     = require("../../../logger");
 import deferred   = require("../../deferred");
 import parallel   = require("../../parallel");
@@ -727,35 +727,52 @@ class Daemon extends DaemonBase implements IDaemon {
                 zipContent : null,
                 zipLength  : null,
                 date       : null
-            };
+            },
+            handler:(errs:IException[], result:IResponse) => void = (errs:IException[], result:IResponse):void => {
+                var errors:IException[] = [];
+                var base64:string;
+                if (errs && errs.length) {
+                    errors = errs.slice(0);
+                }
+                if (result && result.content) {
 
-        function handler(errs:IException[], result:IResponse):void {
-            var errors:IException[] = [];
-            if (errs && errs.length) {
-                errors = errs.slice(0);
-            }
-            if (isFunction(memoryUnlock)) {
-                memoryUnlock((errs:IExceptionMemory[]):void => {
-                    if (errs && errs.length) {
-                        errs.forEach((error:IExceptionMemory):void => {
-                            errors.push(error);
-                        });
+                }
+                if (isFunction(memoryUnlock)) {
+                    memoryUnlock((errs:IExceptionMemory[]):void => {
+                        if (errs && errs.length) {
+                            errs.forEach((error:IExceptionMemory):void => {
+                                errors.push(error);
+                            });
+                        }
+                        if (isFunction(callback)) {
+                            callback(errors && errors.length ? errors : null,
+                                errors && errors.length ? null : result || null);
+                        }
+                    });
+                } else if (isFunction(callback)) {
+                    callback(errors && errors.length ? errors : null,
+                        errors && errors.length ? null : result || null);
+                }
+            },
+            handlerViaQueue:(errs:IException[], result:IResponse) => void = (errs:IException[], result:IResponse):void => {
+                var index:number,
+                    length:number,
+                    queue:((errors:IException[], result:IResponse) => void)[];
+                if (isDefined(this._queue[response.filename])) {
+                    queue = this._queue[response.filename];
+                    delete this._queue[response.filename];
+                    length = queue.length;
+                    for (index = 0; index < length; index++) {
+                        queue[index](errs, result);
                     }
-                    if (isFunction(callback)) {
-                        callback(errors && errors.length ? errors : null,
-                            errors && errors.length ? null : result || null);
-                    }
-                });
-            } else if (isFunction(callback)) {
-                callback(errors && errors.length ? errors : null,
-                    errors && errors.length ? null : result || null);
-            }
-        }
+                }
+            };
 
         deferred([
 
             (next:() => void):void => {
                 var exists = false;
+
                 if (isTrue(cacheOnly)) {
                     deferred([
                         (next:() => void):void => {
@@ -825,7 +842,7 @@ class Daemon extends DaemonBase implements IDaemon {
             (next:() => void):void => {
                 this.getLockMemory().lock(response.filename, (errors:IExceptionMemory[], unlock:(callback?:(errors:IExceptionMemory[]) => void) => void):void => {
                     if (errors && errors.length) {
-                        handler(errors, null);
+                        handlerViaQueue(errors, null);
                     } else {
                         memoryUnlock = unlock;
                         next();
@@ -848,7 +865,7 @@ class Daemon extends DaemonBase implements IDaemon {
                         resolve = path.resolve(directory, response.filename);
                         fs.stat(resolve, (error:NodeJS.ErrnoException, stats:fs.Stats):void => {
                             if (error && error.code !== "ENOENT") {
-                                handler([ExceptionBase.convertFromError(error, {
+                                handlerViaQueue([ExceptionBase.convertFromError(error, {
                                     code    : error.code,
                                     errno   : error.errno,
                                     path    : error.path,
@@ -883,15 +900,30 @@ class Daemon extends DaemonBase implements IDaemon {
                         removeItem(this.getBinaryMemory()),
                         removeItem(this.getGzipMemory())
                     ], ():void => {
-                        handler(errors.length ? errors : null, null);
+                        handlerViaQueue(errors.length ? errors : null, null);
                     });
                 });
                 deferred(actions);
             },
-            (done:() => void):void => {
-                fs.readFile(resolve, (err:NodeJS.ErrnoException, data:Buffer):void => {
-
+            (next:() => void):void => {
+                fs.readFile(resolve, (error:NodeJS.ErrnoException, data:Buffer):void => {
+                    if (error) {
+                        handlerViaQueue([ExceptionBase.convertFromError(error, {
+                            code    : error.code,
+                            errno   : error.errno,
+                            path    : error.path,
+                            syscall : error.syscall
+                        })], null);
+                    } else {
+                        response.type = "text/plain";
+                        response.content = data;
+                        response.length = data.length;
+                        next();
+                    }
                 });
+            },
+            ():void => {
+                handlerViaQueue(null, response);
             }
         ]);
 

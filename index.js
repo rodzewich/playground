@@ -22,6 +22,28 @@ var fs                   = require("fs"),
     spawn                = require("child_process").spawn,
     charset;
 
+var display = require("./lib/displayException");
+var Static = require("./lib/static/client/Client.js");
+var inst = new Static({
+    location: "/home/rodzewich/Projects/playground/temp/static.sock"
+});
+
+function loop() {
+    inst.getContent("index.html", function (errors, response) {
+        if (errors && errors.length) {
+            errors.forEach(function (error) {
+                display(error);
+            });
+        } else {
+            console.log("response", response);
+        }
+        setTimeout(loop, 1000).ref();
+    });
+}
+loop();
+
+return;
+
 require('source-map-support').install({
     retrieveSourceMap : function (source) {
         if (fs.existsSync(source + ".map")) {

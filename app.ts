@@ -220,15 +220,16 @@ deferred([
                             response.writeHead(304);
                             response.end();
                         } else if (result && result.zipContent && gzipAllowed) {
-                            response.writeHead(200);
                             response.setHeader("Content-Type", result.type);
                             response.setHeader("Last-Modified", new Date(result.date * 1000).toUTCString());
                             response.setHeader("Content-Encoding", "gzip");
+                            response.writeHead(200);
                             response.end(result.zipContent);
                         } else if (result && result.content) {
-                            response.writeHead(200);
                             response.setHeader("Content-Type", result.type);
                             response.setHeader("Last-Modified", new Date(result.date * 1000).toUTCString());
+                            response.writeHead(200);
+                            console.log("content", result.content);
                             response.end(result.content);
                         } else {
                             next();
@@ -238,8 +239,8 @@ deferred([
 
                 // 404 page
                 ():void => {
-                    response.writeHead(404);
                     response.setHeader("Content-Type", "text/html; charset=utf-8");
+                    response.writeHead(404);
                     response.end(error404({
                         serverName    : config.getServerName(),
                         serverVersion : config.getServerVersion()

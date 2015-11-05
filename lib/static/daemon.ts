@@ -60,7 +60,7 @@ var cache:any = {},
         .describe("gzipTimeout", "Timeout for gzip data")
         .describe("lockTimeout", "Timeout for locks\n")
 
-        .alias("s", "sourceDirectory")
+        .alias("s", "sourcesDirectory")
         .describe("s", "Source directory")
         .alias("i", "includeDirectories")
         .describe("i", "Include directories\n")
@@ -87,6 +87,8 @@ if (isArray(argv._) && (<Array>argv._).length === 0 || argv.help) {
     process.exit(0);
 }
 
+// todo: проверять наличие параметра --sourcesDirectory
+
 daemon = new Daemon({
     location             : getLocation(),
     memoryLocation       : getMemory(),
@@ -104,7 +106,7 @@ daemon = new Daemon({
     binaryTimeout        : getBinaryTimeout(),
     gzipTimeout          : getGzipTimeout(),
     lockTimeout          : getLockTimeout(),
-    sourceDirectory      : getSourceDirectory(),
+    sourcesDirectory     : getSourcesDirectory(),
     includeDirectories   : getIncludeDirectories(),
     useIndex             : isUseIndex(),
     indexExtensions      : getIndexExtensions(),
@@ -274,7 +276,7 @@ function getLockTimeout():number {
     return 300;
 }
 
-function getSourceDirectory():string {
+function getSourcesDirectory():string {
     return config.getPublicDirectory();
 }
 
