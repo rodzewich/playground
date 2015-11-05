@@ -166,7 +166,7 @@ function isDebug():boolean {
 
 function getMemory():string {
     if (!isDefined(cache.memory)) {
-        cache.memory = config.getMemorySocket();
+        cache.memory = config.PROJECT_MEMORY_SOCKET;
         if (argv.memory) {
             cache.memory = String(argv.memory);
         }
@@ -275,7 +275,7 @@ function getLockTimeout():number {
 }
 
 function getSourceDirectory():string {
-    return config.getPublicDirectory();
+    return config.PROJECT_PUBLIC_DIRECTORY;
 }
 
 function getIncludeDirectories():string[] {

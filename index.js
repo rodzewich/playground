@@ -22,6 +22,13 @@ var fs                   = require("fs"),
     spawn                = require("child_process").spawn,
     charset;
 
+fs.stat("./sdfsd/sdfsdf/sdfsdfs", function (error) {
+    "use strict";
+    console.log(error);
+});
+
+return ;
+
 require('source-map-support').install({
     retrieveSourceMap : function (source) {
         if (fs.existsSync(source + ".map")) {

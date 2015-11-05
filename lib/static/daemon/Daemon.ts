@@ -16,6 +16,7 @@ import isDefined  = require("../../isDefined");
 import isFunction = require("../../isFunction");
 import isTrue     = require("../../isTrue");
 import fs = require("fs");
+import zlib = require("zlib");
 import Separator  = require("../../helpers/Separator");
 import ExceptionBase = require("../../exception/Exception");
 import UseIndexHelper   = require("../helpers/UseIndexHelper");
@@ -37,6 +38,9 @@ import IGzipExtensionsHelper       = require("../helpers/IGzipExtensionsHelper")
 import GzipMinLengthHelper         = require("../helpers/GzipMinLengthHelper");
 import IGzipMinLengthHelper        = require("../helpers/IGzipMinLengthHelper");
 import path = require("path");
+
+// todo: Accept-Encoding: <compress | gzip | deflate | sdch | identity>
+// todo: TE: trailers, deflate
 
 var logger:log4js.Logger = log4js.getLogger("static");
 
@@ -719,7 +723,16 @@ class Daemon extends DaemonBase implements IDaemon {
 
         var fullpath:string,
             resolve:string = path.relative(path.sep, path.normalize(path.resolve(path.sep, String(filename)))),
-            memoryUnlock:(callback?:(errors:IExceptionMemory[]) => void) => void;
+            memoryUnlock:(callback?:(errors:IExceptionMemory[]) => void) => void,
+            response:IResponse = {
+                filename   : resolve,
+                content    : null,
+                type       : null,
+                length     : null,
+                zipContent : null,
+                zipLength  : null,
+                date       : null
+            };
 
         function handler(errs:IException[], result:IResponse):void {
             var errors:IException[] = [];
@@ -747,16 +760,7 @@ class Daemon extends DaemonBase implements IDaemon {
         deferred([
 
             (next:() => void):void => {
-                var exists = false,
-                    response:IResponse = {
-                        filename   : null,
-                        content    : null,
-                        type       : null,
-                        length     : null,
-                        zipContent : null,
-                        zipLength  : null,
-                        date       : null
-                    };
+                var exists = false;
                 if (isTrue(cacheOnly)) {
                     deferred([
                         (next:() => void):void => {
@@ -764,9 +768,8 @@ class Daemon extends DaemonBase implements IDaemon {
                                 if (errors.length) {
                                     handler(errors, null);
                                 } else if (result) {
-                                    response.filename = resolve;
-                                    response.type     = "text/plain"; // todo: fix it
-                                    response.date     = result.date;
+                                    response.type = "text/plain"; // todo: fix it
+                                    response.date = result.date;
                                     exists = true;
                                     next();
                                 } else {
@@ -836,62 +839,99 @@ class Daemon extends DaemonBase implements IDaemon {
             },
             (done:() => void):void => {
                 var actions:((next:() => void) => void)[],
-                    directories:string[] = [
+                    directories:string[];
+                try {
+                    directories = [
                         this.getSourcesDirectory()
                     ];
-                this.getIncludeDirectories().forEach((directory:string):void => {
-                    if (directories.indexOf(directory) === -1) {
-                        directories.push(directory);
-                    }
-                });
-                actions = directories.map((directory:string):((next:() => void) => void) => {
-                    // todo: find index files
-                    return (next:() => void) => {
-                        fullpath = path.resolve(directory, resolve);
-                        fs.stat(fullpath, (error:NodeJS.ErrnoException, stats:fs.Stats):void => {
-                            if (error && error.code !== "ENOENT") {
-                                handler([ExceptionBase.convertFromError(error, {
-                                    code    : error.code,
-                                    errno   : error.errno,
-                                    path    : error.path,
-                                    syscall : error.syscall
-                                })], null);
-                            } else if (!error && stats.isFile()) {
-                                done();
-                            } else {
-                                next();
-                            }
-                        });
-                    };
-                });
-                actions.push(() => {
-                    var errors:IExceptionBase[] = [];
-
-                    function removeItem(memory:IMemory):((done:() => void) => void) {
-                        return (done:() => void):void => {
-                            memory.removeItem(resolve, (errs:IExceptionMemory[]):void => {
-                                if (errs && errs.length) {
-                                    errs.forEach((error:IExceptionMemory):void => {
-                                        errors.push(error);
-                                    });
+                    this.getIncludeDirectories().forEach((directory:string):void => {
+                        if (directories.indexOf(directory) === -1) {
+                            directories.push(directory);
+                        }
+                    });
+                    actions = directories.map((directory:string):((next:() => void) => void) => {
+                        // todo: find index files
+                        return (next:() => void) => {
+                            fullpath = path.resolve(directory, resolve);
+                            fs.stat(fullpath, (error:NodeJS.ErrnoException, stats:fs.Stats):void => {
+                                if (error && error.code !== "ENOENT") {
+                                    handler([ExceptionBase.convertFromError(error, {
+                                        code    : error.code,
+                                        errno   : error.errno,
+                                        path    : error.path,
+                                        syscall : error.syscall
+                                    })], null);
+                                } else if (!error && stats.isFile()) {
+                                    response.date = parseInt(Number(stats.mtime).toString(10).slice(0, -3), 10);
+                                    done();
+                                } else {
+                                    next();
                                 }
-                                done();
                             });
                         };
-                    }
-
-                    parallel([
-                        removeItem(this.getMetadataMemory()),
-                        removeItem(this.getBinaryMemory()),
-                        removeItem(this.getGzipMemory())
-                    ], ():void => {
-                        handler(errors.length ? errors : null, null);
                     });
-                });
-                deferred(actions);
-            },
-            (done:() => void):void => {
+                    actions.push(() => {
+                        var errors:IExceptionBase[] = [];
 
+                        function removeItem(memory:IMemory):((done:() => void) => void) {
+                            return (done:() => void):void => {
+                                memory.removeItem(resolve, (errs:IExceptionMemory[]):void => {
+                                    if (errs && errs.length) {
+                                        errs.forEach((error:IExceptionMemory):void => {
+                                            errors.push(error);
+                                        });
+                                    }
+                                    done();
+                                });
+                            };
+                        }
+
+                        parallel([
+                            removeItem(this.getMetadataMemory()),
+                            removeItem(this.getBinaryMemory()),
+                            removeItem(this.getGzipMemory())
+                        ], ():void => {
+                            handler(errors.length ? errors : null, null);
+                        });
+                    });
+                    deferred(actions);
+                } catch (error) {
+                    handler([ExceptionBase.convertFromError(error)], null);
+                }
+            },
+            (next:() => void):void => {
+                try {
+                    fs.readFile(fullpath, (error:NodeJS.ErrnoException, data:Buffer):void => {
+                        if (error) {
+                            handler([ExceptionBase.convertFromError(error, {
+                                code    : error.code,
+                                errno   : error.errno,
+                                path    : error.path,
+                                syscall : error.syscall
+                            })], null);
+                        } else {
+                            response.filename = resolve;
+                            response.content  = data;
+                            next();
+                        }
+                    });
+                } catch (error) {
+                    handler([ExceptionBase.convertFromError(error)], null);
+                }
+            },
+            (next:() => void):void => {
+                try {
+                    if (this.isUseGzip() && false) {
+                        zlib.createGzip();
+                    } else {
+                        next();
+                    }
+                } catch (error) {
+                    handler([ExceptionBase.convertFromError(error)], null);
+                }
+            },
+            ():void => {
+                handler(null, response);
             }
         ]);
 

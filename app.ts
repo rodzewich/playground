@@ -26,7 +26,7 @@ import IStaticResponse  = require("./lib/static/client/IResponse");
 
 });*/
 var staticInstance:IStaticClient = new StaticClient({
-    location : config.getStaticSocket(),
+    location : config.PROJECT_STATIC_SOCKET,
     /*timeout  : 123,
     debug    : true*/
 });
@@ -48,7 +48,7 @@ deferred([
         if (config.DEBUG) {
             process.stdout.write("Create logs directory");
         }
-        mkdir(config.getLogsDirectory(), (errors?:IException[]):void => {
+        mkdir(config.PROJECT_LOGS_DIRECTORY, (errors?:IException[]):void => {
             if (errors && errors.length) {
                 if (config.DEBUG) {
                     process.stdout.write("\n");
@@ -72,12 +72,12 @@ deferred([
         }
         deferred([
             (next:() => void):void => {
-                cp.spawn(config.getEnvironment(), ["rm", "-rf", config.getTemporaryDirectory()], {}).on("close", ():void => {
+                cp.spawn(config.PROJECT_ENV, ["rm", "-rf", config.PROJECT_TEMPORARY_DIRECTORY], {}).on("close", ():void => {
                     next();
                 });
             },
             (next:() => void):void => {
-                mkdir(config.getTemporaryDirectory(), (errors?:IException[]):void => {
+                mkdir(config.PROJECT_TEMPORARY_DIRECTORY, (errors?:IException[]):void => {
                     if (errors && errors.length) {
                         if (config.DEBUG) {
                             process.stdout.write("\n");
@@ -106,7 +106,7 @@ deferred([
         }
         memoryInit({
             debug    : false, //config.DEBUG,
-            location : config.getMemorySocket(),
+            location : config.PROJECT_MEMORY_SOCKET,
             binary   : config.SERVER_BINARY,
             cwd      : config.PROJECT_DIRECTORY
         }, (errors?:IException[]):void => {
@@ -133,7 +133,7 @@ deferred([
         }
         staticInit({
             debug    : false, //config.DEBUG,
-            location : config.getStaticSocket(),
+            location : config.PROJECT_STATIC_SOCKET,
             binary   : config.SERVER_BINARY,
             cwd      : config.PROJECT_DIRECTORY
         }, (errors?:IException[]):void => {
@@ -184,7 +184,7 @@ deferred([
                 extension:string,
                 filename:string;
 
-            response.setHeader("Server", [config.getServerName(), config.getServerVersion()].join("/"));
+            response.setHeader("Server", [config.PROJECT_SERVER_NAME, config.PROJECT_SERVER_VERSION].join("/"));
 
             deferred([
 
@@ -213,8 +213,8 @@ deferred([
                             response.setHeader("Content-Type", "text/html; charset=utf-8");
                             response.writeHead(500);
                             response.end(error500({
-                                serverName    : config.getServerName(),
-                                serverVersion : config.getServerVersion()
+                                serverName    : config.PROJECT_SERVER_NAME,
+                                serverVersion : config.PROJECT_SERVER_VERSION
                             }, errors));
                         } else if (modified && modified === date) {
                             response.writeHead(304);
@@ -241,8 +241,8 @@ deferred([
                     response.writeHead(404);
                     response.setHeader("Content-Type", "text/html; charset=utf-8");
                     response.end(error404({
-                        serverName    : config.getServerName(),
-                        serverVersion : config.getServerVersion()
+                        serverName    : config.PROJECT_SERVER_NAME,
+                        serverVersion : config.PROJECT_SERVER_VERSION
                     }));
                 }
             ]);
@@ -251,7 +251,7 @@ deferred([
         });
 
         server.addListener("error", handler);
-        server.listen(config.getPort(), config.getHostname(), handler);
+        server.listen(config.PROJECT_SERVER_PORT, config.PROJECT_SERVER_HOSTNAME, handler);
 
     }
 

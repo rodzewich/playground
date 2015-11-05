@@ -16,23 +16,32 @@ module config {
     export const DEBUG:boolean             = true;
     export const SERVER_DIRECTORY:string   = __dirname;
     export const SERVER_BINARY:string      = path.join(SERVER_DIRECTORY, "bin");
-    export const SERVER_ENVIRONMENT:string = "/usr/bin/env";
-    export const SERVER_NAME:string        = "test";
-    export const SERVER_VERSION:string     = "0.0.1";
 
-    export const PROJECT_DIRECTORY:string = process.cwd();
-    export const PROJECT_CONFIG:string    = path.join(PROJECT_DIRECTORY, "config.json");
-
-    export const DEFAULT_PROJECT_HOSTNAME:string  = "localhost";
-    export const DEFAULT_PROJECT_PORT:number      = 80;
-
-    export const DEFAULT_PROJECT_LOGS_DIRECTORY:string            = path.join(PROJECT_DIRECTORY, "logs");
-    export const DEFAULT_PROJECT_TEMPORARY_DIRECTORY:string       = path.join(PROJECT_DIRECTORY, "temp");
+    export const DEFAULT_PROJECT_SERVER_NAME:string               = "test";
+    export const DEFAULT_PROJECT_SERVER_VERSION:string            = "0.0.1";
+    export const DEFAULT_PROJECT_SERVER_HOSTNAME:string           = "localhost";
+    export const DEFAULT_PROJECT_SERVER_PORT:number               = 80;
+    export const DEFAULT_PROJECT_LOGS_DIRECTORY:string            = "logs";
+    export const DEFAULT_PROJECT_TEMPORARY_DIRECTORY:string       = "temp";
+    export const DEFAULT_PROJECT_PUBLIC_DIRECTORY:string          = "public";
     export const DEFAULT_PROJECT_MEMORY_SOCKET:string             = "memory.sock";
     export const DEFAULT_PROJECT_STATIC_SOCKET:string             = "static.sock";
+    export const DEFAULT_PROJECT_ENV:string                       = "/usr/bin/env";
+
+    export const PROJECT_SERVER_NAME:string         = getServerName();
+    export const PROJECT_SERVER_VERSION:string      = getServerVersion();
+    export const PROJECT_SERVER_HOSTNAME:string     = getServerHostname();
+    export const PROJECT_SERVER_PORT:number         = getServerPort();
+    export const PROJECT_DIRECTORY:string           = process.cwd();
+    export const PROJECT_CONFIG:string              = path.join(PROJECT_DIRECTORY, "config.json");
+    export const PROJECT_PUBLIC_DIRECTORY:string    = getPublicDirectory();
+    export const PROJECT_LOGS_DIRECTORY:string      = getLogsDirectory();
+    export const PROJECT_TEMPORARY_DIRECTORY:string = getTemporaryDirectory();
+    export const PROJECT_MEMORY_SOCKET:string       = getMemorySocket();
+    export const PROJECT_STATIC_SOCKET:string       = getStaticSocket();
+    export const PROJECT_ENV:string                 = getEnv();
 
     export const DEFAULT_PROJECT_NAMESPACE_SEPARATOR:Separator    = Separator.DOT;
-    export const DEFAULT_PROJECT_PUBLIC_DIRECTORY:string          = path.join(PROJECT_DIRECTORY, "public");
     export const DEFAULT_PROJECT_CSS_SOCKET:string                = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "css.sock");
     export const DEFAULT_PROJECT_LESS_SOCKET:string               = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "less.sock");
     export const DEFAULT_PROJECT_SASS_SOCKET:string               = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "sass.sock");
@@ -47,7 +56,7 @@ module config {
     export const DEFAULT_STATIC_GZIP_MEMORY_NAMESPACE:INamespaceHelper      = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["gzip"]);
     export const DEFAULT_STATIC_LOCK_MEMORY_NAMESPACE:INamespaceHelper      = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["lock"]);
 
-    export function getConfig():any {
+    function getConfig():any {
         if (!isDefined(config)) {
             try {
                 config = <any>require(PROJECT_CONFIG) || null;
@@ -58,151 +67,161 @@ module config {
         return config;
     }
 
-    export function getServerName():string {
-        return SERVER_NAME;
+    function getServerName():string {
+        var configValue:string;
+        if (!isDefined(cache.serverName)) {
+            configValue = <string>getobject.get(getConfig(), "server.name");
+            if (configValue && isString(configValue)) {
+                cache.serverName = configValue;
+            } else {
+                cache.serverName = DEFAULT_PROJECT_SERVER_NAME;
+            }
+        }
+        return cache.serverName;
     }
 
-    export function getServerVersion():string {
-        return SERVER_VERSION;
+    function getServerVersion():string {
+        var configValue:string;
+        if (!isDefined(cache.serverVersion)) {
+            configValue = <string>getobject.get(getConfig(), "server.version");
+            if (configValue && isString(configValue)) {
+                cache.serverVersion = configValue;
+            } else {
+                cache.serverVersion = DEFAULT_PROJECT_SERVER_VERSION;
+            }
+        }
+        return cache.serverVersion;
     }
 
-    export function getHostname():string {
+    function getServerHostname():string {
         var configValue:string;
         if (!isDefined(cache.hostname)) {
-            configValue = getobject.get(getConfig(), "hostname");
-            cache.hostname = DEFAULT_PROJECT_HOSTNAME;
+            configValue = <string>getobject.get(getConfig(), "server.hostname");
             if (configValue && isString(configValue)) {
                 cache.hostname = configValue;
+            } else {
+                cache.hostname = DEFAULT_PROJECT_SERVER_HOSTNAME;
             }
         }
         return cache.hostname;
     }
 
-    export function getPort():number {
+    function getServerPort():number {
         var configValue:number;
         if (!isDefined(cache.port)) {
-            configValue = <number>getobject.get(getConfig(), "port");
-            cache.port = DEFAULT_PROJECT_PORT;
+            configValue = <number>getobject.get(getConfig(), "server.port");
             if (configValue && isNumber(configValue)) {
                 cache.port = configValue;
+            } else {
+                cache.port = DEFAULT_PROJECT_SERVER_PORT;
             }
         }
         return cache.port;
     }
 
-    export function getTemporaryDirectory():string {
-        var configValue:string;
-        if (!isDefined(cache.temporaryDirectory)) {
-            configValue = getobject.get(getConfig(), "temporary.directory");
-            cache.temporaryDirectory = DEFAULT_PROJECT_TEMPORARY_DIRECTORY;
-            if (configValue && isString(configValue)) {
-                cache.temporaryDirectory = configValue;
-            }
-            if (!path.isAbsolute(cache.temporaryDirectory)) {
-                cache.temporaryDirectory = path.join(PROJECT_DIRECTORY, cache.temporaryDirectory);
-            }
-            cache.temporaryDirectory = path.normalize(cache.temporaryDirectory);
-            if (path.relative(PROJECT_DIRECTORY, cache.temporaryDirectory).slice(0, 2) === "..") {
-                cache.temporaryDirectory = DEFAULT_PROJECT_TEMPORARY_DIRECTORY;
-            }
-        }
-        return cache.temporaryDirectory;
-    }
-
-    export function getMemorySocket():string {
-        var configValue:string;
+    function getMemorySocket():string {
+        var configValue:string,
+            temporaryDirectory:string;
         if (!isDefined(cache.memorySocket)) {
             configValue = getobject.get(getConfig(), "temporary.memory");
-            cache.memorySocket = path.join(getTemporaryDirectory(), DEFAULT_PROJECT_MEMORY_SOCKET);
-            if (configValue && isString(configValue)) {
-                cache.memorySocket = configValue;
-            }
-            if (!path.isAbsolute(cache.memorySocket)) {
-                cache.memorySocket = path.join(getTemporaryDirectory(), cache.memorySocket);
-            }
-            cache.memorySocket = path.normalize(cache.memorySocket);
-            if (path.relative(getTemporaryDirectory(), cache.memorySocket).slice(0, 2) === "..") {
-                cache.memorySocket = path.join(getTemporaryDirectory(), DEFAULT_PROJECT_MEMORY_SOCKET);
+            temporaryDirectory = getTemporaryDirectory();
+            if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
+                cache.memorySocket = path.normalize(path.join(temporaryDirectory, configValue));
+            } else if (configValue && isString(configValue) &&
+                path.relative(temporaryDirectory, configValue).slice(0, 2) !== "..") {
+                cache.memorySocket = path.normalize(configValue);
+            } else {
+                cache.memorySocket = path.join(temporaryDirectory, DEFAULT_PROJECT_MEMORY_SOCKET);
             }
         }
         return cache.memorySocket;
     }
 
-    export function getStaticSocket():string {
-        var configValue:string;
+    function getStaticSocket():string {
+        var configValue:string,
+            temporaryDirectory:string;
         if (!isDefined(cache.staticSocket)) {
             configValue = getobject.get(getConfig(), "temporary.static");
-            cache.staticSocket = path.join(getTemporaryDirectory(), DEFAULT_PROJECT_MEMORY_SOCKET);
-            if (configValue && isString(configValue)) {
-                cache.staticSocket = configValue;
-            }
-            if (!path.isAbsolute(cache.staticSocket)) {
-                cache.staticSocket = path.join(getTemporaryDirectory(), cache.staticSocket);
-            }
-            cache.staticSocket = path.normalize(cache.staticSocket);
-            if (path.relative(getTemporaryDirectory(), cache.staticSocket).slice(0, 2) === "..") {
-                cache.staticSocket = path.join(getTemporaryDirectory(), DEFAULT_PROJECT_MEMORY_SOCKET);
+            temporaryDirectory = getTemporaryDirectory();
+            if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
+                cache.staticSocket = path.normalize(path.join(temporaryDirectory, configValue));
+            } else if (configValue && isString(configValue) &&
+                path.relative(temporaryDirectory, configValue).slice(0, 2) !== "..") {
+                cache.staticSocket = path.normalize(configValue);
+            } else {
+                cache.staticSocket = path.join(temporaryDirectory, DEFAULT_PROJECT_STATIC_SOCKET);
             }
         }
         return cache.staticSocket;
     }
 
-    export function getLogsDirectory():string {
-        var configValue:string;
-        if (!isDefined(cache.logsDirectory)) {
-            configValue = getobject.get(getConfig(), "logs.directory");
-            cache.logsDirectory = DEFAULT_PROJECT_LOGS_DIRECTORY;
-            if (configValue && isString(configValue)) {
-                cache.logsDirectory = configValue;
-            }
-            if (!path.isAbsolute(cache.logsDirectory)) {
-                cache.logsDirectory = path.join(PROJECT_DIRECTORY, cache.logsDirectory);
-            }
-            cache.logsDirectory = path.normalize(cache.logsDirectory);
-            if (path.relative(PROJECT_DIRECTORY, cache.logsDirectory).slice(0, 2) === "..") {
-                cache.logsDirectory = DEFAULT_PROJECT_LOGS_DIRECTORY;
-            }
-        }
-        return cache.logsDirectory;
-    }
-
-    export function getMemoryLog():string {
-        return null;
-    }
-
-    export function getStaticLog():string {
-        return null;
-    }
-
-    export function getPublicDirectory():string {
+    function getPublicDirectory():string {
         var configValue:string;
         if (!isDefined(cache.publicDirectory)) {
-            configValue = getobject.get(getConfig(), "publicDirectory");
-            cache.publicDirectory = DEFAULT_PROJECT_PUBLIC_DIRECTORY;
-            if (configValue && isString(configValue)) {
-                cache.publicDirectory = configValue;
-            }
-            if (!path.isAbsolute(cache.publicDirectory)) {
-                cache.publicDirectory = path.join(PROJECT_DIRECTORY, cache.publicDirectory);
-            }
-            cache.publicDirectory = path.normalize(cache.publicDirectory);
-            if (path.relative(PROJECT_DIRECTORY, cache.publicDirectory).slice(0, 2) === "..") {
-                cache.publicDirectory = DEFAULT_PROJECT_PUBLIC_DIRECTORY;
+            configValue = getobject.get(getConfig(), "public.directory");
+            if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
+                cache.publicDirectory = path.normalize(path.join(PROJECT_DIRECTORY, configValue));
+            } else if (configValue && isString(configValue) &&
+                path.relative(PROJECT_DIRECTORY, configValue).slice(0, 2) !== "..") {
+                cache.publicDirectory = path.normalize(configValue);
+            } else {
+                cache.publicDirectory = path.join(PROJECT_DIRECTORY, DEFAULT_PROJECT_PUBLIC_DIRECTORY);
             }
         }
         return cache.publicDirectory;
     }
 
-    export function getEnvironment():string {
-        var environment:string;
-        if (!isDefined(cache.ENVIRONMENT)) {
-            environment = getobject.get(getConfig(), "ENVIRONMENT");
-            cache.ENVIRONMENT = SERVER_ENVIRONMENT;
-            if (isDefined(environment)) {
-                cache.ENVIRONMENT = String(environment);
+    function getLogsDirectory():string {
+        var configValue:string;
+        if (!isDefined(cache.logsDirectory)) {
+            configValue = getobject.get(getConfig(), "logs.directory");
+            if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
+                cache.logsDirectory = path.normalize(path.join(PROJECT_DIRECTORY, configValue));
+            } else if (configValue && isString(configValue) &&
+                path.relative(PROJECT_DIRECTORY, configValue).slice(0, 2) !== "..") {
+                cache.logsDirectory = path.normalize(configValue);
+            } else {
+                cache.logsDirectory = path.join(PROJECT_DIRECTORY, DEFAULT_PROJECT_LOGS_DIRECTORY);
             }
         }
-        return cache.ENVIRONMENT;
+        return cache.logsDirectory;
+    }
+
+    function getTemporaryDirectory():string {
+        var configValue:string;
+        if (!isDefined(cache.temporaryDirectory)) {
+            configValue = getobject.get(getConfig(), "temporary.directory");
+            if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
+                cache.temporaryDirectory = path.normalize(path.join(PROJECT_DIRECTORY, configValue));
+            } else if (configValue && isString(configValue) &&
+                path.relative(PROJECT_DIRECTORY, configValue).slice(0, 2) !== "..") {
+                cache.temporaryDirectory = path.normalize(configValue);
+            } else {
+                cache.temporaryDirectory = path.join(PROJECT_DIRECTORY, DEFAULT_PROJECT_TEMPORARY_DIRECTORY);
+            }
+        }
+        return cache.temporaryDirectory;
+    }
+
+    function getMemoryLog():string {
+        return null;
+    }
+
+    function getStaticLog():string {
+        return null;
+    }
+
+    function getEnv():string {
+        var env:string;
+        if (!isDefined(cache.env)) {
+            env = getobject.get(getConfig(), "env");
+            if (isString(env)) {
+                cache.env = String(env);
+            } else {
+                cache.env = DEFAULT_PROJECT_ENV;
+            }
+        }
+        return cache.env;
     }
 
 }
