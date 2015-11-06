@@ -916,7 +916,7 @@ class Daemon extends DaemonBase implements IDaemon {
                         })], null);
                     } else {
                         response.type = "text/plain";
-                        response.content = data;
+                        response.content = data.toString("base64");
                         response.length = data.length;
                         next();
                     }

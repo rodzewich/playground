@@ -7,6 +7,8 @@ import isDefined        = require("./lib/isDefined");
 import Separator        = require("./lib/helpers/Separator");
 import NamespaceHelper  = require("./lib/helpers/NamespaceHelper");
 import INamespaceHelper = require("./lib/helpers/INamespaceHelper");
+import displayException = require("./lib/displayException");
+import Exception        = require("./lib/exception/Exception");
 import getobject        = require("getobject");
 
 module config {
@@ -28,12 +30,12 @@ module config {
     export const DEFAULT_PROJECT_STATIC_SOCKET:string             = "static.sock";
     export const DEFAULT_PROJECT_ENV:string                       = "/usr/bin/env";
 
+    export const PROJECT_DIRECTORY:string           = process.cwd();
+    export const PROJECT_CONFIG:string              = path.join(PROJECT_DIRECTORY, "config.json");
     export const PROJECT_SERVER_NAME:string         = getServerName();
     export const PROJECT_SERVER_VERSION:string      = getServerVersion();
     export const PROJECT_SERVER_HOSTNAME:string     = getServerHostname();
     export const PROJECT_SERVER_PORT:number         = getServerPort();
-    export const PROJECT_DIRECTORY:string           = process.cwd();
-    export const PROJECT_CONFIG:string              = path.join(PROJECT_DIRECTORY, "config.json");
     export const PROJECT_PUBLIC_DIRECTORY:string    = getPublicDirectory();
     export const PROJECT_LOGS_DIRECTORY:string      = getLogsDirectory();
     export const PROJECT_TEMPORARY_DIRECTORY:string = getTemporaryDirectory();

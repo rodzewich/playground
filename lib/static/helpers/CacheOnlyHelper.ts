@@ -6,7 +6,7 @@ class CacheOnlyHelper implements ICacheOnlyHelper {
 
     private _used:boolean = false;
 
-    constructor(value:boolean) {
+    constructor(value?:boolean) {
         if (isDefined(value)) {
             this.setIsUsed(value);
         }

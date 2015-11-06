@@ -1,7 +1,8 @@
 import IClient    = require("./IClient");
 import ClientBase = require("../../client/Client");
 import log4js     = require("../../../logger");
-import IResponse  = require("./IResponse");
+import IResponseClient  = require("./IResponse");
+import IResponseDaemon  = require("../daemon/IResponse");
 import IOptions   = require("./IOptions");
 import isString   = require("../../isString");
 import isFunction = require("../../isFunction");
@@ -89,9 +90,9 @@ class Client extends ClientBase implements IClient {
 
     }
 
-    public getContent(filename:string, callback?:(errors:IException[], response:IResponse) => void):void {
+    public getContent(filename:string, callback?:(errors:IException[], response:IResponseClient) => void):void {
 
-        function handler(errors:IException[], response:IResponse):void {
+        function handler(errors:IException[], response:IResponseClient):void {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
@@ -107,9 +108,31 @@ class Client extends ClientBase implements IClient {
         if (!isString(filename) || !filename) {
             handler([new Exception({message : "filename should be a non empty string"})], null);
         } else {
-            this.call((errors:IException[], response:IResponse):void => {
+            this.call((errors:IException[], response:IResponseDaemon):void => {
+                var result:IResponseClient = {
+                    filename:null,
+                    content:null,
+                    type:null,
+                    length:null,
+                    zipContent:null,
+                    zipLength:null,
+                    date:null,
+                };
+                if (response) {
+                    result.filename = response.filename;
+                    result.type = response.type;
+                    result.length = response.length;
+                    result.zipLength = response.zipLength;
+                    result.date = response.date;
+                    if (response.content) {
+                        result.content = new Buffer(response.content, 'base64');
+                    }
+                    if (response.zipContent) {
+                        result.zipContent = new Buffer(response.zipContent, 'base64');
+                    }
+                }
                 handler(errors && errors.length ? errors : null,
-                    !errors || !errors.length ? response : null);
+                    !errors || !errors.length ? result : null);
             }, null, "getContent", filename, this.isCacheOnly());
         }
 
