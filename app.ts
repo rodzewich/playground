@@ -295,7 +295,6 @@ deferred([
                             response.setHeader("Content-Type", result.type);
                             response.setHeader("Last-Modified", new Date(result.date * 1000).toUTCString());
                             response.writeHead(200);
-                            console.log("content", result.content);
                             response.end(result.content);
                         } else {
                             next();
