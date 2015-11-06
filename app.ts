@@ -9,7 +9,6 @@ import Exception  = require("./lib/exception/Exception");
 import IException = require("./lib/exception/IException");
 import memoryInit = require("./lib/memory/init");
 import staticInit = require("./lib/static/init");
-import display    = require("./lib/displayException");
 import colors     = require("colors");
 import http       = require("http");
 import url        = require("url");
@@ -43,52 +42,119 @@ process.addListener('uncaughtException', function (error:Error) {
 
 deferred([
 
-    // adjust logs directory
+    // create directories
     (next:() => void):void => {
-        if (config.DEBUG) {
-            process.stdout.write("Create logs directory");
-        }
-        mkdir(config.PROJECT_LOGS_DIRECTORY, (errors?:IException[]):void => {
-            if (errors && errors.length) {
-                if (config.DEBUG) {
-                    process.stdout.write("\n");
-                }
-                errors.forEach((error:IException):void => {
-                    display(error);
-                });
-            } else {
-                if (config.DEBUG) {
-                    ok();
-                }
-                next();
-            }
-        })
-    },
-
-    // adjust temporary directory
-    (next:() => void):void => {
-        if (config.DEBUG) {
-            process.stdout.write("Clear temporary directory");
-        }
         deferred([
+            // temporary
             (next:() => void):void => {
                 cp.spawn(config.PROJECT_ENV, ["rm", "-rf", config.PROJECT_TEMPORARY_DIRECTORY], {}).on("close", ():void => {
+                    // todo: show errors
                     next();
                 });
             },
             (next:() => void):void => {
-                mkdir(config.PROJECT_TEMPORARY_DIRECTORY, (errors?:IException[]):void => {
+                mkdir(config.PROJECT_TEMPORARY_DIRECTORY, (errors:IException[]):void => {
                     if (errors && errors.length) {
-                        if (config.DEBUG) {
-                            process.stdout.write("\n");
-                        }
                         errors.forEach((error:IException):void => {
-                            display(error);
+                            displayException(error);
                         });
                     } else {
-                        if (config.DEBUG) {
-                            ok();
-                        }
+                        next();
+                    }
+                });
+            },
+            (next:() => void):void => {
+                var directory:string = path.dirname(config.PROJECT_MEMORY_SOCKET);
+                mkdir(directory, (errors:IException[]):void => {
+                    if (errors && errors.length) {
+                        errors.forEach((error:IException):void => {
+                            displayException(error);
+                        });
+                    } else {
+                        next();
+                    }
+                });
+            },
+            (next:() => void):void => {
+                var directory:string = path.dirname(config.PROJECT_STATIC_SOCKET);
+                mkdir(directory, (errors:IException[]):void => {
+                    if (errors && errors.length) {
+                        errors.forEach((error:IException):void => {
+                            displayException(error);
+                        });
+                    } else {
+                        next();
+                    }
+                });
+            },
+            (next:() => void):void => {
+                var directory:string = path.dirname(config.PROJECT_CSS_SOCKET);
+                mkdir(directory, (errors:IException[]):void => {
+                    if (errors && errors.length) {
+                        errors.forEach((error:IException):void => {
+                            displayException(error);
+                        });
+                    } else {
+                        next();
+                    }
+                });
+            },
+            (next:() => void):void => {
+                var directory:string = path.dirname(config.PROJECT_LESS_SOCKET);
+                mkdir(directory, (errors:IException[]):void => {
+                    if (errors && errors.length) {
+                        errors.forEach((error:IException):void => {
+                            displayException(error);
+                        });
+                    } else {
+                        next();
+                    }
+                });
+            },
+            (next:() => void):void => {
+                var directory:string = path.dirname(config.PROJECT_SASS_SOCKET);
+                mkdir(directory, (errors:IException[]):void => {
+                    if (errors && errors.length) {
+                        errors.forEach((error:IException):void => {
+                            displayException(error);
+                        });
+                    } else {
+                        next();
+                    }
+                });
+            },
+            (next:() => void):void => {
+                var directory:string = path.dirname(config.PROJECT_STYLUS_SOCKET);
+                mkdir(directory, (errors:IException[]):void => {
+                    if (errors && errors.length) {
+                        errors.forEach((error:IException):void => {
+                            displayException(error);
+                        });
+                    } else {
+                        next();
+                    }
+                });
+            },
+            // logs
+            (next:() => void):void => {
+                mkdir(config.PROJECT_LOGS_DIRECTORY, (errors:IException[]):void => {
+                    if (errors && errors.length) {
+                        errors.forEach((error:IException):void => {
+                            displayException(error);
+                        });
+                    } else {
+                        next();
+                    }
+                });
+            },
+            // public
+            (next:() => void):void => {
+                mkdir(config.PROJECT_PUBLIC_DIRECTORY, (errors:IException[]):void => {
+                    if (errors && errors.length) {
+                        errors.forEach((error:IException):void => {
+                            displayException(error);
+                        });
+                    } else {
                         next();
                     }
                 });
@@ -99,7 +165,7 @@ deferred([
         ]);
     },
 
-    // init memory daemon
+    // init memory
     (next:() => void):void => {
         if (config.DEBUG) {
             process.stdout.write("Init memory daemon");
@@ -115,7 +181,7 @@ deferred([
                     process.stdout.write("\n");
                 }
                 errors.forEach((error:IException):void => {
-                    display(error);
+                    displayException(error);
                 });
             } else {
                 if (config.DEBUG) {
@@ -126,7 +192,7 @@ deferred([
         });
     },
 
-    // init static daemon
+    // init static
     (next:() => void):void => {
         if (config.DEBUG) {
             process.stdout.write("Init static daemon");
@@ -142,7 +208,7 @@ deferred([
                     process.stdout.write("\n");
                 }
                 errors.forEach((error:IException):void => {
-                    display(error);
+                    displayException(error);
                 });
             } else {
                 if (config.DEBUG) {
@@ -163,7 +229,7 @@ deferred([
                 if (config.DEBUG) {
                     process.stdout.write("\n");
                 }
-                display(Exception.convertFromError(error));
+                displayException(Exception.convertFromError(error));
                 server.close();
             } else {
                 if (config.DEBUG) {
