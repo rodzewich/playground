@@ -15,24 +15,24 @@ module config {
     var config:any,
         cache:any = {};
 
-    export const DEBUG:boolean             = true;
-    export const SERVER_DIRECTORY:string   = __dirname;
-    export const SERVER_BINARY:string      = path.join(SERVER_DIRECTORY, "bin");
+    export const DEBUG:boolean           = true;
+    export const SERVER_DIRECTORY:string = __dirname;
+    export const SERVER_BINARY:string    = path.join(SERVER_DIRECTORY, "bin");
 
-    export const DEFAULT_PROJECT_SERVER_NAME:string               = "test";
-    export const DEFAULT_PROJECT_SERVER_VERSION:string            = "0.0.1";
-    export const DEFAULT_PROJECT_SERVER_HOSTNAME:string           = "localhost";
-    export const DEFAULT_PROJECT_SERVER_PORT:number               = 80;
-    export const DEFAULT_PROJECT_LOGS_DIRECTORY:string            = "logs";
-    export const DEFAULT_PROJECT_TEMPORARY_DIRECTORY:string       = "temp";
-    export const DEFAULT_PROJECT_PUBLIC_DIRECTORY:string          = "public";
-    export const DEFAULT_PROJECT_MEMORY_SOCKET:string             = "memory.sock";
-    export const DEFAULT_PROJECT_STATIC_SOCKET:string             = "static.sock";
-    export const DEFAULT_PROJECT_CSS_SOCKET:string                = "css.sock";
-    export const DEFAULT_PROJECT_LESS_SOCKET:string               = "less.sock";
-    export const DEFAULT_PROJECT_SASS_SOCKET:string               = "sass.sock";
-    export const DEFAULT_PROJECT_STYLUS_SOCKET:string             = "stylus.sock";
-    export const DEFAULT_PROJECT_ENV:string                       = "/usr/bin/env";
+    export const DEFAULT_PROJECT_SERVER_NAME:string         = "test";
+    export const DEFAULT_PROJECT_SERVER_VERSION:string      = "0.0.1";
+    export const DEFAULT_PROJECT_SERVER_HOSTNAME:string     = "localhost";
+    export const DEFAULT_PROJECT_SERVER_PORT:number         = 80;
+    export const DEFAULT_PROJECT_LOGS_DIRECTORY:string      = "logs";
+    export const DEFAULT_PROJECT_TEMPORARY_DIRECTORY:string = "temp";
+    export const DEFAULT_PROJECT_PUBLIC_DIRECTORY:string    = "public";
+    export const DEFAULT_PROJECT_MEMORY_SOCKET:string       = "memory.sock";
+    export const DEFAULT_PROJECT_STATIC_SOCKET:string       = "static.sock";
+    export const DEFAULT_PROJECT_CSS_SOCKET:string          = "css.sock";
+    export const DEFAULT_PROJECT_LESS_SOCKET:string         = "less.sock";
+    export const DEFAULT_PROJECT_SASS_SOCKET:string         = "sass.sock";
+    export const DEFAULT_PROJECT_STYLUS_SOCKET:string       = "stylus.sock";
+    export const DEFAULT_PROJECT_ENV:string                 = "/usr/bin/env";
 
     export const PROJECT_DIRECTORY:string           = process.cwd();
     export const PROJECT_CONFIG:string              = path.join(PROJECT_DIRECTORY, "config.json");
