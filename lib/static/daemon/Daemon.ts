@@ -873,6 +873,7 @@ class Daemon extends DaemonBase implements IDaemon {
                                     syscall : error.syscall
                                 })], null);
                             } else if (!error && stats.isFile()) {
+                                response.date = parseInt(String(Number(stats.mtime) / 1000).split(".")[0], 10);
                                 done();
                             } else {
                                 next();

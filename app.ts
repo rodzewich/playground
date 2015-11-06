@@ -20,6 +20,7 @@ import IStaticClient    = require("./lib/static/client/IClient");
 import StaticClient     = require("./lib/static/client/Client");
 import IStaticException = require("./lib/static/exception/IException");
 import IStaticResponse  = require("./lib/static/client/IResponse");
+import ContentType      = require("./lib/helpers/ContentType");
 
 /*var memoryInstance:IMemory = new Memory({
 
@@ -276,7 +277,7 @@ deferred([
                         var modified:number = Date.parse(request.headers["if-modified-since"]),
                             date:number = result && result.date ? 1000 * result.date : 0;
                         if (errors && errors.length) {
-                            response.setHeader("Content-Type", "text/html; charset=utf-8");
+                            response.setHeader("Content-Type", ContentType.HTML.toString("utf-8"));
                             response.writeHead(500);
                             response.end(error500({
                                 serverName    : config.PROJECT_SERVER_NAME,
@@ -304,7 +305,7 @@ deferred([
 
                 // 404 page
                 ():void => {
-                    response.setHeader("Content-Type", "text/html; charset=utf-8");
+                    response.setHeader("Content-Type", ContentType.HTML.toString("utf-8"));
                     response.writeHead(404);
                     response.end(error404({
                         serverName    : config.PROJECT_SERVER_NAME,
