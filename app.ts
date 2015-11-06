@@ -277,7 +277,7 @@ deferred([
                         var modified:number = Date.parse(request.headers["if-modified-since"]),
                             date:number = result && result.date ? 1000 * result.date : 0;
                         if (errors && errors.length) {
-                            response.setHeader("Content-Type", ContentType.HTML.toString("utf-8"));
+                            response.setHeader("Content-Type", ContentType.HTML.toString(config.PROJECT_SERVER_CHARSET));
                             response.writeHead(500);
                             response.end(error500({
                                 serverName    : config.PROJECT_SERVER_NAME,
@@ -305,7 +305,7 @@ deferred([
 
                 // 404 page
                 ():void => {
-                    response.setHeader("Content-Type", ContentType.HTML.toString("utf-8"));
+                    response.setHeader("Content-Type", ContentType.HTML.toString(config.PROJECT_SERVER_CHARSET));
                     response.writeHead(404);
                     response.end(error404({
                         serverName    : config.PROJECT_SERVER_NAME,

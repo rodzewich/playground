@@ -23,6 +23,7 @@ module config {
     export const DEFAULT_PROJECT_SERVER_VERSION:string      = "0.0.1";
     export const DEFAULT_PROJECT_SERVER_HOSTNAME:string     = "localhost";
     export const DEFAULT_PROJECT_SERVER_PORT:number         = 80;
+    export const DEFAULT_PROJECT_SERVER_CHARSET:string      = "utf-8";
     export const DEFAULT_PROJECT_LOGS_DIRECTORY:string      = "logs";
     export const DEFAULT_PROJECT_TEMPORARY_DIRECTORY:string = "temp";
     export const DEFAULT_PROJECT_PUBLIC_DIRECTORY:string    = "public";
@@ -40,6 +41,7 @@ module config {
     export const PROJECT_SERVER_VERSION:string      = getServerVersion();
     export const PROJECT_SERVER_HOSTNAME:string     = getServerHostname();
     export const PROJECT_SERVER_PORT:number         = getServerPort();
+    export const PROJECT_SERVER_CHARSET:string      = getServerCharset();
     export const PROJECT_PUBLIC_DIRECTORY:string    = getPublicDirectory();
     export const PROJECT_LOGS_DIRECTORY:string      = getLogsDirectory();
     export const PROJECT_TEMPORARY_DIRECTORY:string = getTemporaryDirectory();
@@ -123,6 +125,19 @@ module config {
             }
         }
         return cache.port;
+    }
+
+    function getServerCharset():string {
+        var configValue:string;
+        if (!isDefined(cache.serverCharset)) {
+            configValue = <string>getobject.get(getConfig(), "server.charset");
+            if (configValue && isString(configValue)) {
+                cache.serverCharset = configValue;
+            } else {
+                cache.serverCharset = DEFAULT_PROJECT_SERVER_CHARSET;
+            }
+        }
+        return cache.serverCharset;
     }
 
     function getMemorySocket():string {
