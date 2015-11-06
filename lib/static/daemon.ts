@@ -16,7 +16,7 @@ process.addListener('uncaughtException', function (error:Error) {
         messageSent = true;
     }
     if (logger) {
-        logger.fatal(error);
+        logger.fatal(Exception.convertFromError(error).toString());
     }
 });
 
@@ -82,7 +82,7 @@ var cache:any = {},
 
         .argv;
 
-if (isArray(argv._) && (<Array>argv._).length === 0 || argv.help) {
+if (isArray(argv._) && (<Array<any>>argv._).length === 0 || argv.help) {
     optimist.showHelp();
     process.exit(0);
 }

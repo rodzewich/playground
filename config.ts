@@ -28,6 +28,10 @@ module config {
     export const DEFAULT_PROJECT_PUBLIC_DIRECTORY:string          = "public";
     export const DEFAULT_PROJECT_MEMORY_SOCKET:string             = "memory.sock";
     export const DEFAULT_PROJECT_STATIC_SOCKET:string             = "static.sock";
+    export const DEFAULT_PROJECT_CSS_SOCKET:string                = "css.sock";
+    export const DEFAULT_PROJECT_LESS_SOCKET:string               = "less.sock";
+    export const DEFAULT_PROJECT_SASS_SOCKET:string               = "sass.sock";
+    export const DEFAULT_PROJECT_STYLUS_SOCKET:string             = "stylus.sock";
     export const DEFAULT_PROJECT_ENV:string                       = "/usr/bin/env";
 
     export const PROJECT_DIRECTORY:string           = process.cwd();
@@ -41,13 +45,13 @@ module config {
     export const PROJECT_TEMPORARY_DIRECTORY:string = getTemporaryDirectory();
     export const PROJECT_MEMORY_SOCKET:string       = getMemorySocket();
     export const PROJECT_STATIC_SOCKET:string       = getStaticSocket();
+    export const PROJECT_CSS_SOCKET:string          = getCssSocket();
+    export const PROJECT_LESS_SOCKET:string         = getLessSocket();
+    export const PROJECT_SASS_SOCKET:string         = getSassSocket();
+    export const PROJECT_STYLUS_SOCKET:string       = getStylusSocket();
     export const PROJECT_ENV:string                 = getEnv();
 
-    export const DEFAULT_PROJECT_NAMESPACE_SEPARATOR:Separator    = Separator.DOT;
-    export const DEFAULT_PROJECT_CSS_SOCKET:string                = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "css.sock");
-    export const DEFAULT_PROJECT_LESS_SOCKET:string               = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "less.sock");
-    export const DEFAULT_PROJECT_SASS_SOCKET:string               = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "sass.sock");
-    export const DEFAULT_PROJECT_STYLUS_SOCKET:string             = path.join(DEFAULT_PROJECT_TEMPORARY_DIRECTORY, "stylus.sock");
+    /*export const DEFAULT_PROJECT_NAMESPACE_SEPARATOR:Separator    = Separator.DOT;
     export const DEFAULT_STATIC_MEMORY_METADATA:string            = DEFAULT_PROJECT_MEMORY_SOCKET;
     export const DEFAULT_STATIC_MEMORY_BINARY:string              = DEFAULT_PROJECT_MEMORY_SOCKET;
     export const DEFAULT_STATIC_MEMORY_GZIP:string                = DEFAULT_PROJECT_MEMORY_SOCKET;
@@ -56,7 +60,7 @@ module config {
     export const DEFAULT_STATIC_METADATA_MEMORY_NAMESPACE:INamespaceHelper  = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["metadata"]);
     export const DEFAULT_STATIC_BINARY_MEMORY_NAMESPACE:INamespaceHelper    = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["binary"]);
     export const DEFAULT_STATIC_GZIP_MEMORY_NAMESPACE:INamespaceHelper      = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["gzip"]);
-    export const DEFAULT_STATIC_LOCK_MEMORY_NAMESPACE:INamespaceHelper      = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["lock"]);
+    export const DEFAULT_STATIC_LOCK_MEMORY_NAMESPACE:INamespaceHelper      = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["lock"]);*/
 
     function getConfig():any {
         if (!isDefined(config)) {
@@ -157,6 +161,78 @@ module config {
         return cache.staticSocket;
     }
 
+    function getCssSocket():string {
+        var configValue:string,
+            temporaryDirectory:string;
+        if (!isDefined(cache.cssSocket)) {
+            configValue = getobject.get(getConfig(), "temporary.css");
+            temporaryDirectory = getTemporaryDirectory();
+            if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
+                cache.cssSocket = path.normalize(path.join(temporaryDirectory, configValue));
+            } else if (configValue && isString(configValue) &&
+                path.relative(temporaryDirectory, configValue).slice(0, 2) !== "..") {
+                cache.cssSocket = path.normalize(configValue);
+            } else {
+                cache.cssSocket = path.join(temporaryDirectory, DEFAULT_PROJECT_CSS_SOCKET);
+            }
+        }
+        return cache.cssSocket;
+    }
+
+    function getLessSocket():string {
+        var configValue:string,
+            temporaryDirectory:string;
+        if (!isDefined(cache.lessSocket)) {
+            configValue = getobject.get(getConfig(), "temporary.less");
+            temporaryDirectory = getTemporaryDirectory();
+            if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
+                cache.lessSocket = path.normalize(path.join(temporaryDirectory, configValue));
+            } else if (configValue && isString(configValue) &&
+                path.relative(temporaryDirectory, configValue).slice(0, 2) !== "..") {
+                cache.lessSocket = path.normalize(configValue);
+            } else {
+                cache.lessSocket = path.join(temporaryDirectory, DEFAULT_PROJECT_LESS_SOCKET);
+            }
+        }
+        return cache.lessSocket;
+    }
+
+    function getSassSocket():string {
+        var configValue:string,
+            temporaryDirectory:string;
+        if (!isDefined(cache.sassSocket)) {
+            configValue = getobject.get(getConfig(), "temporary.sass");
+            temporaryDirectory = getTemporaryDirectory();
+            if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
+                cache.sassSocket = path.normalize(path.join(temporaryDirectory, configValue));
+            } else if (configValue && isString(configValue) &&
+                path.relative(temporaryDirectory, configValue).slice(0, 2) !== "..") {
+                cache.sassSocket = path.normalize(configValue);
+            } else {
+                cache.sassSocket = path.join(temporaryDirectory, DEFAULT_PROJECT_SASS_SOCKET);
+            }
+        }
+        return cache.sassSocket;
+    }
+
+    function getStylusSocket():string {
+        var configValue:string,
+            temporaryDirectory:string;
+        if (!isDefined(cache.sassSocket)) {
+            configValue = getobject.get(getConfig(), "temporary.stylus");
+            temporaryDirectory = getTemporaryDirectory();
+            if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
+                cache.stylusSocket = path.normalize(path.join(temporaryDirectory, configValue));
+            } else if (configValue && isString(configValue) &&
+                path.relative(temporaryDirectory, configValue).slice(0, 2) !== "..") {
+                cache.stylusSocket = path.normalize(configValue);
+            } else {
+                cache.stylusSocket = path.join(temporaryDirectory, DEFAULT_PROJECT_STYLUS_SOCKET);
+            }
+        }
+        return cache.stylusSocket;
+    }
+
     function getPublicDirectory():string {
         var configValue:string;
         if (!isDefined(cache.publicDirectory)) {
@@ -203,14 +279,6 @@ module config {
             }
         }
         return cache.temporaryDirectory;
-    }
-
-    function getMemoryLog():string {
-        return null;
-    }
-
-    function getStaticLog():string {
-        return null;
     }
 
     function getEnv():string {
