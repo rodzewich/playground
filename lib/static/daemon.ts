@@ -121,7 +121,7 @@ daemon.start((errors:IException[]):void => {
         length:number;
     if (errors && errors.length) {
         if (!messageSent) {
-            if (!!argv.json) {
+            if (argv && !!argv.json) {
                 process.stderr.write(JSON.stringify({
                         started : false,
                         errors  : errors.map((error:IException):IObject => {
@@ -141,7 +141,7 @@ daemon.start((errors:IException[]):void => {
         }
     } else {
         if (!messageSent) {
-            if (!!argv.json) {
+            if (argv && !!argv.json) {
                 process.stderr.write(JSON.stringify({
                         started : true
                     }) + "\n");

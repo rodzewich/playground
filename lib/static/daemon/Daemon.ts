@@ -36,6 +36,7 @@ import GzipExtensionsHelper        = require("../helpers/GzipExtensionsHelper");
 import IGzipExtensionsHelper       = require("../helpers/IGzipExtensionsHelper");
 import GzipMinLengthHelper         = require("../helpers/GzipMinLengthHelper");
 import IGzipMinLengthHelper        = require("../helpers/IGzipMinLengthHelper");
+import ContentType                 = require("../../helpers/ContentType");
 import path = require("path");
 
 var logger:log4js.Logger = log4js.getLogger("static");
@@ -780,7 +781,7 @@ class Daemon extends DaemonBase implements IDaemon {
                                 if (errors.length) {
                                     handler(errors, null);
                                 } else if (result) {
-                                    response.type = "text/plain"; // todo: fix it
+                                    response.type = result.type;
                                     response.date = result.date;
                                     exists = true;
                                     next();
@@ -799,7 +800,7 @@ class Daemon extends DaemonBase implements IDaemon {
                                                 errors.push(error);
                                             });
                                         } else if (buffer) {
-                                            response.content = buffer;
+                                            response.content = buffer.toString("base64");
                                             response.length = buffer.length;
                                         }
                                         done();
@@ -812,7 +813,7 @@ class Daemon extends DaemonBase implements IDaemon {
                                                 errors.push(error);
                                             });
                                         } else if (buffer) {
-                                            response.zipContent = buffer;
+                                            response.zipContent = buffer.toString("base64");
                                             response.zipLength = buffer.length;
                                         }
                                         done();
@@ -906,6 +907,7 @@ class Daemon extends DaemonBase implements IDaemon {
                 deferred(actions);
             },
             (next:() => void):void => {
+                var extension:string = path.extname(resolve).slice(1).toLowerCase();
                 fs.readFile(resolve, (error:NodeJS.ErrnoException, data:Buffer):void => {
                     if (error) {
                         handlerViaQueue([ExceptionBase.convertFromError(error, {
@@ -915,9 +917,9 @@ class Daemon extends DaemonBase implements IDaemon {
                             syscall : error.syscall
                         })], null);
                     } else {
-                        response.type = "text/plain";
+                        response.type    = ContentType.find(extension).toString("utf-8"); // todo: use default charset
                         response.content = data.toString("base64");
-                        response.length = data.length;
+                        response.length  = data.length;
                         next();
                     }
                 });
