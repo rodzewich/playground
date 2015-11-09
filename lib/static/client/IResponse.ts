@@ -2,6 +2,7 @@
 
 interface IResponse {
     filename:string;
+    original:string;
     content:Buffer;
     type:string;
     length:number;

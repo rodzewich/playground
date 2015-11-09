@@ -5,10 +5,17 @@ body {
 
 
 #header {
-    border: 1px solid #aaaaaa;
-    background-color: #cccccc;
-    color: #888888;
-    text-align: center;
+    margin-bottom: 10px;
+}
+
+#footer {
+    margin-top: 10px;
+}
+
+.layout-block {
     padding: 20px;
-    border-radius: 4px;
+    text-align: center;
+    background-color: #b7f8ff;
+    border-top: 2px solid #00a0ff;
+    border-bottom: 2px solid #00a0ff;
 }

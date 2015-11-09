@@ -10,28 +10,61 @@ import isFunction = require("../isFunction");
 import isArray    = require("../isArray");
 import display    = require("../helpers/display");
 import IObject    = require("../exception/IObject");
+import config     = require("../../config");
 
 var logger:log4js.Logger = log4js.getLogger("client");
 
-interface IOptions {
-    location:string;
-    binary:string;
-    debug:boolean;
-    cwd:string;
-}
+function init(callback:(errors?:IException[]) => void):void {
+    var content:Buffer,
+        command:cp.ChildProcess,
+        params:string[] = [
+        path.join(config.SERVER_BINARY, "static"),
+        "--json",
+        "--charset",          config.PROJECT_SERVER_CHARSET,
+        "--sourcesDirectory", config.PROJECT_PUBLIC_DIRECTORY,
+        "--memory",           config.PROJECT_MEMORY_SOCKET,
+        "--metadataMemory",   config.PROJECT_MEMORY_SOCKET,
+        "--binaryMemory",     config.PROJECT_MEMORY_SOCKET,
+        "--gzipMemory",       config.PROJECT_MEMORY_SOCKET,
+        "--lockMemory",       config.PROJECT_MEMORY_SOCKET,
+        // todo: implement it
+        /*"--namespace", "",
+         "--metadataNamespace", "",
+         "--binaryNamespace", "",
+         "--gzipNamespace", "",
+         "--lockNamespace", "",*/
+        /*"--timeout", "",
+         "--metadataTimeout", "",
+         "--binaryTimeout", "",
+         "--gzipTimeout", "",
+         "--lockTimeout", "",*/
+    ];
 
-function init(options:IOptions, callback:(errors?:IException[]) => void):void {
-    var location:string = options.location,
-        filename:string = path.join(options.binary, "static"),
-        command:cp.ChildProcess = cp.spawn(process.execPath, [filename, "--json", location], {cwd : options.cwd}),
-        debug:boolean = !!options.debug,
-        content:Buffer = new Buffer(0);
+    // todo: add include directories
 
-    if (debug) {
-        display.input("cp.spawn(" + [process.execPath,
-                JSON.stringify([filename, options.location]),
-                JSON.stringify({cwd : options.cwd})].join(", ") + ");");
+    if (config.PROJECT_STATIC_USE_INDEX) {
+        params.push("--useIndex");
+        if (config.PROJECT_STATIC_INDEX_EXTENSIONS) {
+            config.PROJECT_STATIC_INDEX_EXTENSIONS.forEach((extension:string):void => {
+                params.push("--indexExtensions", extension);
+            });
+        }
     }
+
+    if (config.PROJECT_STATIC_USE_GZIP) {
+        params.push("--useGzip");
+        params.push("--gzipCompressionLevel", String(config.PROJECT_STATIC_GZIP_LEVEL));
+        if (config.PROJECT_STATIC_GZIP_EXTENSIONS) {
+            config.PROJECT_STATIC_GZIP_EXTENSIONS.forEach((extension:string):void => {
+                params.push("--gzipExtensions", extension);
+            });
+        }
+    }
+
+    params.push(config.PROJECT_STATIC_SOCKET);
+
+    command = cp.spawn(process.execPath, params, {cwd : config.PROJECT_DIRECTORY});
+    content = new Buffer(0);
 
     function done(response:any):void {
         if (isFunction(callback) && isArray(response.errors)) {
@@ -55,9 +88,6 @@ function init(options:IOptions, callback:(errors?:IException[]) => void):void {
         var index:number,
             response:any;
         content = Buffer.concat([content, data]);
-        if (debug) {
-            display.output(data.toString("utf8"));
-        }
         index = content.indexOf(0x0a);
         while (index !== -1) {
             response = parse(content.slice(0, index));

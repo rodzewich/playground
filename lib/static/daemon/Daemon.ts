@@ -16,6 +16,7 @@ import isDefined  = require("../../isDefined");
 import isFunction = require("../../isFunction");
 import isTrue     = require("../../isTrue");
 import fs = require("fs");
+import zlib = require("zlib");
 import Separator  = require("../../helpers/Separator");
 import ExceptionBase = require("../../exception/Exception");
 import UseIndexHelper   = require("../helpers/UseIndexHelper");
@@ -36,10 +37,14 @@ import GzipExtensionsHelper        = require("../helpers/GzipExtensionsHelper");
 import IGzipExtensionsHelper       = require("../helpers/IGzipExtensionsHelper");
 import GzipMinLengthHelper         = require("../helpers/GzipMinLengthHelper");
 import IGzipMinLengthHelper        = require("../helpers/IGzipMinLengthHelper");
+import CharsetHelper               = require("../../helpers/CharsetHelper");
+import ICharsetHelper              = require("../../helpers/ICharsetHelper");
 import ContentType                 = require("../../helpers/ContentType");
-import path = require("path");
+import path                        = require("path");
 
 var logger:log4js.Logger = log4js.getLogger("static");
+
+// todo: Accept-Encoding: <compress | gzip | deflate | sdch | identity>
 
 class Daemon extends DaemonBase implements IDaemon {
 
@@ -61,6 +66,8 @@ class Daemon extends DaemonBase implements IDaemon {
 
     private _gzipMinLengthHelper:IGzipMinLengthHelper;
 
+    private _charsetHelper:ICharsetHelper;
+
     private _memory:IMemory;
 
     private _metadataMemory:IMemory;
@@ -70,6 +77,17 @@ class Daemon extends DaemonBase implements IDaemon {
     private _gzipMemory:IMemory;
 
     private _lockMemory:IMemory;
+
+    protected createCharsetHelper():ICharsetHelper {
+        return new CharsetHelper();
+    }
+
+    protected getCharsetHelper():ICharsetHelper {
+        if (!this._charsetHelper) {
+            this._charsetHelper = this.createCharsetHelper();
+        }
+        return this._charsetHelper;
+    }
 
     protected createGzipMinLengthHelper():IGzipMinLengthHelper {
         return new GzipMinLengthHelper();
@@ -165,6 +183,9 @@ class Daemon extends DaemonBase implements IDaemon {
 
     constructor(options?:IOptions) {
         super(options);
+        if (options && isDefined(options.charset)) {
+            this.setCharset(options.charset);
+        }
         if (options && isDefined(options.memoryNamespace)) {
             this.setMemoryNamespace(options.memoryNamespace);
         }
@@ -234,6 +255,22 @@ class Daemon extends DaemonBase implements IDaemon {
         if (options && isDefined(options.lockTimeout)) {
             this.setLockTimeout(options.lockTimeout);
         }
+    }
+
+    public get charset():string {
+        return this.getCharset();
+    }
+
+    public set charset(value:string) {
+        this.setCharset(value);
+    }
+
+    public getCharset():string {
+        return this.getCharsetHelper().getCharset();
+    }
+
+    public setCharset(charset:string):void {
+        this.getCharsetHelper().setCharset(charset);
     }
 
     public get metadataLocation():string {
@@ -719,9 +756,11 @@ class Daemon extends DaemonBase implements IDaemon {
     public getContent(filename:string, cacheOnly:boolean, callback?:(errors:IException[], result:IResponse) => void):void {
 
         var resolve:string,
+            content:Buffer,
             memoryUnlock:(callback?:(errors:IExceptionMemory[]) => void) => void,
             response:IResponse = {
                 filename   : path.relative(path.sep, path.normalize(path.resolve(path.sep, String(filename)))),
+                original   : path.relative(path.sep, path.normalize(path.resolve(path.sep, String(filename)))),
                 content    : null,
                 type       : null,
                 length     : null,
@@ -729,45 +768,47 @@ class Daemon extends DaemonBase implements IDaemon {
                 zipLength  : null,
                 date       : null
             },
-            handler:(errs:IException[], result:IResponse) => void = (errs:IException[], result:IResponse):void => {
-                var errors:IException[] = [];
-                var base64:string;
-                if (errs && errs.length) {
-                    errors = errs.slice(0);
-                }
-                if (result && result.content) {
-
-                }
-                if (isFunction(memoryUnlock)) {
-                    memoryUnlock((errs:IExceptionMemory[]):void => {
-                        if (errs && errs.length) {
-                            errs.forEach((error:IExceptionMemory):void => {
-                                errors.push(error);
-                            });
-                        }
-                        if (isFunction(callback)) {
-                            callback(errors && errors.length ? errors : null,
-                                errors && errors.length ? null : result || null);
-                        }
-                    });
-                } else if (isFunction(callback)) {
-                    callback(errors && errors.length ? errors : null,
-                        errors && errors.length ? null : result || null);
-                }
-            },
-            handlerViaQueue:(errs:IException[], result:IResponse) => void = (errs:IException[], result:IResponse):void => {
-                var index:number,
-                    length:number,
-                    queue:((errors:IException[], result:IResponse) => void)[];
-                if (isDefined(this._queue[response.filename])) {
-                    queue = this._queue[response.filename];
-                    delete this._queue[response.filename];
-                    length = queue.length;
-                    for (index = 0; index < length; index++) {
-                        queue[index](errs, result);
+            handler:(errs:IException[], result:IResponse) => void =
+                (errs:IException[], result:IResponse):void => {
+                    var errors:IException[] = [];
+                    var base64:string;
+                    if (errs && errs.length) {
+                        errors = errs.slice(0);
                     }
-                }
-            };
+                    if (result && result.content) {
+                        // todo: ?????
+                    }
+                    if (isFunction(memoryUnlock)) {
+                        memoryUnlock((errs:IExceptionMemory[]):void => {
+                            if (errs && errs.length) {
+                                errs.forEach((error:IExceptionMemory):void => {
+                                    errors.push(error);
+                                });
+                            }
+                            if (isFunction(callback)) {
+                                callback(errors && errors.length ? errors : null,
+                                    errors && errors.length ? null : result || null);
+                            }
+                        });
+                    } else if (isFunction(callback)) {
+                        callback(errors && errors.length ? errors : null,
+                            errors && errors.length ? null : result || null);
+                    }
+                },
+            handlerViaQueue:(errs:IException[], result:IResponse) => void =
+                (errs:IException[], result:IResponse):void => {
+                    var index:number,
+                        length:number,
+                        queue:((errors:IException[], result:IResponse) => void)[];
+                    if (isDefined(this._queue[response.filename])) {
+                        queue = this._queue[response.filename];
+                        delete this._queue[response.filename];
+                        length = queue.length;
+                        for (index = 0; index < length; index++) {
+                            queue[index](errs, result);
+                        }
+                    }
+                };
 
         deferred([
 
@@ -863,7 +904,8 @@ class Daemon extends DaemonBase implements IDaemon {
                 actions = directories.map((directory:string):((next:() => void) => void) => {
                     // todo: find index files
                     return (next:() => void) => {
-                        resolve = path.resolve(directory, response.filename);
+                        var actions:((next:() => void) => void)[];
+                        resolve = path.join(directory, response.filename);
                         fs.stat(resolve, (error:NodeJS.ErrnoException, stats:fs.Stats):void => {
                             if (error && error.code !== "ENOENT") {
                                 handlerViaQueue([ExceptionBase.convertFromError(error, {
@@ -872,6 +914,33 @@ class Daemon extends DaemonBase implements IDaemon {
                                     path    : error.path,
                                     syscall : error.syscall
                                 })], null);
+                            } else if (!error && stats.isDirectory() &&
+                                this.isUseIndex() && this.getIndexExtensions().length) {
+                                actions = this.getIndexExtensions().map((extension:string):((next:() => void) => void) => {
+                                    return (next:() => void) => {
+                                        resolve = path.join(directory, response.filename, "index." + extension);
+                                        fs.stat(resolve, (error:NodeJS.ErrnoException, stats:fs.Stats):void => {
+                                            if (error && error.code !== "ENOENT") {
+                                                handlerViaQueue([ExceptionBase.convertFromError(error, {
+                                                    code    : error.code,
+                                                    errno   : error.errno,
+                                                    path    : error.path,
+                                                    syscall : error.syscall
+                                                })], null);
+                                            } else if (!error && stats.isFile()) {
+                                                response.original = path.join(response.original, "index." + extension);
+                                                response.date = parseInt(String(Number(stats.mtime) / 1000).split(".")[0], 10);
+                                                done();
+                                            } else {
+                                                next();
+                                            }
+                                        });
+                                    };
+                                });
+                                actions.push(() => {
+                                    next();
+                                });
+                                deferred(actions);
                             } else if (!error && stats.isFile()) {
                                 response.date = parseInt(String(Number(stats.mtime) / 1000).split(".")[0], 10);
                                 done();
@@ -918,13 +987,54 @@ class Daemon extends DaemonBase implements IDaemon {
                             syscall : error.syscall
                         })], null);
                     } else {
-                        response.type    = ContentType.find(extension).toString("utf-8"); // todo: use default charset
+                        content          = data;
+                        response.type    = ContentType.find(extension).toString(this.getCharset());
                         response.content = data.toString("base64");
                         response.length  = data.length;
                         next();
                     }
                 });
             },
+            (next:() => void):void => {
+                var options:zlib.ZlibOptions = {
+                    level: this.getGzipCompressionLevel()
+                };
+                // todo: use other zlib options
+                // todo: implement via extensions
+                if (this.isUseGzip() && this.getGzipMinLength() <= response.length) {
+                    zlib.gzip(content, options, (error: Error, content:Buffer):void => {
+                        if (error) {
+                            handlerViaQueue([ExceptionBase.convertFromError(error)], null);
+                        } else {
+                            response.zipContent = content.toString("base64");
+                            response.zipLength = content.length;
+                            next();
+                        }
+                    });
+                } else {
+                    next();
+                }
+            },
+            /*(next:() => void):void => {
+                var options:zlib.ZlibOptions = {
+                    level: this.getGzipCompressionLevel()
+                };
+                // todo: use other zlib options
+                // todo: implement via extensions
+                if (this.isUseDeflate() && this.getDeflateMinLength() <= response.length) {
+                    zlib.deflate(content, options, (error: Error, content:Buffer):void => {
+                        if (error) {
+                            handlerViaQueue([ExceptionBase.convertFromError(error)], null);
+                        } else {
+                            response.deflateContent = content.toString("base64");
+                            response.deflateLength = content.length;
+                            next();
+                        }
+                    });
+                } else {
+                    next();
+                }
+            },*/
             ():void => {
                 handlerViaQueue(null, response);
             }

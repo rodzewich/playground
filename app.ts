@@ -166,55 +166,31 @@ deferred([
         ]);
     },
 
-    // init memory
+    /***************************************************************************
+     * INIT MEMORY SOCKET
+     **************************************************************************/
     (next:() => void):void => {
-        if (config.DEBUG) {
-            process.stdout.write("Init memory daemon");
-        }
-        memoryInit({
-            debug    : false, //config.DEBUG,
-            location : config.PROJECT_MEMORY_SOCKET,
-            binary   : config.SERVER_BINARY,
-            cwd      : config.PROJECT_DIRECTORY
-        }, (errors?:IException[]):void => {
+        memoryInit((errors?:IException[]):void => {
             if (errors && errors.length) {
-                if (config.DEBUG) {
-                    process.stdout.write("\n");
-                }
                 errors.forEach((error:IException):void => {
                     displayException(error);
                 });
             } else {
-                if (config.DEBUG) {
-                    ok();
-                }
                 next();
             }
         });
     },
 
-    // init static
+    /***************************************************************************
+     * INIT STATIC SOCKET
+     **************************************************************************/
     (next:() => void):void => {
-        if (config.DEBUG) {
-            process.stdout.write("Init static daemon");
-        }
-        staticInit({
-            debug    : false, //config.DEBUG,
-            location : config.PROJECT_STATIC_SOCKET,
-            binary   : config.SERVER_BINARY,
-            cwd      : config.PROJECT_DIRECTORY
-        }, (errors?:IException[]):void => {
+        staticInit((errors?:IException[]):void => {
             if (errors && errors.length) {
-                if (config.DEBUG) {
-                    process.stdout.write("\n");
-                }
                 errors.forEach((error:IException):void => {
                     displayException(error);
                 });
             } else {
-                if (config.DEBUG) {
-                    ok();
-                }
                 next();
             }
         });

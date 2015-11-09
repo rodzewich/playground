@@ -34,6 +34,11 @@ module config {
     export const DEFAULT_PROJECT_SASS_SOCKET:string         = "sass.sock";
     export const DEFAULT_PROJECT_STYLUS_SOCKET:string       = "stylus.sock";
     export const DEFAULT_PROJECT_ENV:string                 = "/usr/bin/env";
+    export const DEFAULT_PROJECT_STATIC_USE_INDEX:boolean         = true;
+    export const DEFAULT_PROJECT_STATIC_INDEX_EXTENSIONS:string[] = ["html", "htm"];
+    export const DEFAULT_PROJECT_STATIC_USE_GZIP:boolean          = true;
+    export const DEFAULT_PROJECT_STATIC_GZIP_EXTENSIONS:string[]  = null;
+    export const DEFAULT_PROJECT_STATIC_GZIP_LEVEL:number         = 1;
 
     export const PROJECT_DIRECTORY:string           = process.cwd();
     export const PROJECT_CONFIG:string              = path.join(PROJECT_DIRECTORY, "config.json");
@@ -52,17 +57,31 @@ module config {
     export const PROJECT_SASS_SOCKET:string         = getSassSocket();
     export const PROJECT_STYLUS_SOCKET:string       = getStylusSocket();
     export const PROJECT_ENV:string                 = getEnv();
+    export const PROJECT_STATIC_USE_INDEX:boolean         = getStaticUseIndex();
+    export const PROJECT_STATIC_INDEX_EXTENSIONS:string[] = getStaticIndexExtensions();
+    export const PROJECT_STATIC_USE_GZIP:boolean          = getStaticUseGzip();
+    export const PROJECT_STATIC_GZIP_EXTENSIONS:string[]  = getStaticGzipExtensions();
+    export const PROJECT_STATIC_GZIP_LEVEL:number         = getStaticGzipLevel();
+
+    /*export const DEFAULT_PROJECT_NAMESPACE_SEPARATOR:Separator            = Separator.DOT;
+    export const DEFAULT_PROJECT_STATIC_MEMORY_NAMESPACE:string           = new NamespaceHelper(["static"], DEFAULT_PROJECT_NAMESPACE_SEPARATOR).getValue();
+    export const DEFAULT_PROJECT_STATIC_METADATA_MEMORY_NAMESPACE:string  = new NamespaceHelper(["metadata"], DEFAULT_PROJECT_NAMESPACE_SEPARATOR).getValue();
+    export const DEFAULT_PROJECT_STATIC_BINARY_MEMORY_NAMESPACE:string    = new NamespaceHelper(["binary"], DEFAULT_PROJECT_NAMESPACE_SEPARATOR).getValue();
+    export const DEFAULT_PROJECT_STATIC_GZIP_MEMORY_NAMESPACE:string      = new NamespaceHelper(["gzip"], DEFAULT_PROJECT_NAMESPACE_SEPARATOR).getValue();
+    export const DEFAULT_PROJECT_STATIC_LOCK_MEMORY_NAMESPACE:string      = new NamespaceHelper(["lock"], DEFAULT_PROJECT_NAMESPACE_SEPARATOR).getValue();*/
+
+    /*export const PROJECT_STATIC_MEMORY_NAMESPACE:string           = getStaticMemoryNamespace();
+    export const PROJECT_STATIC_METADATA_MEMORY_NAMESPACE:string  = getMetadataMemoryNamespace();
+    export const PROJECT_STATIC_BINARY_MEMORY_NAMESPACE:string    = getBinaryMemoryNamespace();
+    export const PROJECT_STATIC_GZIP_MEMORY_NAMESPACE:string      = getGzipMemoryNamespace();
+    export const PROJECT_STATIC_LOCK_MEMORY_NAMESPACE:string      = getLockMemoryNamespace();*/
 
     /*export const DEFAULT_PROJECT_NAMESPACE_SEPARATOR:Separator    = Separator.DOT;
     export const DEFAULT_STATIC_MEMORY_METADATA:string            = DEFAULT_PROJECT_MEMORY_SOCKET;
     export const DEFAULT_STATIC_MEMORY_BINARY:string              = DEFAULT_PROJECT_MEMORY_SOCKET;
     export const DEFAULT_STATIC_MEMORY_GZIP:string                = DEFAULT_PROJECT_MEMORY_SOCKET;
     export const DEFAULT_STATIC_MEMORY_LOCK:string                = DEFAULT_PROJECT_MEMORY_SOCKET;
-    export const DEFAULT_STATIC_MEMORY_NAMESPACE:INamespaceHelper = new NamespaceHelper(["static"], DEFAULT_PROJECT_NAMESPACE_SEPARATOR);
-    export const DEFAULT_STATIC_METADATA_MEMORY_NAMESPACE:INamespaceHelper  = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["metadata"]);
-    export const DEFAULT_STATIC_BINARY_MEMORY_NAMESPACE:INamespaceHelper    = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["binary"]);
-    export const DEFAULT_STATIC_GZIP_MEMORY_NAMESPACE:INamespaceHelper      = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["gzip"]);
-    export const DEFAULT_STATIC_LOCK_MEMORY_NAMESPACE:INamespaceHelper      = NamespaceHelper.parse(DEFAULT_STATIC_MEMORY_NAMESPACE.getValue(), DEFAULT_PROJECT_NAMESPACE_SEPARATOR).addToNamespace(["lock"]);*/
+    */
 
     function getConfig():any {
         if (!isDefined(config)) {
@@ -73,6 +92,31 @@ module config {
             }
         }
         return config;
+    }
+
+    function getStaticUseIndex():boolean {
+        // todo: re-implement it
+        return DEFAULT_PROJECT_STATIC_USE_INDEX;
+    }
+
+    function getStaticIndexExtensions():string[] {
+        // todo: re-implement it
+        return DEFAULT_PROJECT_STATIC_INDEX_EXTENSIONS.slice(0);
+    }
+
+    function getStaticUseGzip():boolean {
+        // todo: re-implement it
+        return DEFAULT_PROJECT_STATIC_USE_GZIP;
+    }
+
+    function getStaticGzipExtensions():string[] {
+        // todo: re-implement it
+        return DEFAULT_PROJECT_STATIC_GZIP_EXTENSIONS;
+    }
+
+    function getStaticGzipLevel():number {
+        // todo: re-implement it
+        return DEFAULT_PROJECT_STATIC_GZIP_LEVEL;
     }
 
     function getServerName():string {

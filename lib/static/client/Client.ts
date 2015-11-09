@@ -105,25 +105,27 @@ class Client extends ClientBase implements IClient {
             }
         }
 
-        if (!isString(filename) || !filename) {
-            handler([new Exception({message : "filename should be a non empty string"})], null);
+        if (!isString(filename)) {
+            handler([new Exception({message : "filename should be a string"})], null);
         } else {
             this.call((errors:IException[], response:IResponseDaemon):void => {
                 var result:IResponseClient = {
-                    filename:null,
-                    content:null,
-                    type:null,
-                    length:null,
-                    zipContent:null,
-                    zipLength:null,
-                    date:null,
+                    filename   : null,
+                    original   : null,
+                    content    : null,
+                    type       : null,
+                    length     : null,
+                    zipContent : null,
+                    zipLength  : null,
+                    date       : null
                 };
                 if (response) {
-                    result.filename = response.filename;
-                    result.type = response.type;
-                    result.length = response.length;
+                    result.filename  = response.filename;
+                    result.original  = response.original;
+                    result.type      = response.type;
+                    result.length    = response.length;
                     result.zipLength = response.zipLength;
-                    result.date = response.date;
+                    result.date      = response.date;
                     if (response.content) {
                         result.content = new Buffer(response.content, 'base64');
                     }
@@ -132,7 +134,7 @@ class Client extends ClientBase implements IClient {
                     }
                 }
                 handler(errors && errors.length ? errors : null,
-                    !errors || !errors.length ? result : null);
+                    (!errors || !errors.length) && response ? result : null);
             }, null, "getContent", filename, this.isCacheOnly());
         }
 

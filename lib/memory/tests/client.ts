@@ -22,6 +22,7 @@ import typeOf     = require("../../typeOf");
 // todo: проверять методы isDisconnected/isDisconnecting
 // todo: проверять timeout/getTimeout
 // todo: проверять debug/isDebug
+// todo: пробовать удалять/читать не существующие элементы
 
 function run(debug:boolean, callback:() => void):void {
     var daemon:IDaemon,

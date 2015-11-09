@@ -10,27 +10,14 @@ import isFunction = require("../isFunction");
 import isArray    = require("../isArray");
 import display    = require("../helpers/display");
 import IObject    = require("../exception/IObject");
+import config     = require("../../config");
 
 var logger:log4js.Logger = log4js.getLogger("client");
 
-interface IOptions {
-    location:string;
-    binary:string;
-    debug:boolean;
-    cwd:string;
-}
-
-function init(options:IOptions, callback:(errors?:IException[]) => void):void {
-    var filename:string = path.join(options.binary, "memory"),
-        command:cp.ChildProcess = cp.spawn(process.execPath, [filename, "--json", options.location], {cwd : options.cwd}),
-        debug:boolean = !!options.debug,
+function init(callback:(errors?:IException[]) => void):void {
+    var filename:string = path.join(config.SERVER_BINARY, "memory"),
+        command:cp.ChildProcess = cp.spawn(process.execPath, [filename, "--json", config.PROJECT_MEMORY_SOCKET], {cwd : config.PROJECT_DIRECTORY}),
         content:Buffer = new Buffer(0);
-
-    if (debug) {
-        display.input("cp.spawn(" + [process.execPath,
-            JSON.stringify([filename, options.location]),
-            JSON.stringify({cwd : options.cwd})].join(", ") + ");");
-    }
 
     function done(response:any):void {
         if (isFunction(callback) && isArray(response.errors)) {
@@ -54,9 +41,6 @@ function init(options:IOptions, callback:(errors?:IException[]) => void):void {
         var index:number,
             response:any;
         content = Buffer.concat([content, data]);
-        if (debug) {
-            display.output(data.toString("utf8"));
-        }
         index = content.indexOf(0x0a);
         while (index !== -1) {
             response = parse(content.slice(0, index));

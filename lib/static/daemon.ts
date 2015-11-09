@@ -20,21 +20,27 @@ process.addListener('uncaughtException', function (error:Error) {
     }
 });
 
+require("../mapping");
+
 import displayException = require("../displayException");
+import isNull     = require("../isNull");
 import isDefined  = require("../isDefined");
-import Exception  = require("../exception/Exception");
-import IException = require("../exception/IException");
-import IDaemon    = require("./daemon/IDaemon");
+import isString   = require("../isString");
+import isNumber   = require("../isNumber");
+import isBoolean  = require("../isBoolean");
+import Exception  = require("./exception/Exception");
+import IException = require("./exception/IException");
+import IObject    = require("./exception/IObject");
 import Daemon     = require("./daemon/Daemon");
+import IOptions   = require("./daemon/IOptions");
 import log4js     = require("../../logger");
 import optimist   = require("optimist");
 import path       = require("path");
+import colors     = require("colors");
 import isArray    = require("../isArray");
 import config     = require("../../config");
-require("../mapping");
 
 var cache:any = {},
-    daemon:IDaemon,
     logger:log4js.Logger = log4js.getLogger("memory"),
     argv:any = optimist
         .usage("Usage: static [options] [location]")
@@ -60,6 +66,8 @@ var cache:any = {},
         .describe("gzipTimeout", "Timeout for gzip data")
         .describe("lockTimeout", "Timeout for locks\n")
 
+        .alias("c", "charset")
+        .describe("c", "Content charset")
         .alias("s", "sourcesDirectory")
         .describe("s", "Source directory")
         .alias("i", "includeDirectories")
@@ -87,36 +95,7 @@ if (isArray(argv._) && (<Array<any>>argv._).length === 0 || argv.help) {
     process.exit(0);
 }
 
-// todo: проверять наличие параметра --sourcesDirectory
-
-daemon = new Daemon({
-    location             : getLocation(),
-    memoryLocation       : getMemory(),
-    metadataLocation     : getMetadataMemory(),
-    binaryLocation       : getBinaryMemory(),
-    gzipLocation         : getGzipMemory(),
-    lockLocation         : getLockMemory(),
-    memoryNamespace      : getNamespace(),
-    metadataNamespace    : getMetadataNamespace(),
-    binaryNamespace      : getBinaryNamespace(),
-    gzipNamespace        : getGzipNamespace(),
-    lockNamespace        : getLockNamespace(),
-    memoryTimeout        : getTimeout(),
-    metadataTimeout      : getMetadataTimeout(),
-    binaryTimeout        : getBinaryTimeout(),
-    gzipTimeout          : getGzipTimeout(),
-    lockTimeout          : getLockTimeout(),
-    sourcesDirectory     : getSourcesDirectory(),
-    includeDirectories   : getIncludeDirectories(),
-    useIndex             : isUseIndex(),
-    indexExtensions      : getIndexExtensions(),
-    useGzip              : isUseGzip(),
-    gzipExtensions       : getGzipExtensions(),
-    gzipCompressionLevel : getGzipCompressionLevel(),
-    debug                : isDebug()
-});
-
-daemon.start((errors:IException[]):void => {
+new Daemon(getOptions()).start((errors:IException[]):void => {
     var index:number,
         length:number;
     if (errors && errors.length) {
@@ -147,94 +126,137 @@ daemon.start((errors:IException[]):void => {
                     }) + "\n");
                 messageSent = true;
             } else {
-                console.log("Static daemon started");
+                showParameters();
             }
         }
-        logger.info("Static daemon started");
+        logger.info("Daemon started");
     }
 });
 
-function getLocation():string {
-    var location:string = argv._.shift();
-    if (!path.isAbsolute(location)) {
-        location = path.join(process.cwd(), location);
+function showParameters():void {
+    console.log(colors.green("Daemon started with parameters:"));
+    var property:string;
+    var options:IOptions = getOptions();
+    var value:string;
+    for (property in options) {
+        if (!options.hasOwnProperty(property)) {
+            continue;
+        }
+        if (isNull(options[property])) {
+            value = colors.cyan(JSON.stringify(options[property]));
+        } else if (isString(options[property])) {
+            value = colors.green(JSON.stringify(options[property]));
+        } else if (isNumber(options[property])) {
+            value = colors.blue(JSON.stringify(options[property]));
+        } else if (isBoolean(options[property])) {
+            value = colors.magenta(JSON.stringify(options[property]));
+        } else {
+            value = JSON.stringify(options[property]);
+        }
+        console.log(property + new Array(22 - property.length).join(" ") + ":", value);
     }
-    return path.normalize(location);
+}
+
+function getOptions():IOptions {
+    return {
+        charset              : getCharset(),
+        location             : getLocation(),
+        memoryLocation       : getMemory(),
+        metadataLocation     : getMetadataMemory(),
+        binaryLocation       : getBinaryMemory(),
+        gzipLocation         : getGzipMemory(),
+        lockLocation         : getLockMemory(),
+        memoryNamespace      : getNamespace(),
+        metadataNamespace    : getMetadataNamespace(),
+        binaryNamespace      : getBinaryNamespace(),
+        gzipNamespace        : getGzipNamespace(),
+        lockNamespace        : getLockNamespace(),
+        memoryTimeout        : getTimeout(),
+        metadataTimeout      : getMetadataTimeout(),
+        binaryTimeout        : getBinaryTimeout(),
+        gzipTimeout          : getGzipTimeout(),
+        lockTimeout          : getLockTimeout(),
+        sourcesDirectory     : getSourcesDirectory(),
+        includeDirectories   : getIncludeDirectories(),
+        useIndex             : isUseIndex(),
+        indexExtensions      : getIndexExtensions(),
+        useGzip              : isUseGzip(),
+        gzipExtensions       : getGzipExtensions(),
+        gzipCompressionLevel : getGzipCompressionLevel(),
+        debug                : isDebug()
+    };
+}
+
+function getCharset():string {
+    if (argv && isString(argv.charset)) {
+        return String(argv.charset);
+    }
+    return config.PROJECT_SERVER_CHARSET;
+}
+
+function getLocation():string {
+    if (argv && argv._ && isString(argv._[0]) && !path.isAbsolute(argv._[0])) {
+        return path.normalize(path.join(process.cwd(), argv._[0]));
+    } else if (argv && argv._ && isString(argv._[0])) {
+        path.normalize(argv._[0]);
+    }
+    return config.PROJECT_STATIC_SOCKET;
 }
 
 function isDebug():boolean {
-    return config.DEBUG && !!argv.debug;
+    return config.DEBUG && argv && argv.debug;
 }
 
 function getMemory():string {
-    if (!isDefined(cache.memory)) {
-        cache.memory = config.PROJECT_MEMORY_SOCKET;
-        if (argv.memory) {
-            cache.memory = String(argv.memory);
-        }
-        if (!path.isAbsolute(cache.memory)) {
-            cache.memory = path.join(process.cwd(), cache.memory);
-        }
-        cache.memory = path.normalize(cache.memory);
+    if (argv && isString(argv.memory) && !path.isAbsolute(argv.memory)) {
+        return path.normalize(path.join(process.cwd(), argv.memory));
+    } else if (argv && isString(argv.memory)) {
+        return path.normalize(argv.memory);
     }
-    return <string>cache.memory;
+    return config.PROJECT_MEMORY_SOCKET;
 }
 
 function getMetadataMemory():string {
-    if (!isDefined(cache.metadataMemory)) {
-        cache.metadataMemory = getMemory();
-        if (argv.metadataMemory) {
-            cache.metadataMemory = String(argv.metadataMemory);
-        }
-        if (!path.isAbsolute(cache.metadataMemory)) {
-            cache.metadataMemory = path.join(process.cwd(), cache.metadataMemory);
-        }
-        cache.metadataMemory = path.normalize(cache.metadataMemory);
+    if (argv && isString(argv.metadataMemory) && !path.isAbsolute(argv.metadataMemory)) {
+        return path.normalize(path.join(process.cwd(), argv.metadataMemory));
+    } else if (argv && isString(argv.metadataMemory)) {
+        return path.normalize(argv.metadataMemory);
     }
-    return <string>cache.metadataMemory;
+    return config.PROJECT_MEMORY_SOCKET;
 }
 
 function getBinaryMemory():string {
-    if (!isDefined(cache.binaryMemory)) {
-        cache.binaryMemory = getMemory();
-        if (argv.binaryMemory) {
-            cache.binaryMemory = String(argv.binaryMemory);
-        }
-        if (!path.isAbsolute(cache.binaryMemory)) {
-            cache.binaryMemory = path.join(process.cwd(), cache.binaryMemory);
-        }
-        cache.binaryMemory = path.normalize(cache.binaryMemory);
+    if (argv && isString(argv.binaryMemory) && !path.isAbsolute(argv.binaryMemory)) {
+        return path.normalize(path.join(process.cwd(), argv.binaryMemory));
+    } else if (argv && isString(argv.binaryMemory)) {
+        return path.normalize(argv.binaryMemory);
     }
-    return <string>cache.metadataMemory;
+    return config.PROJECT_MEMORY_SOCKET;
 }
 
 function getGzipMemory():string {
-    if (!isDefined(cache.gzipMemory)) {
-        cache.gzipMemory = getMemory();
-        if (argv.gzipMemory) {
-            cache.gzipMemory = String(argv.gzipMemory);
-        }
-        if (!path.isAbsolute(cache.gzipMemory)) {
-            cache.gzipMemory = path.join(process.cwd(), cache.gzipMemory);
-        }
-        cache.gzipMemory = path.normalize(cache.gzipMemory);
+    if (argv && isString(argv.gzipMemory) && !path.isAbsolute(argv.gzipMemory)) {
+        return path.normalize(path.join(process.cwd(), argv.gzipMemory));
+    } else if (argv && isString(argv.gzipMemory)) {
+        return path.normalize(argv.gzipMemory);
     }
-    return <string>cache.gzipMemory;
+    return config.PROJECT_MEMORY_SOCKET;
 }
 
 function getLockMemory():string {
-    if (!isDefined(cache.lockMemory)) {
-        cache.lockMemory = getMemory();
-        if (argv.lockMemory) {
-            cache.lockMemory = String(argv.lockMemory);
-        }
-        if (!path.isAbsolute(cache.lockMemory)) {
-            cache.lockMemory = path.join(process.cwd(), cache.lockMemory);
-        }
-        cache.lockMemory = path.normalize(cache.lockMemory);
+    if (argv && isString(argv.lockMemory) && !path.isAbsolute(argv.lockMemory)) {
+        return path.normalize(path.join(process.cwd(), argv.lockMemory));
+    } else if (argv && isString(argv.lockMemory)) {
+        return path.normalize(argv.lockMemory);
     }
-    return <string>cache.lockMemory;
+    return config.PROJECT_MEMORY_SOCKET;
 }
+
+
+
+
+
+
 
 function getNamespace():string {
     return "static";
@@ -276,30 +298,56 @@ function getLockTimeout():number {
     return 300;
 }
 
+
+
+
+
+
 function getSourcesDirectory():string {
     return config.PROJECT_PUBLIC_DIRECTORY;
 }
+
+
+
+
+
 
 function getIncludeDirectories():string[] {
     return null;
 }
 
 function isUseIndex():boolean {
-    return false;
+    if (argv && isDefined(argv.useIndex)) {
+        return !!argv.useIndex;
+    }
+    return config.PROJECT_STATIC_USE_INDEX;
 }
 
 function getIndexExtensions():string[] {
-    return null;
+    if (argv && isArray(argv.indexExtensions)) {
+        return argv.indexExtensions;
+    }
+    return config.PROJECT_STATIC_INDEX_EXTENSIONS;
 }
 
 function isUseGzip():boolean {
-    return false;
+    if (argv && isDefined(argv.useGzip)) {
+        return !!argv.useGzip;
+    }
+    return config.PROJECT_STATIC_USE_GZIP;
 }
 
 function getGzipExtensions():string[] {
-    return null;
+    if (argv && isArray(argv.gzipExtensions)) {
+        return argv.gzipExtensions;
+    }
+    return config.PROJECT_STATIC_GZIP_EXTENSIONS;
 }
 
 function getGzipCompressionLevel():number {
-    return null;
+    if (argv && isString(argv.gzipCompressionLevel) &&
+        !isNaN(argv.gzipCompressionLevel)) {
+        return parseInt(argv.gzipCompressionLevel, 10);
+    }
+    return config.PROJECT_STATIC_GZIP_LEVEL;
 }

@@ -3,6 +3,8 @@ import IException  = require("../exception/IException");
 import IResponse   = require("./IResponse");
 import IMemory     = require("../../memory/client/IClient");
 
+// todo: gzipExludedExtensions
+
 interface IDaemon extends IDaemonBase {
     memoryNamespace:string;
     metadataNamespace:string;

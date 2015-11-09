@@ -52,7 +52,7 @@ class ContentType {
     }
 
     public toString(charset?:string):string {
-        return this.getExtension().replace(/\{charset\}/g, charset || "utf-8")
+        return String(this._type || "").replace(/\{charset\}/g, charset || "utf-8")
     }
 
     public static find(extension:string):ContentType {
