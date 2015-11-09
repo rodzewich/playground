@@ -29,6 +29,10 @@
             margin: 0 auto;
         }
 
+        .login-panel {
+            height: 400px;
+        }
+
         #footer {
             position: absolute;
             bottom: 0;
@@ -86,8 +90,11 @@
 
 <div class="container">
 
+    <div class="login-panel panel panel-default col-md-8" style="margin: 20px 0 0">
+        <div class="panel-body">
+            <h2 class="form-signin-heading" style="text-align: center">Вход в личный кабинет</h2>
+
     <form id="login-form" class="form-horizontal">
-        <h2 class="form-signin-heading">Вход в личный кабинет</h2>
 
         <div class="alert alert-danger alert-dismissable">
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
@@ -121,6 +128,15 @@
             </div>
         </div>
     </form>
+            </div>
+        </div>
+
+    <div class="login-panel panel panel-default col-md-4"
+         style="margin: 20px 0 0">
+        <div class="panel-body">
+            <h2 class="form-signin-heading" style="text-align: center">Вход через соц. сети</h2>
+        </div>
+    </div>
 
 </div>
 
