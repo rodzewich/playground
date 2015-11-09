@@ -22,10 +22,13 @@
         body {
             padding-top: 50px;
         }
-        .starter-template {
-            padding: 40px 15px;
-            text-align: center;
+
+        #login-form {
+            max-width: 500px;
+            padding: 15px;
+            margin: 0 auto;
         }
+
         #footer {
             position: absolute;
             bottom: 0;
@@ -47,7 +50,7 @@
 </head>
 <body>
 
-<div class="navbar navbar-inverse navbar-fixed-top">
+<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
     <div class="container">
         <div class="navbar-header">
             <a class="navbar-brand" href="/">Auto.ru</a>
@@ -64,13 +67,6 @@
                     </ul>
                 </li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Отзывы <b class="caret"></b></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="#">Добавить отзыв</a></li>
-                        <li><a href="#">Отзывы</a></li>
-                    </ul>
-                </li>
-                <li class="dropdown">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">Автосалоны <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li><a href="#">Официальные дилеры</a></li>
@@ -78,48 +74,60 @@
                     </ul>
                 </li>
                 <li><a href="/contacts.html">Контакты</a></li>
+                <li><a href="/contacts.html">Реклама</a></li>
             </ul>
-            <form class="navbar-form navbar-right" action="/login.html" >
-                <div class="form-group">
-                    <input type="text" placeholder="Логин" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <input type="password" placeholder="Пароль" class="form-control" />
-                </div>
-                <button type="submit" class="btn btn-success">Вход</button>
-            </form>
-        </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Профиль</a></li>
+                <li><a href="#">Личный кабинет</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
     </div>
 </div>
+
 <div class="container">
 
-    <div class="panel panel-default" style="margin: 20px 0 0">
-        <div class="panel-body">
-            <ul class="nav nav-tabs">
-                <li class="active"><a href="#">Легковые <span class="badge">30000</span></a></li>
-                <li><a href="#">Легкие грузовики <span class="badge">30000</span></a></li>
-                <li><a href="#">Грузовые <span class="badge">30000</span></a></li>
-                <li><a href="#">Микроавтобусы <span class="badge">30000</span></a></li>
-                <li><a href="#">Автобусы <span class="badge">30000</span></a></li>
-                <li><a href="#">Другие <span class="badge">30000</span></a></li>
-            </ul>
-        </div>
-    </div>
+    <form id="login-form" class="form-horizontal">
+        <h2 class="form-signin-heading">Вход в личный кабинет</h2>
 
-    <div class="starter-template">
-        <h1>Bootstrap starter template</h1>
-        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
-    </div>
+        <div class="alert alert-danger alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+            <strong>Внимание!</strong> Не удалось войти в личный кабинет, проверте правильность логина и пароля.
+        </div>
+
+        <div class="form-group">
+            <label for="inputEmail3" class="col-sm-2 control-label">Логин</label>
+            <div class="col-sm-10">
+                <input type="text" class="form-control" id="inputEmail3" placeholder="Логин">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="inputPassword3" class="col-sm-2 control-label">Пароль</label>
+            <div class="col-sm-10">
+                <input type="password" class="form-control" id="inputPassword3" placeholder="Пароль">
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <div class="checkbox">
+                    <label>
+                        <input type="checkbox"> Запомнить меня
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success">Войти</button>
+            </div>
+        </div>
+    </form>
+
 </div>
 
 
 <div id="footer">
     <div class="container">
-        <span class="text-muted" style="float:left">Place sticky footer content here.</span>
-        <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Контакты</a></li>
-            <li><a href="#">Реклама</a></li>
-        </ul>
+        <p class="text-muted">Place sticky footer content here.</p>
     </div>
 </div>
 
