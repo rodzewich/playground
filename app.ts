@@ -21,15 +21,7 @@ import StaticClient     = require("./lib/static/client/Client");
 import IStaticException = require("./lib/static/exception/IException");
 import IStaticResponse  = require("./lib/static/client/IResponse");
 import ContentType      = require("./lib/helpers/ContentType");
-
-/*var memoryInstance:IMemory = new Memory({
-
-});*/
-var staticInstance:IStaticClient = new StaticClient({
-    location : config.PROJECT_STATIC_SOCKET,
-    /*timeout  : 123,
-    debug    : true*/
-});
+import staticRouter     = require("./lib/static/router");
 
 require("./lib/mapping");
 
@@ -244,6 +236,10 @@ deferred([
                         filename  = path.basename(resolved, extension);
                         next();
                     }
+                },
+
+                (next:() => void):void => {
+                    staticRouter(request, response, next);
                 },
 
                 (next:() => void):void => {
