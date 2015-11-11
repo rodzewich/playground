@@ -3,7 +3,7 @@
 import http        = require("http");
 import IOptions    = require("./IOptions");
 import ContentType = require("../../helpers/ContentType");
-import error404    = require("../../../errors/404");
+import error500    = require("../../../errors/404");
 
 // todo: load custom template
 
@@ -15,8 +15,8 @@ function router(options:IOptions):(() => void) {
             name:string                  = options.server.name,
             version:string               = options.server.version;
         response.setHeader("Content-Type", ContentType.HTML.toString(charset));
-        response.writeHead(404);
-        response.end(error404({
+        response.writeHead(500);
+        response.end(error500({
             name    : name,
             version : version
         }));

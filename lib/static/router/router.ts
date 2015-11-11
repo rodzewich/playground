@@ -1,20 +1,15 @@
 /// <reference path="../../../types/node/node.d.ts" />
 
 import http        = require("http");
-import config      = require("../../../config");
 import Client      = require("../client/Client");
 import IClient     = require("../client/IClient");
-import error500    = require("../../../errors/500");
-import ContentType = require("../../helpers/ContentType");
+import error500    = require("../../routers/error500/router");
 import IOptions    = require("./IOptions");
 import IException  = require("../exception/IException");
 import IResponse   = require("../client/IResponse");
+import isDefined   = require("../../isDefined");
 
-var client:IClient = new Client({
-    location : config.PROJECT_STATIC_SOCKET,
-    //timeout  : 123, // todo: implement it
-    debug    : config.DEBUG
-});
+var client:IClient = new Client({});
 
 function router(options:IOptions):((next:() => void) => void) {
     return (next:() => void):void => {
@@ -22,20 +17,37 @@ function router(options:IOptions):((next:() => void) => void) {
         var request:http.ServerRequest   = options.request,
             response:http.ServerResponse = options.response,
             filename:string              = options.filename,
+            socket:string                = options.socket,
+            timeout:number               = options.timeout,
+            debug:boolean                = options.debug,
+            charset:string               = options.server.charset,
+            name:string                  = options.server.name,
+            version:string               = options.server.version,
             headers:any                  = request.headers || {},
             gzipAllowed:boolean          = String(headers["accept-encoding"]).split(", ").indexOf("gzip") !== -1;
 
+        if (isDefined(socket)) {
+            client.setLocation(socket);
+        }
+        if (isDefined(timeout)) {
+            client.setTimeout(timeout);
+        }
+        if (isDefined(debug)) {
+            client.setIsDebug(debug);
+        }
         client.getContent(filename, (errors:IException[], result:IResponse):void => {
             var modified:number = Date.parse(request.headers["if-modified-since"]),
                 date:number = result && result.date ? 1000 * result.date : 0;
             if (errors && errors.length) {
-                // todo: use via 500 router
-                response.setHeader("Content-Type", ContentType.HTML.toString(config.PROJECT_SERVER_CHARSET));
-                response.writeHead(500);
-                response.end(error500({
-                    serverName    : config.PROJECT_SERVER_NAME,
-                    serverVersion : config.PROJECT_SERVER_VERSION
-                }, errors));
+                error500({
+                    request  : request,
+                    response : response,
+                    server   : {
+                        charset : charset,
+                        name    : name,
+                        version : version
+                    }
+                })();
             } else if (modified && modified === date) {
                 response.writeHead(304);
                 response.end();

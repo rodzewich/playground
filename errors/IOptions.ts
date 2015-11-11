@@ -1,6 +1,6 @@
 interface IOptions {
-    serverName:string;
-    serverVersion:string;
+    name:string;
+    version:string;
 }
 
 export = IOptions;

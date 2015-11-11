@@ -232,16 +232,26 @@ deferred([
                 content({
                     request  : request,
                     response : response,
-                    filename : pathname
+                    filename : pathname,
+                    socket   : config.PROJECT_STATIC_SOCKET,
+                    timeout  : 300, // todo: use via config
+                    debug    : config.DEBUG,
+                    server   : {
+                        charset : config.PROJECT_SERVER_CHARSET,
+                        name    : config.PROJECT_SERVER_NAME,
+                        version : config.PROJECT_SERVER_VERSION
+                    }
                 }),
 
                 // error
                 error404({
-                    request       : request,
-                    response      : response,
-                    charset       : config.PROJECT_SERVER_CHARSET,
-                    serverName    : config.PROJECT_SERVER_NAME,
-                    serverVersion : config.PROJECT_SERVER_VERSION
+                    request  : request,
+                    response : response,
+                    server   : {
+                        charset : config.PROJECT_SERVER_CHARSET,
+                        name    : config.PROJECT_SERVER_NAME,
+                        version : config.PROJECT_SERVER_VERSION
+                    }
                 })
 
             ]);

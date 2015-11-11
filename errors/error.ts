@@ -8,8 +8,8 @@ import http         = require("http");
 function render(code:number, options:IOptions, errors?:IException[]):string {
     var list:string,
         status:string = http.STATUS_CODES[code],
-        serverName:string = options.serverName,
-        serverVersion:string = options.serverVersion;
+        serverName:string = options.name,
+        serverVersion:string = options.version;
     if (errors && errors.length) {
         list = "<ol><li>" + errors.map((error:IException):string => {
                 return [
