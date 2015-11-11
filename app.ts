@@ -13,15 +13,11 @@ import colors     = require("colors");
 import http       = require("http");
 import url        = require("url");
 import path       = require("path");
-import error404   = require("./errors/404");
-import error500   = require("./errors/500");
 import displayException = require("./lib/displayException");
-import IStaticClient    = require("./lib/static/client/IClient");
-import StaticClient     = require("./lib/static/client/Client");
-import IStaticException = require("./lib/static/exception/IException");
-import IStaticResponse  = require("./lib/static/client/IResponse");
 import ContentType      = require("./lib/helpers/ContentType");
-import staticRouter     = require("./lib/static/router/router");
+import content          = require("./lib/static/router/router");
+import redirect         = require("./lib/routers/redirect/router");
+import error404         = require("./lib/routers/error404/router");
 
 require("./lib/mapping");
 
@@ -188,37 +184,32 @@ deferred([
         });
     },
 
+    /***************************************************************************
+     * START HTTP SERVER
+     **************************************************************************/
     ():void => {
-        if (config.DEBUG) {
-            process.stdout.write("Start http daemon");
-        }
 
         function handler(error:NodeJS.ErrnoException):void {
             if (error) {
-                if (config.DEBUG) {
-                    process.stdout.write("\n");
-                }
                 displayException(Exception.convertFromError(error));
-                server.close();
-            } else {
-                if (config.DEBUG) {
-                    ok();
-                }
+                server.close(() => {
+                    process.exit(1);
+                });
             }
             server.removeListener("error", handler);
-
         }
 
-        var server:http.Server = http.createServer(function (request, response) {
+        var server:http.Server = http.createServer((request:http.ServerRequest, response:http.ServerResponse):void => {
 
-            var options:url.Url = url.parse(request.url),
-                method:string   = (request.method || "GET").toUpperCase(),
-                query:string    = <string>options.query || "",
-                pathname:string = options.pathname || "/",
-                directory:string,
-                extension:string,
-                filename:string;
+            var options:url.Url  = url.parse(request.url),
+                method:string    = (request.method || "GET").toUpperCase(),
+                query:string     = <string>options.query || "",
+                pathname:string  = options.pathname || "/",
+                directory:string = path.dirname(pathname),
+                extension:string = path.extname(pathname).toLowerCase(),
+                filename:string  = path.basename(pathname, extension);
 
+            // headers
             response.setHeader("Server", [
                 config.PROJECT_SERVER_NAME,
                 config.PROJECT_SERVER_VERSION
@@ -227,43 +218,39 @@ deferred([
             deferred([
 
                 // redirect
-                (next:() => void):void => {
-                    var resolved:string = path.normalize(pathname);
-                    if (method === "GET" && pathname !== resolved) {
-                        response.writeHead(301);
-                        response.setHeader("Location", resolved + (query ? "?" + query : query));
-                        response.end();
-                    } else {
-                        directory = path.dirname(resolved);
-                        extension = path.extname(resolved).toLowerCase();
-                        filename  = path.basename(resolved, extension);
-                        next();
-                    }
-                },
+                redirect({
+                    request  : request,
+                    response : response,
+                    filename : pathname,
+                    method   : method,
+                    query    : query
+                }),
 
-                // static content
-                staticRouter({
+                // todo: insert less, sass, stylus, babel, typescript and etc. routers
+
+                // content
+                content({
                     request  : request,
                     response : response,
                     filename : pathname
                 }),
 
-                // 404 page
-                ():void => {
-                    response.setHeader("Content-Type", ContentType.HTML.toString(config.PROJECT_SERVER_CHARSET));
-                    response.writeHead(404);
-                    response.end(error404({
-                        serverName    : config.PROJECT_SERVER_NAME,
-                        serverVersion : config.PROJECT_SERVER_VERSION
-                    }));
-                }
-            ]);
+                // error
+                error404({
+                    request       : request,
+                    response      : response,
+                    charset       : config.PROJECT_SERVER_CHARSET,
+                    serverName    : config.PROJECT_SERVER_NAME,
+                    serverVersion : config.PROJECT_SERVER_VERSION
+                })
 
+            ]);
 
         });
 
         server.addListener("error", handler);
-        server.listen(config.PROJECT_SERVER_PORT, config.PROJECT_SERVER_HOSTNAME, handler);
+        server.listen(config.PROJECT_SERVER_PORT,
+            config.PROJECT_SERVER_HOSTNAME, handler);
 
     }
 

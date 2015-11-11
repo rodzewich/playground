@@ -17,18 +17,19 @@ var client:IClient = new Client({
 });
 
 function router(options:IOptions):((next:() => void) => void) {
-
-    var request:http.ServerRequest   = options.request,
-        response:http.ServerResponse = options.response,
-        filename:string              = options.filename,
-        headers:any                  = request.headers || {},
-        gzipAllowed:boolean          = String(headers["accept-encoding"]).split(", ").indexOf("gzip") !== -1;
-
     return (next:() => void):void => {
+
+        var request:http.ServerRequest   = options.request,
+            response:http.ServerResponse = options.response,
+            filename:string              = options.filename,
+            headers:any                  = request.headers || {},
+            gzipAllowed:boolean          = String(headers["accept-encoding"]).split(", ").indexOf("gzip") !== -1;
+
         client.getContent(filename, (errors:IException[], result:IResponse):void => {
             var modified:number = Date.parse(request.headers["if-modified-since"]),
                 date:number = result && result.date ? 1000 * result.date : 0;
             if (errors && errors.length) {
+                // todo: use via 500 router
                 response.setHeader("Content-Type", ContentType.HTML.toString(config.PROJECT_SERVER_CHARSET));
                 response.writeHead(500);
                 response.end(error500({
