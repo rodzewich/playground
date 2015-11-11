@@ -15,7 +15,7 @@ module config {
     var config:any,
         cache:any = {};
 
-    export const DEBUG:boolean           = true;
+    export const DEBUG:boolean           = false;
     export const SERVER_DIRECTORY:string = __dirname;
     export const SERVER_BINARY:string    = path.join(SERVER_DIRECTORY, "bin");
 
