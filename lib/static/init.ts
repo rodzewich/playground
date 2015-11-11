@@ -18,27 +18,27 @@ function init(callback:(errors?:IException[]) => void):void {
     var content:Buffer,
         command:cp.ChildProcess,
         params:string[] = [
-        path.join(config.SERVER_BINARY, "static"),
-        "--json",
-        "--charset",          config.PROJECT_SERVER_CHARSET,
-        "--sourcesDirectory", config.PROJECT_PUBLIC_DIRECTORY,
-        "--memory",           config.PROJECT_MEMORY_SOCKET,
-        "--metadataMemory",   config.PROJECT_MEMORY_SOCKET,
-        "--binaryMemory",     config.PROJECT_MEMORY_SOCKET,
-        "--gzipMemory",       config.PROJECT_MEMORY_SOCKET,
-        "--lockMemory",       config.PROJECT_MEMORY_SOCKET,
-        // todo: implement it
-        /*"--namespace", "",
-         "--metadataNamespace", "",
-         "--binaryNamespace", "",
-         "--gzipNamespace", "",
-         "--lockNamespace", "",*/
-        /*"--timeout", "",
-         "--metadataTimeout", "",
-         "--binaryTimeout", "",
-         "--gzipTimeout", "",
-         "--lockTimeout", "",*/
-    ];
+            path.join(config.SERVER_BINARY, "static"),
+            "--json",
+            "--charset", config.PROJECT_SERVER_CHARSET,
+            "--sourcesDirectory", config.PROJECT_PUBLIC_DIRECTORY,
+            "--memory", config.PROJECT_MEMORY_SOCKET,
+            "--metadataMemory", config.PROJECT_MEMORY_SOCKET,
+            "--binaryMemory", config.PROJECT_MEMORY_SOCKET,
+            "--gzipMemory", config.PROJECT_MEMORY_SOCKET,
+            "--lockMemory", config.PROJECT_MEMORY_SOCKET,
+            // todo: implement it
+            /*"--namespace", "",
+             "--metadataNamespace", "",
+             "--binaryNamespace", "",
+             "--gzipNamespace", "",
+             "--lockNamespace", "",*/
+            /*"--timeout", "",
+             "--metadataTimeout", "",
+             "--binaryTimeout", "",
+             "--gzipTimeout", "",
+             "--lockTimeout", "",*/
+        ];
 
     // todo: add include directories
 
