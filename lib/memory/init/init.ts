@@ -1,23 +1,29 @@
-/// <reference path="../../types/node/node.d.ts" />
-/// <reference path="../../types/log4js/log4js.d.ts" />
+/// <reference path="../../../types/node/node.d.ts" />
+/// <reference path="../../../types/log4js/log4js.d.ts" />
 
 import cp         = require("child_process");
 import path       = require("path");
-import log4js     = require("../../logger");
-import Exception  = require("../exception/Exception");
-import IException = require("../exception/IException");
-import isFunction = require("../isFunction");
-import isArray    = require("../isArray");
-import display    = require("../helpers/display");
-import IObject    = require("../exception/IObject");
-import config     = require("../../config");
+import log4js     = require("../../../logger");
+import Exception  = require("../../exception/Exception");
+import IException = require("../../exception/IException");
+import isFunction = require("../../isFunction");
+import isArray    = require("../../isArray");
+import display    = require("../../helpers/display");
+import IObject    = require("../../exception/IObject");
+import IOptions   = require("./IOptions");
 
 var logger:log4js.Logger = log4js.getLogger("client");
 
-function init(callback:(errors?:IException[]) => void):void {
-    var filename:string = path.join(config.SERVER_BINARY, "memory"),
-        command:cp.ChildProcess = cp.spawn(process.execPath, [filename, "--json", config.PROJECT_MEMORY_SOCKET], {cwd : config.PROJECT_DIRECTORY}),
+function init(options:IOptions, callback:(errors?:IException[]) => void):void {
+    var filename:string = path.join(options.binaryDirectory, "memory"),
+        command:cp.ChildProcess = cp.spawn(process.execPath, [filename, "--json", options.socketLocation], {cwd : options.projectDirectory}),
         content:Buffer = new Buffer(0);
+
+    if (options.debug) {
+        console.log("$", process.execPath, [filename, "--json", options.socketLocation].map((option:string):string => {
+            return JSON.stringify(option);
+        }).join(" "));
+    }
 
     function done(response:any):void {
         if (isFunction(callback) && isArray(response.errors)) {

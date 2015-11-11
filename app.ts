@@ -7,7 +7,7 @@ import config     = require("./config");
 import deferred   = require("./lib/deferred");
 import Exception  = require("./lib/exception/Exception");
 import IException = require("./lib/exception/IException");
-import memoryInit = require("./lib/memory/init");
+import memoryInit = require("./lib/memory/init/init");
 import staticInit = require("./lib/static/init");
 import colors     = require("colors");
 import http       = require("http");
@@ -160,7 +160,12 @@ deferred([
      * INIT MEMORY SOCKET
      **************************************************************************/
     (next:() => void):void => {
-        memoryInit((errors?:IException[]):void => {
+        memoryInit({
+            binaryDirectory  : config.SERVER_BINARY,
+            socketLocation   : config.PROJECT_MEMORY_SOCKET,
+            projectDirectory : config.PROJECT_DIRECTORY,
+            debug            : config.DEBUG
+        }, (errors?:IException[]):void => {
             if (errors && errors.length) {
                 errors.forEach((error:IException):void => {
                     displayException(error);
@@ -239,8 +244,8 @@ deferred([
                     timeout  : 300, // todo: use via config
                     debug    : config.DEBUG,
                     server   : {
-                        charset : config.PROJECT_SERVER_CHARSET,
                         name    : config.PROJECT_SERVER_NAME,
+                        charset : config.PROJECT_SERVER_CHARSET,
                         version : config.PROJECT_SERVER_VERSION
                     }
                 }),
@@ -250,8 +255,8 @@ deferred([
                     request  : request,
                     response : response,
                     server   : {
-                        charset : config.PROJECT_SERVER_CHARSET,
                         name    : config.PROJECT_SERVER_NAME,
+                        charset : config.PROJECT_SERVER_CHARSET,
                         version : config.PROJECT_SERVER_VERSION
                     }
                 })

@@ -1,6 +1,6 @@
 import IDaemonBase  = require("../../daemon/IDaemon");
 import IException   = require("../exception/IException");
-import IInformation = require("../IInformation");
+import IInformation = require("../client/IInformation");
 
 interface IDaemon extends IDaemonBase {
     getNamespaces():string[];

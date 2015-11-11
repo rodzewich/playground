@@ -1,6 +1,6 @@
 /// <reference path="../../../types/node/node.d.ts" />
 
-import IInformation = require("../IInformation");
+import IInformation = require("./IInformation");
 import IClientBase  = require("../../client/IClient");
 import IException   = require("../exception/IException");
 
