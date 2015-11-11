@@ -31,7 +31,9 @@ process.addListener('uncaughtException', function (error:Error) {
 
 deferred([
 
-    // create directories
+    /***************************************************************************
+     * CREATE DIRECTORIES
+     **************************************************************************/
     (next:() => void):void => {
         deferred([
             // temporary
