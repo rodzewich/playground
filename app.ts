@@ -238,13 +238,11 @@ deferred([
                     }
                 },
 
-                (next:() => void):void => {
-                    staticRouter({
-                        request: request,
-                        response: response,
-                        filename: "index.html"
-                    }, next);
-                },
+                staticRouter({
+                    request  : request,
+                    response : response,
+                    filename : "index.html"
+                }),
 
                 (next:() => void):void => {
                     var headers:any = request.headers || {},
