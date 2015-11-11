@@ -239,7 +239,11 @@ deferred([
                 },
 
                 (next:() => void):void => {
-                    staticRouter(request, response, next);
+                    staticRouter({
+                        request: request,
+                        response: response,
+                        filename: "index.html"
+                    }, next);
                 },
 
                 (next:() => void):void => {
