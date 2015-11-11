@@ -219,7 +219,10 @@ deferred([
                 extension:string,
                 filename:string;
 
-            response.setHeader("Server", [config.PROJECT_SERVER_NAME, config.PROJECT_SERVER_VERSION].join("/"));
+            response.setHeader("Server", [
+                config.PROJECT_SERVER_NAME,
+                config.PROJECT_SERVER_VERSION
+            ].join("/"));
 
             deferred([
 
