@@ -1,8 +1,7 @@
 import IObject = require("./IObject");
 import IOptions = require("./IOptions");
 import IException = require("./IException");
-import isDefined = require("../isDefined");
-import isObject = require("../isObject");
+import {isDefined, isObject} from "../utils";
 
 declare class Error {
     static captureStackTrace(error:any, func:any):void;

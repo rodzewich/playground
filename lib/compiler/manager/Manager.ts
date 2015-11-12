@@ -5,8 +5,7 @@ import IOptions = require("./IOptions");
 import IClient = require("../client/IClient");
 import Client = require("../client/Client");
 import path = require("path");
-import typeOf = require("../../typeOf");
-import isDefined = require("../../isDefined");
+import {isDefined, isFunction} from "../../utils";
 import parallel = require("../../parallel");
 import deferred = require("../../deferred");
 
@@ -69,13 +68,13 @@ class Manager extends Client implements IManager {
         if (this._pool.length) {
             client = this._pool.shift();
             setTimeout(():void => {
-                if (typeOf(callback) === "function") {
+                if (isFunction(callback)) {
                     callback(client);
                 } else {
                     this.push(client);
                 }
             }, 0).ref();
-        } else if (typeOf(callback) === "function") {
+        } else if (isFunction(callback)) {
             this._queue.push(callback);
         }
     }

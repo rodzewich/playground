@@ -1,4 +1,4 @@
-import isTrue = require("../../isTrue");
+import {isTrue} from "../../utils";
 import IBrandSpecificLogic = require("./IBrandSpecificLogic");
 
 class BrandSpecificLogic implements IBrandSpecificLogic {

@@ -25,7 +25,7 @@ process.addListener('uncaughtException', function (error:Error) {
 });
 
 import displayException = require("../displayException");
-import isArray          = require("../isArray");
+import {isArray} from "../utils";
 import Exception        = require("../exception/Exception");
 import IException       = require("../exception/IException");
 import IObject          = require("../exception/IObject");

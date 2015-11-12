@@ -3,8 +3,7 @@
 
 import net        = require("net");
 import log4js     = require("log4js");
-import isFunction = require("../isFunction");
-import isDefined  = require("../isDefined");
+import {isFunction, isDefined} from "../utils";
 import IDaemon    = require("./IDaemon");
 import IOptions   = require("./IOptions");
 import Exception  = require("../exception/Exception");

@@ -1,4 +1,4 @@
-import isFunction = require("../isFunction");
+import {isFunction} from "../utils";
 import IHandlersRegistrationHelper = require("./IHandlersRegistrationHelper");
 
 class HandlersRegistrationHelper implements IHandlersRegistrationHelper {

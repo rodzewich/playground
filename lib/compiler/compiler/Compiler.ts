@@ -2,7 +2,7 @@
 
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
-import isDefined = require("../../isDefined");
+import {isDefined} from "../../utils";
 import CssErrorsHelper = require("../helpers/CssErrorsHelper");
 import ICssErrorsHelper = require("../helpers/ICssErrorsHelper");
 import WebRootDirectoryHelper = require("../helpers/WebRootDirectoryHelper");

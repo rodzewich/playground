@@ -9,8 +9,7 @@
 import CompilerBase = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
-import typeOf = require("../../typeOf");
-import isDefined = require("../../isDefined");
+import {isDefined, isFunction} from "../../utils";
 import deferred = require("../../deferred");
 import parallel = require("../../parallel");
 import IMemory = require("../../memory/client/IClient");
@@ -196,7 +195,7 @@ class Compiler extends CompilerBase implements ICompiler {
             supportLanguages:boolean = this.isSupportLanguages(),
             done:((errors:Error[], result:IResponse) => void) =
                 (errors:Error[], result:IResponse):void => {
-                    if (typeOf(callback) === "function") {
+                    if (isFunction(callback)) {
                         callback(errors, result);
                     }
                 },
@@ -215,7 +214,7 @@ class Compiler extends CompilerBase implements ICompiler {
                         unlock:(callback?:(errors:Error[]) => void) => void,
                         completion:((errors:Error[], result:IResponse) => void) =
                             (errors:Error[], result:IResponse):void => {
-                                if (typeOf(callback) === "function") {
+                                if (isFunction(callback)) {
                                     if (errors && errors.length && this.isThrowErrors()) {
                                         callback(errors, null);
                                     } else if (errors && errors.length && result) {

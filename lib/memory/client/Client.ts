@@ -1,13 +1,7 @@
 /// <reference path="../../../types/node/node.d.ts" />
 
 import IInformation     = require("./IInformation");
-import isNull           = require("../../isNull");
-import isDefined        = require("../../isDefined");
-import isArray          = require("../../isArray");
-import isString         = require("../../isString");
-import isObject         = require("../../isObject");
-import isNumber         = require("../../isNumber");
-import isFunction       = require("../../isFunction");
+import {isNull, isDefined, isArray, isString, isObject, isNumber, isFunction} from "../../utils";
 import IClient          = require("./IClient");
 import IOptions         = require("./IOptions");
 import ClientBase       = require("../../client/Client");

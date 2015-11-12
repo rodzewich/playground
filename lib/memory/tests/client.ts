@@ -11,7 +11,7 @@ import IException = require("../../exception/IException");
 import Exception  = require("../../exception/Exception");
 import deferred   = require("../../deferred");
 import parallel   = require("../../parallel");
-import typeOf     = require("../../typeOf");
+import {typeOf} from "../../utils";
 
 // todo: проверять обращение к другим namespace
 // todo: проверять содержание локов в том же объекте

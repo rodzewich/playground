@@ -1,5 +1,4 @@
-import isTrue       = require("../isTrue");
-import isDefined    = require("../isDefined");
+import {isTrue, isDefined} from "../utils";
 import IDebugHelper = require("./IDebugHelper");
 
 class DebugHelper implements IDebugHelper {

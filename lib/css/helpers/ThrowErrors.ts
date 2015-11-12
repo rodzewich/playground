@@ -1,4 +1,4 @@
-import isTrue = require("../../isTrue");
+import {isTrue} from "../../utils";
 import IThrowErrors = require("./IThrowErrors");
 
 class ThrowErrors implements IThrowErrors {

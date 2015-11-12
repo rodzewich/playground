@@ -1,4 +1,4 @@
-import isTrue = require("../../isTrue");
+import {isTrue} from "../../utils";
 import ICacheHelper = require("./ICacheHelper");
 
 class CacheHelper implements ICacheHelper {

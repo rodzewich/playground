@@ -1,6 +1,4 @@
-import isArray          = require("../isArray");
-import isString         = require("../isString");
-import isDefined        = require("../isDefined");
+import {isArray, isString, isDefined} from "../utils";
 import Separator        = require("./Separator");
 import Exception        = require("../exception/Exception");
 import INamespaceHelper = require("./INamespaceHelper");

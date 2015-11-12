@@ -6,8 +6,7 @@ import IResponse = require("../client/IResponse");
 import Compiler = require("../compiler/Compiler");
 import ICompiler = require("../compiler/ICompiler");
 import ICompilerOptions = require("../compiler/IOptions");
-import typeOf = require("../../typeOf");
-import isDefined = require("../../isDefined");
+import {isDefined, isFunction} from "../../utils";
 import IMemory = require("../../memory/client/IClient");
 
 class Daemon extends DaemonBase implements IDaemon {
@@ -44,7 +43,7 @@ class Daemon extends DaemonBase implements IDaemon {
             } else {
                 data = <IResponse>result || null;
             }
-            if (typeOf(callback) === "function") {
+            if (isFunction(callback)) {
                 callback(temp, data);
             }
         });

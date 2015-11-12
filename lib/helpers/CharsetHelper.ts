@@ -1,5 +1,5 @@
 import ICharsetHelper = require("./ICharsetHelper");
-import isDefined = require("../isDefined");
+import {isDefined} from "../utils";
 
 class CharsetHelper implements ICharsetHelper {
 

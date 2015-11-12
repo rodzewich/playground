@@ -3,8 +3,27 @@
 import fs         = require("fs");
 import cp         = require("child_process");
 import mkdir      = require("./lib/mkdir");
-import config     = require("./config");
-import deferred   = require("./lib/deferred");
+import {
+    DEBUG,
+    PROJECT_ENV,
+    PROJECT_TEMPORARY_DIRECTORY,
+    PROJECT_MEMORY_SOCKET,
+    PROJECT_STATIC_SOCKET,
+    PROJECT_CSS_SOCKET,
+    PROJECT_LESS_SOCKET,
+    PROJECT_SASS_SOCKET,
+    PROJECT_STYLUS_SOCKET,
+    PROJECT_LOGS_DIRECTORY,
+    PROJECT_PUBLIC_DIRECTORY,
+    SERVER_BINARY,
+    PROJECT_DIRECTORY,
+    PROJECT_SERVER_NAME,
+    PROJECT_SERVER_VERSION,
+    PROJECT_SERVER_CHARSET,
+    PROJECT_SERVER_PORT,
+    PROJECT_SERVER_HOSTNAME
+} from "./config";
+import {deferred} from "./lib/utils";
 import Exception  = require("./lib/exception/Exception");
 import IException = require("./lib/exception/IException");
 import memoryInit = require("./lib/memory/init/init");
@@ -16,8 +35,8 @@ import path       = require("path");
 import displayException = require("./lib/displayException");
 import ContentType      = require("./lib/helpers/ContentType");
 import content          = require("./lib/static/router/router");
-import redirect         = require("./lib/routers/redirect/router");
-import error404         = require("./lib/routers/error404/router");
+import redirect         = require("./lib/routes/redirect/router");
+import error404         = require("./lib/routes/error404/router");
 
 require("./lib/mapping");
 
@@ -38,13 +57,13 @@ deferred([
         deferred([
             // temporary
             (next:() => void):void => {
-                cp.spawn(config.PROJECT_ENV, ["rm", "-rf", config.PROJECT_TEMPORARY_DIRECTORY], {}).on("close", ():void => {
+                cp.spawn(PROJECT_ENV, ["rm", "-rf", PROJECT_TEMPORARY_DIRECTORY], {}).on("close", ():void => {
                     // todo: show errors
                     next();
                 });
             },
             (next:() => void):void => {
-                mkdir(config.PROJECT_TEMPORARY_DIRECTORY, (errors:IException[]):void => {
+                mkdir(PROJECT_TEMPORARY_DIRECTORY, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
                             displayException(error);
@@ -55,7 +74,7 @@ deferred([
                 });
             },
             (next:() => void):void => {
-                var directory:string = path.dirname(config.PROJECT_MEMORY_SOCKET);
+                var directory:string = path.dirname(PROJECT_MEMORY_SOCKET);
                 mkdir(directory, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
@@ -67,7 +86,7 @@ deferred([
                 });
             },
             (next:() => void):void => {
-                var directory:string = path.dirname(config.PROJECT_STATIC_SOCKET);
+                var directory:string = path.dirname(PROJECT_STATIC_SOCKET);
                 mkdir(directory, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
@@ -79,7 +98,7 @@ deferred([
                 });
             },
             (next:() => void):void => {
-                var directory:string = path.dirname(config.PROJECT_CSS_SOCKET);
+                var directory:string = path.dirname(PROJECT_CSS_SOCKET);
                 mkdir(directory, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
@@ -91,7 +110,7 @@ deferred([
                 });
             },
             (next:() => void):void => {
-                var directory:string = path.dirname(config.PROJECT_LESS_SOCKET);
+                var directory:string = path.dirname(PROJECT_LESS_SOCKET);
                 mkdir(directory, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
@@ -103,7 +122,7 @@ deferred([
                 });
             },
             (next:() => void):void => {
-                var directory:string = path.dirname(config.PROJECT_SASS_SOCKET);
+                var directory:string = path.dirname(PROJECT_SASS_SOCKET);
                 mkdir(directory, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
@@ -115,7 +134,7 @@ deferred([
                 });
             },
             (next:() => void):void => {
-                var directory:string = path.dirname(config.PROJECT_STYLUS_SOCKET);
+                var directory:string = path.dirname(PROJECT_STYLUS_SOCKET);
                 mkdir(directory, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
@@ -128,7 +147,7 @@ deferred([
             },
             // logs
             (next:() => void):void => {
-                mkdir(config.PROJECT_LOGS_DIRECTORY, (errors:IException[]):void => {
+                mkdir(PROJECT_LOGS_DIRECTORY, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
                             displayException(error);
@@ -140,7 +159,7 @@ deferred([
             },
             // public
             (next:() => void):void => {
-                mkdir(config.PROJECT_PUBLIC_DIRECTORY, (errors:IException[]):void => {
+                mkdir(PROJECT_PUBLIC_DIRECTORY, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
                             displayException(error);
@@ -161,10 +180,10 @@ deferred([
      **************************************************************************/
     (next:() => void):void => {
         memoryInit({
-            binaryDirectory  : config.SERVER_BINARY,
-            socketLocation   : config.PROJECT_MEMORY_SOCKET,
-            projectDirectory : config.PROJECT_DIRECTORY,
-            debug            : config.DEBUG
+            binaryDirectory  : SERVER_BINARY,
+            socketLocation   : PROJECT_MEMORY_SOCKET,
+            projectDirectory : PROJECT_DIRECTORY,
+            debug            : DEBUG
         }, (errors?:IException[]):void => {
             if (errors && errors.length) {
                 errors.forEach((error:IException):void => {
@@ -180,6 +199,7 @@ deferred([
      * INIT STATIC SOCKET
      **************************************************************************/
     (next:() => void):void => {
+        // todo: use via parameter, without
         staticInit((errors?:IException[]):void => {
             if (errors && errors.length) {
                 errors.forEach((error:IException):void => {
@@ -218,8 +238,8 @@ deferred([
 
             // headers
             response.setHeader("Server", [
-                config.PROJECT_SERVER_NAME,
-                config.PROJECT_SERVER_VERSION
+                PROJECT_SERVER_NAME,
+                PROJECT_SERVER_VERSION
             ].join("/"));
 
             deferred([
@@ -240,13 +260,13 @@ deferred([
                     request  : request,
                     response : response,
                     filename : pathname,
-                    socket   : config.PROJECT_STATIC_SOCKET,
+                    socket   : PROJECT_STATIC_SOCKET,
                     timeout  : 300, // todo: use via config
-                    debug    : config.DEBUG,
+                    debug    : DEBUG,
                     server   : {
-                        name    : config.PROJECT_SERVER_NAME,
-                        charset : config.PROJECT_SERVER_CHARSET,
-                        version : config.PROJECT_SERVER_VERSION
+                        name    : PROJECT_SERVER_NAME,
+                        charset : PROJECT_SERVER_CHARSET,
+                        version : PROJECT_SERVER_VERSION
                     }
                 }),
 
@@ -255,9 +275,9 @@ deferred([
                     request  : request,
                     response : response,
                     server   : {
-                        name    : config.PROJECT_SERVER_NAME,
-                        charset : config.PROJECT_SERVER_CHARSET,
-                        version : config.PROJECT_SERVER_VERSION
+                        name    : PROJECT_SERVER_NAME,
+                        charset : PROJECT_SERVER_CHARSET,
+                        version : PROJECT_SERVER_VERSION
                     }
                 })
 
@@ -266,8 +286,8 @@ deferred([
         });
 
         server.addListener("error", handler);
-        server.listen(config.PROJECT_SERVER_PORT,
-            config.PROJECT_SERVER_HOSTNAME, handler);
+        server.listen(PROJECT_SERVER_PORT,
+            PROJECT_SERVER_HOSTNAME, handler);
 
     }
 

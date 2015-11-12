@@ -4,8 +4,7 @@ import ManagerBase = require("../../compiler/manager/Manager");
 import IClient = require("../client/IClient");
 import Client = require("../client/Client");
 import IClientOptions = require("../client/IOptions");
-import typeOf = require("../../typeOf");
-import isDefined = require("../../isDefined");
+import {isDefined, isFunction} from "../../utils";
 import IIncludeDirectoriesHelper = require("../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../helpers/IncludeDirectoriesHelper");
 import BrandSpecificLogic = require("../helpers/BrandSpecificLogic");
@@ -185,7 +184,7 @@ class Manager extends ManagerBase {
 
     compile(filename:string, callback?:(errors:Error[], result:IResponse) => void): void {
         super.compile(filename, (errors:Error[], result:any): void => {
-            if (typeOf(callback) === "function") {
+            if (isFunction(callback)) {
                 callback(errors, <IResponse>result);
             }
         });

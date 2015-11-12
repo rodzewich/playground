@@ -1,9 +1,7 @@
 /// <reference path="../../types/node/node.d.ts" />
 
 import path              = require("path");
-import isNull            = require("../isNull");
-import isString          = require("../isString");
-import isDefined         = require("../isDefined");
+import {isNull, isString, isDefined} from "../utils";
 import Exception         = require("../exception/Exception");
 import IResourceLocation = require("./IResourceLocation");
 

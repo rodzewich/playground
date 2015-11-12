@@ -1,4 +1,4 @@
-import typeOf = require("./typeOf");
+import {isFunction} from "./utils";
 
 class TryCode {
 
@@ -10,7 +10,7 @@ class TryCode {
 
     constructor(callback:() => void) {
         try {
-            if (typeOf(callback) === "function") {
+            if (isFunction(callback)) {
                 callback();
             }
         } catch (error) {
@@ -27,7 +27,7 @@ class TryCode {
     }
 
     public finally(callback:() => void):void {
-        if (!this._finally && typeOf(callback) === "function") {
+        if (!this._finally && isFunction(callback)) {
             this._finally = true;
             callback();
         }

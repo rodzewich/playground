@@ -1,4 +1,4 @@
-import isDefined = require("../isDefined");
+import {isDefined} from "../utils";
 import ITimeoutHelper = require("./ITimeoutHelper");
 
 class TimeoutHelper implements ITimeoutHelper {

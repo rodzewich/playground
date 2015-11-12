@@ -1,5 +1,4 @@
-import isString  = require("../isString");
-import isDefined = require("../isDefined");
+import {isString, isDefined} from "../utils";
 import Exception = require("../exception/Exception");
 
 var types:{[index:string]:ContentType} = {};

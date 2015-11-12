@@ -4,7 +4,7 @@ import IDaemon = require("./IDaemon");
 import IResponse = require("../client/IResponse");
 import IRequest = require("../client/IRequest");
 import Compiler = require("../compiler/Compiler");
-import isDefined = require("../../isDefined");
+import {isDefined} from "../../utils";
 import Exception = require("../../exception/Exception");
 import IMemory = require("../../memory/client/IClient");
 

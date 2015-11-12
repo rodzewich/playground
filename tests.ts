@@ -5,8 +5,7 @@
 import glob       = require("glob");
 import path       = require("path");
 import optimist   = require("optimist");
-import isTrue     = require("./lib/isTrue");
-import isFunction = require("./lib/isFunction");
+import {isTrue, isFunction} = require("./lib/utils");
 import deferred   = require("./lib/deferred");
 import Exception  = require("./lib/exception/Exception");
 import displayException = require("./lib/displayException");

@@ -1,11 +1,11 @@
 /// <reference path="../types/node/node.d.ts" />
 
-import fs         = require("fs");
-import path       = require("path");
-import deferred   = require("./deferred");
-import isFunction = require("./isFunction");
-import Exception  = require("./exception/Exception");
-import IException = require("./exception/IException");
+import fs           = require("fs");
+import path         = require("path");
+import deferred     = require("./deferred");
+import {isFunction} from "./utils";
+import Exception    = require("./exception/Exception");
+import IException   = require("./exception/IException");
 
 function mkdir(directory:string, callback?:(errors:IException[]) => void):void {
 

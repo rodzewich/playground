@@ -1,6 +1,8 @@
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../../types/log4js/log4js.d.ts" />
 
+// todo: move to init folder and use via parameter, without config.
+
 import cp         = require("child_process");
 import path       = require("path");
 import log4js     = require("../../logger");

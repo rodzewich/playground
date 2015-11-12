@@ -1,7 +1,4 @@
-import isNull    = require("../isNull");
-import isArray   = require("../isArray");
-import isString  = require("../isString");
-import isDefined = require("../isDefined");
+import {isNull, isArray, isString, isDefined} from "../utils";
 import Exception = require("../exception/Exception");
 import IUsedExtensionsHelper = require("./IUsedExtensionsHelper");
 

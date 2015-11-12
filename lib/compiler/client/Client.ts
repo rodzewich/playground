@@ -1,8 +1,7 @@
 /// <reference path="../../../types/node/node.d.ts" />
 /// <reference path="../../../types/log4js/log4js.d.ts" />
 
-import typeOf = require("../../typeOf");
-import isDefined = require("../../isDefined");
+import {isString, isFunction, isArray, isDefined} from "../../utils";
 import deferred = require("../../deferred");
 import WebRootDirectoryHelper = require("../helpers/WebRootDirectoryHelper");
 import IWebRootDirectoryHelper = require("../helpers/IWebRootDirectoryHelper");
@@ -279,7 +278,7 @@ class Client extends ClientBase implements IClient {
     }
 
     public compile(filename:string, callback?:(errors:Error[], result:IResponse) => void):void {
-        if (typeOf(filename) !== "string") {
+        if (!isString(filename)) {
             throw new Exception({message: "filename should be a string"});
         }
         this.call((errors:Error[], response?:any):void => {
@@ -290,7 +289,7 @@ class Client extends ClientBase implements IClient {
             } else {
                 result = response || null;
             }
-            if (typeOf(callback) === "function") {
+            if (isFunction(callback)) {
                 callback(errs, <IResponse>result);
             }
         }, "compile", this.createRequest(filename));
@@ -348,7 +347,7 @@ class Client extends ClientBase implements IClient {
                             }
                             data = data.slice((new Buffer(json, "utf8")).length + 1);
                             if (!result.started) {
-                                if (typeOf(result.errors) === "array") {
+                                if (isArray(result.errors)) {
                                     errors = (<any[]>result.errors).map((item:any):Error => {
                                         return new Exception(item);
                                     });
