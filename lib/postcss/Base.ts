@@ -1,5 +1,5 @@
 import IOptions = require("./IOptions");
-import typeOf = require("../typeOf");
+import {isDefined} from "../utils";
 import IPlugin = require("./plugins/IPlugin");
 import IPostcssAutoprefixerPlugin = require("./plugins/fallbacks/autoprefixer/IPlugin");
 import PostcssAutoprefixerPlugin = require("./plugins/fallbacks/autoprefixer/Plugin");
@@ -54,78 +54,78 @@ class Base {
             colorRgbaPlugin: IPostcssVminPlugin                = this.getColorRgbaPlugin(),
             cssgracePlugin: IPostcssCssgracePlugin             = this.getCssgracePlugin(),
             willChangePlugin: IPostcssWillChangePlugin         = this.getWillChangePlugin();
-        if (options && typeOf(options.postcssPluginAutoprefixerEnabled) !== "undefined") {
+        if (options && isDefined(options.postcssPluginAutoprefixerEnabled)) {
             autoprefixerPlugin.setIsEnabled(options.postcssPluginAutoprefixerEnabled);
         }
-        if (options && typeOf(options.postcssPluginAutoprefixerUsed) !== "undefined") {
+        if (options && isDefined(options.postcssPluginAutoprefixerUsed)) {
             autoprefixerPlugin.setIsUsed(options.postcssPluginAutoprefixerUsed);
         }
-        if (options && typeOf(options.postcssPluginAutoprefixerBrowsers) !== "undefined") {
+        if (options && isDefined(options.postcssPluginAutoprefixerBrowsers)) {
             autoprefixerPlugin.setBrowsers(options.postcssPluginAutoprefixerBrowsers);
         }
-        if (options && typeOf(options.postcssPluginAutoprefixerCascade) !== "undefined") {
+        if (options && isDefined(options.postcssPluginAutoprefixerCascade)) {
             autoprefixerPlugin.setIsCascade(options.postcssPluginAutoprefixerCascade);
         }
-        if (options && typeOf(options.postcssPluginAutoprefixerRemove) !== "undefined") {
+        if (options && isDefined(options.postcssPluginAutoprefixerRemove)) {
             autoprefixerPlugin.setIsRemove(options.postcssPluginAutoprefixerRemove);
         }
-        if (options && typeOf(options.postcssPluginAutoprefixerAdd) !== "undefined") {
+        if (options && isDefined(options.postcssPluginAutoprefixerAdd)) {
             autoprefixerPlugin.setIsAdd(options.postcssPluginAutoprefixerAdd);
         }
-        if (options && typeOf(options.postcssPluginPseudoElementsEnabled) !== "undefined") {
+        if (options && isDefined(options.postcssPluginPseudoElementsEnabled)) {
             pseudoElementsPlugin.setIsEnabled(options.postcssPluginPseudoElementsEnabled);
         }
-        if (options && typeOf(options.postcssPluginPseudoElementsUsed) !== "undefined") {
+        if (options && isDefined(options.postcssPluginPseudoElementsUsed)) {
             pseudoElementsPlugin.setIsUsed(options.postcssPluginPseudoElementsUsed);
         }
-        if (options && typeOf(options.postcssPluginPseudoElementsSelectors) !== "undefined") {
+        if (options && isDefined(options.postcssPluginPseudoElementsSelectors)) {
             pseudoElementsPlugin.setSelectors(options.postcssPluginPseudoElementsSelectors);
         }
-        if (options && typeOf(options.postcssPluginEpubEnabled) !== "undefined") {
+        if (options && isDefined(options.postcssPluginEpubEnabled)) {
             epubPlugin.setIsEnabled(options.postcssPluginEpubEnabled);
         }
-        if (options && typeOf(options.postcssPluginEpubUsed) !== "undefined") {
+        if (options && isDefined(options.postcssPluginEpubUsed)) {
             epubPlugin.setIsUsed(options.postcssPluginEpubUsed);
         } else {
             epubPlugin.setIsUsed(true);
         }
-        if (options && typeOf(options.postcssPluginEpubFonts) !== "undefined") {
+        if (options && isDefined(options.postcssPluginEpubFonts)) {
             epubPlugin.setIsFonts(options.postcssPluginEpubFonts);
         }
-        if (options && typeOf(options.postcssPluginEpubStrip) !== "undefined") {
+        if (options && isDefined(options.postcssPluginEpubStrip)) {
             epubPlugin.setIsStrip(options.postcssPluginEpubStrip);
         }
-        if (options && typeOf(options.postcssPluginEpubStrict) !== "undefined") {
+        if (options && isDefined(options.postcssPluginEpubStrict)) {
             epubPlugin.setIsStrict(options.postcssPluginEpubStrict);
         }
-        if (options && typeOf(options.postcssPluginOpacityEnabled) !== "undefined") {
+        if (options && isDefined(options.postcssPluginOpacityEnabled)) {
             opacityPlugin.setIsEnabled(options.postcssPluginOpacityEnabled);
         }
-        if (options && typeOf(options.postcssPluginOpacityUsed) !== "undefined") {
+        if (options && isDefined(options.postcssPluginOpacityUsed)) {
             opacityPlugin.setIsUsed(options.postcssPluginOpacityUsed);
         }
-        if (options && typeOf(options.postcssPluginVminEnabled) !== "undefined") {
+        if (options && isDefined(options.postcssPluginVminEnabled)) {
             vminPlugin.setIsEnabled(options.postcssPluginVminEnabled);
         }
-        if (options && typeOf(options.postcssPluginVminUsed) !== "undefined") {
+        if (options && isDefined(options.postcssPluginVminUsed)) {
             vminPlugin.setIsUsed(options.postcssPluginVminUsed);
         }
-        if (options && typeOf(options.postcssPluginColorRgbaEnabled) !== "undefined") {
+        if (options && isDefined(options.postcssPluginColorRgbaEnabled)) {
             colorRgbaPlugin.setIsEnabled(options.postcssPluginColorRgbaEnabled);
         }
-        if (options && typeOf(options.postcssPluginColorRgbaUsed) !== "undefined") {
+        if (options && isDefined(options.postcssPluginColorRgbaUsed)) {
             colorRgbaPlugin.setIsUsed(options.postcssPluginColorRgbaUsed);
         }
-        if (options && typeOf(options.postcssPluginCssgraceEnabled) !== "undefined") {
+        if (options && isDefined(options.postcssPluginCssgraceEnabled)) {
             cssgracePlugin.setIsEnabled(options.postcssPluginCssgraceEnabled);
         }
-        if (options && typeOf(options.postcssPluginCssgraceUsed) !== "undefined") {
+        if (options && isDefined(options.postcssPluginCssgraceUsed)) {
             cssgracePlugin.setIsUsed(options.postcssPluginCssgraceUsed);
         }
-        if (options && typeOf(options.postcssPluginWillChangeEnabled) !== "undefined") {
+        if (options && isDefined(options.postcssPluginWillChangeEnabled)) {
             willChangePlugin.setIsEnabled(options.postcssPluginWillChangeEnabled);
         }
-        if (options && typeOf(options.postcssPluginWillChangeUsed) !== "undefined") {
+        if (options && isDefined(options.postcssPluginWillChangeUsed)) {
             willChangePlugin.setIsUsed(options.postcssPluginWillChangeUsed);
         }
         if (plugins.indexOf(this.getPseudoElementsPlugin()) === -1) {

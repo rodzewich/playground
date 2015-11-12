@@ -1,8 +1,7 @@
 /// <reference path="../../../types/node/node.d.ts" />
 /// <reference path="../../../types/log4js/log4js.d.ts" />
 
-import {isString, isFunction, isArray, isDefined} from "../../utils";
-import deferred = require("../../deferred");
+import {isString, isFunction, isArray, isDefined, deferred} from "../../utils";
 import WebRootDirectoryHelper = require("../helpers/WebRootDirectoryHelper");
 import IWebRootDirectoryHelper = require("../helpers/IWebRootDirectoryHelper");
 import MemoryLocationHelper = require("../helpers/MemoryLocationHelper");

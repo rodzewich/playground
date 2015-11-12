@@ -1,8 +1,7 @@
 /// <reference path="../../../types/node/node.d.ts" />
 
-import ExceptionBase = require("../../exception/Exception");
-import Exception     = require("../exception/Exception");
-import IException    = require("../exception/IException");
+import {Exception as ExceptionBase} from "../../exception";
+import {IException, Exception} from "../exception";
 import DaemonBase    = require("../../daemon/Daemon");
 import {isFunction, isDefined, isNumber} from "../../utils";
 import IDaemon       = require("./IDaemon");

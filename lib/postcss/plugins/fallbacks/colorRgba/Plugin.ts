@@ -1,6 +1,6 @@
 /// <reference path="./plugin.d.ts" />
 
-import typeOf = require("../../../../typeOf");
+import {isDefined} from "../../../../utils";
 import PluginBase = require("../Plugin");
 import IPlugin = require("./IPlugin");
 import IOptions = require("./IOptions");
@@ -12,7 +12,7 @@ class Plugin extends PluginBase implements IPlugin {
 
     constructor(options?:IOptions) {
         super(options);
-        if (options && typeOf(options.properties) !== "undefined") {
+        if (options && isDefined(options.properties)) {
             this.setProperties(options.properties);
         }
     }

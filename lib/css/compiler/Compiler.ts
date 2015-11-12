@@ -9,8 +9,7 @@
 import CompilerBase = require("../../compiler/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");
-import {isDefined, isFunction} from "../../utils";
-import deferred = require("../../deferred");
+import {isDefined, isFunction, deferred, parallel} from "../../utils";
 import parallel = require("../../parallel");
 import IMemory = require("../../memory/client/IClient");
 import IResponse = require("../client/IResponse");

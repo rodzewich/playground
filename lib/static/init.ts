@@ -6,12 +6,9 @@
 import cp         = require("child_process");
 import path       = require("path");
 import log4js     = require("../../logger");
-import Exception  = require("../exception/Exception");
-import IException = require("../exception/IException");
-import isFunction = require("../isFunction");
-import isArray    = require("../isArray");
+import {IObject, IException, Exception} from "../exception";
+import {isFunction, isArray} from "../utils";
 import display    = require("../helpers/display");
-import IObject    = require("../exception/IObject");
 import config     = require("../../config");
 
 var logger:log4js.Logger = log4js.getLogger("client");

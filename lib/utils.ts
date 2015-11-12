@@ -1,6 +1,6 @@
 /// <reference path="../types/node/node.d.ts" />
 
-import Exception = require("./exception/Exception");
+import {Exception} from "./exception";
 
 export function typeOf(value:any):string {
     var type:string = String(Object.prototype.toString.call(value) || '').slice(8, -1) || 'Object',

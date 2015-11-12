@@ -1,7 +1,7 @@
 /// <reference path="./plugin.d.ts" />
 /// <reference path="../../../browserslist.d.ts" />
 
-import typeOf = require("../../../../typeOf");
+import {isDefined} from "../../../../utils";
 import PluginBase = require("../Plugin");
 import IPlugin = require("./IPlugin");
 import IOptions = require("./IOptions");
@@ -20,16 +20,16 @@ class Plugin extends PluginBase implements IPlugin {
 
     constructor(options?:IOptions) {
         super(options);
-        if (options && typeOf(options.browsers) !== "undefined") {
+        if (options && isDefined(options.browsers)) {
             this.setBrowsers(options.browsers);
         }
-        if (options && typeOf(options.cascade) !== "undefined") {
+        if (options && isDefined(options.cascade)) {
             this.setIsCascade(options.cascade);
         }
-        if (options && typeOf(options.add) !== "undefined") {
+        if (options && isDefined(options.add)) {
             this.setIsAdd(options.add);
         }
-        if (options && typeOf(options.remove) !== "undefined") {
+        if (options && isDefined(options.remove)) {
             this.setIsRemove(options.remove);
         }
     }

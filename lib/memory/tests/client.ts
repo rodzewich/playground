@@ -7,11 +7,8 @@ import Client     = require("../client/Client");
 import IClient    = require("../client/IClient");
 import Daemon     = require("../daemon/Daemon");
 import IDaemon    = require("../client/IDaemon");
-import IException = require("../../exception/IException");
-import Exception  = require("../../exception/Exception");
-import deferred   = require("../../deferred");
-import parallel   = require("../../parallel");
-import {typeOf} from "../../utils";
+import {IException, Exception} from "../../exception";
+import {typeOf, deferred, parallel} from "../../utils";
 
 // todo: проверять обращение к другим namespace
 // todo: проверять содержание локов в том же объекте

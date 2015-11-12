@@ -1,5 +1,4 @@
-import isNumber  = require("../../isNumber");
-import isDefined = require("../../isDefined");
+import {isNumber, isDefined} from "../../utils";
 import Exception = require("../../exception/Exception");
 import IGzipMinLengthHelper = require("./IGzipMinLengthHelper");
 

@@ -24,8 +24,7 @@ import {
     PROJECT_SERVER_HOSTNAME
 } from "./config";
 import {deferred} from "./lib/utils";
-import Exception  = require("./lib/exception/Exception");
-import IException = require("./lib/exception/IException");
+import {IException, Exception} from "./lib/exception";
 import memoryInit = require("./lib/memory/init/init");
 import staticInit = require("./lib/static/init");
 import colors     = require("colors");

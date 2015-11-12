@@ -11,9 +11,7 @@
 import CompilerBase  = require("../../css/compiler/Compiler");
 import IOptions      = require("./IOptions");
 import ICompiler     = require("./ICompiler");
-import typeOf        = require("../../typeOf");
-import deferred      = require("../../deferred");
-import parallel      = require("../../parallel");
+import {isFunction, deferred, parallel} from "../../utils";
 import IMemory       = require("../../memory/client/IClient");
 import IResponse     = require("../client/IResponse");
 import path          = require("path");
@@ -75,7 +73,7 @@ class Compiler extends CompilerBase implements ICompiler {
             content: string;
 
         function completion(errors: Error[], result: IResponse): void {
-            if (typeOf(callback) === "function") {
+            if (isFunction(callback)) {
                 callback(errors, result);
             }
         }

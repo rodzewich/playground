@@ -2,7 +2,7 @@
 
 import IInformation = require("./IInformation");
 import IClientBase  = require("../../client/IClient");
-import IException   = require("../exception/IException");
+import {IException} from "../exception";
 
 interface IClient extends IClientBase {
     namespace:string;

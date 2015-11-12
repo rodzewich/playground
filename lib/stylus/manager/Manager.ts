@@ -3,7 +3,6 @@ import IOptions = require("./IOptions");
 import ManagerBase = require("../../css/manager/Manager");
 import IClient = require("../client/IClient");
 import Client = require("../client/Client");
-import typeOf = require("../../typeOf");
 
 class Manager extends ManagerBase {
 

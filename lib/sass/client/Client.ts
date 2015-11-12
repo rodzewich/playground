@@ -1,6 +1,6 @@
 /// <reference path="../../../types/node/node.d.ts" />
 
-import typeOf     = require("../../typeOf");
+import {isFunction} from "../../utils";
 import IOptions   = require("./IOptions");
 import IClient    = require("./IClient");
 import ClientBase = require("../../css/client/Client");
@@ -34,7 +34,7 @@ class Client extends ClientBase {
 
     public compile(filename:string, callback?:(errors:Error[], result:IResponse) => void):void {
         super.compile(filename, (errors:Error[], result:any):void => {
-            if (typeOf(callback) === "function") {
+            if (isFunction(callback)) {
                 callback(errors, <IResponse>result);
             }
         });

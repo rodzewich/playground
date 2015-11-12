@@ -1,5 +1,5 @@
 
-import deferred = require("../../deferred");
+import {deferred, typeOf} from "../../utils";
 import Client = require("../client/Client");
 import IClient = require("../client/IClient");
 import Daemon = require("../daemon/Daemon");
@@ -8,7 +8,6 @@ import IOptions = require("../daemon/IOptions");
 import assert = require("assert");
 import path = require("path");
 import fs = require("fs");
-import typeOf = require("../../typeOf");
 import IMemory = require("../../memory/daemon/IDaemon");
 import Memory = require("../../memory/daemon/Daemon");
 

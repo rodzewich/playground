@@ -5,9 +5,7 @@ import IOptions = require("./IOptions");
 import IClient = require("../client/IClient");
 import Client = require("../client/Client");
 import path = require("path");
-import {isDefined, isFunction} from "../../utils";
-import parallel = require("../../parallel");
-import deferred = require("../../deferred");
+import {isDefined, isFunction, deferred, parallel} from "../../utils";
 
 class Manager extends Client implements IManager {
 

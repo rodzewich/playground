@@ -6,10 +6,8 @@ import url = require("url");
 import http = require("http");
 import path = require("path");
 import base = require("./base");
-import deferred = require("../deferred");
-import parallel = require("../parallel");
+import {isDefined, isFunction, deferred, parallel} from "../utils";
 import mkdir = require("../mkdir");
-import typeOf = require("../typeOf");
 import IManager = require("../less/manager/IManager");
 import Manager = require("../less/manager/Manager");
 import IResponse = require("../less/client/IResponse");
@@ -65,7 +63,7 @@ export function init(options:InitOptions, done:(errors:Error[]) => void):void {
         (next:() => void):void => {
             mkdir(temporaryDirectory, (error?:Error):void => {
                 if (error) {
-                    if (typeOf(done) === "function") {
+                    if (isFunction(done)) {
                         done([error]);
                     }
                 } else {
@@ -98,7 +96,7 @@ export function init(options:InitOptions, done:(errors:Error[]) => void):void {
                         manager.connect((errors:Error[]):void => {
                             if (!errors || !errors.length) {
                                 next();
-                            } else if (typeOf(done) === "function") {
+                            } else if (isFunction(done)) {
                                 done(errors);
                             }
                         });
@@ -110,7 +108,7 @@ export function init(options:InitOptions, done:(errors:Error[]) => void):void {
                             cwd: sourcesDirectory
                         }, (error?:Error, files?:string[]):void => {
                             if (error) {
-                                if (typeOf(done) === "function") {
+                                if (isFunction(done)) {
                                     done([error]);
                                 }
                             } else {
@@ -128,7 +126,7 @@ export function init(options:InitOptions, done:(errors:Error[]) => void):void {
                         });
                         parallel(actions, ():void => {
                             if (errors.length) {
-                                if (typeOf(done) === "function") {
+                                if (isFunction(done)) {
                                     done(errors);
                                 }
                             } else {
@@ -140,7 +138,7 @@ export function init(options:InitOptions, done:(errors:Error[]) => void):void {
                         manager.disconnect((errors:Error[]):void => {
                             if (!errors || !errors.length) {
                                 next();
-                            } else if (typeOf(done) === "function") {
+                            } else if (isFunction(done)) {
                                 done(errors && errors.length ? errors : null);
                             }
                         })
@@ -169,7 +167,7 @@ export function init(options:InitOptions, done:(errors:Error[]) => void):void {
                 useCache             : useCache
             });
             manager.connect((errors:Error[]):void => {
-                if (typeOf(done) === "function") {
+                if (isFunction(done)) {
                     done(errors && errors.length ? errors : null);
                 }
             });
@@ -201,12 +199,12 @@ export function route(options:RouterOptions, complete:() => void):void {
                 modified:string = request.headers["if-modified-since"],
                 header:any = {};
             if (useCache && extension === ".css" &&
-                typeOf(memory[pathname]) !== "undefined" &&
+                isDefined(memory[pathname]) &&
                 modified && modified === startDate) {
                 response.writeHead(304);
                 response.end();
             } else if (useCache && extension === ".css" &&
-                typeOf(memory[pathname]) !== "undefined") {
+                isDefined(memory[pathname])) {
                 header["Content-Type"] = "text/css; charset=utf-8";
                 header["Last-Modified"] = startDate;
                 response.writeHead(200, header);

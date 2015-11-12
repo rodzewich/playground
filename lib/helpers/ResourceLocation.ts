@@ -1,8 +1,8 @@
 /// <reference path="../../types/node/node.d.ts" />
 
-import path              = require("path");
+import path = require("path");
 import {isNull, isString, isDefined} from "../utils";
-import Exception         = require("../exception/Exception");
+import {Exception} from "../exception";
 import IResourceLocation = require("./IResourceLocation");
 
 class ResourceLocation implements IResourceLocation {

@@ -1,4 +1,4 @@
-import isNull = require("../../isNull");
+import {isNull} from "../../isNull";
 import Exception = require("../exception/Exception");
 import IGzipCompressionLevelHelper = require("./IGzipCompressionLevelHelper");
 

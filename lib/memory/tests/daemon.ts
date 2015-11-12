@@ -2,8 +2,8 @@
 
 import path = require("path");
 import assert = require("assert");
-import Exception = require("../../exception/Exception");
-import deferred = require("../../deferred");
+import {Exception} from "../../exception";
+import {deferred} from "../../utils";
 import Daemon = require("../daemon/Daemon");
 import IDaemon = require("../daemon/IDaemon");
 

@@ -1,8 +1,7 @@
 /// <reference path="./plugin.d.ts" />
 /// <reference path="../../../browserslist.d.ts" />
 
-import typeOf = require("../../../../typeOf");
-import isTrue = require("../../../../isTrue");
+import {isTrue, isDefined} from "../../../../utils";
 import PluginBase = require("../Plugin");
 import IPlugin = require("./IPlugin");
 import IOptions = require("./IOptions");
@@ -23,19 +22,19 @@ class Plugin extends PluginBase implements IPlugin {
 
     constructor(options?:IOptions) {
         super(options);
-        if (options && typeOf(options.rootFontSize) !== "undefined") {
+        if (options && isDefined(options.rootFontSize)) {
             this.setRootFontSize(options.rootFontSize);
         }
-        if (options && typeOf(options.replace) !== "undefined") {
+        if (options && isDefined(options.replace)) {
             this.setIsReplace(options.replace);
         }
-        if (options && typeOf(options.atRules) !== "undefined") {
+        if (options && isDefined(options.atRules)) {
             this.setIsAtRules(options.atRules);
         }
-        if (options && typeOf(options.html) !== "undefined") {
+        if (options && isDefined(options.html)) {
             this.setIsHtml(options.html);
         }
-        if (options && typeOf(options.browsers) !== "undefined") {
+        if (options && isDefined(options.browsers)) {
             this.setBrowsers(options.browsers);
         }
     }

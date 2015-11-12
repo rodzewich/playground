@@ -1,4 +1,3 @@
-import typeOf = require("../../../../typeOf");
 import PluginBase = require("../Plugin");
 import IPlugin = require("./IPlugin");
 import postcssBemLinter = require("postcss-bem-linter");

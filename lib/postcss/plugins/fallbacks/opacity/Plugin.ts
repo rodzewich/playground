@@ -1,6 +1,5 @@
 /// <reference path="./plugin.d.ts" />
 
-import typeOf = require("../../../../typeOf");
 import PluginBase = require("../Plugin");
 import IPlugin = require("./IPlugin");
 import IOptions = require("./IOptions");

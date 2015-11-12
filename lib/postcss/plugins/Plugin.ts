@@ -1,5 +1,4 @@
-import isTrue = require("../../isTrue");
-import typeOf = require("../../typeOf");
+import {isTrue, isDefined} from "../../utils";
 import IPlugin = require("./IPlugin");
 import IOptions = require("./IOptions");
 
@@ -10,10 +9,10 @@ abstract class Plugin implements IPlugin {
     private _enabled:boolean = true;
 
     constructor(options?:IOptions) {
-        if (options && typeOf(options.used) !== "undefined") {
+        if (options && isDefined(options.used)) {
             this.setIsUsed(options.used);
         }
-        if (options && typeOf(options.enabled) !== "undefined") {
+        if (options && isDefined(options.enabled)) {
             this.setIsEnabled(options.enabled);
         }
     }

@@ -23,11 +23,7 @@ process.addListener('uncaughtException', function (error:Error) {
 require("../mapping");
 
 import displayException = require("../displayException");
-import isNull     = require("../isNull");
-import isDefined  = require("../isDefined");
-import isString   = require("../isString");
-import isNumber   = require("../isNumber");
-import isBoolean  = require("../isBoolean");
+import {isNull, isDefined, isString, isNumber, isArray, isBoolean} from "../utils";
 import Exception  = require("./exception/Exception");
 import IException = require("./exception/IException");
 import IObject    = require("./exception/IObject");
@@ -37,7 +33,6 @@ import log4js     = require("../../logger");
 import optimist   = require("optimist");
 import path       = require("path");
 import colors     = require("colors");
-import isArray    = require("../isArray");
 import config     = require("../../config");
 
 var cache:any = {},

@@ -12,10 +12,10 @@ process.addListener('uncaughtException', function (error:Error) {
         if (argv.json) {
             process.stderr.write(JSON.stringify({
                     started : false,
-                    errors  : [Exception.convertFromError(error).toObject()]
+                    errors  : [ExceptionBase.convertFromError(error).toObject()]
                 }) + "\n");
         } else {
-            displayException(Exception.convertFromError(error));
+            displayException(ExceptionBase.convertFromError(error));
         }
         messageSent = true;
     }
@@ -26,9 +26,8 @@ process.addListener('uncaughtException', function (error:Error) {
 
 import displayException = require("../displayException");
 import {isArray} from "../utils";
-import Exception        = require("../exception/Exception");
-import IException       = require("../exception/IException");
-import IObject          = require("../exception/IObject");
+import {IObject, IException, Exception} from "./exception";
+import {Exception as ExceptionBase} from "../exception";
 import IDaemon          = require("./daemon/IDaemon");
 import Daemon           = require("./daemon/Daemon");
 import log4js           = require("../../logger");

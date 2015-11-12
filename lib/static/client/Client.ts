@@ -4,13 +4,11 @@ import log4js     = require("../../../logger");
 import IResponseClient  = require("./IResponse");
 import IResponseDaemon  = require("../daemon/IResponse");
 import IOptions   = require("./IOptions");
-import isString   = require("../../isString");
-import isFunction = require("../../isFunction");
+import {isDefined, isString, isFunction} from "../../utils";
 import IException = require("../exception/IException");
 import Exception  = require("../exception/Exception");
 import CacheOnlyHelper  = require("../helpers/CacheOnlyHelper");
 import ICacheOnlyHelper = require("../helpers/ICacheOnlyHelper");
-import isDefined        = require("../../isDefined");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
