@@ -1,13 +1,43 @@
-import IObject = require("./IObject");
-import IOptions = require("./IOptions");
-import IException = require("./IException");
-import {isDefined, isObject} from "../utils";
+import {isDefined, isObject} from "./utils";
 
 declare class Error {
     static captureStackTrace(error:any, func:any):void;
 }
 
-class Exception implements IException {
+export interface IOptions {
+    message:string;
+    stack?:string;
+    data?:{[index:string]:any};
+    name?:string;
+    code?:number;
+    type?:string;
+}
+
+export interface IObject {
+    message:string;
+    stack:string;
+    name:string;
+    code:number;
+}
+
+export interface IException {
+    name:string;
+    code:number;
+    type:string;
+    message:string;
+    stack:string;
+    data:{[index:string]:any};
+    toObject():IObject;
+    toString():string;
+    getName():string;
+    getStack():string;
+    getMessage():string;
+    getCode():number;
+    getType():string;
+    getData():{[index:string]:any};
+}
+
+export class Exception implements IException {
 
     private _message:string = "undefined";
 
@@ -161,5 +191,3 @@ class Exception implements IException {
     }
 
 }
-
-export = Exception;
