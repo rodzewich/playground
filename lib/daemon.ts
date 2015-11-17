@@ -1,21 +1,44 @@
-/// <reference path="../../types/node/node.d.ts" />
-/// <reference path="../../types/log4js/log4js.d.ts" />
+/// <reference path="../types/node/node.d.ts" />
+/// <reference path="../types/log4js/log4js.d.ts" />
 
 import net        = require("net");
 import log4js     = require("log4js");
-import {isFunction, isDefined} from "../utils";
-import IDaemon    = require("./IDaemon");
-import IOptions   = require("./IOptions");
-import {IException, Exception} from "../exception";
-import DebugHelper       = require("../helpers/DebugHelper");
-import IDebugHelper      = require("../helpers/IDebugHelper");
-import IMeLocationHelper = require("../helpers/IMeLocationHelper");
-import MeLocationHelper  = require("../helpers/MeLocationHelper");
+import {isFunction, isDefined} from "./utils";
+import {IException, Exception} from "./exception";
+import DebugHelper       = require("./helpers/DebugHelper");
+import IDebugHelper      = require("./helpers/IDebugHelper");
+import IMeLocationHelper = require("./helpers/IMeLocationHelper");
+import MeLocationHelper  = require("./helpers/MeLocationHelper");
 
 require("../../logger");
 var logger:log4js.Logger = log4js.getLogger("daemon");
 
-class Daemon implements IDaemon {
+export interface IOptions {
+    location?: string;
+    debug?:boolean;
+}
+
+export interface IDaemon {
+    location: string;
+    started:boolean;
+    starting:boolean;
+    stopped:boolean;
+    stopping:boolean;
+    debug:boolean;
+    start(callback?:(errors:IException[]) => void):void;
+    stop(callback?:(errors:IException[]) => void):void;
+    isStarting():boolean;
+    isStopping():boolean;
+    isStarted():boolean;
+    isStopped():boolean;
+    getLocation():string;
+    setLocation(value:string):void;
+    isDebug():boolean;
+    getIsDebug():boolean;
+    setIsDebug(value:boolean):void;
+}
+
+export class Daemon implements IDaemon {
 
     private _daemon:net.Server = null;
 
@@ -310,5 +333,3 @@ class Daemon implements IDaemon {
     }
 
 }
-
-export = Daemon;
