@@ -1,5 +1,5 @@
 import IDaemonBase = require("../../daemon/IDaemon");
-import IException  = require("../exception/IException");
+import {IException} from "../exception";
 import IResponse   = require("./IResponse");
 import IMemory     = require("../../memory/client/IClient");
 

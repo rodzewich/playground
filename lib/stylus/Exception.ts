@@ -1,4 +1,4 @@
-import ExceptionBase = require("../compiler/Exception");
+import {Exception as ExceptionBase} from "../compiler";
 
 class Exception extends ExceptionBase {
 

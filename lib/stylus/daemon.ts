@@ -16,8 +16,7 @@ process.addListener('uncaughtException', function (error:Error) {
     }
 });
 
-import Exception  = require("../exception/Exception");
-import IException = require("../exception/IException");
+import {Exception, IException} from "../exception";
 import IMemory    = require("../memory/client/IClient");
 import Memory     = require("../memory/client/Client");
 import IDaemon    = require("./daemon/IDaemon");

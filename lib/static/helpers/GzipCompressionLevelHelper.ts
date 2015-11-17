@@ -1,5 +1,5 @@
-import {isNull} from "../../isNull";
-import Exception = require("../exception/Exception");
+import {isNull} from "../../utils";
+import {Exception} from "../exception";
 import IGzipCompressionLevelHelper = require("./IGzipCompressionLevelHelper");
 
 class GzipCompressionLevelHelper implements IGzipCompressionLevelHelper {

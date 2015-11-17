@@ -1,5 +1,5 @@
 import {isNull, isArray, isString, isDefined} from "../utils";
-import Exception = require("../exception/Exception");
+import {Exception} from "../exception";
 import IUsedExtensionsHelper = require("./IUsedExtensionsHelper");
 
 class UsedExtensionsHelper implements IUsedExtensionsHelper {

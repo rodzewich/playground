@@ -1,4 +1,4 @@
-import IException = require("../exception/IException");
+import {IException} from "../exception";
 
 interface IClient {
     location:string;

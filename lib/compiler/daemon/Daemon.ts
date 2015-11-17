@@ -5,7 +5,7 @@ import IResponse = require("../client/IResponse");
 import IRequest = require("../client/IRequest");
 import Compiler = require("../compiler/Compiler");
 import {isDefined} from "../../utils";
-import Exception = require("../../exception/Exception");
+import {Exception} from "../../exception";
 import IMemory = require("../../memory/client/IClient");
 
 abstract class Daemon extends DaemonBase implements IDaemon {

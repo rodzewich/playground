@@ -1,6 +1,6 @@
 import {isArray, isString, isDefined} from "../utils";
 import Separator        = require("./Separator");
-import Exception        = require("../exception/Exception");
+import {Exception} from "../exception";
 import INamespaceHelper = require("./INamespaceHelper");
 
 class NamespaceHelper implements INamespaceHelper {

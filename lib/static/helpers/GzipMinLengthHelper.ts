@@ -1,5 +1,5 @@
 import {isNumber, isDefined} from "../../utils";
-import Exception = require("../../exception/Exception");
+import {Exception} from "../../exception";
 import IGzipMinLengthHelper = require("./IGzipMinLengthHelper");
 
 class GzipMinLengthHelper implements IGzipMinLengthHelper {

@@ -1,6 +1,6 @@
 import IClientBase = require("../../client/IClient");
 import IResponse   = require("./IResponse");
-import IException  = require("../exception/IException");
+import {IException} from "../exception";
 
 interface IClient extends IClientBase {
     ping(callback?:(errors:IException[]) => void):void;

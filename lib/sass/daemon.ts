@@ -16,13 +16,12 @@ process.addListener('uncaughtException', function (error:Error) {
     }
 });
 
-import Exception  = require("../exception/Exception");
-import IException = require("../exception/IException");
+import {IException, Exception} from "../exception";
 import IMemory    = require("../memory/client/IClient");
 import Memory     = require("../memory/client/Client");
 import IDaemon    = require("./daemon/IDaemon");
 import Daemon     = require("./daemon/Daemon");
-import {deferred} from "../deferred";
+import {deferred} from "../utils";
 import log4js     = require("../../logger");
 import optimist   = require("optimist");
 

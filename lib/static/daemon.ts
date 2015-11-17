@@ -24,9 +24,7 @@ require("../mapping");
 
 import displayException = require("../displayException");
 import {isNull, isDefined, isString, isNumber, isArray, isBoolean} from "../utils";
-import Exception  = require("./exception/Exception");
-import IException = require("./exception/IException");
-import IObject    = require("./exception/IObject");
+import {IObject, IException, Exception} from "./exception";
 import Daemon     = require("./daemon/Daemon");
 import IOptions   = require("./daemon/IOptions");
 import log4js     = require("../../logger");

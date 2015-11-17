@@ -2,7 +2,7 @@
 /// <reference path="../types/colors/colors.d.ts" />
 
 import colors     = require("colors");
-import IException = require("./exception/IException");
+import {IException} from "./exception";
 
 function displayException(error:IException) {
     var columns = process.stdout.columns || 80;

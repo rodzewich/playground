@@ -5,8 +5,7 @@ import IResponseClient  = require("./IResponse");
 import IResponseDaemon  = require("../daemon/IResponse");
 import IOptions   = require("./IOptions");
 import {isDefined, isString, isFunction} from "../../utils";
-import IException = require("../exception/IException");
-import Exception  = require("../exception/Exception");
+import {IException, Exception} from "../exception";
 import CacheOnlyHelper  = require("../helpers/CacheOnlyHelper");
 import ICacheOnlyHelper = require("../helpers/ICacheOnlyHelper");
 

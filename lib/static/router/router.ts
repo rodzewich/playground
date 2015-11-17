@@ -5,7 +5,7 @@ import Client      = require("../client/Client");
 import IClient     = require("../client/IClient");
 import error500    = require("../../routes/error500/router");
 import IOptions    = require("./IOptions");
-import IException  = require("../exception/IException");
+import {IException} from "../exception";
 import IResponse   = require("../client/IResponse");
 import {isDefined} from "../../utils";
 

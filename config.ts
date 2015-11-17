@@ -6,7 +6,7 @@ import Separator        = require("./lib/helpers/Separator");
 import NamespaceHelper  = require("./lib/helpers/NamespaceHelper");
 import INamespaceHelper = require("./lib/helpers/INamespaceHelper");
 import displayException = require("./lib/displayException");
-import Exception        = require("./lib/exception/Exception");
+import {Exception} from "./lib/exception";
 import getobject        = require("getobject");
 
 var config:any,

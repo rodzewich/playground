@@ -1,5 +1,5 @@
 import {isString, isDefined} from "../utils";
-import Exception = require("../exception/Exception");
+import {Exception} from "../exception";
 
 var types:{[index:string]:ContentType} = {};
 

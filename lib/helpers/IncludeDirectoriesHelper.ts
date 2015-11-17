@@ -1,5 +1,5 @@
 import {isDefined, isNull, isArray, isString} from "../utils";
-import Exception = require("../exception/Exception");
+import {Exception} from "../exception";
 import IIncludeDirectoriesHelper = require("./IIncludeDirectoriesHelper");
 
 class IncludeDirectoriesHelper implements IIncludeDirectoriesHelper {

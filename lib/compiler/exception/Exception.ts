@@ -1,4 +1,4 @@
-import ExceptionBase = require("../../exception/Exception");
+import {Exception as ExceptionBase} from "../../exception";
 import IOptions = require("./IOptions");
 import IException = require("./IException");
 
