@@ -1,17 +1,40 @@
-import IClient    = require("./IClient");
-import ClientBase = require("../../client/Client");
-import log4js     = require("../../../logger");
-import IResponseClient  = require("./IResponse");
-import IResponseDaemon  = require("../daemon/IResponse");
-import IOptions   = require("./IOptions");
-import {isDefined, isString, isFunction} from "../../utils";
+/// <reference path="../../types/node/node.d.ts" />
+
+import {IOptions as IOptionsBase, IClient as IClientBase, Client as ClientBase} from "../client";
+import log4js     = require("../../logger");
+import IResponseDaemon  = require("./daemon/IResponse");
+import {isDefined, isString, isFunction} from "../utils";
 import {IException, Exception} from "../exception";
-import CacheOnlyHelper  = require("../helpers/CacheOnlyHelper");
-import ICacheOnlyHelper = require("../helpers/ICacheOnlyHelper");
+import CacheOnlyHelper  = require("./helpers/CacheOnlyHelper");
+import ICacheOnlyHelper = require("./helpers/ICacheOnlyHelper");
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
-class Client extends ClientBase implements IClient {
+export interface IResponse {
+    filename:string;
+    original:string;
+    content:Buffer;
+    type:string;
+    length:number;
+    zipContent:Buffer;
+    zipLength:number;
+    date:number;
+}
+
+export interface IOptions extends IOptionsBase {
+    cacheOnly?:boolean;
+}
+
+export interface IClient extends IClientBase {
+    ping(callback?:(errors:IException[]) => void):void;
+    stop(callback?:(errors:IException[]) => void):void;
+    getContent(filename:string, callback?:(errors:IException[], response:IResponse) => void):void;
+    isCacheOnly():boolean;
+    getIsCacheOnly():boolean;
+    setIsCacheOnly(value:boolean):void;
+}
+
+export class Client extends ClientBase implements IClient {
 
     private _cacheOnlyHelper:ICacheOnlyHelper;
 
@@ -87,9 +110,9 @@ class Client extends ClientBase implements IClient {
 
     }
 
-    public getContent(filename:string, callback?:(errors:IException[], response:IResponseClient) => void):void {
+    public getContent(filename:string, callback?:(errors:IException[], response:IResponse) => void):void {
 
-        function handler(errors:IException[], response:IResponseClient):void {
+        function handler(errors:IException[], response:IResponse):void {
             if (isFunction(callback)) {
                 setTimeout(():void => {
                     callback(errors, response);
@@ -106,7 +129,7 @@ class Client extends ClientBase implements IClient {
             handler([new Exception({message : "filename should be a string"})], null);
         } else {
             this.call((errors:IException[], response:IResponseDaemon):void => {
-                var result:IResponseClient = {
+                var result:IResponse = {
                     filename   : null,
                     original   : null,
                     content    : null,
@@ -138,5 +161,3 @@ class Client extends ClientBase implements IClient {
     }
 
 }
-
-export = Client;

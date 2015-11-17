@@ -1,12 +1,10 @@
 /// <reference path="../../../types/node/node.d.ts" />
 
 import http        = require("http");
-import Client      = require("../client/Client");
-import IClient     = require("../client/IClient");
+import {IResponse, IClient, Client} from "../client";
 import error500    = require("../../routes/error500/router");
 import IOptions    = require("./IOptions");
 import {IException} from "../exception";
-import IResponse   = require("../client/IResponse");
 import {isDefined} from "../../utils";
 
 var client:IClient = new Client({});

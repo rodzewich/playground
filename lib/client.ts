@@ -1,26 +1,54 @@
-/// <reference path="../../types/node/node.d.ts" />
+/// <reference path="../types/node/node.d.ts" />
 
-import IClient           = require("./IClient");
-import IOptions          = require("./IOptions");
+import {IException} from "./exception";
 import fs                = require("fs");
 import net               = require("net");
 import colors            = require("colors");
-import {isNull, isDefined, isFunction, isArray, deferred} from "../utils";
-import display           = require("../helpers/display");
-import log4js            = require("../../logger");
-import {IOptions as IExceptionOptions, IException, Exception} from "../exception";
-import DebugHelper       = require("../helpers/DebugHelper");
-import IDebugHelper      = require("../helpers/IDebugHelper");
-import TimeoutHelper     = require("../helpers/TimeoutHelper");
-import ITimeoutHelper    = require("../helpers/ITimeoutHelper");
-import MeLocationHelper  = require("../helpers/MeLocationHelper");
-import IMeLocationHelper = require("../helpers/IMeLocationHelper");
-import HandlersRegistrationHelper  = require("../helpers/HandlersRegistrationHelper");
-import IHandlersRegistrationHelper = require("../helpers/IHandlersRegistrationHelper");
+import {isNull, isDefined, isFunction, isArray, deferred} from "./utils";
+import display           = require("./helpers/display");
+import log4js            = require("./../logger");
+import {IOptions as IExceptionOptions, IException, Exception} from "./exception";
+import DebugHelper       = require("./helpers/DebugHelper");
+import IDebugHelper      = require("./helpers/IDebugHelper");
+import TimeoutHelper     = require("./helpers/TimeoutHelper");
+import ITimeoutHelper    = require("./helpers/ITimeoutHelper");
+import MeLocationHelper  = require("./helpers/MeLocationHelper");
+import IMeLocationHelper = require("./helpers/IMeLocationHelper");
+import HandlersRegistrationHelper  = require("./helpers/HandlersRegistrationHelper");
+import IHandlersRegistrationHelper = require("./helpers/IHandlersRegistrationHelper");
 
 var logger:log4js.Logger = log4js.getLogger("client");
 
-class Client implements IClient {
+export export interface IOptions {
+    location?:string;
+    timeout?:number;
+    debug?:boolean;
+}
+
+export interface IClient {
+    location:string;
+    timeout:number;
+    connected:boolean;
+    connecting:boolean;
+    disconnected:boolean;
+    disconnecting:boolean;
+    debug:boolean;
+    connect(callback?:(errors:IException[]) => void):void;
+    disconnect(callback?:(errors:IException[]) => void):void;
+    isConnected():boolean;
+    isDisconnected():boolean;
+    isConnecting():boolean;
+    isDisconnecting():boolean;
+    getLocation():string;
+    setLocation(location:string):void;
+    getTimeout():number;
+    setTimeout(timeout:number):void;
+    isDebug():boolean;
+    getIsDebug():boolean;
+    setIsDebug(value:boolean):void;
+}
+
+export class Client implements IClient {
 
     private _client:net.Socket = null;
 
@@ -492,5 +520,3 @@ class Client implements IClient {
     }
 
 }
-
-export = Client;
