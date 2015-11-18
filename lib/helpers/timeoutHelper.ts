@@ -1,7 +1,11 @@
 import {isDefined} from "../utils";
-import ITimeoutHelper = require("./ITimeoutHelper");
 
-class TimeoutHelper implements ITimeoutHelper {
+export interface ITimeoutHelper {
+    getTimeout():number;
+    setTimeout(timeout:number):void;
+}
+
+export class TimeoutHelper implements ITimeoutHelper {
 
     private _value:number = TimeoutHelper.DEFAULT;
 
@@ -25,5 +29,3 @@ class TimeoutHelper implements ITimeoutHelper {
     public static DEFAULT:number = 300;
 
 }
-
-export = TimeoutHelper;

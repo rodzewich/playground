@@ -1,7 +1,12 @@
 import {isFunction} from "../utils";
-import IHandlersRegistrationHelper = require("./IHandlersRegistrationHelper");
 
-class HandlersRegistrationHelper implements IHandlersRegistrationHelper {
+export interface IHandlersRegistrationHelper {
+    register(callback:any):string;
+    clear():void;
+    find(id:string):any;
+}
+
+export class HandlersRegistrationHelper implements IHandlersRegistrationHelper {
 
     private _handlers:{[index:string]:Function} = {};
 
@@ -43,5 +48,3 @@ class HandlersRegistrationHelper implements IHandlersRegistrationHelper {
     }
 
 }
-
-export = HandlersRegistrationHelper;

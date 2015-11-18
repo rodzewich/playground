@@ -6,7 +6,6 @@ import path       = require("path");
 import log4js     = require("../../../logger");
 import {IObject, IException, Exception} from "../../exception";
 import {isFunction, isArray} from "../../utils";
-import display    = require("../../helpers/display");
 import IOptions   = require("./IOptions");
 
 var logger:log4js.Logger = log4js.getLogger("client");
