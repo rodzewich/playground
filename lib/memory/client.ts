@@ -1,13 +1,11 @@
 /// <reference path="../../types/node/node.d.ts" />
 
+import log4js           = require("../../logger");
 import {isNull, isDefined, isArray, isString, isObject, isNumber, isFunction} from "../utils";
 import {IOptions as IOptionsBase, IClient as IClientBase, Client as ClientBase} from "../client";
-import Separator        = require("../helpers/Separator");
 import {IException, Exception} from "./exception";
 import {Exception as ExceptionBase} from "../exception";
-import NamespaceHelper  = require("../helpers/NamespaceHelper");
-import INamespaceHelper = require("../helpers/INamespaceHelper");
-import log4js           = require("../../logger");
+import {INamespaceHelper, NamespaceHelper, SeparatorHelper} from "../helpers/namespaceHelper";
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
@@ -94,7 +92,7 @@ export class Client extends ClientBase implements IClient {
     }
 
     public setNamespace(namespace:string):void {
-        this.getNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, Separator.DOT).getNamespace());
+        this.getNamespaceHelper().setNamespace(NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getNamespace());
     }
 
     public get namespace():string {
@@ -171,7 +169,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "namespace should be a string"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -206,7 +204,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "namespace should be a string"})]);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)]);
             }
@@ -282,7 +280,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "key should be a string"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -319,7 +317,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message: "keys should be a non empty strings array"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -354,7 +352,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "key should be a string"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -395,7 +393,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message: "keys should be a non empty strings array"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -447,7 +445,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "ttl should be a positive integer"})]);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)]);
             }
@@ -483,7 +481,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "ttl should be a positive integer"})]);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)]);
             }
@@ -525,7 +523,7 @@ export class Client extends ClientBase implements IClient {
                 temp = new Buffer(String(value)).toString("base64");
             }
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)]);
             }
@@ -573,7 +571,7 @@ export class Client extends ClientBase implements IClient {
                 }
             }
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)]);
             }
@@ -607,7 +605,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "key should be a string"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -644,7 +642,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message: "keys should be a non empty strings array"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -681,7 +679,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "ttl should be a positive integer"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -720,7 +718,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "ttl should be a positive integer"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -755,7 +753,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "key should be a string"})]);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)]);
             }
@@ -791,7 +789,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message: "keys should be a non empty strings array"})]);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)]);
             }
@@ -825,7 +823,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "key should be a string"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -862,7 +860,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message: "keys should be a non empty strings array"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -897,7 +895,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "index should be a positive number"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -934,7 +932,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "indexes should be a positive numbers array"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -979,7 +977,7 @@ export class Client extends ClientBase implements IClient {
         }
 
         try {
-            realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+            realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
         } catch (error) {
             handler([ExceptionBase.convertFromError(error)], null);
         }
@@ -1016,7 +1014,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "ttl should be a positive integer"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -1053,7 +1051,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "ttl should be a positive integer"})], null);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)], null);
             }
@@ -1109,7 +1107,7 @@ export class Client extends ClientBase implements IClient {
             handler([new Exception({message : "key should be a string"})]);
         } else {
             try {
-                realNamespace = NamespaceHelper.parse(namespace, Separator.DOT).getValue();
+                realNamespace = NamespaceHelper.parse(namespace, SeparatorHelper.DOT).getValue();
             } catch (error) {
                 handler([ExceptionBase.convertFromError(error)]);
             }

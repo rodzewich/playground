@@ -1,21 +1,19 @@
+import fs   = require("fs");
+import zlib = require("zlib");
+import path = require("path");
+import log4js = require("log4js");
 import {IOptions as IOptionsBase, IDaemon as IDaemonBase, Daemon as DaemonBase} from "../daemon";
 import {IClient as IMemory, Client as Memory} from "../memory/client";
-import log4js = require("../../logger");
 import {isDefined, isFunction, isTrue, deferred, parallel} from "../utils";
 import {IObject, IException, Exception} from "./exception";
 import {IException as IExceptionMemory} from "../memory/exception";
 import {IException as IExceptionBase} from "../exception";
-import fs = require("fs");
-import zlib = require("zlib");
-import path = require("path");
-import Separator  = require("../helpers/Separator");
 import {Exception as ExceptionBase} from "../exception";
 import UseIndexHelper   = require("./helpers/UseIndexHelper");
 import IUseIndexHelper  = require("./helpers/IUseIndexHelper");
 import UseGzipHelper    = require("./helpers/UseGzipHelper");
 import IUseGzipHelper   = require("./helpers/IUseGzipHelper");
-import NamespaceHelper  = require("../helpers/NamespaceHelper");
-import INamespaceHelper = require("../helpers/INamespaceHelper");
+import {INamespaceHelper, NamespaceHelper, SeparatorHelper} from "../helpers/namespaceHelper";
 import GzipCompressionLevelHelper  = require("./helpers/GzipCompressionLevelHelper");
 import IGzipCompressionLevelHelper = require("./helpers/IGzipCompressionLevelHelper");
 import IIncludeDirectoriesHelper   = require("../helpers/IIncludeDirectoriesHelper");
@@ -1204,7 +1202,7 @@ export class Daemon extends DaemonBase implements IDaemon {
         });
     }
 
-    public static DEFAULT_SEPARATOR:Separator = Separator.DOT;
+    public static DEFAULT_SEPARATOR:SeparatorHelper = SeparatorHelper.DOT;
 
     public static DEFAULT_NAMESPACE:INamespaceHelper = new NamespaceHelper(["static"], Daemon.DEFAULT_SEPARATOR);
 

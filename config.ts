@@ -2,9 +2,7 @@
 
 import path             = require("path");
 import {isNumber, isString, isDefined} from "./lib/utils";
-import Separator        = require("./lib/helpers/Separator");
-import NamespaceHelper  = require("./lib/helpers/NamespaceHelper");
-import INamespaceHelper = require("./lib/helpers/INamespaceHelper");
+import {INamespaceHelper, NamespaceHelper, SeparatorHelper} from "./lib/helpers/namespaceHelper";
 import displayException = require("./lib/displayException");
 import {Exception} from "./lib/exception";
 import getobject        = require("getobject");
@@ -60,7 +58,7 @@ export const PROJECT_STATIC_USE_GZIP:boolean          = getStaticUseGzip();
 export const PROJECT_STATIC_GZIP_EXTENSIONS:string[]  = getStaticGzipExtensions();
 export const PROJECT_STATIC_GZIP_LEVEL:number         = getStaticGzipLevel();
 
-/*export const DEFAULT_PROJECT_NAMESPACE_SEPARATOR:Separator            = Separator.DOT;
+/*export const DEFAULT_PROJECT_NAMESPACE_SEPARATOR:SeparatorHelper            = SeparatorHelper.DOT;
  export const DEFAULT_PROJECT_STATIC_MEMORY_NAMESPACE:string           = new NamespaceHelper(["static"], DEFAULT_PROJECT_NAMESPACE_SEPARATOR).getValue();
  export const DEFAULT_PROJECT_STATIC_METADATA_MEMORY_NAMESPACE:string  = new NamespaceHelper(["metadata"], DEFAULT_PROJECT_NAMESPACE_SEPARATOR).getValue();
  export const DEFAULT_PROJECT_STATIC_BINARY_MEMORY_NAMESPACE:string    = new NamespaceHelper(["binary"], DEFAULT_PROJECT_NAMESPACE_SEPARATOR).getValue();
@@ -73,7 +71,7 @@ export const PROJECT_STATIC_GZIP_LEVEL:number         = getStaticGzipLevel();
  export const PROJECT_STATIC_GZIP_MEMORY_NAMESPACE:string      = getGzipMemoryNamespace();
  export const PROJECT_STATIC_LOCK_MEMORY_NAMESPACE:string      = getLockMemoryNamespace();*/
 
-/*export const DEFAULT_PROJECT_NAMESPACE_SEPARATOR:Separator    = Separator.DOT;
+/*export const DEFAULT_PROJECT_NAMESPACE_SEPARATOR:SeparatorHelper    = SeparatorHelper.DOT;
  export const DEFAULT_STATIC_MEMORY_METADATA:string            = DEFAULT_PROJECT_MEMORY_SOCKET;
  export const DEFAULT_STATIC_MEMORY_BINARY:string              = DEFAULT_PROJECT_MEMORY_SOCKET;
  export const DEFAULT_STATIC_MEMORY_GZIP:string                = DEFAULT_PROJECT_MEMORY_SOCKET;

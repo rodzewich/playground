@@ -11,7 +11,7 @@ import mkdir = require("../mkdir");
 import IManager = require("../sass/manager/IManager");
 import Manager = require("../sass/manager/Manager");
 import IResponse = require("../sass/client/IResponse");
-import log4js = require("../../logger");
+import log4js = require("log4js");
 import glob = require("glob");
 import accessLog = require("../accessLog");
 

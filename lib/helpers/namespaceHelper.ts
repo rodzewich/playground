@@ -1,15 +1,53 @@
 import {isArray, isString, isDefined} from "../utils";
-import Separator        = require("./Separator");
 import {Exception} from "../exception";
-import INamespaceHelper = require("./INamespaceHelper");
 
-class NamespaceHelper implements INamespaceHelper {
+export class SeparatorHelper {
+
+    private _name:string;
+
+    private _value:string;
+
+    constructor(name:string, value:string) {
+        this._name = name;
+        this._value = value;
+    }
+
+    public getName():string {
+        return this._name;
+    }
+
+    public getValue():string {
+        return this._value;
+    }
+
+    public toString():string {
+        return this.getValue();
+    }
+
+    public static DOT:SeparatorHelper = new SeparatorHelper("DOT", ".");
+
+    public static COLON:SeparatorHelper = new SeparatorHelper("COLON", "::");
+
+    public static ARROW:SeparatorHelper = new SeparatorHelper("ARROW", "->");
+
+}
+
+export interface INamespaceHelper {
+    getValue():string;
+    getNamespace():string[];
+    setNamespace(namespace:string[]):INamespaceHelper;
+    addToNamespace(namespace:string[]):INamespaceHelper;
+    getSeparator():SeparatorHelper;
+    setSeparator(separator:SeparatorHelper):INamespaceHelper;
+}
+
+export class NamespaceHelper implements INamespaceHelper {
 
     private _namespace:string[] = ["default"];
 
-    private _separator:Separator = Separator.DOT;
+    private _separator:SeparatorHelper = SeparatorHelper.DOT;
 
-    constructor(namespace?:string[], separator?:Separator) {
+    constructor(namespace?:string[], separator?:SeparatorHelper) {
         if (isDefined(namespace)) {
             this.setNamespace(namespace);
         }
@@ -54,22 +92,20 @@ class NamespaceHelper implements INamespaceHelper {
         return this;
     }
 
-    public getSeparator():Separator {
+    public getSeparator():SeparatorHelper {
         return this._separator;
     }
 
-    public setSeparator(separator:Separator):INamespaceHelper {
-        if (!(separator instanceof Separator)) {
+    public setSeparator(separator:SeparatorHelper):INamespaceHelper {
+        if (!(separator instanceof SeparatorHelper)) {
             throw new Exception({message: "separator is invalid"});
         }
         this._separator = separator;
         return this;
     }
 
-    public static parse(namespace:string, separator:Separator = Separator.DOT):NamespaceHelper {
+    public static parse(namespace:string, separator:SeparatorHelper = SeparatorHelper.DOT):NamespaceHelper {
         return new NamespaceHelper(String(namespace).split(separator.getValue()), separator);
     }
 
 }
-
-export = NamespaceHelper;
