@@ -1,2 +1,2 @@
 #!/usr/bin/env node
-require("../lib/memory/daemon");
+require("../lib/memory/runner");

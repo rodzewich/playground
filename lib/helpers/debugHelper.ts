@@ -1,7 +1,12 @@
 import {isTrue, isDefined} from "../utils";
-import IDebugHelper = require("./IDebugHelper");
 
-class DebugHelper implements IDebugHelper {
+export interface IDebugHelper {
+    isDebug():boolean;
+    getIsDebug():boolean;
+    setIsDebug(value:boolean):void;
+}
+
+export class DebugHelper implements IDebugHelper {
 
     private _debug:boolean = false;
 
@@ -24,5 +29,3 @@ class DebugHelper implements IDebugHelper {
     }
 
 }
-
-export = DebugHelper;

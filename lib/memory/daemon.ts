@@ -11,11 +11,8 @@ import IncrementableBigIntegerHelper  = require("../helpers/IncrementableBigInte
 
 var logger:log4js.Logger = log4js.getLogger("memory");
 
-
-
 export interface IOptions extends IOptionsBase {
 }
-
 
 export interface IDaemon extends IDaemonBase {
     getNamespaces():string[];

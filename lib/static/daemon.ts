@@ -150,7 +150,7 @@ export interface IDaemon extends IDaemonBase {
     getContent(filename:string, cacheOnly:boolean, callback?:(errors:IException[], result:IResponse) => void):void;
 }
 
-class Daemon extends DaemonBase implements IDaemon {
+export class Daemon extends DaemonBase implements IDaemon {
 
     private _queue:{[index:string]:((errors:IException[], result:IResponse) => void)[]} = {};
 

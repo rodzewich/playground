@@ -3,9 +3,13 @@
 import path = require("path");
 import {isNull, isString, isDefined} from "../utils";
 import {Exception} from "../exception";
-import IResourceLocation = require("./IResourceLocation");
 
-class ResourceLocation implements IResourceLocation {
+export interface IResourceLocation {
+    getLocation():string;
+    setLocation(location:string):void
+}
+
+export class ResourceLocation implements IResourceLocation {
 
     protected _location:string = null;
 
@@ -31,7 +35,4 @@ class ResourceLocation implements IResourceLocation {
         }
     }
 
-
 }
-
-export = ResourceLocation;

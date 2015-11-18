@@ -9,7 +9,7 @@ var messageSent:boolean = false,
 process.title = "Memory daemon";
 process.addListener('uncaughtException', function (error:Error) {
     if (!messageSent) {
-        if (argv.json) {
+        if (argv && argv.json) {
             process.stderr.write(JSON.stringify({
                     started : false,
                     errors  : [ExceptionBase.convertFromError(error).toObject()]
@@ -28,8 +28,7 @@ import displayException = require("../displayException");
 import {isArray} from "../utils";
 import {IObject, IException, Exception} from "./exception";
 import {Exception as ExceptionBase} from "../exception";
-import IDaemon          = require("./daemon/IDaemon");
-import Daemon           = require("./daemon/Daemon");
+import {IDaemon, Daemon} from "./daemon";
 import log4js           = require("../../logger");
 import path             = require("path");
 import optimist         = require("optimist");

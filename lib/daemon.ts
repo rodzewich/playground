@@ -1,16 +1,14 @@
 /// <reference path="../types/node/node.d.ts" />
 /// <reference path="../types/log4js/log4js.d.ts" />
 
-import net        = require("net");
-import log4js     = require("log4js");
+import net    = require("net");
+import log4js = require("log4js");
 import {isFunction, isDefined} from "./utils";
 import {IException, Exception} from "./exception";
-import DebugHelper       = require("./helpers/DebugHelper");
-import IDebugHelper      = require("./helpers/IDebugHelper");
-import IMeLocationHelper = require("./helpers/IMeLocationHelper");
-import MeLocationHelper  = require("./helpers/MeLocationHelper");
+import {IDebugHelper, DebugHelper} from "./helpers/debugHelper";
+import {IMeLocationHelper, MeLocationHelper} from "./helpers/meLocationHelper";
 
-require("../../logger");
+require("../logger");
 var logger:log4js.Logger = log4js.getLogger("daemon");
 
 export interface IOptions {

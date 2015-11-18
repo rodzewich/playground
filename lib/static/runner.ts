@@ -5,7 +5,7 @@ var messageSent = false;
 process.title = "Static daemon";
 process.addListener('uncaughtException', function (error:Error) {
     if (!messageSent) {
-        if (argv.json) {
+        if (argv && argv.json) {
             process.stderr.write(JSON.stringify({
                     started : false,
                     errors  : [Exception.convertFromError(error).toObject()]
@@ -25,8 +25,7 @@ require("../mapping");
 import displayException = require("../displayException");
 import {isNull, isDefined, isString, isNumber, isArray, isBoolean} from "../utils";
 import {IObject, IException, Exception} from "./exception";
-import Daemon     = require("./daemon/Daemon");
-import IOptions   = require("./daemon/IOptions");
+import {IOptions, Daemon} from "./daemon";
 import log4js     = require("../../logger");
 import optimist   = require("optimist");
 import path       = require("path");

@@ -1,9 +1,7 @@
 
 import {deferred, typeOf} from "../../utils";
-import Client = require("../client/Client");
-import IClient = require("../client/IClient");
-import Daemon = require("../daemon/Daemon");
-import IDaemon = require("../daemon/IDaemon");
+import {IClient, Client} from "../client";
+import {IDaemon, Daemon} from "../daemon";
 import IOptions = require("../daemon/IOptions");
 import assert = require("assert");
 import path = require("path");

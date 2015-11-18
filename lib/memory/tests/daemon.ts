@@ -4,8 +4,7 @@ import path = require("path");
 import assert = require("assert");
 import {Exception} from "../../exception";
 import {deferred} from "../../utils";
-import Daemon = require("../daemon/Daemon");
-import IDaemon = require("../daemon/IDaemon");
+import {IDaemon, Daemon} from "../daemon";
 
 function run(debug:boolean, callback:() => void):void {
     deferred([
