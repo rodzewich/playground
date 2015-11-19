@@ -244,9 +244,7 @@ export class Client implements IClient {
             clearTimeout(timer);
             if (errors && errors.length) {
                 errors.forEach((error:IException):void => {
-                    if (debug) {
-                        displayError(error.getStack());
-                    }
+                    displayError(debug, error.getStack());
                     logger.error(error.getStack());
                 });
             }
@@ -327,9 +325,7 @@ export class Client implements IClient {
                             path    : error.path,
                             syscall : error.syscall
                         });
-                        if (debug) {
-                            displayError(exception.getStack())
-                        }
+                        displayError(debug, exception.getStack())
                         logger.error(exception.getStack());
                     });
                     client.addListener("close", ():void => {
@@ -342,9 +338,7 @@ export class Client implements IClient {
                         this._client       = null;
                         this._connected    = false;
                         this._disconnected = true;
-                        if (debug) {
-                            displayError("can not connect to: " + this.getLocation());
-                        }
+                        displayError(debug, "can not connect to: " + this.getLocation());
                         logger.error(Exception.convertFromError(error).getStack());
                         connected([Exception.convertFromError(error, {
                             code    : error.code,
@@ -415,9 +409,7 @@ export class Client implements IClient {
                             response:string,
                             callback:(errors:IException[], response?:any) => void;
 
-                        if (debug) {
-                            displayOutput(buffer.toString("utf8"))
-                        }
+                        displayOutput(debug, buffer.toString("utf8"))
 
                         function options():any {
                             try {
@@ -431,9 +423,7 @@ export class Client implements IClient {
                             if (isArray(cache.errors)) {
                                 return (<IExceptionOptions[]>cache.errors).map((error:IExceptionOptions):IException => {
                                     var exception:IException = new Exception(error);
-                                    if (debug) {
-                                        displayError(exception.getStack());
-                                    }
+                                    displayError(debug, exception.getStack());
                                     logger.error(exception.getStack());
                                     return exception;
                                 })

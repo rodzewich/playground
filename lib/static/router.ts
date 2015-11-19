@@ -1,15 +1,28 @@
-/// <reference path="../../../types/node/node.d.ts" />
+/// <reference path="../../types/node/node.d.ts" />
 
-import http        = require("http");
-import {IResponse, IClient, Client} from "../client";
-import error500    = require("../../routes/error500/router");
-import IOptions    = require("./IOptions");
-import {IException} from "../exception";
-import {isDefined} from "../../utils";
+import http = require("http");
+import {IResponse, IClient, Client} from "./client";
+import {router as error500} from "../routes/error500";
+import {IException} from "./exception";
+import {isDefined} from "../utils";
 
 var client:IClient = new Client({});
 
-function router(options:IOptions):((next:() => void) => void) {
+export interface IOptions {
+    request:http.ServerRequest;
+    response:http.ServerResponse;
+    filename:string;
+    socket:string;
+    timeout:number;
+    debug:boolean;
+    server:{
+        name:string;
+        charset:string;
+        version:string
+    };
+}
+
+export function router(options:IOptions):((next:() => void) => void) {
     return (next:() => void):void => {
 
         var request:http.ServerRequest   = options.request,
@@ -67,5 +80,3 @@ function router(options:IOptions):((next:() => void) => void) {
     };
 
 }
-
-export = router;

@@ -1,13 +1,22 @@
-/// <reference path="../../../types/node/node.d.ts" />
+/// <reference path="../../types/node/node.d.ts" />
 
 import http        = require("http");
-import IOptions    = require("./IOptions");
-import ContentType = require("../../helpers/ContentType");
-import error500    = require("../../../errors/404");
+import ContentType = require("../helpers/ContentType");
+import error404    = require("../../errors/404");
+
+export interface IOptions {
+    request:http.ServerRequest;
+    response:http.ServerResponse;
+    server:{
+        name:string;
+        charset:string;
+        version:string
+    };
+}
 
 // todo: load custom template
 
-function router(options:IOptions):(() => void) {
+export function router(options:IOptions):(() => void) {
     return ():void => {
         var request:http.ServerRequest   = options.request,
             response:http.ServerResponse = options.response,
@@ -15,12 +24,10 @@ function router(options:IOptions):(() => void) {
             name:string                  = options.server.name,
             version:string               = options.server.version;
         response.setHeader("Content-Type", ContentType.HTML.toString(charset));
-        response.writeHead(500);
-        response.end(error500({
+        response.writeHead(404);
+        response.end(error404({
             name    : name,
             version : version
         }));
     };
 }
-
-export = router;

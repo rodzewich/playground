@@ -18,8 +18,7 @@ import GzipCompressionLevelHelper  = require("./helpers/GzipCompressionLevelHelp
 import IGzipCompressionLevelHelper = require("./helpers/IGzipCompressionLevelHelper");
 import IIncludeDirectoriesHelper   = require("../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper    = require("./../helpers/IncludeDirectoriesHelper");
-import SourcesDirectoryHelper      = require("./../helpers/SourcesDirectoryHelper");
-import ISourcesDirectoryHelper     = require("./../helpers/ISourcesDirectoryHelper");
+import {ISourcesDirectoryHelper, SourcesDirectoryHelper} from "../helpers/sourcesDirectoryHelper";
 import IndexExtensionsHelper       = require("./helpers/IndexExtensionsHelper");
 import IIndexExtensionsHelper      = require("./helpers/IIndexExtensionsHelper");
 import GzipExtensionsHelper        = require("./helpers/GzipExtensionsHelper");

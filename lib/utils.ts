@@ -7,7 +7,6 @@ import path   = require("path");
 import colors = require("colors");
 import mappingSupport = require('source-map-support');
 import {IException, Exception} from "./exception";
-import {Exception} from "./static/exception";
 
 export function typeOf(value:any):string {
     var type:string = String(Object.prototype.toString.call(value) || '').slice(8, -1) || 'Object',

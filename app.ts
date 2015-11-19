@@ -9,12 +9,12 @@ import path       = require("path");
 import {deferred, mkdir, displayException, installMapping} from "./lib/utils";
 import {input as displayInput, output as displayOutput} from "./lib/helpers/display";
 import {IException, Exception} from "./lib/exception";
-import memoryInit = require("./lib/memory/init/init");
+import {init as memoryInit} from "./lib/memory/init";
 import staticInit = require("./lib/static/init");
 import ContentType      = require("./lib/helpers/ContentType");
-import content          = require("./lib/static/router/router");
-import redirect         = require("./lib/routes/redirect/router");
-import error404         = require("./lib/routes/error404/router");
+import {router as content} from "./lib/static/router";
+import {router as redirect} from "./lib/routes/redirect";
+import {router as error404} from "./lib/routes/error404";
 import {
     DEBUG,
     PROJECT_ENV,
@@ -37,10 +37,6 @@ import {
 } from "./config";
 
 installMapping();
-
-function ok():void {
-    process.stdout.write(" [ " + colors.green("ok") + " ] \n");
-}
 
 process.addListener('uncaughtException', function (error:Error) {
     displayException(Exception.convertFromError(error));
@@ -240,12 +236,16 @@ deferred([
      **************************************************************************/
     ():void => {
 
+        displayInput(DEBUG, "Web init");
+
         function handler(error:NodeJS.ErrnoException):void {
             if (error) {
                 displayException(Exception.convertFromError(error));
                 server.close(() => {
                     process.exit(1);
                 });
+            } else {
+                displayOutput(DEBUG, "done");
             }
             server.removeListener("error", handler);
         }

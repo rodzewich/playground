@@ -9,8 +9,7 @@ import WebRootDirectoryHelper = require("../helpers/WebRootDirectoryHelper");
 import IWebRootDirectoryHelper = require("../helpers/IWebRootDirectoryHelper");
 import CacheHelper = require("../helpers/CacheHelper");
 import ICacheHelper = require("../helpers/ICacheHelper");
-import SourcesDirectoryHelper = require("../helpers/SourcesDirectoryHelper");
-import ISourcesDirectoryHelper = require("../helpers/ISourcesDirectoryHelper");
+import {ISourcesDirectoryHelper, SourcesDirectoryHelper} from "../../helpers/sourcesDirectoryHelper";
 
 abstract class Compiler implements ICompiler {
 
