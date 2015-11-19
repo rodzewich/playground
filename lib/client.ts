@@ -273,9 +273,7 @@ export class Client implements IClient {
                     });
                     this._client.write(request);
                     this._client.write(new Buffer([0x0a]));
-                    if (debug) {
-                        displayInput(request);
-                    }
+                    displayInput(debug, request);
                     if (timeout !== -1) {
                         temp = this.createTimeoutHelper();
                         if (timeout) {
@@ -335,9 +333,7 @@ export class Client implements IClient {
                         logger.error(exception.getStack());
                     });
                     client.addListener("close", ():void => {
-                        if (debug) {
-                            displayInput("closed connection");
-                        }
+                        displayInput(debug, "closed connection");
                         logger.info("closed connection");
                         this.disconnect();
                     });
@@ -360,9 +356,7 @@ export class Client implements IClient {
                         this._client       = client;
                         this._connected    = true;
                         this._disconnected = false;
-                        if (debug) {
-                            displayInput("successful connected to: " + this.getLocation());
-                        }
+                        displayInput(debug, "successful connected to: " + this.getLocation());
                         logger.info("successful connected to: " + this.getLocation());
                         connected(null);
                     }
@@ -500,9 +494,7 @@ export class Client implements IClient {
             this._client.removeAllListeners("data");
             this._client.destroy();
             setTimeout(():void => {
-                if (debug) {
-                    displayInput("successful disconnected from: " + this.getLocation());
-                }
+                displayInput(debug, "successful disconnected from: " + this.getLocation());
                 logger.info("successful disconnected from: " + this.getLocation());
                 this._client        = null;
                 this._connected     = false;

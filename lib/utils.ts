@@ -7,6 +7,7 @@ import path   = require("path");
 import colors = require("colors");
 import mappingSupport = require('source-map-support');
 import {IException, Exception} from "./exception";
+import {Exception} from "./static/exception";
 
 export function typeOf(value:any):string {
     var type:string = String(Object.prototype.toString.call(value) || '').slice(8, -1) || 'Object',
@@ -16,6 +17,18 @@ export function typeOf(value:any):string {
         type = type.toLowerCase();
     }
     return type;
+}
+
+export function isArguments(value:any):boolean {
+    return typeOf(value) === "arguments";
+}
+
+export function isError(value:any):boolean {
+    return typeOf(value) === "error";
+}
+
+export function isDate(value:any):boolean {
+    return typeOf(value) === "date";
 }
 
 export function isArray(value:any):boolean {
@@ -28,6 +41,10 @@ export function isBoolean(value:any):boolean {
 
 export function isDefined(value:any):boolean {
     return typeOf(value) !== "undefined";
+}
+
+export function isUndefined(value:any):boolean {
+    return typeOf(value) === "undefined";
 }
 
 export function isFalse(value:any):boolean {
@@ -81,14 +98,15 @@ export function deferred(actions:((next:() => void) => void)[]):void {
     }
 
     if (!isArray(actions)) {
-        throw new Exception({message: "Incorrect actions argument"});
+        throw new Exception({message: "incorrect first argument, it must be a functions array"});
     }
     length = actions.length;
     for (index = 0; index < length; index++) {
         action = actions[index];
-        if (isFunction(action)) {
-            temp.push(action);
+        if (!isFunction(action)) {
+            throw new Exception({message: "incorrect first argument, it contains a " + typeOf(action) + " element instead function"});
         }
+        temp.push(action);
     }
     iterate();
 }
@@ -347,5 +365,11 @@ export function installMapping() {
             }
             return null;
         }
+    });
+}
+
+export function template(template:string, ...args:any[]):string {
+    return String(template).replace(/(?:\{(\d+)\})/g, (substring:string, ...items:any[]):string => {
+        return String(args[parseInt(<string>items[0])] || "");
     });
 }

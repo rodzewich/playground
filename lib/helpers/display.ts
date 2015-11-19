@@ -1,6 +1,7 @@
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../../types/colors/colors.d.ts" />
 
+import {template} from "../utils"
 import colors = require("colors");
 
 class Type {
@@ -34,28 +35,32 @@ class Type {
 
 }
 
-function display(content:string, type:Type):void {
-    var columns = process.stdout.columns || 80;
-    String(content).split("\n").forEach(function (line:string) {
-        var temp:string;
-        do {
-            temp = line.slice(0, columns - 3);
-            line = line.slice(columns - 3);
-            if (temp) {
-                console.log(type.getPrefix() + " " + temp);
-            }
-        } while (line);
-    });
+function display(debug:boolean, message:string, type:Type, args:any[]):void {
+    var columns:number;
+    if (debug) {
+        columns = process.stdout.columns || 80;
+        args.unshift(message);
+        String(template.apply(null, args)).split("\n").forEach(function (line:string) {
+            var temp:string;
+            do {
+                temp = line.slice(0, columns - 3);
+                line = line.slice(columns - 3);
+                if (temp) {
+                    console.log(type.getPrefix() + " " + temp);
+                }
+            } while (line);
+        });
+    }
 }
 
-export function input(content:string):void {
-    return display(content, Type.INPUT);
+export function input(debug:boolean, message:string, ...args:any[]) {
+    display(debug, message, Type.INPUT, args);
 }
 
-export function output(content:string):void {
-    return display(content, Type.OUTPUT);
+export function output(debug:boolean, message:string, ...args:any[]):void {
+    display(debug, message, Type.OUTPUT, args);
 }
 
-export function error(content:string):void {
-    return display(content, Type.ERROR);
+export function error(debug:boolean, message:string, ...args:any[]):void {
+    display(debug, message, Type.ERROR, args);
 }

@@ -7,6 +7,7 @@ import http       = require("http");
 import url        = require("url");
 import path       = require("path");
 import {deferred, mkdir, displayException, installMapping} from "./lib/utils";
+import {input as displayInput, output as displayOutput} from "./lib/helpers/display";
 import {IException, Exception} from "./lib/exception";
 import memoryInit = require("./lib/memory/init/init");
 import staticInit = require("./lib/static/init");
@@ -54,114 +55,136 @@ deferred([
         deferred([
             // temporary
             (next:() => void):void => {
+                displayInput(DEBUG, "Command: {0} {1}", PROJECT_ENV, ["rm", "-rf", PROJECT_TEMPORARY_DIRECTORY].map((item:string):string => {
+                    return JSON.stringify(item);
+                }).join(" "));
                 cp.spawn(PROJECT_ENV, ["rm", "-rf", PROJECT_TEMPORARY_DIRECTORY], {}).on("close", ():void => {
                     // todo: show errors
+                    displayOutput(DEBUG, "done");
                     next();
                 });
             },
             (next:() => void):void => {
+                displayInput(DEBUG, "Create temporary directory: {0}", JSON.stringify(PROJECT_TEMPORARY_DIRECTORY));
                 mkdir(PROJECT_TEMPORARY_DIRECTORY, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
                             displayException(error);
                         });
                     } else {
+                        displayOutput(DEBUG, "done");
                         next();
                     }
                 });
             },
             (next:() => void):void => {
                 var directory:string = path.dirname(PROJECT_MEMORY_SOCKET);
+                displayInput(DEBUG, "Create temporary directory for memory: {0}", JSON.stringify(directory));
                 mkdir(directory, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
                             displayException(error);
                         });
                     } else {
+                        displayOutput(DEBUG, "done");
                         next();
                     }
                 });
             },
             (next:() => void):void => {
                 var directory:string = path.dirname(PROJECT_STATIC_SOCKET);
+                displayInput(DEBUG, "Create temporary directory for static: {0}", JSON.stringify(directory));
                 mkdir(directory, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
                             displayException(error);
                         });
                     } else {
+                        displayOutput(DEBUG, "done");
                         next();
                     }
                 });
             },
             (next:() => void):void => {
                 var directory:string = path.dirname(PROJECT_CSS_SOCKET);
+                displayInput(DEBUG, "Create temporary directory for css: {0}", JSON.stringify(directory));
                 mkdir(directory, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
                             displayException(error);
                         });
                     } else {
+                        displayOutput(DEBUG, "done");
                         next();
                     }
                 });
             },
             (next:() => void):void => {
                 var directory:string = path.dirname(PROJECT_LESS_SOCKET);
+                displayInput(DEBUG, "Create temporary directory for less: {0}", JSON.stringify(directory));
                 mkdir(directory, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
                             displayException(error);
                         });
                     } else {
+                        displayOutput(DEBUG, "done");
                         next();
                     }
                 });
             },
             (next:() => void):void => {
                 var directory:string = path.dirname(PROJECT_SASS_SOCKET);
+                displayInput(DEBUG, "Create temporary directory for sass: {0}", JSON.stringify(directory));
                 mkdir(directory, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
                             displayException(error);
                         });
                     } else {
+                        displayOutput(DEBUG, "done");
                         next();
                     }
                 });
             },
             (next:() => void):void => {
                 var directory:string = path.dirname(PROJECT_STYLUS_SOCKET);
+                displayInput(DEBUG, "Create temporary directory for stylus: {0}", JSON.stringify(directory));
                 mkdir(directory, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
                             displayException(error);
                         });
                     } else {
+                        displayOutput(DEBUG, "done");
                         next();
                     }
                 });
             },
             // logs
             (next:() => void):void => {
+                displayInput(DEBUG, "Create logs directory: {0}", JSON.stringify(PROJECT_LOGS_DIRECTORY));
                 mkdir(PROJECT_LOGS_DIRECTORY, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
                             displayException(error);
                         });
                     } else {
+                        displayOutput(DEBUG, "done");
                         next();
                     }
                 });
             },
             // public
             (next:() => void):void => {
+                displayInput(DEBUG, "Create public directory: {0}", JSON.stringify(PROJECT_PUBLIC_DIRECTORY));
                 mkdir(PROJECT_PUBLIC_DIRECTORY, (errors:IException[]):void => {
                     if (errors && errors.length) {
                         errors.forEach((error:IException):void => {
                             displayException(error);
                         });
                     } else {
+                        displayOutput(DEBUG, "done");
                         next();
                     }
                 });
@@ -176,6 +199,7 @@ deferred([
      * INIT MEMORY SOCKET
      **************************************************************************/
     (next:() => void):void => {
+        displayInput(DEBUG, "Memory init");
         memoryInit({
             binaryDirectory  : SERVER_BINARY,
             socketLocation   : PROJECT_MEMORY_SOCKET,
@@ -187,6 +211,7 @@ deferred([
                     displayException(error);
                 });
             } else {
+                displayOutput(DEBUG, "done");
                 next();
             }
         });
@@ -197,12 +222,14 @@ deferred([
      **************************************************************************/
     (next:() => void):void => {
         // todo: use via parameter, without
+        displayInput(DEBUG, "Static init");
         staticInit((errors?:IException[]):void => {
             if (errors && errors.length) {
                 errors.forEach((error:IException):void => {
                     displayException(error);
                 });
             } else {
+                displayOutput(DEBUG, "done");
                 next();
             }
         });
