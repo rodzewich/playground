@@ -1,16 +1,15 @@
 /// <reference path="./types/node/node.d.ts" />
 
 import path             = require("path");
-import {isNumber, isString, isDefined} from "./lib/utils";
+import {isNumber, isString, isDefined, displayException} from "./lib/utils";
 import {INamespaceHelper, NamespaceHelper, SeparatorHelper} from "./lib/helpers/namespaceHelper";
-import displayException = require("./lib/displayException");
 import {Exception} from "./lib/exception";
 import getobject        = require("getobject");
 
 var config:any,
     cache:any = {};
 
-export const DEBUG:boolean           = false;
+export const DEBUG:boolean           = true;
 export const SERVER_DIRECTORY:string = __dirname;
 export const SERVER_BINARY:string    = path.join(SERVER_DIRECTORY, "bin");
 

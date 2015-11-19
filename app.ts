@@ -2,7 +2,18 @@
 
 import fs         = require("fs");
 import cp         = require("child_process");
-import mkdir      = require("./lib/mkdir");
+import colors     = require("colors");
+import http       = require("http");
+import url        = require("url");
+import path       = require("path");
+import {deferred, mkdir, displayException, installMapping} from "./lib/utils";
+import {IException, Exception} from "./lib/exception";
+import memoryInit = require("./lib/memory/init/init");
+import staticInit = require("./lib/static/init");
+import ContentType      = require("./lib/helpers/ContentType");
+import content          = require("./lib/static/router/router");
+import redirect         = require("./lib/routes/redirect/router");
+import error404         = require("./lib/routes/error404/router");
 import {
     DEBUG,
     PROJECT_ENV,
@@ -23,21 +34,8 @@ import {
     PROJECT_SERVER_PORT,
     PROJECT_SERVER_HOSTNAME
 } from "./config";
-import {deferred} from "./lib/utils";
-import {IException, Exception} from "./lib/exception";
-import memoryInit = require("./lib/memory/init/init");
-import staticInit = require("./lib/static/init");
-import colors     = require("colors");
-import http       = require("http");
-import url        = require("url");
-import path       = require("path");
-import displayException = require("./lib/displayException");
-import ContentType      = require("./lib/helpers/ContentType");
-import content          = require("./lib/static/router/router");
-import redirect         = require("./lib/routes/redirect/router");
-import error404         = require("./lib/routes/error404/router");
 
-require("./lib/mapping");
+installMapping();
 
 function ok():void {
     process.stdout.write(" [ " + colors.green("ok") + " ] \n");

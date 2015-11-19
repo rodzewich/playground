@@ -2,14 +2,13 @@
 /// <reference path="./types/glob/glob.d.ts" />
 /// <reference path="./types/optimist/optimist.d.ts" />
 
-import glob       = require("glob");
-import path       = require("path");
-import optimist   = require("optimist");
-import {isTrue, isFunction, deferred} from "./lib/utils";
+import glob     = require("glob");
+import path     = require("path");
+import optimist = require("optimist");
+import {isTrue, isFunction, deferred, displayException, installMapping} from "./lib/utils";
 import {Exception} from "./lib/exception";
-import displayException = require("./lib/displayException");
 
-require("./lib/mapping");
+installMapping();
 
 var argv:any = optimist
     .usage("Usage: tests [--debug] [--test ./path/to/test]")

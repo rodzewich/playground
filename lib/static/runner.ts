@@ -20,10 +20,7 @@ process.addListener('uncaughtException', function (error:Error) {
     }
 });
 
-require("../mapping");
-
-import displayException = require("../displayException");
-import {isNull, isDefined, isString, isNumber, isArray, isBoolean} from "../utils";
+import {isNull, isDefined, isString, isNumber, isArray, isBoolean, displayException, installMapping} from "../utils";
 import {IObject, IException, Exception} from "./exception";
 import {IOptions, Daemon} from "./daemon";
 import log4js     = require("../../logger");
@@ -31,6 +28,8 @@ import optimist   = require("optimist");
 import path       = require("path");
 import colors     = require("colors");
 import config     = require("../../config");
+
+installMapping();
 
 var cache:any = {},
     logger:log4js.Logger = log4js.getLogger("memory"),

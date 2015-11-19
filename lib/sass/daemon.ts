@@ -17,15 +17,15 @@ process.addListener('uncaughtException', function (error:Error) {
 });
 
 import {IException, Exception} from "../exception";
-import IMemory    = require("../memory/client/IClient");
-import Memory     = require("../memory/client/Client");
+import {IClient as IMemory, Client as Memory} from "../memory/client";
 import IDaemon    = require("./daemon/IDaemon");
 import Daemon     = require("./daemon/Daemon");
-import {deferred} from "../utils";
+import {deferred, installMapping} from "../utils";
 import log4js     = require("../../logger");
 import optimist   = require("optimist");
 
-require("../mapping");
+installMapping();
+
 var memory:IMemory;
 var daemon:IDaemon;
 var logger:log4js.Logger = log4js.getLogger("sass");

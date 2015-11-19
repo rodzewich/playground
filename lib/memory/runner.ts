@@ -24,8 +24,7 @@ process.addListener('uncaughtException', function (error:Error) {
     }
 });
 
-import displayException = require("../displayException");
-import {isArray} from "../utils";
+import {isArray, displayException, installMapping} from "../utils";
 import {IObject, IException, Exception} from "./exception";
 import {Exception as ExceptionBase} from "../exception";
 import {IDaemon, Daemon} from "./daemon";
@@ -34,7 +33,7 @@ import path             = require("path");
 import optimist         = require("optimist");
 import config           = require("../../config");
 
-require("../mapping");
+installMapping();
 
 logger = log4js.getLogger("memory");
 argv = optimist
