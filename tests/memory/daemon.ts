@@ -1,10 +1,10 @@
-/// <reference path="../../../types/node/node.d.ts" />
+/// <reference path="../../types/node/node.d.ts" />
 
 import path = require("path");
 import assert = require("assert");
-import {Exception} from "../../exception";
-import {deferred} from "../../utils";
-import {IDaemon, Daemon} from "../daemon";
+import {Exception} from "../../lib/exception";
+import {deferred} from "../../lib/utils";
+import {IDaemon, Daemon} from "../../lib/memory/daemon";
 
 function run(debug:boolean, callback:() => void):void {
     deferred([

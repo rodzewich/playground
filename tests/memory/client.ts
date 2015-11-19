@@ -1,12 +1,12 @@
-/// <reference path="../../../types/node/node.d.ts" />
+/// <reference path="../../types/node/node.d.ts" />
 
 import fs         = require("fs");
 import path       = require("path");
 import assert     = require("assert");
-import {IClient, Client} from "../client";
-import {IDaemon, Daemon} from "../daemon";
-import {IException, Exception} from "../../exception";
-import {typeOf, deferred, parallel} from "../../utils";
+import {IClient, Client} from "../../lib/memory/client";
+import {IDaemon, Daemon} from "../../lib/memory/daemon";
+import {IException, Exception} from "../../lib/exception";
+import {typeOf, deferred, parallel} from "../../lib/utils";
 
 // todo: проверять обращение к другим namespace
 // todo: проверять содержание локов в том же объекте

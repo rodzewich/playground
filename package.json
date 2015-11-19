@@ -73,5 +73,10 @@
     "source-map-support": "^0.3.2",
     "stylus": "^0.52.4",
     "typescript": "^1.7.0-dev.20150926"
+  },
+  "devDependencies": {
+    "chai": "^3.4.1",
+    "jasmine": "^2.3.2",
+    "karma": "^0.13.15"
   }
 }
