@@ -12,6 +12,8 @@ import {ICssErrorsHelper, CssErrorsHelper} from "./helpers/cssErrorsHelper";
 import {ICacheHelper, CacheHelper} from "./helpers/cacheHelper";
 import {IException, Exception} from "./exception";
 
+var logger:log4js.Logger = log4js.getLogger("worker");
+
 interface IOptions extends IOptionsBase {
     sourcesDirectory:string;
     memoryLocation:string;
@@ -68,8 +70,6 @@ interface IClient extends IClientBase {
     getWebRootDirectory():string;
     setWebRootDirectory(value:string):void;
 }
-
-var logger:log4js.Logger = log4js.getLogger("worker");
 
 class Client extends ClientBase implements IClient {
 

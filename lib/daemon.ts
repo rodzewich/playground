@@ -8,7 +8,6 @@ import {IException, Exception} from "./exception";
 import {IDebugHelper, DebugHelper} from "./helpers/debugHelper";
 import {IMeLocationHelper, MeLocationHelper} from "./helpers/meLocationHelper";
 
-require("../logger");
 var logger:log4js.Logger = log4js.getLogger("daemon");
 
 export interface IOptions {
@@ -36,7 +35,7 @@ export interface IDaemon {
     setIsDebug(value:boolean):void;
 }
 
-export class Daemon implements IDaemon {
+export abstract class Daemon implements IDaemon {
 
     private _daemon:net.Server = null;
 

@@ -44,7 +44,7 @@ export interface IClient {
     setIsDebug(value:boolean):void;
 }
 
-export class Client implements IClient {
+export abstract class Client implements IClient {
 
     private _client:net.Socket = null;
 
