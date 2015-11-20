@@ -59,6 +59,7 @@
     "log4js": "^0.6.26",
     "mocha": "^2.3.3",
     "node-sass": "^3.3.2",
+    "onecolor": "^2.5.0",
     "optimist": "^0.6.1",
     "pixrem": "^2.0.0",
     "postcss": "^5.0.4",

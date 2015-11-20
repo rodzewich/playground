@@ -11,10 +11,11 @@ import {ISourcesDirectoryHelper, SourcesDirectoryHelper} from "../helpers/source
 import {ICssErrorsHelper, CssErrorsHelper} from "./helpers/cssErrorsHelper";
 import {ICacheHelper, CacheHelper} from "./helpers/cacheHelper";
 import {IException, Exception} from "./exception";
+import {IException as IExceptionBase} from "../exception";
 
 var logger:log4js.Logger = log4js.getLogger("worker");
 
-interface IOptions extends IOptionsBase {
+export interface IOptions extends IOptionsBase {
     sourcesDirectory:string;
     memoryLocation:string;
     useCache:boolean;
@@ -25,7 +26,7 @@ interface IOptions extends IOptionsBase {
     webRootDirectory:string;
 }
 
-interface IRequest {
+export interface IRequest {
     filename:string;
     sourcesDirectory:string;
     errorsBackgroundColor:string;
@@ -36,10 +37,10 @@ interface IRequest {
     useCache:boolean;
 }
 
-interface IResponse {
+export interface IResponse {
 }
 
-interface IClient extends IClientBase {
+export interface IClient extends IClientBase {
     daemon:string;
     useCache:boolean;
     errorsBackgroundColor:string;
@@ -49,7 +50,7 @@ interface IClient extends IClientBase {
     memoryLocation:string;
     sourcesDirectory:string;
     webRootDirectory:string;
-    compile(filename:string, callback?:(errors:Error[], result:IResponse) => void): void;
+    compile(filename:string, callback?:(errors:IException[], result:IResponse) => void): void;
     getDaemon():string;
     isCacheUsed():boolean;
     getIsCacheUsed():boolean;
@@ -71,9 +72,21 @@ interface IClient extends IClientBase {
     setWebRootDirectory(value:string):void;
 }
 
-class Client extends ClientBase implements IClient {
+export class Client extends ClientBase implements IClient {
 
     private _cacheHelper:ICacheHelper;
+
+    private _cssErrorsHelper:ICssErrorsHelper;
+
+    private _memoryLocationHelper:IMemoryLocationHelper;
+
+    private _sourcesDirectoryHelper:ISourcesDirectoryHelper;
+
+    private _webRootDirectoryHelper:IWebRootDirectoryHelper;
+
+    protected createCssErrorsHelper():ICssErrorsHelper {
+        return new CssErrorsHelper();
+    }
 
     protected createCacheHelper():ICacheHelper {
         return new CacheHelper();
@@ -86,20 +99,12 @@ class Client extends ClientBase implements IClient {
         return this._cacheHelper;
     }
 
-    private _cssErrorsHelper:ICssErrorsHelper;
-
-    protected createCssErrorsHelper():ICssErrorsHelper {
-        return new CssErrorsHelper();
-    }
-
     protected getCssErrorsHelper():ICssErrorsHelper {
         if (!this._cssErrorsHelper) {
             this._cssErrorsHelper = this.createCssErrorsHelper();
         }
         return this._cssErrorsHelper;
     }
-
-    private _memoryLocationHelper:IMemoryLocationHelper;
 
     protected createMemoryLocationHelper():IMemoryLocationHelper {
         return new MemoryLocationHelper();
@@ -112,8 +117,6 @@ class Client extends ClientBase implements IClient {
         return this._memoryLocationHelper;
     }
 
-    private _sourcesDirectoryHelper:ISourcesDirectoryHelper;
-
     protected createSourcesDirectoryHelper():ISourcesDirectoryHelper {
         return new SourcesDirectoryHelper();
     }
@@ -124,8 +127,6 @@ class Client extends ClientBase implements IClient {
         }
         return this._sourcesDirectoryHelper;
     }
-
-    private _webRootDirectoryHelper:IWebRootDirectoryHelper;
 
     protected createWebRootDirectoryHelper():IWebRootDirectoryHelper {
         return new WebRootDirectoryHelper();
@@ -323,22 +324,35 @@ class Client extends ClientBase implements IClient {
         };
     }
 
-    public compile(filename:string, callback?:(errors:Error[], result:IResponse) => void):void {
-        if (!isString(filename)) {
-            throw new Exception({message: "filename should be a string"});
-        }
-        this.call((errors:Error[], response?:any):void => {
-            var errs:Error[] = null,
-                result:any = null;
-            if (errors && errors.length) {
-                errs = errors;
-            } else {
-                result = response || null;
-            }
+    public compile(filename:string, callback?:(errors:IException[], result:IResponse) => void):void {
+
+        function handler(errors:IException[], result:IResponse):void => {
             if (isFunction(callback)) {
-                callback(errs, <IResponse>result);
+                callback(errors, result);
             }
-        }, "compile", this.createRequest(filename));
+        }
+
+        if (!isString(filename)) {
+            handler([new Exception({message: "filename should be a string"})]);
+        } else {
+            this.call((errors:IExceptionBase[], response?:any):void => {
+                if (errors && errors.length) {
+                    handler(errors.map((exception:IExceptionBase):IException => {
+                        return new Exception({
+                            name    : exception.getName(),
+                            code    : exception.getCode(),
+                            type    : exception.getType(),
+                            message : exception.getMessage(),
+                            stack   : exception.getStack(),
+                            data    : exception.getData()
+                        });
+                    }), null);
+                } else {
+                    handler(null, <IResponse>response);
+                }
+            }, "compile", this.createRequest(filename));
+        }
+
     }
 
     public connect(callback:(errors:Error[]) => void):void {
@@ -417,10 +431,9 @@ class Client extends ClientBase implements IClient {
     }
 
     public disconnect(callback:(errors:Error[]) => void):void {
+        super.disconnect
         // todo: implement this
     }
 
 
 }
-
-

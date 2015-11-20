@@ -1,10 +1,11 @@
-import {Exception} from "../exception";
+import one = require("onecolor");
+import {IException as IExceptionBase} from "../../exception";
 
 export interface ICssErrorsHelper {
     getBackgroundColor():string;
-    setBackgroundColor(value:string):void;
+    setBackgroundColor(color:string):void;
     getTextColor():string;
-    setTextColor(value:string):void;
+    setTextColor(color:string):void;
     getBlockPadding():string;
     setBlockPadding(value:string):void;
     getFontSize():string;
@@ -26,16 +27,16 @@ export class CssErrorsHelper implements ICssErrorsHelper {
         return this._backgroundColor;
     }
 
-    public setBackgroundColor(value:string):void {
-        this._backgroundColor = value;
+    public setBackgroundColor(color:string):void {
+        this._backgroundColor = one(color).hex();
     }
 
     public getTextColor():string {
         return this._textColor;
     }
 
-    public setTextColor(value:string):void {
-        this._textColor = value;
+    public setTextColor(color:string):void {
+        this._textColor = one(color).hex();
     }
 
     public getBlockPadding():string {
@@ -54,7 +55,7 @@ export class CssErrorsHelper implements ICssErrorsHelper {
         this._fontSize = value;
     }
 
-    public create(exceptions:Exception[]):string {
+    public create(exceptions:IExceptionBase[]):string {
         var property:string,
             content:string[] = [],
             bodyBefore:any = {
@@ -71,7 +72,7 @@ export class CssErrorsHelper implements ICssErrorsHelper {
                 "font-variant"     : "normal !important",
                 "font-weight"      : "400 !important",
                 "word-wrap"        : "break-word !important",
-                "content"          : JSON.stringify(exceptions.map(function (exception:Exception, index:number) {
+                "content"          : JSON.stringify(exceptions.map(function (exception:IExceptionBase, index:number) {
                     return String(index + 1) + ". " + exception.getStack();
                 }).join("\n\n")).
                     replace(/\\n/g, "\\A ")/*.

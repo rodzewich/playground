@@ -2,6 +2,9 @@
 /// <reference path="./types/glob/glob.d.ts" />
 /// <reference path="./types/optimist/optimist.d.ts" />
 
+import {Test} from "./tests/client"
+
+
 import glob     = require("glob");
 import path     = require("path");
 import optimist = require("optimist");
@@ -25,6 +28,11 @@ if (argv.help) {
 process.addListener('uncaughtException', function (error:Error) {
     displayException(Exception.convertFromError(error));
 });
+
+
+new Test().run();
+return;
+
 
 var test:Function;
 

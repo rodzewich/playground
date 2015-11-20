@@ -1172,10 +1172,10 @@ export class Daemon extends DaemonBase implements IDaemon {
                         this.stop();
                         break;
                     case "getContent":
-                        this.getContent(<string>args[0], <boolean>args[1], (errors:Exception[], result:IResponse):void => {
+                        this.getContent(<string>args[0], <boolean>args[1], (errors:IException[], result:IResponse):void => {
                             response.result = result;
                             if (errors && errors.length) {
-                                response.errors = errors.map((error:Exception):IObject => {
+                                response.errors = errors.map((error:IException):IObject => {
                                     return error.toObject();
                                 });
                             }
