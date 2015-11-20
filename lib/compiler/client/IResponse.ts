@@ -1,4 +1,0 @@
-interface IResponse {
-}
-
-export = IResponse;

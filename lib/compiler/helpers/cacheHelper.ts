@@ -1,7 +1,12 @@
 import {isTrue} from "../../utils";
-import ICacheHelper = require("./ICacheHelper");
 
-class CacheHelper implements ICacheHelper {
+export interface ICacheHelper {
+    setIsUsed(value:any):void;
+    getIsUsed():boolean;
+    isUsed():boolean;
+}
+
+export class CacheHelper implements ICacheHelper {
 
     private _use:boolean = false;
 
@@ -18,5 +23,3 @@ class CacheHelper implements ICacheHelper {
     }
 
 }
-
-export = CacheHelper;

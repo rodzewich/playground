@@ -1,26 +1,74 @@
-/// <reference path="../../../types/node/node.d.ts" />
-/// <reference path="../../../types/log4js/log4js.d.ts" />
+/// <reference path="../../types/node/node.d.ts" />
+/// <reference path="../../types/log4js/log4js.d.ts" />
 
-import {isString, isFunction, isArray, isDefined, deferred} from "../../utils";
-import WebRootDirectoryHelper = require("../helpers/WebRootDirectoryHelper");
-import IWebRootDirectoryHelper = require("../helpers/IWebRootDirectoryHelper");
-import MemoryLocationHelper = require("../helpers/MemoryLocationHelper");
-import IMemoryLocationHelper = require("../helpers/IMemoryLocationHelper");
-import {ISourcesDirectoryHelper, SourcesDirectoryHelper} from "../../helpers/sourcesDirectoryHelper";
-import CssErrorsHelper = require("../helpers/CssErrorsHelper");
-import ICssErrorsHelper = require("../helpers/ICssErrorsHelper");
-import CacheHelper = require("../helpers/CacheHelper");
-import ICacheHelper = require("../helpers/ICacheHelper");
-import ClientBase = require("../../client/Client");
-import IOptions = require("./IOptions");
-import Exception = require("../exception/Exception");
-import IClient = require("./IClient");
-import IResponse = require("./IResponse");
-import IRequest = require("./IRequest");
 import cp = require("child_process");
 import log4js = require("log4js");
+import {IOptions as IOptionsBase, IClient as IClientBase, Client as ClientBase} from "../client";
+import {isString, isFunction, isArray, isDefined, deferred} from "../utils";
+import {IWebRootDirectoryHelper, WebRootDirectoryHelper} from "./helpers/webRootDirectoryHelper";
+import {IMemoryLocationHelper, MemoryLocationHelper} from "./helpers/memoryLocationHelper";
+import {ISourcesDirectoryHelper, SourcesDirectoryHelper} from "../helpers/sourcesDirectoryHelper";
+import {ICssErrorsHelper, CssErrorsHelper} from "./helpers/cssErrorsHelper";
+import {ICacheHelper, CacheHelper} from "./helpers/cacheHelper";
+import {IException, Exception} from "./exception";
 
-require("../../../logger");
+interface IOptions extends IOptionsBase {
+    sourcesDirectory:string;
+    memoryLocation:string;
+    useCache:boolean;
+    errorsBackgroundColor?:string;
+    errorsTextColor?:string;
+    errorsBlockPadding?:string;
+    errorsFontSize?:string;
+    webRootDirectory:string;
+}
+
+interface IRequest {
+    filename:string;
+    sourcesDirectory:string;
+    errorsBackgroundColor:string;
+    errorsTextColor:string;
+    errorsBlockPadding:string;
+    errorsFontSize:string;
+    webRootDirectory:string;
+    useCache:boolean;
+}
+
+interface IResponse {
+}
+
+interface IClient extends IClientBase {
+    daemon:string;
+    useCache:boolean;
+    errorsBackgroundColor:string;
+    errorsTextColor:string;
+    errorsBlockPadding:string;
+    errorsFontSize:string;
+    memoryLocation:string;
+    sourcesDirectory:string;
+    webRootDirectory:string;
+    compile(filename:string, callback?:(errors:Error[], result:IResponse) => void): void;
+    getDaemon():string;
+    isCacheUsed():boolean;
+    getIsCacheUsed():boolean;
+    setIsCacheUsed(value:boolean):void;
+    getErrorsBackgroundColor():string;
+    setErrorsBackgroundColor(value:string):void;
+    getErrorsTextColor():string;
+    setErrorsTextColor(value:string):void;
+    getErrorsBlockPadding():string;
+    setErrorsBlockPadding(value:string):void;
+    getErrorsFontSize():string;
+    setErrorsFontSize(value:string):void;
+    createCssErrors(errors:Error[]):string;
+    getMemoryLocation():string;
+    setMemoryLocation(value:string):void;
+    getSourcesDirectory():string;
+    setSourcesDirectory(value:string):void;
+    getWebRootDirectory():string;
+    setWebRootDirectory(value:string):void;
+}
+
 var logger:log4js.Logger = log4js.getLogger("worker");
 
 class Client extends ClientBase implements IClient {
@@ -327,9 +375,9 @@ class Client extends ClientBase implements IClient {
                             json = string.slice(0, index + 1);
                             try {
                                 result = JSON.parse(json) || {
-                                    started: false,
-                                    errors: [new Exception({message: "unknown error"}).toObject()]
-                                };
+                                        started: false,
+                                        errors: [new Exception({message: "unknown error"}).toObject()]
+                                    };
                             } catch (err) {
                                 logger.warn("Worker send error content", data.toString("utf8"));
                                 process.stderr.write(data);
@@ -375,5 +423,4 @@ class Client extends ClientBase implements IClient {
 
 }
 
-export = Client;
 

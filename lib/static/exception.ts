@@ -18,6 +18,10 @@ export class Exception extends ExceptionBase implements IException {
 
     protected _class:any = Exception;
 
+    constructor(options:IOptions) {
+        super(options);
+    }
+
     public toObject():IObject {
         return super.toObject();
     }

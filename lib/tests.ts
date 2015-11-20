@@ -1,17 +1,33 @@
-/// <reference path="../types/chai/chai.d.ts" />
+import {deferred, isFunction} from "./utils";
 
-export function describe(description:string):void {
-
+export interface ITest {
+    run(callback:() => void):void;
 }
 
-export function it(description:string) {
+export abstract class Test implements ITest {
 
-}
+    protected setUp(callback:() => void):void {
+        if (isFunction(callback)) {
+            callback();
+        }
+    }
 
-export function run() {
+    protected tearDown(callback:() => void):void {
+        if (isFunction(callback)) {
+            callback();
+        }
+    }
 
-}
-
-export function assert() {
+    public run(callback:() => void):void {
+        deferred([
+            this.setUp,
+            this.tearDown,
+            ():void => {
+                if (isFunction(callback)) {
+                    callback();
+                }
+            }
+        ]);
+    }
 
 }
