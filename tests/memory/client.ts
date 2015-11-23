@@ -34,13 +34,13 @@ export class Test extends TestBase implements ITest {
 
         deferred([
             (next:() => void):void => {
-                this.testDefaultValues(next);
+                super.testDefaultValues(next);
             },
             ():void => {
 
                 var client:IClient = this.createClientInstance();
-                assert.strictEqual(client.namespace, null);
-                assert.strictEqual(client.getNamespace(), null);
+                assert.strictEqual(client.namespace, "default");
+                assert.strictEqual(client.getNamespace(), "default");
 
                 if (isFunction(callback)) {
                     callback();
@@ -51,11 +51,130 @@ export class Test extends TestBase implements ITest {
 
     }
 
+    public testThrowsViaConstructor(callback:() => void):void {
+
+        deferred([
+            (next:() => void):void => {
+                super.testThrowsViaConstructor(next);
+            },
+            ():void => {
+
+                assert.throw(():void => {
+                    this.createClientInstance({
+                        namespace : "invalid->namespace"
+                    });
+                }, Exception, "namespace is invalid");
+
+                if (isFunction(callback)) {
+                    callback();
+                }
+
+            }
+        ]);
+
+    }
+
+    public testThrowsViaSetters(callback:() => void):void {
+
+        deferred([
+            (next:() => void):void => {
+                super.testThrowsViaSetters(next);
+            },
+            ():void => {
+
+                assert.throw(():void => {
+                    var client:IClient = this.createClientInstance();
+                    client.setNamespace("invalid->namespace");
+                }, Exception, "namespace is invalid");
+
+                if (isFunction(callback)) {
+                    callback();
+                }
+
+            }
+        ]);
+
+    }
+
+    public testSetupOptionsViaConstructor(callback:() => void):void {
+
+        deferred([
+            (next:() => void):void => {
+                super.testSetupOptionsViaConstructor(next);
+            },
+            ():void => {
+
+                var test:(namespace:string) => void = (namespace:string):void => {
+
+                    var client:IClient = this.createClientInstance({
+                        namespace : namespace
+                    });
+
+                    assert.strictEqual(client.namespace, namespace);
+                    assert.strictEqual(client.getNamespace(), namespace);
+
+                };
+
+                test("path.to.namespace1");
+                test("path.to.namespace2");
+
+                if (isFunction(callback)) {
+                    callback();
+                }
+
+            }
+
+        ]);
+
+    }
+
+    public testSetupOptionsViaSetters(callback:() => void):void {
+
+
+        deferred([
+            (next:() => void):void => {
+                super.testSetupOptionsViaSetters(next);
+            },
+            ():void => {
+
+                var test:(namespace:string) => void = (namespace:string):void => {
+
+                    var client1:IClient = this.createClientInstance();
+                    var client2:IClient = this.createClientInstance();
+
+                    client1.setNamespace(namespace);
+
+                    client2.namespace = namespace;
+
+                    assert.strictEqual(client1.namespace, namespace);
+                    assert.strictEqual(client1.getNamespace(), namespace);
+
+                    assert.strictEqual(client2.namespace, namespace);
+                    assert.strictEqual(client2.getNamespace(), namespace);
+
+                };
+
+                test("path.to.namespace1");
+                test("path.to.namespace2");
+
+                if (isFunction(callback)) {
+                    callback();
+                }
+
+            }
+        ]);
+
+    }
 
     public run(callback:() => void):void {
         deferred([
             (next:() => void):void => {
-                this.run(next);
+                super.run(next);
+            },
+            ():void => {
+                if (isFunction(callback)) {
+                    callback();
+                }
             }
         ]);
     }
