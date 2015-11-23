@@ -2,8 +2,7 @@
 /// <reference path="./types/glob/glob.d.ts" />
 /// <reference path="./types/optimist/optimist.d.ts" />
 
-import {Test} from "./tests/client"
-
+import {Test} from "./tests/memory/client"
 
 import glob     = require("glob");
 import path     = require("path");
@@ -40,9 +39,10 @@ if (argv.test) {
     test = require(argv.test);
     console.log("Test:", path.join(path.dirname(argv.test), path.basename(argv.test, path.extname(argv.test))));
     if (!isFunction(test)) {
-        displayException(new Exception({message: "Test should be export run function"}))
+        displayException(new Exception({message : "Test should be export run function"}))
     } else {
-        test(isTrue(argv.debug), ():void => {});
+        test(isTrue(argv.debug), ():void => {
+        });
     }
 } else {
     glob("./lib/**/tests/*.js", (errors, files):void => {

@@ -2,11 +2,11 @@
 
 import fs         = require("fs");
 import path       = require("path");
-import assert     = require("assert");
-import {IClient, Client} from "../../lib/memory/client";
+import {assert} from "chai";
+import {IOptions, IClient, Client} from "../../lib/memory/client";
 import {IDaemon, Daemon} from "../../lib/memory/daemon";
 import {IException, Exception} from "../../lib/exception";
-import {typeOf, deferred, parallel} from "../../lib/utils";
+import {isFunction, typeOf, deferred, parallel} from "../../lib/utils";
 
 // todo: проверять обращение к другим namespace
 // todo: проверять содержание локов в том же объекте
@@ -19,6 +19,50 @@ import {typeOf, deferred, parallel} from "../../lib/utils";
 // todo: проверять debug/isDebug
 // todo: пробовать удалять/читать не существующие элементы
 
+import {ITest as ITestBase, Test as TestBase} from "../client";
+
+export interface ITest extends ITestBase {
+}
+
+export class Test extends TestBase implements ITest {
+
+    public createClientInstance(options?:IOptions):IClient {
+        return new Client(options);
+    }
+
+    public testDefaultValues(callback:() => void):void {
+
+        deferred([
+            (next:() => void):void => {
+                this.testDefaultValues(next);
+            },
+            ():void => {
+
+                var client:IClient = this.createClientInstance();
+                assert.strictEqual(client.namespace, null);
+                assert.strictEqual(client.getNamespace(), null);
+
+                if (isFunction(callback)) {
+                    callback();
+                }
+
+            }
+        ]);
+
+    }
+
+
+    public run(callback:() => void):void {
+        deferred([
+            (next:() => void):void => {
+                this.run(next);
+            }
+        ]);
+    }
+
+}
+
+// todo: remove this function
 function run(debug:boolean, callback:() => void):void {
     var daemon:IDaemon,
         location:string = path.join(__dirname, "client.sock");
@@ -1254,4 +1298,4 @@ function run(debug:boolean, callback:() => void):void {
 
 }
 
-export = run;
+/*export = run;*/
