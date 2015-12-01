@@ -1,13 +1,8 @@
-/// <reference path="../types/node/node.d.ts" />
-
-import http = require("http");
+import {IRequest} from "./request";
 
 export interface IParams {
     controller:string;
     method:string;
-}
-
-export interface IRequest {
 }
 
 export interface IMatch {

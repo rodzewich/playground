@@ -6,6 +6,7 @@ import colors     = require("colors");
 import http       = require("http");
 import url        = require("url");
 import path       = require("path");
+import {IRequest, Request} from "./lib/http/request";
 import {deferred, mkdir, displayException, installMapping} from "./lib/utils";
 import {input as displayInput, output as displayOutput} from "./lib/helpers/display";
 import {IException, Exception} from "./lib/exception";
@@ -252,6 +253,7 @@ deferred([
 
         var server:http.Server = http.createServer((request:http.ServerRequest, response:http.ServerResponse):void => {
 
+
             var options:url.Url  = url.parse(request.url),
                 method:string    = (request.method || "GET").toUpperCase(),
                 query:string     = <string>options.query || "",
@@ -259,6 +261,8 @@ deferred([
                 directory:string = path.dirname(pathname),
                 extension:string = path.extname(pathname).toLowerCase(),
                 filename:string  = path.basename(pathname, extension);
+
+
 
             // headers
             response.setHeader("Server", [
