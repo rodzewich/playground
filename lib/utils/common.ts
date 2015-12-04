@@ -88,18 +88,16 @@ export function deferred(actions:((next:() => void) => void)[]):void {
         }, 0).ref();
     }
 
-    if (!isArray(actions)) {
-        throw new Exception({message: "incorrect first argument, it must be a functions array"});
+    if (isArray(actions)) {
+	    length = actions.length;
+    	for (index = 0; index < length; index++) {
+        	action = actions[index];
+	        if (isFunction(action)) {
+		        temp.push(action);
+        	}
+	    }
+    	iterate();
     }
-    length = actions.length;
-    for (index = 0; index < length; index++) {
-        action = actions[index];
-        if (!isFunction(action)) {
-            throw new Exception({message: "incorrect first argument, it contains a " + typeOf(action) + " element instead function"});
-        }
-        temp.push(action);
-    }
-    iterate();
 }
 
 export function parallel(actions:((done:() => void) => void)[], complete:() => void) {
