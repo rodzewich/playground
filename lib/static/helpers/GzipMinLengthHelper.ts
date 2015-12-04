@@ -1,4 +1,4 @@
-import {isNumber, isDefined} from "../../utils";
+import {isNumber, isDefined} from "../../utils/common";
 import {Exception} from "../../exception";
 import IGzipMinLengthHelper = require("./IGzipMinLengthHelper");
 

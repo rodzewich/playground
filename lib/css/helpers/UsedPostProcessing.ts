@@ -1,4 +1,4 @@
-import {isTrue} from "../../utils";
+import {isTrue} from "../../utils/common";
 import IUsedPostProcessing = require("./IUsedPostProcessing");
 
 class UsedPostProcessing {

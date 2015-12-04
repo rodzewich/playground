@@ -1,10 +1,10 @@
 /// <reference path="./types/node/node.d.ts" />
 
-import path             = require("path");
-import {isNumber, isString, isDefined, displayException} from "./lib/utils";
+import * as path from "path";
+import {isNumber, isString, isDefined, get} from "./lib/utils/common";
+import {displayException} from "./lib/utils";
 import {INamespaceHelper, NamespaceHelper, SeparatorHelper} from "./lib/helpers/namespaceHelper";
 import {Exception} from "./lib/exception";
-import getobject        = require("getobject");
 
 var config:any,
     cache:any = {};
@@ -116,7 +116,7 @@ function getStaticGzipLevel():number {
 function getServerName():string {
     var configValue:string;
     if (!isDefined(cache.serverName)) {
-        configValue = <string>getobject.get(getConfig(), "server.name");
+        configValue = <string>get(getConfig(), "server.name");
         if (configValue && isString(configValue)) {
             cache.serverName = configValue;
         } else {
@@ -129,7 +129,7 @@ function getServerName():string {
 function getServerVersion():string {
     var configValue:string;
     if (!isDefined(cache.serverVersion)) {
-        configValue = <string>getobject.get(getConfig(), "server.version");
+        configValue = <string>get(getConfig(), "server.version");
         if (configValue && isString(configValue)) {
             cache.serverVersion = configValue;
         } else {
@@ -142,7 +142,7 @@ function getServerVersion():string {
 function getServerHostname():string {
     var configValue:string;
     if (!isDefined(cache.hostname)) {
-        configValue = <string>getobject.get(getConfig(), "server.hostname");
+        configValue = <string>get(getConfig(), "server.hostname");
         if (configValue && isString(configValue)) {
             cache.hostname = configValue;
         } else {
@@ -155,7 +155,7 @@ function getServerHostname():string {
 function getServerPort():number {
     var configValue:number;
     if (!isDefined(cache.port)) {
-        configValue = <number>getobject.get(getConfig(), "server.port");
+        configValue = <number>get(getConfig(), "server.port");
         if (configValue && isNumber(configValue)) {
             cache.port = configValue;
         } else {
@@ -168,7 +168,7 @@ function getServerPort():number {
 function getServerCharset():string {
     var configValue:string;
     if (!isDefined(cache.serverCharset)) {
-        configValue = <string>getobject.get(getConfig(), "server.charset");
+        configValue = <string>get(getConfig(), "server.charset");
         if (configValue && isString(configValue)) {
             cache.serverCharset = configValue;
         } else {
@@ -182,7 +182,7 @@ function getMemorySocket():string {
     var configValue:string,
         temporaryDirectory:string;
     if (!isDefined(cache.memorySocket)) {
-        configValue = getobject.get(getConfig(), "temporary.memory");
+        configValue = get(getConfig(), "temporary.memory");
         temporaryDirectory = getTemporaryDirectory();
         if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
             cache.memorySocket = path.normalize(path.join(temporaryDirectory, configValue));
@@ -200,7 +200,7 @@ function getStaticSocket():string {
     var configValue:string,
         temporaryDirectory:string;
     if (!isDefined(cache.staticSocket)) {
-        configValue = getobject.get(getConfig(), "temporary.static");
+        configValue = get(getConfig(), "temporary.static");
         temporaryDirectory = getTemporaryDirectory();
         if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
             cache.staticSocket = path.normalize(path.join(temporaryDirectory, configValue));
@@ -218,7 +218,7 @@ function getCssSocket():string {
     var configValue:string,
         temporaryDirectory:string;
     if (!isDefined(cache.cssSocket)) {
-        configValue = getobject.get(getConfig(), "temporary.css");
+        configValue = get(getConfig(), "temporary.css");
         temporaryDirectory = getTemporaryDirectory();
         if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
             cache.cssSocket = path.normalize(path.join(temporaryDirectory, configValue));
@@ -236,7 +236,7 @@ function getLessSocket():string {
     var configValue:string,
         temporaryDirectory:string;
     if (!isDefined(cache.lessSocket)) {
-        configValue = getobject.get(getConfig(), "temporary.less");
+        configValue = get(getConfig(), "temporary.less");
         temporaryDirectory = getTemporaryDirectory();
         if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
             cache.lessSocket = path.normalize(path.join(temporaryDirectory, configValue));
@@ -254,7 +254,7 @@ function getSassSocket():string {
     var configValue:string,
         temporaryDirectory:string;
     if (!isDefined(cache.sassSocket)) {
-        configValue = getobject.get(getConfig(), "temporary.sass");
+        configValue = get(getConfig(), "temporary.sass");
         temporaryDirectory = getTemporaryDirectory();
         if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
             cache.sassSocket = path.normalize(path.join(temporaryDirectory, configValue));
@@ -272,7 +272,7 @@ function getStylusSocket():string {
     var configValue:string,
         temporaryDirectory:string;
     if (!isDefined(cache.sassSocket)) {
-        configValue = getobject.get(getConfig(), "temporary.stylus");
+        configValue = get(getConfig(), "temporary.stylus");
         temporaryDirectory = getTemporaryDirectory();
         if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
             cache.stylusSocket = path.normalize(path.join(temporaryDirectory, configValue));
@@ -289,7 +289,7 @@ function getStylusSocket():string {
 function getPublicDirectory():string {
     var configValue:string;
     if (!isDefined(cache.publicDirectory)) {
-        configValue = getobject.get(getConfig(), "public.directory");
+        configValue = get(getConfig(), "public.directory");
         if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
             cache.publicDirectory = path.normalize(path.join(PROJECT_DIRECTORY, configValue));
         } else if (configValue && isString(configValue) &&
@@ -305,7 +305,7 @@ function getPublicDirectory():string {
 function getLogsDirectory():string {
     var configValue:string;
     if (!isDefined(cache.logsDirectory)) {
-        configValue = getobject.get(getConfig(), "logs.directory");
+        configValue = get(getConfig(), "logs.directory");
         if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
             cache.logsDirectory = path.normalize(path.join(PROJECT_DIRECTORY, configValue));
         } else if (configValue && isString(configValue) &&
@@ -321,7 +321,7 @@ function getLogsDirectory():string {
 function getTemporaryDirectory():string {
     var configValue:string;
     if (!isDefined(cache.temporaryDirectory)) {
-        configValue = getobject.get(getConfig(), "temporary.directory");
+        configValue = get(getConfig(), "temporary.directory");
         if (configValue && isString(configValue) && !path.isAbsolute(configValue)) {
             cache.temporaryDirectory = path.normalize(path.join(PROJECT_DIRECTORY, configValue));
         } else if (configValue && isString(configValue) &&
@@ -337,7 +337,7 @@ function getTemporaryDirectory():string {
 function getEnv():string {
     var env:string;
     if (!isDefined(cache.env)) {
-        env = getobject.get(getConfig(), "env");
+        env = get(getConfig(), "env");
         if (isString(env)) {
             cache.env = String(env);
         } else {

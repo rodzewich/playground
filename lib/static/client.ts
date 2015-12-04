@@ -3,7 +3,7 @@
 import {IOptions as IOptionsBase, IClient as IClientBase, Client as ClientBase} from "../client";
 import log4js     = require("../../logger");
 import IResponseDaemon  = require("./daemon/IResponse");
-import {isDefined, isString, isFunction} from "../utils";
+import {isDefined, isString, isFunction} from "../utils/common";
 import {IException, Exception} from "../exception";
 import CacheOnlyHelper  = require("./helpers/CacheOnlyHelper");
 import ICacheOnlyHelper = require("./helpers/ICacheOnlyHelper");

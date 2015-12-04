@@ -1,4 +1,4 @@
-import {isDefined, isObject} from "./utils";
+import {isDefined, isObject} from "./utils/common";
 
 declare class Error {
     static captureStackTrace(error:any, func:any):void;

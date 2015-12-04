@@ -20,13 +20,14 @@ process.addListener('uncaughtException', function (error:Error) {
     }
 });
 
-import {isNull, isDefined, isString, isNumber, isArray, isBoolean, displayException, installMapping} from "../utils";
+import {isNull, isDefined, isString, isNumber, isArray, isBoolean} from "../utils/common";
+import {displayException, installMapping} from "../utils";
 import {IObject, IException, Exception} from "./exception";
 import {IOptions, Daemon} from "./daemon";
 import log4js     = require("../../logger");
-import optimist   = require("optimist");
-import path       = require("path");
-import colors     = require("colors");
+import * as optimist from "optimist";
+import * as path from "path";
+import * as colors from "colors";
 import config     = require("../../config");
 
 installMapping();

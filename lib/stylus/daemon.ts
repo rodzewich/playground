@@ -20,9 +20,10 @@ import {Exception, IException} from "../exception";
 import {IClient as IMemory, Client as Memory} from "../memory/client";
 import IDaemon    = require("./daemon/IDaemon");
 import Daemon     = require("./daemon/Daemon");
-import {deferred, installMapping} from "../utils";
+import {installMapping} from "../utils";
+import {deferred} from "../utils/common";
 import log4js     = require("../../logger");
-import optimist   = require("optimist");
+import * as optimist from "optimist";
 
 installMapping();
 

@@ -1,4 +1,4 @@
-import {isDefined, isNumber} from "../utils";
+import {isDefined, isNumber} from "../utils/common";
 import {Exception} from "../exception";
 
 export interface ITimeoutHelper {

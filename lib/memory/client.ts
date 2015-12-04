@@ -1,7 +1,7 @@
 /// <reference path="../../types/node/node.d.ts" />
 
 import * as log4js from "../../logger";
-import {isNull, isDefined, isArray, isString, isObject, isNumber, isFunction} from "../utils";
+import {isNull, isDefined, isArray, isString, isObject, isNumber, isFunction} from "../utils/common";
 import {IOptions as IOptionsBase, IClient as IClientBase, Client as ClientBase} from "../client";
 import {IException, Exception} from "./exception";
 import {Exception as ExceptionBase} from "../exception";

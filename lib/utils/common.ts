@@ -1,5 +1,7 @@
+/// <reference path="../../types/node/node.d.ts" />
+
 export function typeOf(value:any):string {
-    var type:string = String(Object.prototype.toString.call(value) || '').slice(8, -1) || 'Object',
+    let type:string = String(Object.prototype.toString.call(value) || '').slice(8, -1) || 'Object',
         types:string[] = ['Arguments', 'Array', 'Boolean', 'Date', 'Error', 'Function', 'Null', 'Number', 'Object', 'String', 'Undefined'];
 
     if (types.indexOf(type) !== -1) {
@@ -37,7 +39,7 @@ export function isUndefined(value:any):boolean {
 }
 
 export function isFalse(value:any):boolean {
-    var temp:string;
+    let temp:string;
     if (typeOf(value) === "string") {
         temp = String(value).toLowerCase().
         replace(/^\s+/, "").replace(/\s+$/, "").
@@ -72,18 +74,21 @@ export function isTrue(value:any):boolean {
 }
 
 export function deferred(actions:((next:() => void) => void)[]):void {
-    var index:number,
+    let index:number,
         length:number,
         action:(next:() => void) => void,
         temp:((next:() => void) => void)[] = [];
 
     function iterate():void {
-        setTimeout(():void => {
-            var action:(next:() => void) => void = temp.shift();
+        let timer:NodeJS.Timer = setTimeout(():void => {
+            let action:(next:() => void) => void = temp.shift();
             if (isFunction(action)) {
                 action(iterate);
             }
-        }, 0).ref();
+        }, 0);
+        if (isFunction(timer.ref)) {
+            timer.ref();
+        }
     }
 
     if (isArray(actions)) {
@@ -98,6 +103,7 @@ export function deferred(actions:((next:() => void) => void)[]):void {
     }
 }
 
+// todo: re-implement it
 export function parallel(actions:((done:() => void) => void)[], complete:() => void) {
     var index:number,
         temp:((done:() => void) => void)[],
@@ -143,9 +149,6 @@ export function parallel(actions:((done:() => void) => void)[], complete:() => v
     }
 }
 
-/**
- * Function makes object cloning.
- */
 export function clone(object:any, recursive:boolean = false) {
     let prop:string,
         index:number,
@@ -192,11 +195,41 @@ export function clone(object:any, recursive:boolean = false) {
     }
 }
 
-/**
- * Function converts template to string with values.
- */
+// todo: implement it
+export function merge(...objects:any[]):any {
+    if (objects.length === 0) {
+        return null;
+    } else {
+        
+    }
+}
+
+export function get(object:any, key:string):any {
+    let keys:string[] = String(key || "").split("."),
+        length:number = keys.length,
+        result:any = object,
+        index:number;
+    for (index = 0; index < length; index++) {
+        if (/^\s*$/.test(keys[index])) {
+            continue;
+        }
+        if (isObject(result)) {
+            result = (<{[index:string]:any}>result)[keys[index].replace(/^\s*(\S+(?:.+\S+)*)\s*$/, "$1")];
+            continue;
+        }
+        if (isArguments(result) || isArray(result)) {
+            result = (<{[index:string]:any}>result)[parseInt(keys[index], 10)];
+            continue;
+        }
+        return null;
+    }
+    return isDefined(result) ? result : null;
+}
+
 export function template(template:string, ...args:any[]):string {
     return String(template).replace(/(?:\{(\d+)\})/g, (substring:string, ...items:any[]):string => {
         return String(args[parseInt(<string>items[0])] || "");
+    }).replace(/(?:\{([^\{\}]+)\})/g, (substring:string, ...items:any[]):string => {
+        return get(args[0], <string>items[0]);
     });
 }

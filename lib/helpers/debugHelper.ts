@@ -1,4 +1,4 @@
-import {isTrue, isDefined} from "../utils";
+import {isTrue, isDefined} from "../utils/common";
 
 export interface IDebugHelper {
     isDebug():boolean;

@@ -108,7 +108,7 @@ import GlobalVariables = require("../helpers/GlobalVariables");
 import IGlobalVariables = require("../helpers/IGlobalVariables");
 import ModifyVariables = require("../helpers/ModifyVariables");
 import IModifyVariables = require("../helpers/IModifyVariables");
-import {isDefined} from "../../utils";
+import {isDefined} from "../../utils/common";
 import CompilerBase = require("../../css/compiler/Compiler");
 import IOptions = require("./IOptions");
 import ICompiler = require("./ICompiler");

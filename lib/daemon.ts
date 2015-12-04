@@ -3,7 +3,7 @@
 
 import net    = require("net");
 import log4js = require("log4js");
-import {isFunction, isDefined} from "./utils";
+import {isFunction, isDefined} from "./utils/common";
 import {IException, Exception} from "./exception";
 import {IDebugHelper, DebugHelper} from "./helpers/debugHelper";
 import {IMeLocationHelper, MeLocationHelper} from "./helpers/meLocationHelper";

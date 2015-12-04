@@ -1,4 +1,4 @@
-import {isDefined} from "../utils";
+import {isDefined} from "../utils/common";
 import IWarning = require("./IWarning");
 import SourceCodePointCreator = require("../helpers/SourceCodePointCreator");
 import ISourceCodePointCreator = require("../helpers/ISourceCodePointCreator");

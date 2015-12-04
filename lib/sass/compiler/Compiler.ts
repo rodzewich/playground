@@ -11,7 +11,7 @@
 import CompilerBase  = require("../../css/compiler/Compiler");
 import IOptions      = require("./IOptions");
 import ICompiler     = require("./ICompiler");
-import {isFunction, deferred, parallel} from "../../utils";
+import {isFunction, deferred, parallel} from "../../utils/common";
 import IMemory       = require("../../memory/client/IClient");
 import IResponse     = require("../client/IResponse");
 import path          = require("path");

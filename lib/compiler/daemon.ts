@@ -3,7 +3,7 @@
 import logger = require("log4js");
 import {IOptions as IOptionsBase, IDaemon as IDaemonBase, Daemon as DaemonBase} from "../daemon";
 import {IRequest, IResponse} from "./client";
-import {isDefined, isFunction} from "../utils";
+import {isDefined, isFunction} from "../utils/common";
 import {IException, Exception, IObject} from "./exception";
 import {Exception as ExceptionBase} from "../exception";
 

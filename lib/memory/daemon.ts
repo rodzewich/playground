@@ -4,7 +4,7 @@ import {IOptions as IOptionsBase, IDaemon as IDaemonBase, Daemon as DaemonBase} 
 import {IInformation} from "./client";
 import {Exception as ExceptionBase} from "../exception";
 import {IObject, IException, Exception} from "./exception";
-import {isFunction, isDefined, isNumber} from "../utils";
+import {isFunction, isDefined, isNumber} from "../utils/common";
 import log4js        = require("../../logger");
 import IIncrementableBigIntegerHelper = require("../helpers/IIncrementableBigIntegerHelper");
 import IncrementableBigIntegerHelper  = require("../helpers/IncrementableBigIntegerHelper");

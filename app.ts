@@ -1,13 +1,14 @@
 /// <reference path="./types/node/node.d.ts" />
 
-import fs         = require("fs");
-import cp         = require("child_process");
-import colors     = require("colors");
-import http       = require("http");
-import url        = require("url");
-import path       = require("path");
+import * as fs from "fs";
+import * as cp from "child_process";
+import * as colors from "colors";
+import * as http from "http";
+import * as url from "url";
+import * as path from "path";
 import {IRequest, Request} from "./lib/http/request";
-import {deferred, mkdir, displayException, installMapping} from "./lib/utils";
+import {deferred} from "./lib/utils/common";
+import {mkdir, displayException, installMapping} from "./lib/utils";
 import {input as displayInput, output as displayOutput} from "./lib/helpers/display";
 import {IException, Exception} from "./lib/exception";
 import {init as memoryInit} from "./lib/memory/init";

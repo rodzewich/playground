@@ -1,5 +1,5 @@
 
-import {deferred, typeOf} from "../../utils";
+import {deferred, typeOf} from "../../utils/common";
 import {IClient, Client} from "../client";
 import {IDaemon, Daemon} from "../daemon";
 import IOptions = require("../daemon/IOptions");

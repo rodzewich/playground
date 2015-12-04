@@ -4,7 +4,7 @@ import http = require("http");
 import {IResponse, IClient, Client} from "./client";
 import {router as error500} from "../routes/error500";
 import {IException} from "./exception";
-import {isDefined} from "../utils";
+import {isDefined} from "../utils/common";
 
 var client:IClient = new Client({});
 

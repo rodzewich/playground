@@ -5,7 +5,7 @@ import fs     = require("fs");
 import net    = require("net");
 import colors = require("colors");
 import log4js = require("log4js");
-import {isNull, isDefined, isFunction, isArray, deferred} from "./utils";
+import {isNull, isDefined, isFunction, isArray, deferred} from "./utils/common";
 import {IOptions as IExceptionOptions, IException, Exception} from "./exception";
 import {IDebugHelper, DebugHelper} from "./helpers/debugHelper";
 import {ITimeoutHelper, TimeoutHelper} from "./helpers/timeoutHelper";

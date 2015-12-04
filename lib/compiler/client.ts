@@ -4,7 +4,7 @@
 import cp = require("child_process");
 import log4js = require("log4js");
 import {IOptions as IOptionsBase, IClient as IClientBase, Client as ClientBase} from "../client";
-import {isString, isFunction, isArray, isDefined, deferred} from "../utils";
+import {isString, isFunction, isArray, isDefined, deferred} from "../utils/common";
 import {IWebRootDirectoryHelper, WebRootDirectoryHelper} from "./helpers/webRootDirectoryHelper";
 import {IMemoryLocationHelper, MemoryLocationHelper} from "./helpers/memoryLocationHelper";
 import {ISourcesDirectoryHelper, SourcesDirectoryHelper} from "../helpers/sourcesDirectoryHelper";
@@ -326,7 +326,7 @@ export class Client extends ClientBase implements IClient {
 
     public compile(filename:string, callback?:(errors:IException[], result:IResponse) => void):void {
 
-        function handler(errors:IException[], result:IResponse):void => {
+        function handler(errors:IException[], result:IResponse):void {
             if (isFunction(callback)) {
                 callback(errors, result);
             }

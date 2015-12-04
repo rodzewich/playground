@@ -1,7 +1,7 @@
 /// <reference path="../../types/node/node.d.ts" />
 
 import path = require("path");
-import {isDefined, isFunction, deferred, parallel} from "../utils";
+import {isDefined, isFunction, deferred, parallel} from "../utils/common";
 import {IOptions as IOptionsBase, IClient, Client} from "./client";
 import {INumberOfProcessesHelper, NumberOfProcessesHelper} from "./helpers/numberOfProcessesHelper";
 

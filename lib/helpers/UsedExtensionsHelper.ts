@@ -1,4 +1,4 @@
-import {isNull, isArray, isString, isDefined} from "../utils";
+import {isNull, isArray, isString, isDefined} from "../utils/common";
 import {Exception} from "../exception";
 import IUsedExtensionsHelper = require("./IUsedExtensionsHelper");
 

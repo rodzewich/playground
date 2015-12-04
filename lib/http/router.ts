@@ -1,7 +1,6 @@
 
 import {IRequest} from "./request";
-import * as getobject from "getobject";
-import {isDefined, clone} from "../utils";
+import {isDefined, clone, get} from "../utils/common";
 
 export interface IParams {
     controller:string;
@@ -20,7 +19,7 @@ export class Match implements IMatch {
         return null;
     }
     public getParam(key:string, defaults?:any):any {
-        let param:any = getobject.get(this._params, String(key));
+        let param:any = get(this._params, String(key));
         if (isDefined(param)) {
             return clone(param, true);
         }

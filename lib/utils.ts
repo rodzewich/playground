@@ -7,6 +7,7 @@ import * as path from "path";
 import * as colors from "colors";
 import mappingSupport = require('source-map-support');
 import {IException, Exception} from "./exception";
+import {isFunction, deferred} from "./utils/common"
 
 
 export function mkdir(directory:string, callback?:(errors:IException[]) => void):void {

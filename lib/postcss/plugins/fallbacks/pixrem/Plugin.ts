@@ -1,7 +1,7 @@
 /// <reference path="./plugin.d.ts" />
 /// <reference path="../../../browserslist.d.ts" />
 
-import {isTrue, isDefined} from "../../../../utils";
+import {isTrue, isDefined} from "../../../../utils/common";
 import PluginBase = require("../Plugin");
 import IPlugin = require("./IPlugin");
 import IOptions = require("./IOptions");

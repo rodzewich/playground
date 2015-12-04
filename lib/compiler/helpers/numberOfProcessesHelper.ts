@@ -1,4 +1,4 @@
-import {isDefined} from "../../utils";
+import {isDefined} from "../../utils/common";
 
 export interface INumberOfProcessesHelper {
     setNumber(value:number):void;

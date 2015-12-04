@@ -6,7 +6,7 @@ import IResponse = require("../client/IResponse");
 import Compiler = require("../compiler/Compiler");
 import ICompiler = require("../compiler/ICompiler");
 import ICompilerOptions = require("../compiler/IOptions");
-import {isDefined, isFunction} from "../../utils";
+import {isDefined, isFunction} from "../../utils/common";
 import IMemory = require("../../memory/client/IClient");
 
 class Daemon extends DaemonBase implements IDaemon {

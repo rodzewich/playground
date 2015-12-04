@@ -1,4 +1,4 @@
-import {isString, isDefined} from "../utils";
+import {isString, isDefined} from "../utils/common";
 import {Exception} from "../exception";
 
 var types:{[index:string]:ContentType} = {};

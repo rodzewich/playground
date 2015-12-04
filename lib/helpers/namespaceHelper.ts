@@ -1,4 +1,4 @@
-import {isArray, isString, isDefined} from "../utils";
+import {isArray, isString, isDefined} from "../utils/common";
 import {Exception} from "../exception";
 
 export class SeparatorHelper {

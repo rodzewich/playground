@@ -1,5 +1,5 @@
 import IOptions = require("./IOptions");
-import {isDefined} from "../utils";
+import {isDefined} from "../utils/common";
 import IPlugin = require("./plugins/IPlugin");
 import IPostcssAutoprefixerPlugin = require("./plugins/fallbacks/autoprefixer/IPlugin");
 import PostcssAutoprefixerPlugin = require("./plugins/fallbacks/autoprefixer/Plugin");

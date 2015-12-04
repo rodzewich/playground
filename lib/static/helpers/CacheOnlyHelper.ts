@@ -1,5 +1,5 @@
 import ICacheOnlyHelper = require("./ICacheOnlyHelper");
-import {isDefined, isTrue} from "../../utils";
+import {isDefined, isTrue} from "../../utils/common";
 
 class CacheOnlyHelper implements ICacheOnlyHelper {
 

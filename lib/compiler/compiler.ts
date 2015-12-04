@@ -1,6 +1,6 @@
 /// <reference path="../../types/node/node.d.ts" />
 
-import {isDefined} from "../utils";
+import {isDefined} from "../utils/common";
 import {IException as IExceptionBase} from "../exception";
 import {IException} from "./exception";
 import {ICssErrorsHelper, CssErrorsHelper} from "./helpers/cssErrorsHelper";

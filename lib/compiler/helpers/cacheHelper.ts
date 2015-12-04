@@ -1,4 +1,4 @@
-import {isTrue} from "../../utils";
+import {isTrue} from "../../utils/common";
 
 export interface ICacheHelper {
     setIsUsed(value:any):void;

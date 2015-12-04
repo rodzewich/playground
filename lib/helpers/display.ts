@@ -1,8 +1,8 @@
 /// <reference path="../../types/node/node.d.ts" />
 /// <reference path="../../types/colors/colors.d.ts" />
 
-import {template} from "../utils"
-import colors = require("colors");
+import {template} from "../utils/common"
+import * as colors from "colors";
 
 class Type {
 

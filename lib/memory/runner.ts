@@ -24,7 +24,8 @@ process.addListener('uncaughtException', function (error:Error) {
     }
 });
 
-import {isArray, displayException, installMapping} from "../utils";
+import {isArray} from "../utils/common";
+import {displayException, installMapping} from "../utils";
 import {IObject, IException, Exception} from "./exception";
 import {Exception as ExceptionBase} from "../exception";
 import {IDaemon, Daemon} from "./daemon";

@@ -1,4 +1,4 @@
-import {isDefined, isNull, isArray, isString} from "../utils";
+import {isDefined, isNull, isArray, isString} from "../utils/common";
 import {Exception} from "../exception";
 import IIncludeDirectoriesHelper = require("./IIncludeDirectoriesHelper");
 

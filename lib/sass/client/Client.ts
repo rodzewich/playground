@@ -1,6 +1,6 @@
 /// <reference path="../../../types/node/node.d.ts" />
 
-import {isFunction} from "../../utils";
+import {isFunction} from "../../utils/common";
 import IOptions   = require("./IOptions");
 import IClient    = require("./IClient");
 import ClientBase = require("../../css/client/Client");

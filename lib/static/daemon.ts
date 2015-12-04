@@ -4,7 +4,7 @@ import path = require("path");
 import log4js = require("log4js");
 import {IOptions as IOptionsBase, IDaemon as IDaemonBase, Daemon as DaemonBase} from "../daemon";
 import {IClient as IMemory, Client as Memory} from "../memory/client";
-import {isDefined, isFunction, isTrue, deferred, parallel} from "../utils";
+import {isDefined, isFunction, isTrue, deferred, parallel} from "../utils/common";
 import {IObject, IException, Exception} from "./exception";
 import {IException as IExceptionMemory} from "../memory/exception";
 import {IException as IExceptionBase} from "../exception";

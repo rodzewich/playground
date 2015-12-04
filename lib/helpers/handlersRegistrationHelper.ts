@@ -1,4 +1,4 @@
-import {isFunction} from "../utils";
+import {isFunction} from "../utils/common";
 
 export interface IHandlersRegistrationHelper {
     register(callback:any):string;

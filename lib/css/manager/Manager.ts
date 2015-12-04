@@ -4,7 +4,7 @@ import ManagerBase = require("../../compiler/manager/Manager");
 import IClient = require("../client/IClient");
 import Client = require("../client/Client");
 import IClientOptions = require("../client/IOptions");
-import {isDefined, isFunction} from "../../utils";
+import {isDefined, isFunction} from "../../utils/common";
 import IIncludeDirectoriesHelper = require("../helpers/IIncludeDirectoriesHelper");
 import IncludeDirectoriesHelper = require("../helpers/IncludeDirectoriesHelper");
 import BrandSpecificLogic = require("../helpers/BrandSpecificLogic");

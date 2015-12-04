@@ -1,4 +1,4 @@
-import {deferred, isFunction, isDefined} from "./utils";
+import {deferred, isFunction, isDefined} from "./utils/common";
 import {IDebugHelper, DebugHelper} from "../lib/helpers/debugHelper";
 
 export interface IOptions {

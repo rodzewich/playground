@@ -1,7 +1,7 @@
 import {IProtocolHelper, ProtocolHelper} from "../helpers/protocolHelper";
 import {IMethodHelper, MethodHelper} from "../helpers/methodHelper";
 import {IPortHelper, PortHelper} from "../helpers/portHelper";
-import {isDefined} from "../utils";
+import {isDefined} from "../utils/common";
 
 export interface IOptions {
     protocol?:string;

@@ -1,7 +1,7 @@
 // todo: 1. сокращать тексты по горизонтали, обрезать большие пробельные пространства!
 // todo: 2. сокращать тексты по горизонтали, обрезать текст слева и справа, так чтобы он помещался в ширину консоли или 80 знаков!
 
-import {isDefined} from "../utils";
+import {isDefined} from "../utils/common";
 import ISourceCodePointCreator = require("./ISourceCodePointCreator");
 
 class SourceCodePointCreator implements ISourceCodePointCreator {
