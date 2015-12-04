@@ -30,61 +30,145 @@ export class Match implements IMatch {
     }
 }
 
-export interface IRouter {
-    match(request:IRequest):IMatch;
-    assemble(params:IParams, options:any):IRequest;
-}
+export module router {
 
-export abstract class Router implements IRouter {
-    abstract match(request:IRequest):IMatch;
-    abstract assemble(params:IParams, options:any):IRequest;
-}
-
-
-export interface IHostname extends IRouter {
-}
-
-export class Hostname extends Router implements IHostname {
-    public match(request:IRequest):IMatch {
-        return null;
+    export interface IOptions {
+        controller?:string;
+        action?:string;
+        type?:string;
+        children?:IRouter[];
     }
-    public assemble(params:IParams, options:any):IRequest {
-        return null;
+
+    export interface IRouter {
+        match(request:IRequest):IMatch;
+        assemble(params:IParams, options:any):IRequest;
     }
+
+    export class Router implements IRouter {
+
+        constructor(options?:IOptions) {
+            if (options && isDefined(options.defaults)) {
+
+            }
+        }
+
+        public match(request:IRequest):IMatch {
+            return new Match();
+        }
+        
+        public assemble(params:IParams, options:any):IRequest {
+            return null;
+        }
+
+    }
+
+    export function factory(options?:IOptions):IRouter {
+        return new Router(options);
+    }
+
+}
+
+export module hostname {
+    
+    export interface IOptions extends router.IOptions {
+        route:string;
+        constraints:{[index:string]:(string|string[]|RegExp)};
+    }
+
+    export interface IRouter extends router.IRouter {
+    }
+
+    export class Router extends router.Router implements IRouter {
+
+        private _route:string;
+        private _constraints:{[index:string]:(string|string[]|RegExp)};
+
+        constructor(options?:IOptions) {
+            super(options);
+            if (options && isDefined(options.route)) {
+                this._route = options.route;
+            }
+            if (options && isDefined(options.constraints)) {
+                this._constraints = options.constraints;
+            }
+        }
+
+        public match(request:IRequest):IMatch {
+            return null;
+        }
+        public assemble(params:IParams, options:any):IRequest {
+            return null;
+        }
+
+    }
+
+    export function factory(options?:IOptions):IRouter {
+        return new Router(options);
+    }
+
 }
 
 
-export interface ILiteral extends IRouter {
+export module literal {
+    
+    export interface IOptions extends router.IOptions {
+    }
+
+    export interface IRouter extends router.IRouter {
+    }
+
+    export class Router extends router.Router implements IRouter {
+    }
+
 }
 
-export class Literal extends Router implements ILiteral {
+
+export module method {
+
+    export interface IRouter extends router.IRouter {
+    }
+
+    export class Router extends router.Router implements IRouter {
+    }
+
 }
 
-export interface IMethod extends IRouter {
+export module path {
+
+    export interface IRouter extends router.IRouter {
+    }
+
+    export class Router extends router.Router implements IRouter {
+    }
+
 }
 
-export class Method extends Router implements IMethod {
+export module regex {
+
+    export interface IRouter extends router.IRouter {
+    }
+
+    export class Router extends router.Router implements IRouter {
+    }
+
 }
 
-export interface IPart extends IRouter {
+export module scheme {
+
+    export interface IRouter extends router.IRouter {
+    }
+
+    export class Router extends router.Router implements IRouter {
+    }
+
 }
 
-export class Part extends Router implements IPart {
-}
+export module segment {
 
-export interface IRegex extends IRouter {
-}
+    export interface IRouter extends router.IRouter {
+    }
 
-export class Regex extends Router implements IRegex {
-}
+    export class Router extends router.Router implements IRouter {
+    }
 
-export interface IScheme extends IRouter {
-}
-
-export class Scheme extends Router implements IScheme {}
-
-export interface ISegment extends IRouter {
-}
-
-export class Segment extends Router implements IRouter {
 }
