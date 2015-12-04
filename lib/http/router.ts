@@ -26,6 +26,9 @@ export interface IHostname extends IRouter {
 
 export class Hostname extends Router implements IHostname {
     public match(request:IRequest):IMatch {
+        return null;
+    }
+    public assemble(params:IParams, options:any):IRequest {
 
     }
 }

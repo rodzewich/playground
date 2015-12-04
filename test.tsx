@@ -6,9 +6,9 @@ import * as React from 'react';
 import * as ReactDOMServer from 'react-dom/server';
 import {ButtonToolbar, Button, Input, ButtonInput} from 'react-bootstrap';
 
-class MyComponent extends React.Component {
+class MyComponent<P, S> extends React.Component<P, S> {
 
-    render() {
+    render():JSX.Element {
         return <form>
             <Input type="text" label="Text" placeholder="Enter text" />
             <Input type="email" label="Email Address" placeholder="Enter email" />

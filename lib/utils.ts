@@ -2,9 +2,9 @@
 /// <reference path="../types/colors/colors.d.ts" />
 /// <reference path="../types/source-map-support/source-map-support.d.ts" />
 
-import fs     = require("fs");
-import path   = require("path");
-import colors = require("colors");
+import * as fs from "fs";
+import * as path from "path";
+import * as colors from "colors";
 import mappingSupport = require('source-map-support');
 import {IException, Exception} from "./exception";
 
@@ -268,7 +268,7 @@ export function lock(options, callback) {
 
     dirname.split(path.sep).forEach(function (element, index, array) {
         var directory = array.slice(0, index + 1).join(path.sep);
-        actions.push(function (next) {
+        actions.push((next:() => void) => {
             fs.mkdir(directory, function (error) {
                 if (!error || error.code === "EEXIST") {
                     next();
