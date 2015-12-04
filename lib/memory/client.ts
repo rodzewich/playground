@@ -1,6 +1,6 @@
 /// <reference path="../../types/node/node.d.ts" />
 
-import log4js           = require("../../logger");
+import * as log4js from "../../logger";
 import {isNull, isDefined, isArray, isString, isObject, isNumber, isFunction} from "../utils";
 import {IOptions as IOptionsBase, IClient as IClientBase, Client as ClientBase} from "../client";
 import {IException, Exception} from "./exception";
@@ -82,7 +82,7 @@ export class Client extends ClientBase implements IClient {
 
     constructor(options?:IOptions) {
         super(options);
-        if (options && typeof options.namespace !== "undefined") {
+        if (options && isDefined(options.namespace)) {
             this.setNamespace(options.namespace);
         }
     }

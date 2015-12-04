@@ -1,4 +1,7 @@
+
 import {IRequest} from "./request";
+import * as getobject from "getobject";
+import {isDefined, clone} from "../utils";
 
 export interface IParams {
     controller:string;
@@ -11,6 +14,23 @@ export interface IMatch {
     getParams():any;
 }
 
+export class Match implements IMatch {
+    private _params:any = {};
+    public getName():string {
+        return null;
+    }
+    public getParam(key:string, defaults?:any):any {
+        let param:any = getobject.get(this._params, String(key));
+        if (isDefined(param)) {
+            return clone(param, true);
+        }
+        return clone(defaults, true) || null;
+    }
+    public getParams():any {
+        return clone(this._params, true);
+    }
+}
+
 export interface IRouter {
     match(request:IRequest):IMatch;
     assemble(params:IParams, options:any):IRequest;
@@ -21,6 +41,7 @@ export abstract class Router implements IRouter {
     abstract assemble(params:IParams, options:any):IRequest;
 }
 
+
 export interface IHostname extends IRouter {
 }
 
@@ -29,9 +50,10 @@ export class Hostname extends Router implements IHostname {
         return null;
     }
     public assemble(params:IParams, options:any):IRequest {
-
+        return null;
     }
 }
+
 
 export interface ILiteral extends IRouter {
 }
