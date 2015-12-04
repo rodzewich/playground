@@ -226,19 +226,50 @@ export function displayException(error:IException) {
     console.log("");
 }
 
-// todo: re-implement it
 export function clone(object:any, recursive:boolean = false) {
-    var result = {};
-    var prop;
-    if (object) {
-        for (prop in object) {
-            if (!object.hasOwnProperty(prop)) {
-                continue;
+    let prop:string,
+        index:number,
+        length:number,
+        array:any[],
+        result:any;
+    switch (typeOf(object)) {
+        case "null":
+        case "undefined":
+        case "number":
+        case "string":
+        case "boolean":
+        case "function":
+            return object;
+        case "date":
+            return new Date(Number(object));
+        case "arguments":
+        case "array":
+            length = (<any[]>object).length;
+            array = [];
+            for (index = 0; index < length; index++) {
+                if (recursive) {
+                    array.push(clone((<any[]>object)[index]));
+                } else {
+                    array.push((<any[]>object)[index]);
+                }
             }
-            result[prop] = object[prop];
-        }
+            return array;
+        case "error":
+            return new Error((<Error>object).message);
+        default:
+            result = {};
+            for (prop in object) {
+                if (!object.hasOwnProperty(prop)) {
+                    continue;
+                }
+                if (recursive) {
+                    result[prop] = clone(object[prop]);
+                } else {
+                    result[prop] = object[prop];
+                }
+            }
+            return result;
     }
-    return result;
 }
 
 // todo: re-implement it
