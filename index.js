@@ -1,6 +1,11 @@
 /*jslint */
 /*global require */
 
+var url = require("url");
+console.log(url.parse("http://sdfsfd.com/sfsd/sdfsdf/sdfsdf.html?sdfsdf=123"));
+return;
+
+
 var fs                   = require("fs"),
     http                 = require("http"),
     path                 = require("path"),

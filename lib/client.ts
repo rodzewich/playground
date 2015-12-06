@@ -1,10 +1,10 @@
 /// <reference path="../types/node/node.d.ts" />
 /// <reference path="../types/log4js/log4js.d.ts" />
 
-import fs     = require("fs");
-import net    = require("net");
-import colors = require("colors");
-import log4js = require("log4js");
+import * as fs from "fs";
+import * as net from "net";
+import * as colors from "colors";
+import * as log4js from "log4js";
 import {isNull, isDefined, isFunction, isArray, deferred} from "./utils/common";
 import {IOptions as IExceptionOptions, IException, Exception} from "./exception";
 import {IDebugHelper, DebugHelper} from "./helpers/debugHelper";

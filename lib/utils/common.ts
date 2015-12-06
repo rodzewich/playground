@@ -14,28 +14,40 @@ export function isArguments(value:any):boolean {
     return typeOf(value) === "arguments";
 }
 
+export function isNotArguments(value:any):boolean {
+    return !isArguments(value);
+}
+
 export function isError(value:any):boolean {
     return typeOf(value) === "error";
+}
+
+export function isNotError(value:any):boolean {
+    return !isError(value);
 }
 
 export function isDate(value:any):boolean {
     return typeOf(value) === "date";
 }
 
+export function isNotDate(value:any):boolean {
+    return !isDate(value);
+}
+
 export function isArray(value:any):boolean {
     return typeOf(value) === "array";
+}
+
+export function isNotArray(value:any):boolean {
+    return !isArray(value);
 }
 
 export function isBoolean(value:any):boolean {
     return typeOf(value) === "boolean";
 }
 
-export function isDefined(value:any):boolean {
-    return typeOf(value) !== "undefined";
-}
-
-export function isUndefined(value:any):boolean {
-    return typeOf(value) === "undefined";
+export function isNotBoolean(value:any):boolean {
+    return !isBoolean(value);
 }
 
 export function isFalse(value:any):boolean {
@@ -49,28 +61,56 @@ export function isFalse(value:any):boolean {
     return !value;
 }
 
+export function isTrue(value:any):boolean {
+    return !isFalse(value);
+}
+
+export function isDefined(value:any):boolean {
+    return typeOf(value) !== "undefined";
+}
+
+export function isUndefined(value:any):boolean {
+    return !isDefined(value);
+}
+
 export function isFunction(value:any):boolean {
     return typeOf(value) === "function";
+}
+
+export function isNotFunction(value:any):boolean {
+    return !isFunction(value);
 }
 
 export function isNull(value:any):boolean {
     return typeOf(value) === "null";
 }
 
+export function isNotNull(value:any):boolean {
+    return !isNull(value);
+}
+
 export function isNumber(value:any):boolean {
     return typeOf(value) === "number";
+}
+
+export function isNotNumber(value:any):boolean {
+    return !isNumber(value);
 }
 
 export function isObject(value:any):boolean {
     return typeOf(value) === "object";
 }
 
+export function isNotObject(value:any):boolean {
+    return !isObject(value);
+}
+
 export function isString(value:any):boolean {
     return typeOf(value) === "string";
 }
 
-export function isTrue(value:any):boolean {
-    return !isFalse(value);
+export function isNotString(value:any):boolean {
+    return !isString(value);
 }
 
 export function deferred(actions:((next:() => void) => void)[]):void {
@@ -221,9 +261,9 @@ export function get(object:any, key:string):any {
             result = (<{[index:string]:any}>result)[parseInt(keys[index], 10)];
             continue;
         }
-        return null;
+        return undefined;
     }
-    return isDefined(result) ? result : null;
+    return result;
 }
 
 export function template(template:string, ...args:any[]):string {

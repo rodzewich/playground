@@ -1,8 +1,8 @@
 /// <reference path="../types/node/node.d.ts" />
 /// <reference path="../types/log4js/log4js.d.ts" />
 
-import net    = require("net");
-import log4js = require("log4js");
+import * as net from "net";
+import * as log4js "log4js";
 import {isFunction, isDefined} from "./utils/common";
 import {IException, Exception} from "./exception";
 import {IDebugHelper, DebugHelper} from "./helpers/debugHelper";

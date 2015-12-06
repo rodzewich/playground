@@ -1,7 +1,9 @@
+
+import * as querystring from "querystring";
 import {IProtocolHelper, ProtocolHelper} from "../helpers/protocolHelper";
 import {IMethodHelper, MethodHelper} from "../helpers/methodHelper";
 import {IPortHelper, PortHelper} from "../helpers/portHelper";
-import {isDefined} from "../utils/common";
+import {isDefined, isObject, clone, get} from "../utils/common";
 
 export interface IOptions {
     protocol?:string;
@@ -30,6 +32,58 @@ export class UrlHelper implements IUrlHelper {
     }
 }
 
+export interface IParams {
+    getParams():{[index:string]:any};
+    getParam(name:string):any;
+    hasParam(name:string):boolean;
+}
+
+export class Params implements IParams {
+    private _params:{[index:string]:any};
+    constructor(params:any) {
+        if (isObject(params)) {
+            this._params = clone(params, true);
+        } else {
+            this._params = {};
+        }
+    }
+    public getParams():{[index:string]:any} {
+        return clone(this._params);
+    }
+    public getParam(name:string):any {
+        if (this.hasParam(name)) {
+            return clone(get(this._params, String(name))) || null;
+        }
+        return null;
+    }
+    public hasParam(name:string):boolean {
+        return isDefined(get(this._params, String(name)));
+    }
+}
+
+export interface IQuery extends IParams {
+}
+
+export class Query extends Params implements IQuery {
+    
+    constructor(query:string) {
+        super(querystring.parse(query));
+    }
+
+}
+
+export interface IPost extends IParams {
+}
+
+export class Post extends Params implements IPost {
+}
+
+export interface ICookie extends IParams {
+}
+
+export class Cookie extends Params implements ICookie {
+}
+
 export interface IRequest {
     protocol:string;
     getProtocol():string;
@@ -43,6 +97,12 @@ export interface IRequest {
     url:string;
     getUrl():string;
     setUrl(url:string):void;
+    query:IQuery;
+    getQuery():IQuery;
+    post:IPost;
+    getPost():IPost;
+    cookie:ICookie;
+    getCookie():ICookie;
 }
 
 export class Request implements IRequest {
@@ -148,6 +208,40 @@ export class Request implements IRequest {
     public setUrl(url:string):void {
         this.getUrlHelper().setUrl(url);
     }
+    public get query():IQuery {
+        return this.getQuery();
+    }
+    public set query(params:IQuery) {
+        // todo: throw error!!!
+    }
+    private _query:IQuery;
+    protected createQuery():IQuery {
+        return new Query();
+    }
+    public getQuery():IQuery {
+        if (!this._query) {
+            this._query = this.createQuery();
+        }
+        return this._query;
+    }
+    public get post():IPost {
+        return this.getPost();
+    }
+    public set post(params:IPost) {
+        // todo: throw error!!!
+    }
+    private _post:IPost;
+    protected createPost():IPost {
+        return new Post();
+    }
+    public getPost():IPost {
+        if (!this._post) {
+            this._post = this.createPost();
+        }
+        return this._post;
+    }
+
+
 }
 
 /// <reference path="../../types/node/node.d.ts" />
@@ -160,3 +254,6 @@ new Request({
     port: parseInt(String(request.headers["host"] || "").split(":")[1], 10) || 80,
     url: String(request.url || "/")
 });
+
+
+
