@@ -1,115 +1,55 @@
 
-import * as querystring from "querystring";
+import * as url from "url";
+import {isDefined, isString, isObject, clone, get} from "../utils/common";
+import {Exception} from "../exception";
 import {IProtocolHelper, ProtocolHelper} from "../helpers/protocolHelper";
-import {IMethodHelper, MethodHelper} from "../helpers/methodHelper";
 import {IPortHelper, PortHelper} from "../helpers/portHelper";
-import {isDefined, isObject, clone, get} from "../utils/common";
+import {IQueryHelper, QueryHelper} from "./helpers/queryHelper";
+import {IPostHelper, PostHelper} from "./helpers/postHelper";
+import {ICookieHelper, CookieHelper} from "./helpers/cookieHelper";
+import {IUrlHelper, UrlHelper} from "./helpers/urlHelper";
+import {IMethodHelper, methods, find as findMethod} from "./helpers/methodHelper";
 
 export interface IOptions {
+    cookie?:string;
     protocol?:string;
     method?:string;
     port?:number;
     url?:string;
-}
-
-export interface IUrlHelper {
-    getUrl():string;
-    setUrl(url:string):void;
-}
-
-export class UrlHelper implements IUrlHelper {
-    private _url:string;
-    constructor(url?:string) {
-        if (isDefined(url)) {
-            this.setUrl(url);
-        }
-    }
-    public getUrl():string {
-        return this._url;
-    }
-    public setUrl(url:string):void {
-        this._url = url;
-    }
-}
-
-export interface IParams {
-    getParams():{[index:string]:any};
-    getParam(name:string):any;
-    hasParam(name:string):boolean;
-}
-
-export class Params implements IParams {
-    private _params:{[index:string]:any};
-    constructor(params:any) {
-        if (isObject(params)) {
-            this._params = clone(params, true);
-        } else {
-            this._params = {};
-        }
-    }
-    public getParams():{[index:string]:any} {
-        return clone(this._params);
-    }
-    public getParam(name:string):any {
-        if (this.hasParam(name)) {
-            return clone(get(this._params, String(name))) || null;
-        }
-        return null;
-    }
-    public hasParam(name:string):boolean {
-        return isDefined(get(this._params, String(name)));
-    }
-}
-
-export interface IQuery extends IParams {
-}
-
-export class Query extends Params implements IQuery {
-    
-    constructor(query:string) {
-        super(querystring.parse(query));
-    }
-
-}
-
-export interface IPost extends IParams {
-}
-
-export class Post extends Params implements IPost {
-}
-
-export interface ICookie extends IParams {
-}
-
-export class Cookie extends Params implements ICookie {
+    post?:string;
+    hostname?:string;
 }
 
 export interface IRequest {
     protocol:string;
     getProtocol():string;
     setProtocol(protocol:string):void;
-    method:string;
-    getMethod():string;
-    setMethod(method:string):void;
+    method:IMethodHelper;
+    getMethod():IMethodHelper;
     port:number;
     getPort():number;
     setPort(port:number):void;
     url:string;
     getUrl():string;
     setUrl(url:string):void;
-    query:IQuery;
-    getQuery():IQuery;
-    post:IPost;
-    getPost():IPost;
-    cookie:ICookie;
-    getCookie():ICookie;
+    query:IQueryHelper;
+    getQuery():IQueryHelper;
+    post:IPostHelper;
+    getPost():IPostHelper;
+    cookie:ICookieHelper;
+    getCookie():ICookieHelper;
 }
 
 export class Request implements IRequest {
+    private _options:url.Url;
+    private _postData:string;
+    private _cookieData:string;
     private _protocolHelper:IProtocolHelper;
     private _methodHelper:IMethodHelper;
     private _portHelper:IPortHelper;
     private _urlHelper:IUrlHelper;
+    private _queryHelper:IQueryHelper;
+    private _postHelper:IPostHelper;
     protected createProtocolHelper():IProtocolHelper {
         return new ProtocolHelper();
     }
@@ -118,15 +58,6 @@ export class Request implements IRequest {
             this._protocolHelper = this.createProtocolHelper();
         }
         return this._protocolHelper;
-    }
-    protected createMethodHelper():IMethodHelper {
-        return new MethodHelper();
-    }
-    protected getMethodHelper():IMethodHelper {
-        if (!this._methodHelper) {
-            this._methodHelper = this.createMethodHelper();
-        }
-        return this._methodHelper;
     }
     protected createPortHelper():IPortHelper {
         return new PortHelper();
@@ -146,20 +77,63 @@ export class Request implements IRequest {
         }
         return this._urlHelper;
     }
+    protected createQueryHelper():IQueryHelper {
+        var query:string = "";
+        if (this._options && isString(this._options.query)) {
+            query = this._options.query;
+        }
+        return new QueryHelper(query);
+    }
+    protected getQueryHelper():IQueryHelper {
+        if (!this._queryHelper) {
+            this._queryHelper = this.createQueryHelper();
+        }
+        return this._queryHelper;
+    }
+    protected createPostHelper():IPostHelper {
+        return new PostHelper(this._postData || "");
+    }
+    protected getPostHelper():IPostHelper {
+        if (!this._postHelper) {
+            this._postHelper = this.createPostHelper();
+        }
+        return this._postHelper;
+    }
+    private _cookieHelper:ICookieHelper;
+    protected createCookieHelper():ICookieHelper {
+        return new PostHelper(this._cookieData || "");
+    }
+    protected getCookieHelper():ICookieHelper {
+        if (!this._postHelper) {
+            this._postHelper = this.createCookieHelper();
+        }
+        return this._postHelper;
+    }
     constructor(options?:IOptions) {
         if (options && isDefined(options.protocol)) {
             this.setProtocol(options.protocol);
         }
         if (options && isDefined(options.method)) {
-            this.setMethod(options.method);
+            this._methodHelper = findMethod(options.method);
         }
         if (options && isDefined(options.port)) {
             this.setPort(options.port);
         }
         if (options && isDefined(options.url)) {
             this.setUrl(options.url);
+            this._options = url.parse(this.getUrl(), false, false);
+        }
+        if (options && isDefined(options.post)) {
+            this._postData = String(options.post || "");
+        }
+        if (options && isDefined(options.post)) {
+            this._cookieData = String(options.cookie || "");
+        }
+        if (options && isDefined(options.hostname)) {
+
         }
     }
+    
     public get protocol():string {
         return this.getProtocol();
     }
@@ -172,18 +146,17 @@ export class Request implements IRequest {
     public setProtocol(protocol:string):void {
         this.getProtocolHelper().setProtocol(protocol);
     }
-    public get method():string {
+    
+    public get method():IMethodHelper {
         return this.getMethod();
     }
-    public set method(method:string) {
-        this.setMethod(method);
+    public set method(value:IMethodHelper) {
+        throw new Exception({message: "\"method\" property cannot be set"});
     }
-    public getMethod():string {
-        return this.getMethodHelper().getMethod();
+    public getMethod():IMethodHelper {
+        return this._methodHelper || null;
     }
-    public setMethod(method:string):void {
-        this.getMethodHelper().setMethod(method);
-    }
+    
     public get port():number {
         return this.getPort();
     }
@@ -196,6 +169,7 @@ export class Request implements IRequest {
     public setPort(port:number):void {
         this.getPortHelper().setPort(port);
     }
+    
     public get url():string {
         return this.getUrl();
     }
@@ -208,51 +182,60 @@ export class Request implements IRequest {
     public setUrl(url:string):void {
         this.getUrlHelper().setUrl(url);
     }
-    public get query():IQuery {
+    
+    public get query():IQueryHelper {
         return this.getQuery();
     }
-    public set query(params:IQuery) {
-        // todo: throw error!!!
+    public set query(value:IQueryHelper) {
+        throw new Exception({message: "\"query\" property cannot be set"});
     }
-    private _query:IQuery;
-    protected createQuery():IQuery {
-        return new Query();
+    public getQuery():IQueryHelper {
+        return this.getQueryHelper();
     }
-    public getQuery():IQuery {
-        if (!this._query) {
-            this._query = this.createQuery();
-        }
-        return this._query;
-    }
-    public get post():IPost {
+    
+    public get post():IPostHelper {
         return this.getPost();
     }
-    public set post(params:IPost) {
-        // todo: throw error!!!
+    public set post(value:IPostHelper) {
+        throw new Exception({message: "\"post\" property cannot be set"});
     }
-    private _post:IPost;
-    protected createPost():IPost {
-        return new Post();
-    }
-    public getPost():IPost {
-        if (!this._post) {
-            this._post = this.createPost();
-        }
-        return this._post;
+    public getPost():IPostHelper {
+        return this.getPostHelper();
     }
 
+    public get cookie():ICookieHelper {
+        return this.getCookie();
+    }
+    public set cookie(value:ICookieHelper) {
+        throw new Exception({message: "\"cookie\" property cannot be set"});
+    }
+    public getCookie():ICookieHelper {
+        return this.getCookieHelper();
+    }
 
 }
+
+
+
+
+// Upload
+// http://www.componentix.com/blog/9/file-uploads-using-nodejs-now-for-real
+// http://debuggable.com/posts/streaming-file-uploads-with-node-js:4ac094b2-b6c8-4a7f-bd07-28accbdd56cb
+
 
 /// <reference path="../../types/node/node.d.ts" />
 import http = require("http");
 var request:http.IncomingMessage;
 
+var data:string;
+
 new Request({
     protocol: "http",
-    method: String(request.headers["host"] || "").split(":")[0] || "localhost",
+    method: request.method,
+    hostname: String(request.headers["host"] || "").split(":")[0] || "localhost",
     port: parseInt(String(request.headers["host"] || "").split(":")[1], 10) || 80,
-    url: String(request.url || "/")
+    url: String(request.url || "/"),
+    post: ""
 });
 
 

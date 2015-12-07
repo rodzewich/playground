@@ -38,6 +38,8 @@ import {
     PROJECT_SERVER_HOSTNAME
 } from "./config";
 
+import {IRequest, Request} from "./lib/http/request";
+
 installMapping();
 
 process.addListener('uncaughtException', function (error:Error) {
